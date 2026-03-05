@@ -6387,3 +6387,819 @@ AsyncGenerateContentResponse(
 2026-02-22 22:25:42 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x000001E096D3B3D0>) completed
 2026-02-22 22:25:42 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x000001E096D3B3D0>)
 2026-02-22 22:25:42 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x000001E096D3B3D0>) completed
+2026-02-22 22:33:33 - root - INFO - Logging configuré : backend/logs/gemini_api.log
+2026-02-22 22:33:33 - backend.ia.providers.provider_factory - DEBUG - Provider cache cleared
+2026-02-22 22:33:33 - backend.app - INFO - Provider cache cleared - configuration rechargée depuis .env
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F194B19E0>
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F194B19E0> completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2B60>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2B60>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method executescript of sqlite3.Connection object at 0x0000019F193C2B60>, "-- JARVIS 2.0 - Schéma Base de Données\n-- Gestion de projets avec conversations et messages\n\n-- Table projects\nCREATE TABLE IF NOT EXISTS projects (\n    id TEXT PRIMARY KEY,\n    name TEXT NOT NULL,\n    path TEXT NOT NULL UNIQUE,\n    description TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Table conversations\nCREATE TABLE IF NOT EXISTS conversations (\n    id TEXT PRIMARY KEY,\n    project_id TEXT,\n    agent_id TEXT NOT NULL,\n    title TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE\n);\n\n-- Table messages\nCREATE TABLE IF NOT EXISTS messages (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    conversation_id TEXT NOT NULL,\n    role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),\n    content TEXT NOT NULL,\n    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE\n);\n\n-- Index pour performance\nCREATE INDEX IF NOT EXISTS idx_conversations_project ON conversations(project_id);\nCREATE INDEX IF NOT EXISTS idx_conversations_updated ON conversations(updated_at DESC);\nCREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);\nCREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);\n\n-- Table library_documents (Knowledge Base)\nCREATE TABLE IF NOT EXISTS library_documents (\n    id TEXT PRIMARY KEY,\n    category TEXT NOT NULL CHECK(category IN ('libraries', 'methodologies', 'prompts', 'personal')),\n    name TEXT NOT NULL,\n    icon TEXT,\n    description TEXT,\n    content TEXT NOT NULL,\n    tags TEXT, -- JSON array stringifié\n    agents TEXT, -- JSON array stringifié\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Index pour performance library\nCREATE INDEX IF NOT EXISTS idx_library_category ON library_documents(category);\nCREATE INDEX IF NOT EXISTS idx_library_updated ON library_documents(updated_at DESC);\nCREATE INDEX IF NOT EXISTS idx_library_name ON library_documents(name);\n")
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method executescript of sqlite3.Connection object at 0x0000019F193C2B60>, "-- JARVIS 2.0 - Schéma Base de Données\n-- Gestion de projets avec conversations et messages\n\n-- Table projects\nCREATE TABLE IF NOT EXISTS projects (\n    id TEXT PRIMARY KEY,\n    name TEXT NOT NULL,\n    path TEXT NOT NULL UNIQUE,\n    description TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Table conversations\nCREATE TABLE IF NOT EXISTS conversations (\n    id TEXT PRIMARY KEY,\n    project_id TEXT,\n    agent_id TEXT NOT NULL,\n    title TEXT,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE\n);\n\n-- Table messages\nCREATE TABLE IF NOT EXISTS messages (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    conversation_id TEXT NOT NULL,\n    role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),\n    content TEXT NOT NULL,\n    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE\n);\n\n-- Index pour performance\nCREATE INDEX IF NOT EXISTS idx_conversations_project ON conversations(project_id);\nCREATE INDEX IF NOT EXISTS idx_conversations_updated ON conversations(updated_at DESC);\nCREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);\nCREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);\n\n-- Table library_documents (Knowledge Base)\nCREATE TABLE IF NOT EXISTS library_documents (\n    id TEXT PRIMARY KEY,\n    category TEXT NOT NULL CHECK(category IN ('libraries', 'methodologies', 'prompts', 'personal')),\n    name TEXT NOT NULL,\n    icon TEXT,\n    description TEXT,\n    content TEXT NOT NULL,\n    tags TEXT, -- JSON array stringifié\n    agents TEXT, -- JSON array stringifié\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Index pour performance library\nCREATE INDEX IF NOT EXISTS idx_library_category ON library_documents(category);\nCREATE INDEX IF NOT EXISTS idx_library_updated ON library_documents(updated_at DESC);\nCREATE INDEX IF NOT EXISTS idx_library_name ON library_documents(name);\n") completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F193C2B60>)
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F193C2B60>) completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F193C2B60>)
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F193C2B60>) completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F194B1D00>
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F194B1D00> completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2980>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2980>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2980>, 'SELECT COUNT(*) FROM library_documents', [])
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2980>, 'SELECT COUNT(*) FROM library_documents', []) completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F194B5440>)
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F194B5440>) completed
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F194B5440>)
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F194B5440>) completed
+2026-02-22 22:33:33 - backend.db.database - DEBUG - Library déjà peuplée (13 documents)
+2026-02-22 22:33:33 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F193C2980>)
+2026-02-22 22:33:33 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F193C2980>) completed
+2026-02-22 22:33:43 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19528860>
+2026-02-22 22:33:43 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19528860> completed
+2026-02-22 22:33:43 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194ECD60>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:43 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194ECD60>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:43 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194ECD60>, 'INSERT INTO projects (id, name, path, description, created_at) VALUES (?, ?, ?, ?, ?)', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7', 'Test Calculatrice', 'D:\\Coding\\TEST\\test_calculatrice', 'Calculatrice CLI pour test live niveau 1', '2026-02-22T22:33:43.437896'))
+2026-02-22 22:33:43 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194ECD60>, 'INSERT INTO projects (id, name, path, description, created_at) VALUES (?, ?, ?, ?, ?)', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7', 'Test Calculatrice', 'D:\\Coding\\TEST\\test_calculatrice', 'Calculatrice CLI pour test live niveau 1', '2026-02-22T22:33:43.437896')) completed
+2026-02-22 22:33:43 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194ECD60>)
+2026-02-22 22:33:43 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194ECD60>) completed
+2026-02-22 22:33:43 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194ECD60>)
+2026-02-22 22:33:43 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194ECD60>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19528AE0>
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19528AE0> completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527240>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527240>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195272C0>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195272C0>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195272C0>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195272C0>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527240>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527240>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE020>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE020>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19528D60>
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19528D60> completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EDE40>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EDE40>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EDE40>, 'INSERT INTO conversations (id, project_id, agent_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', '7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7', 'JARVIS_Maître', 'Création calculatrice', '2026-02-22T22:33:45.589649', '2026-02-22T22:33:45.589649'))
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EDE40>, 'INSERT INTO conversations (id, project_id, agent_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', '7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7', 'JARVIS_Maître', 'Création calculatrice', '2026-02-22T22:33:45.589649', '2026-02-22T22:33:45.589649')) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EDE40>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EDE40>) completed
+2026-02-22 22:33:45 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EDE40>)
+2026-02-22 22:33:45 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EDE40>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19528F40>
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19528F40> completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT * FROM conversations WHERE id = ?', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3',))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT * FROM conversations WHERE id = ?', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3',)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195276C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195276C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3',))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3',)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195276C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195276C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE200>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE200>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F194B1B20>
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F194B1B20> completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC LIMIT ?', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', 100))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC LIMIT ?', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', 100)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x0000019F195277C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x0000019F195277C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195277C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195277C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE200>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE200>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19529080>
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19529080> completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE200>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195277C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195277C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195277C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195277C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE200>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE200>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19529260>
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19529260> completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE5C0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE5C0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE5C0>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', 'user', 'Crée une calculatrice CLI Python avec :\n- src/calculator.py : classe Calculator avec méthodes statiques add(a,b), subtract(a,b), multiply(a,b), divide(a,b). Division par zéro lève ZeroDivisionError. Entrées non numériques lèvent ValueError.\n- src/main.py : interface CLI qui demande 2 nombres et une opération (+,-,*,/), appelle Calculator, affiche le résultat.\n- tests/test_calculator.py : tests pytest couvrant tous les cas (succès des 4 opérations, division par zéro, entrées invalides).\n- requirements.txt : pytest\n\nUtilise des imports absolus simples. Chaque fichier doit être complet.', '2026-02-22T22:33:47.752519'))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE5C0>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', 'user', 'Crée une calculatrice CLI Python avec :\n- src/calculator.py : classe Calculator avec méthodes statiques add(a,b), subtract(a,b), multiply(a,b), divide(a,b). Division par zéro lève ZeroDivisionError. Entrées non numériques lèvent ValueError.\n- src/main.py : interface CLI qui demande 2 nombres et une opération (+,-,*,/), appelle Calculator, affiche le résultat.\n- tests/test_calculator.py : tests pytest couvrant tous les cas (succès des 4 opérations, division par zéro, entrées invalides).\n- requirements.txt : pytest\n\nUtilise des imports absolus simples. Chaque fichier doit être complet.', '2026-02-22T22:33:47.752519')) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EE5C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EE5C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE5C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE5C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19528E00>
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19528E00> completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:33:47.863515', '14cbb7af-4bb6-4430-b77e-80077fedd3b3'))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:33:47.863515', '14cbb7af-4bb6-4430-b77e-80077fedd3b3')) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EE020>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EE020>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE020>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE020>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19529260>
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19529260> completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195278C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195278C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EE020>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195278C0>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195278C0>) completed
+2026-02-22 22:33:47 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE020>)
+2026-02-22 22:33:47 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EE020>) completed
+2026-02-22 22:33:47 - backend.ia.providers.gemini_provider - INFO - GeminiProvider initialized: model=gemini-2.5-pro, min_delay=4.0s
+2026-02-22 22:33:47 - backend.ia.providers.provider_factory - INFO - Provider created: JARVIS_Maître → gemini (model=gemini-2.5-pro)
+2026-02-22 22:33:47 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=2
+2026-02-22 22:33:47 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:33:47 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:33:47 - grpc._cython.cygrpc - DEBUG - Using AsyncIOEngine.POLLER as I/O engine
+2026-02-22 22:33:47 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:33:47 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:33:59 - backend.ia.providers.gemini_provider - INFO - Gemini response: 1723 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:33:59 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 1723 chars, no tool calls
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F1952A020>
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F1952A020> completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2C50>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2C50>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2C50>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2C50>, 'SELECT * FROM projects WHERE id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195270C0>)
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195270C0>) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2C50>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',))
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F193C2C50>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('7feb0ef3-cb33-4b65-9a19-7c1bd9a638e7',)) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195276C0>)
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195276C0>) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195276C0>)
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195276C0>) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195270C0>)
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195270C0>) completed
+2026-02-22 22:33:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F193C2C50>)
+2026-02-22 22:33:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F193C2C50>) completed
+2026-02-22 22:33:59 - backend.services.orchestration - INFO - Orchestration: 1 délégation(s) détectée(s)
+2026-02-22 22:33:59 - backend.ia.providers.gemini_provider - INFO - GeminiProvider initialized: model=gemini-2.5-pro, min_delay=4.0s
+2026-02-22 22:33:59 - backend.ia.providers.provider_factory - INFO - Provider created: CODEUR → gemini (model=gemini-2.5-pro)
+2026-02-22 22:33:59 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:33:59 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:33:59 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:33:59 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:33:59 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:34:22 - backend.ia.providers.gemini_provider - INFO - Gemini response: 4838 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:34:22 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 4838 chars, no tool calls
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: CODEUR a répondu (4838 chars)
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: transition phase REFLEXION → EXECUTION pour CODEUR
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: instruction CODEUR (1699 chars), fichiers attendus extraits: ['conftest.py', 'requirements.txt', 'src/calculator.py', 'src/main.py', 'tests/test_calculator.py']
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: estimation 1 fichier(s) → 1 passes estimées → max 10 passes
+2026-02-22 22:34:22 - backend.services.file_writer - INFO - Parsing markdown : 4 blocs de code détectés
+2026-02-22 22:34:22 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\src\calculator.py
+2026-02-22 22:34:22 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\src\main.py
+2026-02-22 22:34:22 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\tests\test_calculator.py
+2026-02-22 22:34:22 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\requirements.txt
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: passe 1 — 4 fichier(s) écrit(s) dans D:\Coding\TEST\test_calculatrice
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: comptage local → 4/5 fichiers, manquants: conftest.py
+2026-02-22 22:34:22 - backend.services.orchestration - INFO - Orchestration: passe 2/10 — fichiers manquants détectés
+2026-02-22 22:34:22 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:34:22 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:34:36 - backend.ia.providers.gemini_provider - INFO - Gemini response: 451 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:34:36 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 451 chars, no tool calls
+2026-02-22 22:34:36 - backend.services.file_writer - INFO - Parsing markdown : 1 blocs de code détectés
+2026-02-22 22:34:36 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\conftest.py
+2026-02-22 22:34:36 - backend.services.orchestration - INFO - Orchestration: passe 2 — 1 fichier(s) supplémentaire(s)
+2026-02-22 22:34:36 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:34:36 - backend.services.orchestration - INFO - Orchestration: comptage local → 5/5 fichiers, tous présents
+2026-02-22 22:34:36 - backend.services.orchestration - INFO - Orchestration: vérification OK après 2 passe(s)
+2026-02-22 22:34:36 - backend.ia.providers.gemini_provider - INFO - GeminiProvider initialized: model=gemini-3.1-pro-preview, min_delay=4.0s
+2026-02-22 22:34:36 - backend.ia.providers.provider_factory - INFO - Provider created: VALIDATEUR → gemini (model=gemini-3.1-pro-preview)
+2026-02-22 22:34:36 - backend.agents.base_agent - INFO - Agent VALIDATEUR - Iteration 1/3, messages=2
+2026-02-22 22:34:36 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:34:36 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:34:36 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:34:59 - backend.ia.providers.gemini_provider - INFO - Gemini response: 913 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:34:59 - backend.agents.base_agent - INFO - Agent VALIDATEUR - Response: 913 chars, no tool calls
+2026-02-22 22:34:59 - backend.services.orchestration - INFO - Orchestration: VALIDATEUR → STATUT: INVALIDE
+
+FICHIERS VÉRIFIÉS: 4
+
+DÉTAILS PAR FICHIER:
+- src/calculator.py : ❌ INVALIDE
+  PROB
+2026-02-22 22:34:59 - backend.services.orchestration - WARNING - Orchestration: VALIDATEUR a détecté des problèmes, relance CODEUR pour correction
+2026-02-22 22:34:59 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:34:59 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:35:21 - backend.ia.providers.gemini_provider - INFO - Gemini response: 3243 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:35:21 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 3243 chars, no tool calls
+2026-02-22 22:35:21 - backend.services.file_writer - INFO - Parsing markdown : 2 blocs de code détectés
+2026-02-22 22:35:21 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\src\calculator.py
+2026-02-22 22:35:21 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_calculatrice\src\main.py
+2026-02-22 22:35:21 - backend.services.orchestration - INFO - Orchestration: CODEUR correction → 2 fichiers corrigés
+2026-02-22 22:35:21 - backend.ia.providers.gemini_provider - INFO - GeminiProvider initialized: model=gemini-2.5-pro, min_delay=4.0s
+2026-02-22 22:35:21 - backend.ia.providers.provider_factory - INFO - Provider created: BASE → gemini (model=gemini-2.5-pro)
+2026-02-22 22:35:21 - backend.agents.base_agent - INFO - Agent BASE - Iteration 1/3, messages=2
+2026-02-22 22:35:21 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:35:21 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:35:21 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:35:42 - backend.ia.providers.gemini_provider - INFO - Gemini response: 977 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:35:42 - backend.agents.base_agent - INFO - Agent BASE - Response: 977 chars, no tool calls
+2026-02-22 22:35:42 - backend.services.orchestration - INFO - Orchestration: rapport BASE généré (977 chars)
+2026-02-22 22:35:42 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=4
+2026-02-22 22:35:42 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:35:52 - backend.ia.providers.gemini_provider - INFO - Gemini response: 297 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:35:52 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 297 chars, no tool calls
+2026-02-22 22:35:52 - backend.api - INFO - Orchestration terminée: 1 délégation(s) pour conversation 14cbb7af-4bb6-4430-b77e-80077fedd3b3
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F1952B600>
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F1952B600> completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EF970>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EF970>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EF970>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', 'assistant', "Rapport d'erreurs reçu.\n\nLe `VALIDATEUR` a détecté des erreurs critiques dans le code généré. Pour formuler une instruction de correction, le détail des erreurs est indispensable.\n\nVeuillez fournir le rapport complet du `VALIDATEUR` indiquant les fichiers, lignes et messages d'erreur spécifiques.", '2026-02-22T22:35:52.555160'))
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EF970>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('14cbb7af-4bb6-4430-b77e-80077fedd3b3', 'assistant', "Rapport d'erreurs reçu.\n\nLe `VALIDATEUR` a détecté des erreurs critiques dans le code généré. Pour formuler une instruction de correction, le détail des erreurs est indispensable.\n\nVeuillez fournir le rapport complet du `VALIDATEUR` indiquant les fichiers, lignes et messages d'erreur spécifiques.", '2026-02-22T22:35:52.555160')) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EF970>)
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EF970>) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EF970>)
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EF970>) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195600E0>
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195600E0> completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EFC40>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EFC40>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EFC40>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:35:52.678337', '14cbb7af-4bb6-4430-b77e-80077fedd3b3'))
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EFC40>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:35:52.678337', '14cbb7af-4bb6-4430-b77e-80077fedd3b3')) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EFC40>)
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EFC40>) completed
+2026-02-22 22:35:52 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EFC40>)
+2026-02-22 22:35:52 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EFC40>) completed
+2026-02-22 22:35:57 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195602C0>
+2026-02-22 22:35:57 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195602C0> completed
+2026-02-22 22:35:57 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:35:57 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:35:57 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'INSERT INTO projects (id, name, path, description, created_at) VALUES (?, ?, ?, ?, ?)', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6', 'Test TODO', 'D:\\Coding\\TEST\\test_todo', 'Gestionnaire de tâches pour test live niveau 2', '2026-02-22T22:35:57.540967'))
+2026-02-22 22:35:57 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'INSERT INTO projects (id, name, path, description, created_at) VALUES (?, ?, ?, ?, ?)', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6', 'Test TODO', 'D:\\Coding\\TEST\\test_todo', 'Gestionnaire de tâches pour test live niveau 2', '2026-02-22T22:35:57.540967')) completed
+2026-02-22 22:35:57 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:35:57 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:35:57 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:35:57 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F194B2E80>
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F194B2E80> completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19533B40>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19533B40>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195329C0>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195329C0>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195329C0>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195329C0>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533B40>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533B40>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564130>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564130>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F1952BCE0>
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F1952BCE0> completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EC7C0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EC7C0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EC7C0>, 'INSERT INTO conversations (id, project_id, agent_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 'caf41fc0-2d64-496e-894a-b9bad2c09eb6', 'JARVIS_Maître', 'Création TODO', '2026-02-22T22:35:59.679227', '2026-02-22T22:35:59.679227'))
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F194EC7C0>, 'INSERT INTO conversations (id, project_id, agent_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 'caf41fc0-2d64-496e-894a-b9bad2c09eb6', 'JARVIS_Maître', 'Création TODO', '2026-02-22T22:35:59.679227', '2026-02-22T22:35:59.679227')) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EC7C0>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F194EC7C0>) completed
+2026-02-22 22:35:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EC7C0>)
+2026-02-22 22:35:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F194EC7C0>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560540>
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560540> completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT * FROM conversations WHERE id = ?', ('925d6f89-d46a-4eca-a3c9-6997c7d20276',))
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT * FROM conversations WHERE id = ?', ('925d6f89-d46a-4eca-a3c9-6997c7d20276',)) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532D40>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532D40>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?', ('925d6f89-d46a-4eca-a3c9-6997c7d20276',))
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?', ('925d6f89-d46a-4eca-a3c9-6997c7d20276',)) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19533740>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19533740>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533740>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533740>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532D40>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532D40>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564040>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564040>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F1952BE20>
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F1952BE20> completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC LIMIT ?', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 100))
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC LIMIT ?', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 100)) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x0000019F19533740>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x0000019F19533740>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533740>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533740>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564040>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564040>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195605E0>
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195605E0> completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19533740>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19533740>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564040>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532D40>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532D40>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532D40>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532D40>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533740>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19533740>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564040>)
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564040>) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560720>
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560720> completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 'user', "Crée un gestionnaire de tâches TODO en Python avec persistance JSON :\n- src/storage.py : classe JsonStorage avec méthodes load() et save(data) qui lit/écrit un fichier JSON. Gère le cas où le fichier n'existe pas encore (retourne liste vide).\n- src/todo.py : classe TodoManager qui utilise JsonStorage. Méthodes : add_task(title) retourne l'id, list_tasks() retourne la liste, complete_task(task_id) marque comme complétée, delete_task(task_id) supprime. Chaque tâche a un id (int auto-incrémenté), title, completed (bool).\n- src/cli.py : interface CLI avec argparse. Commandes : add <title>, list, complete <id>, delete <id>.\n- tests/test_todo.py : tests pytest pour TodoManager (add, list, complete, delete) avec fichier JSON temporaire.\n- tests/test_storage.py : tests pytest pour JsonStorage (load fichier inexistant, save/load cycle).\n- requirements.txt : pytest\n\nUtilise des imports absolus simples. Chaque fichier doit être complet.", '2026-02-22T22:36:01.892870'))
+2026-02-22 22:36:01 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 'user', "Crée un gestionnaire de tâches TODO en Python avec persistance JSON :\n- src/storage.py : classe JsonStorage avec méthodes load() et save(data) qui lit/écrit un fichier JSON. Gère le cas où le fichier n'existe pas encore (retourne liste vide).\n- src/todo.py : classe TodoManager qui utilise JsonStorage. Méthodes : add_task(title) retourne l'id, list_tasks() retourne la liste, complete_task(task_id) marque comme complétée, delete_task(task_id) supprime. Chaque tâche a un id (int auto-incrémenté), title, completed (bool).\n- src/cli.py : interface CLI avec argparse. Commandes : add <title>, list, complete <id>, delete <id>.\n- tests/test_todo.py : tests pytest pour TodoManager (add, list, complete, delete) avec fichier JSON temporaire.\n- tests/test_storage.py : tests pytest pour JsonStorage (load fichier inexistant, save/load cycle).\n- requirements.txt : pytest\n\nUtilise des imports absolus simples. Chaque fichier doit être complet.", '2026-02-22T22:36:01.892870')) completed
+2026-02-22 22:36:01 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564220>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564220>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564220>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564220>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195607C0>
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195607C0> completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:36:02.010408', '925d6f89-d46a-4eca-a3c9-6997c7d20276'))
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:36:02.010408', '925d6f89-d46a-4eca-a3c9-6997c7d20276')) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560720>
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560720> completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532D40>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532D40>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532B40>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532B40>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532B40>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532B40>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532D40>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532D40>) completed
+2026-02-22 22:36:02 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:36:02 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:36:02 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=2
+2026-02-22 22:36:02 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:36:02 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:36:12 - backend.ia.providers.gemini_provider - INFO - Gemini response: 3101 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:36:12 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 3101 chars, no tool calls
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195605E0>
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195605E0> completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT * FROM projects WHERE id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19530240>)
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19530240>) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',))
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564130>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('caf41fc0-2d64-496e-894a-b9bad2c09eb6',)) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19530140>)
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19530140>) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19530140>)
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19530140>) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19530240>)
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19530240>) completed
+2026-02-22 22:36:12 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564130>)
+2026-02-22 22:36:12 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564130>) completed
+2026-02-22 22:36:12 - backend.services.orchestration - INFO - Orchestration: 1 délégation(s) détectée(s)
+2026-02-22 22:36:12 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:36:12 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:36:12 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:36:41 - backend.ia.providers.gemini_provider - INFO - Gemini response: 7783 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:36:41 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 7783 chars, no tool calls
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: CODEUR a répondu (7783 chars)
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: transition phase REFLEXION → EXECUTION pour CODEUR
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Extraction fichiers : 7 fichiers détectés via 4 stratégies
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: instruction CODEUR (1722 chars), fichiers attendus extraits: ['requirements.txt', 'src/cli.py', 'src/storage.py', 'src/todo.py', 'tests/test_storage.py', 'tests/test_todo.py', 'todo.json']
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: estimation 1 fichier(s) → 1 passes estimées → max 10 passes
+2026-02-22 22:36:41 - backend.services.file_writer - INFO - Parsing markdown : 2 blocs de code détectés
+2026-02-22 22:36:41 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\src\storage.py
+2026-02-22 22:36:41 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\src\todo.py
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: passe 1 — 2 fichier(s) écrit(s) dans D:\Coding\TEST\test_todo
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Extraction fichiers : 7 fichiers détectés via 4 stratégies
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: comptage local → 2/7 fichiers, manquants: requirements.txt, src/cli.py, tests/test_storage.py, tests/test_todo.py, todo.json
+2026-02-22 22:36:41 - backend.services.orchestration - INFO - Orchestration: passe 2/10 — fichiers manquants détectés
+2026-02-22 22:36:41 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:36:41 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:37:10 - backend.ia.providers.gemini_provider - INFO - Gemini response: 4303 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:37:10 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 4303 chars, no tool calls
+2026-02-22 22:37:10 - backend.services.file_writer - INFO - Parsing markdown : 2 blocs de code détectés
+2026-02-22 22:37:10 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\requirements.txt
+2026-02-22 22:37:10 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\src\cli.py
+2026-02-22 22:37:10 - backend.services.orchestration - INFO - Orchestration: passe 2 — 2 fichier(s) supplémentaire(s)
+2026-02-22 22:37:10 - backend.services.orchestration - INFO - Extraction fichiers : 7 fichiers détectés via 4 stratégies
+2026-02-22 22:37:10 - backend.services.orchestration - INFO - Orchestration: comptage local → 4/7 fichiers, manquants: tests/test_storage.py, tests/test_todo.py, todo.json
+2026-02-22 22:37:10 - backend.services.orchestration - INFO - Orchestration: passe 3/10 — fichiers manquants détectés
+2026-02-22 22:37:10 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:37:10 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:37:40 - backend.ia.providers.gemini_provider - INFO - Gemini response: 5641 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:37:40 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 5641 chars, no tool calls
+2026-02-22 22:37:40 - backend.services.file_writer - INFO - Parsing markdown : 1 blocs de code détectés
+2026-02-22 22:37:40 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\tests\test_storage.py
+2026-02-22 22:37:40 - backend.services.orchestration - INFO - Orchestration: passe 3 — 1 fichier(s) supplémentaire(s)
+2026-02-22 22:37:40 - backend.services.orchestration - INFO - Extraction fichiers : 7 fichiers détectés via 4 stratégies
+2026-02-22 22:37:40 - backend.services.orchestration - INFO - Orchestration: comptage local → 5/7 fichiers, manquants: tests/test_todo.py, todo.json
+2026-02-22 22:37:40 - backend.services.orchestration - INFO - Orchestration: passe 4/10 — fichiers manquants détectés
+2026-02-22 22:37:40 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:37:40 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:38:09 - backend.ia.providers.gemini_provider - INFO - Gemini response: 4682 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:38:09 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 4682 chars, no tool calls
+2026-02-22 22:38:09 - backend.services.file_writer - INFO - Parsing markdown : 2 blocs de code détectés
+2026-02-22 22:38:09 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\tests\test_todo.py
+2026-02-22 22:38:09 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_todo\todo.json
+2026-02-22 22:38:09 - backend.services.orchestration - INFO - Orchestration: passe 4 — 2 fichier(s) supplémentaire(s)
+2026-02-22 22:38:09 - backend.services.orchestration - INFO - Extraction fichiers : 7 fichiers détectés via 4 stratégies
+2026-02-22 22:38:09 - backend.services.orchestration - INFO - Orchestration: comptage local → 7/7 fichiers, tous présents
+2026-02-22 22:38:09 - backend.services.orchestration - INFO - Orchestration: vérification OK après 4 passe(s)
+2026-02-22 22:38:09 - backend.agents.base_agent - INFO - Agent VALIDATEUR - Iteration 1/3, messages=2
+2026-02-22 22:38:09 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:38:30 - backend.ia.providers.gemini_provider - INFO - Gemini response: 334 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:38:30 - backend.agents.base_agent - INFO - Agent VALIDATEUR - Response: 334 chars, no tool calls
+2026-02-22 22:38:30 - backend.services.orchestration - INFO - Orchestration: VALIDATEUR → ` AND explicitly returns `[]` if `not content`. It does NOT raise `json.JSONDecodeError`.
+          
+2026-02-22 22:38:30 - backend.agents.base_agent - INFO - Agent BASE - Iteration 1/3, messages=2
+2026-02-22 22:38:30 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:38:46 - backend.ia.providers.gemini_provider - INFO - Gemini response: 1628 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:38:46 - backend.agents.base_agent - INFO - Agent BASE - Response: 1628 chars, no tool calls
+2026-02-22 22:38:46 - backend.services.orchestration - INFO - Orchestration: rapport BASE généré (1628 chars)
+2026-02-22 22:38:46 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=4
+2026-02-22 22:38:46 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:38:59 - backend.ia.providers.gemini_provider - INFO - Gemini response: 390 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:38:59 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 390 chars, no tool calls
+2026-02-22 22:38:59 - backend.api - INFO - Orchestration terminée: 1 délégation(s) pour conversation 925d6f89-d46a-4eca-a3c9-6997c7d20276
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560680>
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560680> completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 'assistant', "Génération du code terminée.\n\nL'agent CODEUR a livré les fichiers demandés pour le gestionnaire de tâches. La structure semble complète et conforme à la demande initiale.\n\nLes fichiers suivants ont été créés :\n- `src/storage.py`\n- `src/todo.py`\n- `src/cli.py`\n- `tests/test_storage.py`\n- `tests/test_todo.py`\n- `requirements.txt`\n\nLe projet est prêt pour une revue ou l'exécution des tests.", '2026-02-22T22:38:59.411399'))
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564220>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('925d6f89-d46a-4eca-a3c9-6997c7d20276', 'assistant', "Génération du code terminée.\n\nL'agent CODEUR a livré les fichiers demandés pour le gestionnaire de tâches. La structure semble complète et conforme à la demande initiale.\n\nLes fichiers suivants ont été créés :\n- `src/storage.py`\n- `src/todo.py`\n- `src/cli.py`\n- `tests/test_storage.py`\n- `tests/test_todo.py`\n- `requirements.txt`\n\nLe projet est prêt pour une revue ou l'exécution des tests.", '2026-02-22T22:38:59.411399')) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564220>)
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564220>) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564220>)
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564220>) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195600E0>
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195600E0> completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:38:59.556426', '925d6f89-d46a-4eca-a3c9-6997c7d20276'))
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195647C0>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:38:59.556426', '925d6f89-d46a-4eca-a3c9-6997c7d20276')) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:38:59 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>)
+2026-02-22 22:38:59 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195647C0>) completed
+2026-02-22 22:39:05 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560E00>
+2026-02-22 22:39:05 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560E00> completed
+2026-02-22 22:39:05 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564400>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:05 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564400>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:05 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564400>, 'INSERT INTO projects (id, name, path, description, created_at) VALUES (?, ?, ?, ?, ?)', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5', 'Test MiniBlog', 'D:\\Coding\\TEST\\test_miniblog', 'API REST mini-blog pour test live niveau 3', '2026-02-22T22:39:05.242302'))
+2026-02-22 22:39:05 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564400>, 'INSERT INTO projects (id, name, path, description, created_at) VALUES (?, ?, ?, ?, ?)', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5', 'Test MiniBlog', 'D:\\Coding\\TEST\\test_miniblog', 'API REST mini-blog pour test live niveau 3', '2026-02-22T22:39:05.242302')) completed
+2026-02-22 22:39:05 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564400>)
+2026-02-22 22:39:05 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564400>) completed
+2026-02-22 22:39:05 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564400>)
+2026-02-22 22:39:05 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564400>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560D60>
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560D60> completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532640>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19532640>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195326C0>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195326C0>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195326C0>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195326C0>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532640>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19532640>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564C70>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564C70>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560720>
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560720> completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'INSERT INTO conversations (id, project_id, agent_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 'c8825cac-6efd-40a3-b6a6-4e99993cd0c5', 'JARVIS_Maître', 'Création MiniBlog', '2026-02-22T22:39:07.387378', '2026-02-22T22:39:07.387378'))
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564C70>, 'INSERT INTO conversations (id, project_id, agent_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 'c8825cac-6efd-40a3-b6a6-4e99993cd0c5', 'JARVIS_Maître', 'Création MiniBlog', '2026-02-22T22:39:07.387378', '2026-02-22T22:39:07.387378')) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564C70>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564C70>) completed
+2026-02-22 22:39:07 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564C70>)
+2026-02-22 22:39:07 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564C70>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560CC0>
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560CC0> completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT * FROM conversations WHERE id = ?', ('9ed7e029-0745-4a87-8fa4-42e33e43b955',))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT * FROM conversations WHERE id = ?', ('9ed7e029-0745-4a87-8fa4-42e33e43b955',)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195553C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195553C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?', ('9ed7e029-0745-4a87-8fa4-42e33e43b955',))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?', ('9ed7e029-0745-4a87-8fa4-42e33e43b955',)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195553C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195553C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564F40>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564F40>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19561080>
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19561080> completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC LIMIT ?', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 100))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT * FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC LIMIT ?', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 100)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchall of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564F40>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564F40>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195605E0>
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195605E0> completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564F40>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19554CC0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19554CC0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19554CC0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19554CC0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564F40>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564F40>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19561080>
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19561080> completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19565300>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19565300>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19565300>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 'user', 'Crée une API REST mini-blog avec FastAPI et stockage en mémoire :\n- src/models.py : modèles Pydantic — ArticleBase(title: str, content: str, author: str), ArticleCreate(ArticleBase), ArticleUpdate avec champs optionnels, Article(ArticleBase) avec id: str, created_at: datetime, updated_at: datetime.\n- src/database.py : classe InMemoryDB avec méthodes CRUD — create(article: ArticleCreate) -> Article, get_all() -> list[Article], get_by_id(id) -> Article|None, update(id, data: ArticleUpdate) -> Article|None, delete(id) -> bool. Pagination avec skip/limit sur get_all. Recherche par mot-clé dans titre/contenu.\n- src/main.py : app FastAPI avec routes POST /articles/, GET /articles/ (avec query params skip, limit, search), GET /articles/{id}, PUT /articles/{id}, DELETE /articles/{id}. Retourne 404 si article non trouvé.\n- tests/test_api.py : tests pytest avec TestClient de FastAPI. Couvre : création, lecture, mise à jour, suppression, 404, pagination, recherche.\n- requirements.txt : fastapi, uvicorn, pydantic, pytest, httpx\n\nUtilise des imports absolus simples. Chaque fichier doit être complet.', '2026-02-22T22:39:09.530640'))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19565300>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 'user', 'Crée une API REST mini-blog avec FastAPI et stockage en mémoire :\n- src/models.py : modèles Pydantic — ArticleBase(title: str, content: str, author: str), ArticleCreate(ArticleBase), ArticleUpdate avec champs optionnels, Article(ArticleBase) avec id: str, created_at: datetime, updated_at: datetime.\n- src/database.py : classe InMemoryDB avec méthodes CRUD — create(article: ArticleCreate) -> Article, get_all() -> list[Article], get_by_id(id) -> Article|None, update(id, data: ArticleUpdate) -> Article|None, delete(id) -> bool. Pagination avec skip/limit sur get_all. Recherche par mot-clé dans titre/contenu.\n- src/main.py : app FastAPI avec routes POST /articles/, GET /articles/ (avec query params skip, limit, search), GET /articles/{id}, PUT /articles/{id}, DELETE /articles/{id}. Retourne 404 si article non trouvé.\n- tests/test_api.py : tests pytest avec TestClient de FastAPI. Couvre : création, lecture, mise à jour, suppression, 404, pagination, recherche.\n- requirements.txt : fastapi, uvicorn, pydantic, pytest, httpx\n\nUtilise des imports absolus simples. Chaque fichier doit être complet.', '2026-02-22T22:39:09.530640')) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19565300>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19565300>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19565300>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19565300>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19561120>
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19561120> completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:39:09.663177', '9ed7e029-0745-4a87-8fa4-42e33e43b955'))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:39:09.663177', '9ed7e029-0745-4a87-8fa4-42e33e43b955')) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564D60>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564D60>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19561080>
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19561080> completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19554CC0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19554CC0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195554C0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19554CC0>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19554CC0>) completed
+2026-02-22 22:39:09 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>)
+2026-02-22 22:39:09 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>) completed
+2026-02-22 22:39:09 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=2
+2026-02-22 22:39:09 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:39:09 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:39:30 - backend.ia.providers.gemini_provider - INFO - Gemini response: 3481 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:39:30 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 3481 chars, no tool calls
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19560CC0>
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19560CC0> completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT * FROM projects WHERE id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195279C0>)
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F195279C0>) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',))
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'SELECT COUNT(*) as count FROM conversations WHERE project_id = ?', ('c8825cac-6efd-40a3-b6a6-4e99993cd0c5',)) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method fetchone of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>)
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F19527740>) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195279C0>)
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x0000019F195279C0>) completed
+2026-02-22 22:39:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>)
+2026-02-22 22:39:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>) completed
+2026-02-22 22:39:30 - backend.services.orchestration - INFO - Orchestration: 1 délégation(s) détectée(s)
+2026-02-22 22:39:30 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:39:30 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:39:30 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:39:40 - backend.ia.providers.gemini_provider - INFO - Gemini response: 741 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:39:40 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 741 chars, no tool calls
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: CODEUR a répondu (741 chars)
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: transition phase REFLEXION → EXECUTION pour CODEUR
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: instruction CODEUR (328 chars), fichiers attendus extraits: ['requirements.txt', 'src/database.py', 'src/main.py', 'src/models.py', 'tests/test_api.py']
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: estimation 1 fichier(s) → 1 passes estimées → max 10 passes
+2026-02-22 22:39:40 - backend.services.file_writer - INFO - Parsing markdown : 1 blocs de code détectés
+2026-02-22 22:39:40 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_miniblog\src\models.py
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: passe 1 — 1 fichier(s) écrit(s) dans D:\Coding\TEST\test_miniblog
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: comptage local → 1/5 fichiers, manquants: requirements.txt, src/database.py, src/main.py, tests/test_api.py
+2026-02-22 22:39:40 - backend.services.orchestration - INFO - Orchestration: passe 2/10 — fichiers manquants détectés
+2026-02-22 22:39:40 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:39:40 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:40:11 - backend.ia.providers.gemini_provider - INFO - Gemini response: 6450 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:40:11 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 6450 chars, no tool calls
+2026-02-22 22:40:11 - backend.services.file_writer - INFO - Parsing markdown : 3 blocs de code détectés
+2026-02-22 22:40:11 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_miniblog\requirements.txt
+2026-02-22 22:40:11 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_miniblog\src\database.py
+2026-02-22 22:40:11 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_miniblog\src\main.py
+2026-02-22 22:40:11 - backend.services.orchestration - INFO - Orchestration: passe 2 — 3 fichier(s) supplémentaire(s)
+2026-02-22 22:40:11 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:40:11 - backend.services.orchestration - INFO - Orchestration: comptage local → 4/5 fichiers, manquants: tests/test_api.py
+2026-02-22 22:40:11 - backend.services.orchestration - INFO - Orchestration: passe 3/10 — fichiers manquants détectés
+2026-02-22 22:40:11 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:40:11 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:40:43 - backend.ia.providers.gemini_provider - INFO - Gemini response: 2293 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:40:43 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 2293 chars, no tool calls
+2026-02-22 22:40:43 - backend.services.file_writer - INFO - Parsing markdown : 0 blocs de code détectés
+2026-02-22 22:40:43 - backend.services.file_writer - WARNING - ⚠️ PARSING ÉCHOUÉ : Aucun bloc de code détecté
+2026-02-22 22:40:43 - backend.services.file_writer - WARNING - Aperçu de la réponse (500 premiers chars) :
+Je vais maintenant produire le fichier manquant pour compléter votre projet.
+
+# tests/test_api.py
+```python
+import pytest
+from fastapi.testclient import TestClient
+from src.main import app, db
+
+# Crée un client de test pour interagir avec l'API
+client = TestClient(app)
+
+@pytest.fixture(autouse=True)
+def run_before_and_after_tests():
+    """Fixture pour nettoyer la base de données en mémoire avant chaque test."""
+    db.clear()
+    # Le mot-clé 'yield' exécute le test
+    yield
+    # Le code aprè
+2026-02-22 22:40:43 - backend.services.file_writer - WARNING - Pattern alternatif détecté (Pattern sans newline après chemin) : ['tests/test_api.py']
+2026-02-22 22:40:43 - backend.services.orchestration - WARNING - Orchestration: passe 3 — 0 nouveau fichier (stagnation 1/2)
+2026-02-22 22:40:43 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:40:43 - backend.services.orchestration - INFO - Orchestration: comptage local → 4/5 fichiers, manquants: tests/test_api.py
+2026-02-22 22:40:43 - backend.services.orchestration - INFO - Orchestration: passe 4/10 — fichiers manquants détectés
+2026-02-22 22:40:43 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:40:43 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:41:09 - backend.ia.providers.gemini_provider - INFO - Gemini response: 3587 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:41:09 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 3587 chars, no tool calls
+2026-02-22 22:41:09 - backend.services.file_writer - INFO - Parsing markdown : 1 blocs de code détectés
+2026-02-22 22:41:09 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_miniblog\tests\test_api.py
+2026-02-22 22:41:09 - backend.services.orchestration - INFO - Orchestration: passe 4 — 1 fichier(s) supplémentaire(s)
+2026-02-22 22:41:09 - backend.services.orchestration - INFO - Extraction fichiers : 5 fichiers détectés via 4 stratégies
+2026-02-22 22:41:09 - backend.services.orchestration - INFO - Orchestration: comptage local → 5/5 fichiers, tous présents
+2026-02-22 22:41:09 - backend.services.orchestration - INFO - Orchestration: vérification OK après 4 passe(s)
+2026-02-22 22:41:09 - backend.agents.base_agent - INFO - Agent VALIDATEUR - Iteration 1/3, messages=2
+2026-02-22 22:41:09 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:41:32 - backend.ia.providers.gemini_provider - INFO - Gemini response: 182 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:41:32 - backend.agents.base_agent - INFO - Agent VALIDATEUR - Response: 182 chars, no tool calls
+2026-02-22 22:41:32 - backend.services.orchestration - INFO - Orchestration: VALIDATEUR → STATUT: INVALIDE
+
+FICHIERS VÉRIFIÉS: 4
+
+DÉTAILS PAR FICHIER:
+- src/models.py : ✅ VALIDE
+- src/databa
+2026-02-22 22:41:32 - backend.services.orchestration - WARNING - Orchestration: VALIDATEUR a détecté des problèmes, relance CODEUR pour correction
+2026-02-22 22:41:32 - backend.agents.base_agent - INFO - Agent CODEUR - Iteration 1/3, messages=2
+2026-02-22 22:41:32 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:41:58 - backend.ia.providers.gemini_provider - INFO - Gemini response: 4364 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:41:58 - backend.agents.base_agent - INFO - Agent CODEUR - Response: 4364 chars, no tool calls
+2026-02-22 22:41:58 - backend.services.file_writer - INFO - Parsing markdown : 1 blocs de code détectés
+2026-02-22 22:41:58 - backend.services.file_writer - INFO - Fichier écrit : D:\Coding\TEST\test_miniblog\tests\test_api.py
+2026-02-22 22:41:58 - backend.services.orchestration - INFO - Orchestration: CODEUR correction → 1 fichiers corrigés
+2026-02-22 22:41:58 - backend.agents.base_agent - INFO - Agent BASE - Iteration 1/3, messages=2
+2026-02-22 22:41:58 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:42:11 - backend.ia.providers.gemini_provider - INFO - Gemini response: 1636 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:42:11 - backend.agents.base_agent - INFO - Agent BASE - Response: 1636 chars, no tool calls
+2026-02-22 22:42:11 - backend.services.orchestration - INFO - Orchestration: rapport BASE généré (1636 chars)
+2026-02-22 22:42:11 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=4
+2026-02-22 22:42:11 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:42:22 - backend.ia.providers.gemini_provider - INFO - Gemini response: 326 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:42:22 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 326 chars, no tool calls
+2026-02-22 22:42:22 - backend.services.orchestration - INFO - Orchestration: Jarvis_maitre relance — nouvelle délégation détectée (relance 1/2)
+2026-02-22 22:42:22 - backend.services.orchestration - INFO - Orchestration: relance 1 — 1 délégation(s) détectée(s)
+2026-02-22 22:42:22 - backend.agents.base_agent - INFO - Agent BASE - Iteration 1/3, messages=2
+2026-02-22 22:42:22 - backend.ia.providers.gemini_provider - DEBUG - Formatted 4 functions for Gemini
+2026-02-22 22:42:22 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:42:26 - backend.ia.providers.gemini_provider - INFO - Gemini response: 0 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:42:26 - backend.ia.providers.gemini_provider - WARNING - Gemini returned empty response! Response object: response:
+AsyncGenerateContentResponse(
+    done=True,
+    iterator=None,
+    result=protos.GenerateContentResponse({
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "function_call": {
+                  "name": "get_library_list",
+                  "args": {}
+                }
+              }
+            ],
+            "role": "model"
+          },
+          "finish_reason": "STOP",
+          "index": 0
+        }
+      ],
+      "usage_metadata": {
+        "prompt_token_count": 940,
+        "candidates_token_count": 12,
+        "total_token_count": 1167
+      }
+    }),
+)
+2026-02-22 22:42:26 - backend.ia.providers.gemini_provider - WARNING - Candidate finish_reason: 1
+2026-02-22 22:42:26 - backend.ia.providers.gemini_provider - WARNING - Candidate content parts: [function_call {
+  name: "get_library_list"
+  args {
+  }
+}
+]
+2026-02-22 22:42:26 - backend.agents.base_agent - INFO - Agent BASE - Response: 0 chars, no tool calls
+2026-02-22 22:42:26 - backend.services.orchestration - INFO - Orchestration: BASE a répondu (0 chars)
+2026-02-22 22:42:26 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Iteration 1/3, messages=6
+2026-02-22 22:42:26 - grpc._cython.cygrpc - DEBUG - [_cygrpc] Loaded running loop: id(loop)=1782778265360
+2026-02-22 22:42:37 - backend.ia.providers.gemini_provider - INFO - Gemini response: 376 chars, 0 tool_calls, finish_reason=stop
+2026-02-22 22:42:37 - backend.agents.base_agent - INFO - Agent JARVIS_Maître - Response: 376 chars, no tool calls
+2026-02-22 22:42:37 - backend.api - INFO - Orchestration terminée: 2 délégation(s) pour conversation 9ed7e029-0745-4a87-8fa4-42e33e43b955
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F19561800>
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F19561800> completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 'assistant', "Le rapport initial signalait des erreurs critiques dans le code généré.\n\nJ'ai demandé le détail de ces erreurs à l'agent BASE, mais sa réponse ne contenait aucune information spécifique, m'empêchant d'identifier la source des problèmes.\n\nPour que je puisse déléguer une correction, veuillez me fournir le contenu du rapport d'erreurs (messages, logs, ou sortie du validateur).", '2026-02-22T22:42:37.146951'))
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F19564D60>, 'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)', ('9ed7e029-0745-4a87-8fa4-42e33e43b955', 'assistant', "Le rapport initial signalait des erreurs critiques dans le code généré.\n\nJ'ai demandé le détail de ces erreurs à l'agent BASE, mais sa réponse ne contenait aucune information spécifique, m'empêchant d'identifier la source des problèmes.\n\nPour que je puisse déléguer une correction, veuillez me fournir le contenu du rapport d'erreurs (messages, logs, ou sortie du validateur).", '2026-02-22T22:42:37.146951')) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564D60>)
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F19564D60>) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>)
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F19564D60>) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing <function connect.<locals>.connector at 0x0000019F195611C0>
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation <function connect.<locals>.connector at 0x0000019F195611C0> completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195653F0>, 'PRAGMA foreign_keys = ON', [])
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195653F0>, 'PRAGMA foreign_keys = ON', []) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195653F0>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:42:37.303123', '9ed7e029-0745-4a87-8fa4-42e33e43b955'))
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method execute of sqlite3.Connection object at 0x0000019F195653F0>, 'UPDATE conversations SET updated_at = ? WHERE id = ?', ('2026-02-22T22:42:37.303123', '9ed7e029-0745-4a87-8fa4-42e33e43b955')) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195653F0>)
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method commit of sqlite3.Connection object at 0x0000019F195653F0>) completed
+2026-02-22 22:42:37 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195653F0>)
+2026-02-22 22:42:37 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x0000019F195653F0>) completed

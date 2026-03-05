@@ -56,13 +56,15 @@ class BaseAgent:
         Charge le system_prompt depuis un fichier markdown.
         
         Args:
-            prompt_file: Chemin relatif vers le fichier de prompt
+            prompt_file: Chemin relatif vers le fichier de prompt (depuis la racine du projet)
             
         Returns:
             Le contenu du prompt ou None si le fichier n'existe pas
         """
         try:
-            prompt_path = Path(prompt_file)
+            # Résoudre le chemin depuis la racine du projet (2 niveaux au-dessus de ce fichier)
+            project_root = Path(__file__).parent.parent.parent
+            prompt_path = project_root / prompt_file
             if prompt_path.exists():
                 content = prompt_path.read_text(encoding="utf-8")
                 # Extraire le contenu après les métadonnées (après la première ligne vide)

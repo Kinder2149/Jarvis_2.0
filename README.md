@@ -9,6 +9,43 @@ Assistant IA personnel multi-agent pour la génération de code. Architecture 10
 - Clé API Google Gemini (Tier 1) : https://aistudio.google.com/app/apikey
 - Compte Google Cloud avec facturation activée (pour Tier 1)
 
+### Lancer le projet (backend + frontend)
+
+Le frontend est servi par le backend FastAPI (fichiers statiques montés sur `/frontend` et page principale sur `/`). Il n'y a donc pas de serveur frontend séparé à démarrer.
+
+1. Installer les dépendances
+```bash
+pip install -r requirements.txt
+```
+
+2. Configurer l'environnement
+```bash
+cp .env.example .env
+# Éditer .env avec votre clé Gemini :
+# - GEMINI_API_KEY (Google AI Studio)
+# - Configuration agents → modèles Gemini (voir .env.example)
+```
+
+3. Lancer le backend (qui sert aussi le frontend)
+```bash
+uvicorn backend.app:app --reload --port 8000
+```
+
+Important : cette commande doit être exécutée depuis la racine du projet (sinon erreur `ModuleNotFoundError: No module named 'backend'`).
+
+Si tu es déjà dans `backend/` (PowerShell) :
+```powershell
+$env:PYTHONPATH = ".."
+uvicorn backend.app:app --reload --port 8000
+```
+
+4. Ouvrir l'application : `http://localhost:8000/`
+
+URLs utiles :
+- Frontend (app) : `http://localhost:8000/`
+- Health : `http://localhost:8000/health`
+- API (OpenAPI) : `http://localhost:8000/docs`
+
 ### Installation
 
 1. Cloner le projet
@@ -34,9 +71,11 @@ cp .env.example .env
 uvicorn backend.app:app --reload --port 8000
 ```
 
-5. Ouvrir le frontend
-```
-Ouvrir frontend/index.html dans un navigateur
+Important : exécuter cette commande depuis la racine du projet (sinon erreur `ModuleNotFoundError: No module named 'backend'`).
+
+5. Ouvrir l'application
+```text
+http://localhost:8000/
 ```
 
 ## 📚 Documentation

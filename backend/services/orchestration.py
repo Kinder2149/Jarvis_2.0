@@ -21,6 +21,7 @@ from backend.agents.agent_factory import get_agent
 from backend.models.session_state import Mode, ProjectState, SessionState
 from backend.services.file_writer import parse_code_blocks, write_files_to_project
 from backend.services.safety_service import SafetyService
+from backend.services.rag_service import get_rag_service
 
 logger = logging.getLogger(__name__)
 
@@ -440,6 +441,26 @@ class SimpleOrchestrator:
         instruction = delegation["instruction"]
 
         try:
+            # 🔥 ENRICHISSEMENT RAG : Si CODEUR, enrichir l'instruction avec contexte Library
+            if agent_name == "CODEUR":
+                try:
+                    rag_service = get_rag_service()
+                    # Vérifier si l'API RAG est disponible
+                    is_available = await rag_service.check_health()
+                    if is_available:
+                        logger.info("Orchestration: enrichissement RAG activé pour CODEUR")
+                        instruction = await rag_service.enrich_instruction(
+                            instruction,
+                            n_results=3,  # Top 3 documents pertinents
+                            filter_metadata={"agent": "CODEUR"}  # Filtrer sur agent CODEUR si disponible
+                        )
+                        logger.info("Orchestration: instruction CODEUR enrichie avec RAG")
+                    else:
+                        logger.warning("Orchestration: API RAG non disponible, instruction non enrichie")
+                except Exception as e:
+                    logger.warning(f"Orchestration: erreur enrichissement RAG: {e}")
+                    # Continuer sans enrichissement en cas d'erreur
+            
             agent = get_agent(agent_name)
             messages = [{"role": "user", "content": instruction}]
             result = await agent.handle(
