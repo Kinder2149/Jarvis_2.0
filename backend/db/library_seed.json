@@ -115,5 +115,203 @@
     "tags": ["tech", "preferences"],
     "agents": ["JARVIS_Maitre", "CODEUR"],
     "content": "# Stack technique — Val C.\n\n## Backend\n- Python 3.11+\n- FastAPI (web framework)\n- SQLite + aiosqlite (base de données)\n- Pydantic v2 (validation)\n- Gemini AI (LLM)\n\n## Frontend\n- HTML/CSS/JavaScript vanilla\n- Pas de framework JS (pas de React/Vue/Angular)\n- ES6 modules\n- CSS custom properties (variables)\n- Design sombre (dark theme)\n\n## Mobile\n- Flutter / Dart (en apprentissage)\n\n## Outils\n- Git\n- pytest\n- VS Code / Windsurf\n- Windows\n\n## Hébergement\n- Local uniquement (pas de cloud)\n- localhost:8000 pour le backend"
+  },
+  {
+    "category": "libraries",
+    "name": "asyncio",
+    "icon": "⚙️",
+    "description": "Programmation asynchrone Python — async/await, tasks, gather",
+    "tags": ["python", "async", "concurrency"],
+    "agents": ["CODEUR"],
+    "content": "# asyncio — Référence rapide\n\n## Fonction async de base\nimport asyncio\n\nasync def fetch_data():\n    await asyncio.sleep(1)\n    return \"data\"\n\nasync def main():\n    result = await fetch_data()\n    print(result)\n\nasyncio.run(main())\n\n## Exécuter plusieurs tâches en parallèle\nasync def task1():\n    await asyncio.sleep(1)\n    return \"task1\"\n\nasync def task2():\n    await asyncio.sleep(2)\n    return \"task2\"\n\nasync def main():\n    results = await asyncio.gather(task1(), task2())\n    print(results)  # ['task1', 'task2']\n\n## Créer des tâches\nasync def main():\n    task = asyncio.create_task(fetch_data())\n    # Faire autre chose\n    result = await task\n\n## Timeout\nasync def main():\n    try:\n        result = await asyncio.wait_for(fetch_data(), timeout=5.0)\n    except asyncio.TimeoutError:\n        print(\"Timeout!\")"
+  },
+  {
+    "category": "libraries",
+    "name": "pathlib",
+    "icon": "📂",
+    "description": "Manipulation de chemins de fichiers Python — Path, glob, read/write",
+    "tags": ["python", "filesystem"],
+    "agents": ["CODEUR"],
+    "content": "# pathlib — Référence rapide\n\n## Créer un chemin\nfrom pathlib import Path\n\npath = Path(\"data/file.txt\")\nabs_path = Path.cwd() / \"data\" / \"file.txt\"\n\n## Vérifications\nif path.exists():\n    print(\"Existe\")\nif path.is_file():\n    print(\"Fichier\")\nif path.is_dir():\n    print(\"Dossier\")\n\n## Lire/Écrire\ncontent = path.read_text()\npath.write_text(\"nouveau contenu\")\n\n## Navigation\nparent = path.parent\nname = path.name\nstem = path.stem  # sans extension\nsuffix = path.suffix  # extension\n\n## Créer dossiers\npath.mkdir(parents=True, exist_ok=True)\n\n## Glob (recherche)\nfor file in Path(\".\").glob(\"*.py\"):\n    print(file)\n\nfor file in Path(\".\").rglob(\"*.py\"):  # récursif\n    print(file)"
+  },
+  {
+    "category": "libraries",
+    "name": "JSON",
+    "icon": "📄",
+    "description": "Manipulation JSON Python — load, dump, dumps, loads",
+    "tags": ["python", "data", "serialization"],
+    "agents": ["CODEUR"],
+    "content": "# JSON — Référence rapide\n\n## Lire depuis fichier\nimport json\nfrom pathlib import Path\n\nwith open(\"data.json\") as f:\n    data = json.load(f)\n\n# Ou avec pathlib\ndata = json.loads(Path(\"data.json\").read_text())\n\n## Écrire dans fichier\nwith open(\"data.json\", \"w\") as f:\n    json.dump(data, f, indent=2)\n\n# Ou avec pathlib\nPath(\"data.json\").write_text(json.dumps(data, indent=2))\n\n## String → Dict\njson_string = '{\"key\": \"value\"}'\ndata = json.loads(json_string)\n\n## Dict → String\ndata = {\"key\": \"value\"}\njson_string = json.dumps(data, indent=2)\n\n## Options utiles\njson.dumps(data, indent=2, ensure_ascii=False, sort_keys=True)"
+  },
+  {
+    "category": "libraries",
+    "name": "datetime",
+    "icon": "📅",
+    "description": "Manipulation dates/heures Python — datetime, timedelta, isoformat",
+    "tags": ["python", "time", "dates"],
+    "agents": ["CODEUR"],
+    "content": "# datetime — Référence rapide\n\n## Maintenant\nfrom datetime import datetime, timedelta\n\nnow = datetime.now()\ntoday = datetime.today()\nutc_now = datetime.utcnow()\n\n## Créer une date\ndt = datetime(2024, 3, 5, 14, 30, 0)\n\n## Formater\niso = dt.isoformat()  # \"2024-03-05T14:30:00\"\nformatted = dt.strftime(\"%Y-%m-%d %H:%M:%S\")\n\n## Parser\ndt = datetime.fromisoformat(\"2024-03-05T14:30:00\")\ndt = datetime.strptime(\"2024-03-05\", \"%Y-%m-%d\")\n\n## Calculs\ntomorrow = now + timedelta(days=1)\nlast_week = now - timedelta(weeks=1)\nin_2_hours = now + timedelta(hours=2)\n\n## Comparaisons\nif dt1 > dt2:\n    print(\"dt1 est après dt2\")\n\ndiff = dt1 - dt2  # timedelta\ndays_diff = diff.days\nseconds_diff = diff.total_seconds()"
+  },
+  {
+    "category": "libraries",
+    "name": "uuid",
+    "icon": "🔑",
+    "description": "Génération d'identifiants uniques — uuid4, str(uuid)",
+    "tags": ["python", "id", "unique"],
+    "agents": ["CODEUR"],
+    "content": "# uuid — Référence rapide\n\n## Générer un UUID\nimport uuid\n\n# UUID v4 (aléatoire)\nid = uuid.uuid4()\nprint(id)  # UUID('...')\nprint(str(id))  # string\n\n## Utilisation typique\nfrom datetime import datetime\n\ndef create_user(name):\n    return {\n        \"id\": str(uuid.uuid4()),\n        \"name\": name,\n        \"created_at\": datetime.now().isoformat()\n    }\n\n## UUID v3/v5 (basé sur namespace + nom)\nnamespace = uuid.NAMESPACE_DNS\nid = uuid.uuid5(namespace, \"example.com\")\n# Toujours le même UUID pour le même input"
+  },
+  {
+    "category": "methodologies",
+    "name": "Gestion d'erreurs Python",
+    "icon": "⚠️",
+    "description": "Bonnes pratiques try/except, logging, erreurs custom",
+    "tags": ["python", "errors", "best-practices"],
+    "agents": ["CODEUR", "BASE"],
+    "content": "# Gestion d'erreurs Python\n\n## Try/Except de base\ntry:\n    result = risky_operation()\nexcept ValueError as e:\n    print(f\"Erreur: {e}\")\nexcept Exception as e:\n    print(f\"Erreur inattendue: {e}\")\nfinally:\n    cleanup()\n\n## Erreurs custom\nclass ValidationError(Exception):\n    pass\n\ndef validate(data):\n    if not data:\n        raise ValidationError(\"Data cannot be empty\")\n\n## Logging\nimport logging\n\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\ntry:\n    result = operation()\nexcept Exception as e:\n    logger.error(f\"Operation failed: {e}\", exc_info=True)\n    raise\n\n## Bonnes pratiques\n# ✅ Spécifique\ntry:\n    int(\"abc\")\nexcept ValueError:\n    pass\n\n# ❌ Trop large\ntry:\n    int(\"abc\")\nexcept Exception:\n    pass"
+  },
+  {
+    "category": "methodologies",
+    "name": "Architecture JARVIS",
+    "icon": "🏗️",
+    "description": "Architecture multi-agents JARVIS 2.0 — orchestration, délégation",
+    "tags": ["jarvis", "architecture", "agents"],
+    "agents": ["JARVIS_Maitre", "BASE"],
+    "content": "# Architecture JARVIS 2.0\n\n## 4 Agents\n\n### JARVIS_Maître (orchestrateur)\n- Rôle : Directeur technique, garde-fou méthodologique\n- Temperature : 0.3\n- Functions : 0 (empêchent délégation)\n- Délégation via marqueurs : [DEMANDE_CODE_CODEUR: ...], [DEMANDE_VALIDATION_BASE: ...]\n\n### BASE (worker polyvalent)\n- Rôle : Validation, vérification complétude, rapports\n- Temperature : 0.7\n- Functions : 4 (get_project_file, get_project_structure, get_library_document, get_library_list)\n\n### CODEUR (spécialiste code)\n- Rôle : Génération de code uniquement\n- Temperature : 0.3\n- Règles : Fichiers complets, imports absolus, pas de commentaires sauf si demandé\n\n### VALIDATEUR (contrôle qualité)\n- Rôle : Détection bugs, tests, qualité\n- Temperature : 0.5\n\n## Workflow\n1. User → JARVIS_Maître\n2. JARVIS_Maître analyse → Plan → Validation user\n3. JARVIS_Maître délègue → CODEUR (code) ou BASE (validation)\n4. Agent worker exécute → Retour JARVIS_Maître\n5. JARVIS_Maître → User (résultat + documentation)"
+  },
+  {
+    "category": "methodologies",
+    "name": "Tests Python",
+    "icon": "✅",
+    "description": "Stratégie de tests — unitaires, intégration, fixtures, mocks",
+    "tags": ["python", "testing", "quality"],
+    "agents": ["CODEUR", "BASE"],
+    "content": "# Stratégie de tests Python\n\n## Types de tests\n\n### Tests unitaires\n- Testent une fonction/classe isolée\n- Rapides, nombreux\n- Utilisent des mocks pour les dépendances\n\n### Tests d'intégration\n- Testent plusieurs composants ensemble\n- Plus lents, moins nombreux\n- Utilisent des vraies dépendances (DB, API)\n\n## Structure recommandée\ntests/\n  test_models.py\n  test_storage.py\n  test_api.py\n  conftest.py  # fixtures partagées\n\n## Fixtures pytest\n@pytest.fixture\ndef temp_db(tmp_path):\n    db_path = tmp_path / \"test.db\"\n    # Setup\n    yield db_path\n    # Teardown (optionnel)\n\n## Mocks\nfrom unittest.mock import Mock, patch\n\ndef test_with_mock():\n    mock_api = Mock()\n    mock_api.get.return_value = {\"data\": \"test\"}\n    result = process(mock_api)\n    assert result == \"test\"\n    mock_api.get.assert_called_once()\n\n## Couverture\npytest --cov=src --cov-report=html"
+  },
+  {
+    "category": "prompts",
+    "name": "Analyse de dette technique",
+    "icon": "🔧",
+    "description": "Template pour demander une analyse de dette technique",
+    "tags": ["user", "analysis", "debt"],
+    "agents": ["JARVIS_Maitre"],
+    "content": "# Template : Analyse de dette technique\n\n## Structure du prompt\nAnalyse la dette technique du projet [NOM] :\n- Identifier les fichiers avec code dupliqué\n- Détecter les anti-patterns\n- Lister les dépendances obsolètes\n- Vérifier la couverture de tests\n- Proposer un plan de refactorisation\n\n## Exemple\nAnalyse la dette technique du projet JARVIS 2.0 :\n- backend/db/migrations.py : doublons ?\n- frontend/js/views/*.js : code dupliqué ?\n- Dépendances requirements.txt à jour ?\n- Couverture tests < 70% ?\n\nPropose un plan de refactorisation par priorité."
+  },
+  {
+    "category": "prompts",
+    "name": "Debugging assisté",
+    "icon": "🐛",
+    "description": "Template pour demander de l'aide au debugging",
+    "tags": ["user", "debug", "errors"],
+    "agents": ["JARVIS_Maitre", "BASE"],
+    "content": "# Template : Debugging assisté\n\n## Structure du prompt\nJ'ai une erreur dans [FICHIER] :\n```\n[COPIER L'ERREUR COMPLÈTE]\n```\n\nContexte :\n- Ce que je veux faire : [OBJECTIF]\n- Ce qui se passe : [COMPORTEMENT ACTUEL]\n- Fichiers concernés : [LISTE]\n\n## Exemple\nJ'ai une erreur dans backend/api.py :\n```\nAttributeError: 'NoneType' object has no attribute 'id'\n```\n\nContexte :\n- Je veux créer un document library\n- L'API retourne 500 au lieu de 201\n- Fichiers : backend/api.py (L520), backend/db/database.py (L303)\n\nAnalyse la cause et propose une correction."
+  },
+  {
+    "category": "prompts",
+    "name": "Optimisation de code",
+    "icon": "⚡",
+    "description": "Template pour demander l'optimisation d'un code existant",
+    "tags": ["user", "optimization", "performance"],
+    "agents": ["JARVIS_Maitre", "CODEUR"],
+    "content": "# Template : Optimisation de code\n\n## Structure du prompt\nOptimise le code de [FICHIER] :\n- Performance : [PROBLÈME]\n- Lisibilité : [PROBLÈME]\n- Maintenabilité : [PROBLÈME]\n\nContraintes :\n- Garder la même API publique\n- Conserver les tests existants\n- [AUTRES CONTRAINTES]\n\n## Exemple\nOptimise le code de backend/db/database.py :\n- Performance : list_library_documents() fait 3 requêtes SQL au lieu d'1\n- Lisibilité : méthode trop longue (150 lignes)\n- Maintenabilité : duplication de code entre create/update\n\nContraintes :\n- Garder la même signature de méthodes\n- Tous les tests doivent passer\n- Pas de dépendance externe supplémentaire"
+  },
+  {
+    "category": "personal",
+    "name": "Workflow quotidien",
+    "icon": "📆",
+    "description": "Routine de travail et organisation quotidienne",
+    "tags": ["workflow", "organization"],
+    "agents": ["JARVIS_Maitre"],
+    "content": "# Workflow quotidien — Val C.\n\n## Démarrage session\n1. Ouvrir VS Code / Windsurf\n2. Lancer backend : `python backend/app.py`\n3. Ouvrir frontend : http://localhost:8000\n4. Vérifier logs : backend/logs/jarvis_audit.log\n\n## Avant chaque modification\n1. Lire la documentation existante\n2. Vérifier l'architecture actuelle\n3. Identifier les fichiers impactés\n4. Créer un plan d'action\n5. Demander validation si structurant\n\n## Après chaque modification\n1. Tester manuellement\n2. Lancer les tests : `pytest tests/ -v`\n3. Vérifier les logs\n4. Mettre à jour la documentation\n5. Commit Git avec message clair\n\n## Fin de session\n1. Vérifier que tout fonctionne\n2. Documenter les changements\n3. Archiver les docs temporaires\n4. Commit final\n5. Arrêter le backend"
+  },
+  {
+    "category": "personal",
+    "name": "Préférences UI/UX",
+    "icon": "🎨",
+    "description": "Préférences design et expérience utilisateur",
+    "tags": ["design", "ui", "ux"],
+    "agents": ["CODEUR"],
+    "content": "# Préférences UI/UX — Val C.\n\n## Design\n- Dark theme obligatoire\n- Palette : noir (#000), gris foncé (#1a1a1a), bleu (#0066cc), vert (#00cc66)\n- Police : system-ui, -apple-system, sans-serif\n- Icônes : Emojis (pas de bibliothèque externe)\n\n## Layout\n- Sidebar fixe à gauche (navigation)\n- Contenu principal centré, max-width 1200px\n- Padding généreux (2rem)\n- Border-radius subtil (8px)\n\n## Interactions\n- Transitions douces (0.2s ease)\n- Feedback visuel immédiat (hover, active)\n- Messages de confirmation avant actions destructives\n- Loading states explicites\n\n## Accessibilité\n- Contraste suffisant (WCAG AA minimum)\n- Focus visible au clavier\n- Labels explicites sur les boutons\n- Messages d'erreur clairs\n\n## Mobile\n- Pas de priorité mobile (usage desktop uniquement)\n- Mais responsive si simple (media queries basiques)"
+  },
+  {
+    "category": "personal",
+    "name": "Gestion des erreurs",
+    "icon": "🚨",
+    "description": "Approche personnelle de la gestion d'erreurs",
+    "tags": ["errors", "debugging", "methodology"],
+    "agents": ["JARVIS_Maitre", "BASE"],
+    "content": "# Gestion des erreurs — Val C.\n\n## Philosophie\n- Fail fast : détecter les erreurs tôt\n- Fail explicit : messages d'erreur clairs\n- Fail safe : ne jamais corrompre les données\n\n## Logging\n- Niveau INFO : opérations normales\n- Niveau WARNING : situations anormales mais gérables\n- Niveau ERROR : erreurs bloquantes\n- Toujours inclure le contexte (user_id, file_path, etc.)\n\n## Messages d'erreur\n✅ Bon : \"Document 'abc123' not found in database\"\n❌ Mauvais : \"Error\"\n\n✅ Bon : \"Invalid email format: 'test@'. Expected format: user@domain.com\"\n❌ Mauvais : \"Validation error\"\n\n## Debugging\n1. Reproduire l'erreur\n2. Lire le message complet + stack trace\n3. Identifier le fichier et la ligne\n4. Vérifier les logs\n5. Ajouter des prints/logs si nécessaire\n6. Corriger la cause, pas le symptôme\n7. Ajouter un test de non-régression"
+  },
+  {
+    "category": "methodologies",
+    "name": "Git workflow",
+    "icon": "🔀",
+    "description": "Workflow Git et conventions de commit",
+    "tags": ["git", "version-control"],
+    "agents": ["JARVIS_Maitre"],
+    "content": "# Git workflow — Val C.\n\n## Branches\n- main : production (stable)\n- dev : développement (en cours)\n- feature/* : nouvelles fonctionnalités\n- fix/* : corrections de bugs\n\n## Commits\nFormat : `[TYPE] Description courte`\n\nTypes :\n- [FEAT] : Nouvelle fonctionnalité\n- [FIX] : Correction de bug\n- [REFACTOR] : Refactorisation sans changement fonctionnel\n- [DOCS] : Documentation uniquement\n- [TEST] : Ajout/modification de tests\n- [STYLE] : Formatage, pas de changement de code\n\nExemples :\n- [FEAT] Ajout CRUD complet pour library documents\n- [FIX] Correction erreur 500 sur DELETE /api/library/{id}\n- [REFACTOR] Extraction méthode create_document_version\n- [DOCS] Mise à jour README avec instructions migration\n\n## Workflow\n1. Créer branche : `git checkout -b feature/library-crud`\n2. Commits atomiques (1 fonctionnalité = 1 commit)\n3. Push régulier\n4. Merge dans dev quand terminé\n5. Merge dev → main quand stable"
+  },
+  {
+    "category": "tools",
+    "name": "VS Code shortcuts",
+    "icon": "⌨️",
+    "description": "Raccourcis clavier VS Code / Windsurf essentiels",
+    "tags": ["vscode", "shortcuts", "productivity"],
+    "agents": ["JARVIS_Maitre"],
+    "content": "# VS Code shortcuts — Val C.\n\n## Navigation\n- Ctrl+P : Ouvrir fichier rapide\n- Ctrl+Shift+P : Palette de commandes\n- Ctrl+B : Toggle sidebar\n- Ctrl+` : Toggle terminal\n- Ctrl+Tab : Naviguer entre fichiers ouverts\n\n## Édition\n- Ctrl+D : Sélectionner occurrence suivante\n- Ctrl+Shift+L : Sélectionner toutes les occurrences\n- Alt+↑/↓ : Déplacer ligne\n- Shift+Alt+↑/↓ : Dupliquer ligne\n- Ctrl+/ : Commenter/décommenter\n\n## Recherche\n- Ctrl+F : Rechercher dans fichier\n- Ctrl+H : Remplacer dans fichier\n- Ctrl+Shift+F : Rechercher dans projet\n- Ctrl+Shift+H : Remplacer dans projet\n\n## Multi-curseur\n- Alt+Click : Ajouter curseur\n- Ctrl+Alt+↑/↓ : Ajouter curseur au-dessus/dessous\n\n## Refactoring\n- F2 : Renommer symbole\n- Ctrl+. : Quick fix\n- Shift+Alt+F : Formater document"
+  },
+  {
+    "category": "tools",
+    "name": "PowerShell essentials",
+    "icon": "💻",
+    "description": "Commandes PowerShell essentielles pour Windows",
+    "tags": ["powershell", "windows", "cli"],
+    "agents": ["JARVIS_Maitre", "BASE"],
+    "content": "# PowerShell essentials\n\n## Navigation\n- `cd` : Changer de dossier\n- `ls` ou `dir` : Lister fichiers\n- `pwd` : Afficher dossier actuel\n- `mkdir` : Créer dossier\n\n## Fichiers\n- `cat file.txt` : Afficher contenu\n- `cp source dest` : Copier\n- `mv source dest` : Déplacer/renommer\n- `rm file.txt` : Supprimer\n\n## Python\n- `python --version` : Version Python\n- `python -m venv venv` : Créer environnement virtuel\n- `.\\venv\\Scripts\\Activate.ps1` : Activer venv\n- `pip install -r requirements.txt` : Installer dépendances\n- `python backend/app.py` : Lancer backend\n\n## Tests\n- `pytest tests/ -v` : Lancer tous les tests\n- `pytest tests/test_file.py -v` : Lancer un fichier\n- `pytest tests/test_file.py::test_function -v` : Lancer un test\n- `pytest --cov=backend --cov-report=html` : Couverture\n\n## Git\n- `git status` : État\n- `git add .` : Ajouter tous les fichiers\n- `git commit -m \"message\"` : Commit\n- `git push` : Push\n- `git pull` : Pull"
+  },
+  {
+    "category": "tools",
+    "name": "Debugging Python",
+    "icon": "🔍",
+    "description": "Techniques de debugging Python — pdb, logging, print",
+    "tags": ["python", "debugging", "tools"],
+    "agents": ["CODEUR", "BASE"],
+    "content": "# Debugging Python\n\n## Print debugging (simple)\nprint(f\"Debug: variable = {variable}\")\nprint(f\"Debug: type = {type(variable)}\")\nprint(f\"Debug: dir = {dir(variable)}\")\n\n## Logging (recommandé)\nimport logging\nlogging.basicConfig(level=logging.DEBUG)\nlogger = logging.getLogger(__name__)\n\nlogger.debug(f\"Variable value: {variable}\")\nlogger.info(\"Operation started\")\nlogger.warning(\"Unusual condition\")\nlogger.error(f\"Error: {e}\", exc_info=True)\n\n## pdb (debugger interactif)\nimport pdb\n\ndef my_function():\n    x = 10\n    pdb.set_trace()  # Breakpoint\n    y = x * 2\n    return y\n\n# Commandes pdb :\n# n : next line\n# s : step into\n# c : continue\n# p variable : print variable\n# l : list code\n# q : quit\n\n## breakpoint() (Python 3.7+)\ndef my_function():\n    x = 10\n    breakpoint()  # Équivalent à pdb.set_trace()\n    y = x * 2\n    return y"
+  },
+  {
+    "category": "methodologies",
+    "name": "Code review checklist",
+    "icon": "👀",
+    "description": "Checklist complète pour review de code",
+    "tags": ["review", "quality", "process"],
+    "agents": ["BASE", "VALIDATEUR"],
+    "content": "# Code review checklist\n\n## Fonctionnel\n- [ ] Le code fait ce qu'il est censé faire\n- [ ] Tous les cas d'usage sont couverts\n- [ ] Les cas d'erreur sont gérés\n- [ ] Pas de régression sur fonctionnalités existantes\n\n## Qualité\n- [ ] Code lisible et compréhensible\n- [ ] Nommage clair (variables, fonctions, classes)\n- [ ] Pas de code dupliqué\n- [ ] Pas de code mort (commenté ou inutilisé)\n- [ ] Complexité raisonnable (pas de fonctions >50 lignes)\n\n## Architecture\n- [ ] Respecte l'architecture existante\n- [ ] Séparation des responsabilités (SRP)\n- [ ] Pas de couplage fort\n- [ ] Dépendances minimales\n\n## Tests\n- [ ] Tests unitaires présents\n- [ ] Tests passent tous\n- [ ] Couverture suffisante (>70%)\n- [ ] Cas nominaux ET cas d'erreur testés\n\n## Sécurité\n- [ ] Pas de données sensibles en dur\n- [ ] Validation des inputs\n- [ ] Pas d'injection SQL\n- [ ] Gestion correcte des permissions\n\n## Performance\n- [ ] Pas de requêtes N+1\n- [ ] Pas de boucles infinies potentielles\n- [ ] Ressources libérées correctement\n\n## Documentation\n- [ ] Docstrings sur fonctions publiques\n- [ ] README à jour si nécessaire\n- [ ] Commentaires uniquement si code complexe"
+  },
+  {
+    "category": "methodologies",
+    "name": "Refactoring safe",
+    "icon": "♻️",
+    "description": "Méthodologie de refactorisation sécurisée",
+    "tags": ["refactoring", "safety", "process"],
+    "agents": ["JARVIS_Maitre", "CODEUR"],
+    "content": "# Refactoring safe\n\n## Avant de commencer\n1. Tous les tests passent ✅\n2. Code commité (état stable)\n3. Objectif clair du refactoring\n4. Plan d'action défini\n\n## Règles d'or\n1. **Un changement à la fois** : Renommer OU extraire OU déplacer, pas tout en même temps\n2. **Tests verts en permanence** : Lancer les tests après chaque micro-étape\n3. **Commits atomiques** : 1 refactoring = 1 commit\n4. **Pas de changement fonctionnel** : Le comportement reste identique\n\n## Techniques courantes\n\n### Extract Method\nAvant :\n```python\ndef process():\n    # 50 lignes de code\n    x = calculate_something()\n    # 50 autres lignes\n```\n\nAprès :\n```python\ndef process():\n    x = calculate_something()\n    result = process_data(x)\n    return finalize(result)\n```\n\n### Rename\n1. Utiliser F2 (VS Code)\n2. Vérifier tous les usages\n3. Lancer tests\n4. Commit\n\n### Move\n1. Créer nouveau fichier\n2. Copier code\n3. Mettre à jour imports\n4. Supprimer ancien\n5. Tests\n6. Commit\n\n## En cas d'erreur\n1. `git diff` : voir les changements\n2. `git checkout .` : annuler tout\n3. `git reset --hard HEAD` : revenir au dernier commit\n4. Recommencer plus petit"
+  },
+  {
+    "category": "personal",
+    "name": "Apprentissage Flutter",
+    "icon": "📱",
+    "description": "Ressources et progression apprentissage Flutter",
+    "tags": ["flutter", "learning", "mobile"],
+    "agents": ["JARVIS_Maitre"],
+    "content": "# Apprentissage Flutter — Val C.\n\n## Objectifs\n- Créer des apps mobiles simples\n- Comprendre les widgets et le state management\n- Maîtriser la navigation\n- Connecter à des APIs\n\n## Ressources\n- Documentation officielle : https://docs.flutter.dev\n- Flutter Codelabs : https://docs.flutter.dev/codelabs\n- YouTube : Flutter (chaîne officielle)\n\n## Projets d'apprentissage\n1. **Hello World** : Widget stateless basique\n2. **Compteur** : Widget stateful, setState\n3. **Liste de tâches** : ListView, CRUD local\n4. **API Client** : HTTP, JSON, async/await\n5. **Navigation** : Multi-pages, routes\n\n## Concepts clés à maîtriser\n- Widgets (Stateless vs Stateful)\n- State management (setState, Provider)\n- Layout (Column, Row, Stack, Container)\n- Navigation (Navigator, Routes)\n- Async (Future, async/await)\n- HTTP (package http)\n- Persistence (shared_preferences, sqflite)\n\n## Progression actuelle\n- [x] Installation Flutter SDK\n- [x] Hello World\n- [x] Widget Stateless/Stateful\n- [ ] ListView et CRUD\n- [ ] HTTP et API\n- [ ] Navigation\n- [ ] State management avancé"
+  },
+  {
+    "category": "tools",
+    "name": "Gemini AI",
+    "icon": "🤖",
+    "description": "Configuration et usage de l'API Gemini",
+    "tags": ["ai", "gemini", "api"],
+    "agents": ["JARVIS_Maitre"],
+    "content": "# Gemini AI — Configuration JARVIS\n\n## Clé API\nAIzaSyCmhnxKvTM7cIxdEAmnlucQDCV7r48FI6g\n\n## Modèles utilisés\n- **gemini-2.0-flash** : JARVIS_Maître (orchestration)\n- **gemini-2.5-pro** : CODEUR (qualité code)\n- **gemini-2.0-flash-lite** : BASE (validation rapide)\n- **gemini-3.1-pro-preview** : VALIDATEUR (contrôle qualité)\n\n## Quotas Tier 1 (gratuit)\n- RPM : 2K-4K selon modèle\n- TPM : 2M-5M selon modèle\n- RPD : Illimité pour Flash/Flash Lite\n\n## Configuration .env\n```env\nDEFAULT_PROVIDER=gemini\nGEMINI_API_KEY=AIzaSyCmhnxKvTM7cIxdEAmnlucQDCV7r48FI6g\nGEMINI_MODEL=gemini-2.0-flash\n\nJARVIS_MAITRE_PROVIDER=gemini\nJARVIS_MAITRE_MODEL=gemini-2.0-flash\n\nCODEUR_PROVIDER=gemini\nCODEUR_MODEL=gemini-2.5-pro\n\nBASE_PROVIDER=gemini\nBASE_MODEL=gemini-2.0-flash-lite\n\nVALIDATEUR_PROVIDER=gemini\nVALIDATEUR_MODEL=gemini-3.1-pro-preview\n```\n\n## Bonnes pratiques\n- Utiliser Flash pour tâches simples (rapide, peu coûteux)\n- Utiliser Pro pour tâches complexes (qualité maximale)\n- Monitorer les quotas (AI Studio dashboard)\n- Gérer les erreurs de rate limit (retry avec backoff)"
   }
 ]

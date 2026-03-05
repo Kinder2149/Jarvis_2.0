@@ -11,7 +11,7 @@ import ChatSimpleView from './js/views/chat-simple.js';
 import ProjectsListView from './js/views/projects-list.js';
 import ProjectDetailView from './js/views/project-detail.js';
 import AgentsViewEnhanced from './js/views/agents-enhanced.js';
-import LibraryViewEnhanced from './js/views/library-enhanced.js';
+import LibraryView from './js/views/library.js';
 
 class App {
     constructor() {
@@ -87,7 +87,7 @@ class App {
 
         // Librairie
         router.register('/library', () => {
-            this.loadView(LibraryViewEnhanced);
+            this.loadView(LibraryView);
         });
     }
 

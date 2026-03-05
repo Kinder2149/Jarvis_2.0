@@ -473,9 +473,187 @@ class Database:
 
     async def delete_library_document(self, doc_id: str) -> bool:
         async with self._connect() as db:
-            cursor = await db.execute("DELETE FROM library_documents WHERE id = ?", (doc_id,))
+            cursor = await db.execute(
+                "DELETE FROM library_documents WHERE id = ?", (doc_id,)
+            )
             await db.commit()
             return cursor.rowcount > 0
+
+    async def create_document_version(
+        self, document_id: str, change_summary: str | None = None, created_by: str = "system"
+    ) -> dict:
+        """Crée une version d'un document avant modification"""
+        import json
+
+        # Récupérer le document actuel
+        doc = await self.get_library_document(document_id)
+        if not doc:
+            raise ValueError(f"Document {document_id} not found")
+
+        version_id = str(uuid.uuid4())
+        created_at = datetime.now().isoformat()
+
+        async with self._connect() as db:
+            # Récupérer la version actuelle
+            async with db.execute(
+                "SELECT version FROM library_documents WHERE id = ?", (document_id,)
+            ) as cursor:
+                row = await cursor.fetchone()
+                current_version = row[0] if row else 1
+
+            # Créer l'entrée de version
+            await db.execute(
+                """INSERT INTO library_document_versions 
+                (id, document_id, version, category, name, icon, description, content, tags, agents, created_at, created_by, change_summary)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    version_id,
+                    document_id,
+                    current_version,
+                    doc["category"],
+                    doc["name"],
+                    doc["icon"],
+                    doc["description"],
+                    doc["content"],
+                    json.dumps(doc["tags"]),
+                    json.dumps(doc["agents"]),
+                    created_at,
+                    created_by,
+                    change_summary,
+                ),
+            )
+            await db.commit()
+
+        return {"id": version_id, "version": current_version, "created_at": created_at}
+
+    async def get_document_versions(self, document_id: str) -> list[dict]:
+        """Récupère l'historique des versions d'un document"""
+        import json
+
+        async with self._connect() as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM library_document_versions WHERE document_id = ? ORDER BY version DESC",
+                (document_id,),
+            ) as cursor:
+                rows = await cursor.fetchall()
+                return [
+                    {
+                        "id": row["id"],
+                        "document_id": row["document_id"],
+                        "version": row["version"],
+                        "category": row["category"],
+                        "name": row["name"],
+                        "icon": row["icon"],
+                        "description": row["description"],
+                        "content": row["content"],
+                        "tags": json.loads(row["tags"]) if row["tags"] else [],
+                        "agents": json.loads(row["agents"]) if row["agents"] else [],
+                        "created_at": row["created_at"],
+                        "created_by": row["created_by"],
+                        "change_summary": row["change_summary"],
+                    }
+                    for row in rows
+                ]
+
+    async def log_document_access(
+        self, document_id: str, agent_id: str, access_type: str = "read", context: str | None = None
+    ) -> None:
+        """Enregistre un accès à un document"""
+        log_id = str(uuid.uuid4())
+        accessed_at = datetime.now().isoformat()
+
+        async with self._connect() as db:
+            # Créer le log d'accès
+            await db.execute(
+                """INSERT INTO library_access_logs 
+                (id, document_id, agent_id, accessed_at, access_type, context)
+                VALUES (?, ?, ?, ?, ?, ?)""",
+                (log_id, document_id, agent_id, accessed_at, access_type, context),
+            )
+
+            # Mettre à jour ou créer les métriques
+            async with db.execute(
+                "SELECT id, access_count FROM library_document_metrics WHERE document_id = ? AND agent_id = ?",
+                (document_id, agent_id),
+            ) as cursor:
+                row = await cursor.fetchone()
+
+            if row:
+                # Incrémenter le compteur existant
+                await db.execute(
+                    """UPDATE library_document_metrics 
+                    SET access_count = access_count + 1, last_accessed_at = ?, updated_at = ?
+                    WHERE document_id = ? AND agent_id = ?""",
+                    (accessed_at, accessed_at, document_id, agent_id),
+                )
+            else:
+                # Créer nouvelle métrique
+                metric_id = str(uuid.uuid4())
+                await db.execute(
+                    """INSERT INTO library_document_metrics 
+                    (id, document_id, agent_id, access_count, last_accessed_at, created_at, updated_at)
+                    VALUES (?, ?, ?, 1, ?, ?, ?)""",
+                    (metric_id, document_id, agent_id, accessed_at, accessed_at, accessed_at),
+                )
+
+            await db.commit()
+
+    async def get_document_metrics(self, document_id: str) -> list[dict]:
+        """Récupère les métriques d'utilisation d'un document"""
+        async with self._connect() as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM library_document_metrics WHERE document_id = ? ORDER BY access_count DESC",
+                (document_id,),
+            ) as cursor:
+                rows = await cursor.fetchall()
+                return [
+                    {
+                        "id": row["id"],
+                        "document_id": row["document_id"],
+                        "agent_id": row["agent_id"],
+                        "access_count": row["access_count"],
+                        "last_accessed_at": row["last_accessed_at"],
+                        "total_read_time_seconds": row["total_read_time_seconds"],
+                        "created_at": row["created_at"],
+                        "updated_at": row["updated_at"],
+                    }
+                    for row in rows
+                ]
+
+    async def get_top_documents(self, limit: int = 10) -> list[dict]:
+        """Récupère les documents les plus consultés"""
+        import json
+
+        async with self._connect() as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                """SELECT ld.*, SUM(ldm.access_count) as total_accesses
+                FROM library_documents ld
+                LEFT JOIN library_document_metrics ldm ON ld.id = ldm.document_id
+                GROUP BY ld.id
+                ORDER BY total_accesses DESC
+                LIMIT ?""",
+                (limit,),
+            ) as cursor:
+                rows = await cursor.fetchall()
+                return [
+                    {
+                        "id": row["id"],
+                        "category": row["category"],
+                        "name": row["name"],
+                        "icon": row["icon"],
+                        "description": row["description"],
+                        "content": row["content"],
+                        "tags": json.loads(row["tags"]) if row["tags"] else [],
+                        "agents": json.loads(row["agents"]) if row["agents"] else [],
+                        "created_at": row["created_at"],
+                        "updated_at": row["updated_at"],
+                        "total_accesses": row["total_accesses"] or 0,
+                    }
+                    for row in rows
+                ]
 
     async def seed_library_if_empty(self):
         """
