@@ -1,4 +1,25 @@
+# Environnement
 .env
+venv/
+env/
 
-__pycache__
-__pytest__
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Données runtime
+backend/data/
+RAG/projects/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
