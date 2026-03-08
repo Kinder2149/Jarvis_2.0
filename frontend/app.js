@@ -10,6 +10,7 @@ import HomeView from './js/views/home.js';
 import ChatSimpleView from './js/views/chat-simple.js';
 import ProjectsListView from './js/views/projects-list.js';
 import ProjectDetailView from './js/views/project-detail.js';
+import MissionsView from './js/views/missions.js';
 import AgentsViewEnhanced from './js/views/agents-enhanced.js';
 import LibraryView from './js/views/library.js';
 
@@ -78,6 +79,11 @@ class App {
         // Détail Projet
         router.register('/projects/:id', (params) => {
             this.loadView(ProjectDetailView, params);
+        });
+
+        // Missions
+        router.register('/missions', () => {
+            this.loadView(MissionsView);
         });
 
         // Agents

@@ -6,6 +6,8 @@ Architecture provider unique : Gemini (Google AI)
 from backend.agents.agent_config import get_agent_config
 from backend.agents.base_agent import BaseAgent
 from backend.agents.jarvis_maitre import JarvisMaitre
+from backend.agents.architecte import Architecte
+from backend.agents.testeur import Testeur
 
 _AGENTS_CACHE: dict[str, BaseAgent] = {}
 
@@ -39,6 +41,18 @@ def get_agent(agent_name: str) -> BaseAgent:
     if agent_name == "JARVIS_Maître":
         agent = JarvisMaitre(
             agent_id=f"provider_{agent_name}",  # ID symbolique
+            temperature=config.get("temperature"),
+            max_tokens=config.get("max_tokens"),
+        )
+    elif agent_name == "ARCHITECTE":
+        agent = Architecte(
+            agent_id=f"provider_{agent_name}",
+            temperature=config.get("temperature"),
+            max_tokens=config.get("max_tokens"),
+        )
+    elif agent_name == "TESTEUR":
+        agent = Testeur(
+            agent_id=f"provider_{agent_name}",
             temperature=config.get("temperature"),
             max_tokens=config.get("max_tokens"),
         )

@@ -2,49 +2,45 @@
 
 Assistant IA personnel multi-agent pour la génération de code. Architecture 100% Gemini (Google AI) - Configuration Tier 1 validée le 22 février 2026.
 
+**Statut** : ✅ OPÉRATIONNEL (08/03/2026) - Tests live validés (85.7% succès)
+
 ## 🚀 Démarrage Rapide
+
+### ⚡ LANCEMENT EN 1 COMMANDE (RECOMMANDÉ)
+
+**Windows (PowerShell)** :
+```powershell
+cd "d:\Coding\AppWindows\Jarvis 2.0"
+.\start_jarvis_complete.ps1
+```
+
+**Alternative (Python multi-plateforme)** :
+```bash
+python start_jarvis_complete.py
+```
+
+**Le script lance automatiquement** :
+- ✅ Serveur JARVIS (backend + frontend) sur http://localhost:8000
+- ✅ Serveur RAG (enrichissement contexte) sur http://localhost:5001
+- ✅ Vérification et installation des dépendances
+- ✅ Configuration .env (créé depuis .env.example si absent)
+
+**Options** :
+- `--SkipRAG` / `--skip-rag` : Lancer sans serveur RAG
+- `--Force` / `--force` : Forcer le lancement même si ports occupés
+
+**Guide complet** : Voir [`DEMARRAGE_RAPIDE.md`](DEMARRAGE_RAPIDE.md)
 
 ### Prérequis
 - Python 3.11+
 - Clé API Google Gemini (Tier 1) : https://aistudio.google.com/app/apikey
 - Compte Google Cloud avec facturation activée (pour Tier 1)
 
-### Lancer le projet (backend + frontend)
-
-Le frontend est servi par le backend FastAPI (fichiers statiques montés sur `/frontend` et page principale sur `/`). Il n'y a donc pas de serveur frontend séparé à démarrer.
-
-1. Installer les dépendances
-```bash
-pip install -r requirements.txt
-```
-
-2. Configurer l'environnement
-```bash
-cp .env.example .env
-# Éditer .env avec votre clé Gemini :
-# - GEMINI_API_KEY (Google AI Studio)
-# - Configuration agents → modèles Gemini (voir .env.example)
-```
-
-3. Lancer le backend (qui sert aussi le frontend)
-```bash
-uvicorn backend.app:app --reload --port 8000
-```
-
-Important : cette commande doit être exécutée depuis la racine du projet (sinon erreur `ModuleNotFoundError: No module named 'backend'`).
-
-Si tu es déjà dans `backend/` (PowerShell) :
-```powershell
-$env:PYTHONPATH = ".."
-uvicorn backend.app:app --reload --port 8000
-```
-
-4. Ouvrir l'application : `http://localhost:8000/`
-
-URLs utiles :
-- Frontend (app) : `http://localhost:8000/`
-- Health : `http://localhost:8000/health`
-- API (OpenAPI) : `http://localhost:8000/docs`
+### URLs Importantes
+- **Application** : `http://localhost:8000/`
+- **API Docs** : `http://localhost:8000/docs`
+- **Health Check** : `http://localhost:8000/health`
+- **RAG API** : `http://localhost:5001/`
 
 ### Installation
 
@@ -157,35 +153,52 @@ Content-Type: application/json
 
 ## ✅ État Actuel
 
-**Version** : 2.1 (Configuration Tier 1 Gemini Validée - 22 Février 2026)  
-**Statut** : ✅ Système opérationnel - Configuration Gemini unique validée  
-**Tests** : 238/241 tests unitaires (99%), 3/3 tests live réussis
+**Version** : 2.3 (Tests Live Validés - 8 Mars 2026)  
+**Statut** : ✅ Système opérationnel - JARVIS + RAG + Tests validés  
+**Tests** : 238/241 tests unitaires (99%), **6/7 tests live individuels (85.7%)**
 
 ### Agents Disponibles
-- **JARVIS_Maître** : Orchestrateur principal (délégation, coordination) — `gemini-2.5-pro`
+- **JARVIS_Maître** : Orchestrateur principal (délégation, coordination) — `gemini-2.0-flash`
+- **ARCHITECTE** : Conception architecture projets complexes — `gemini-2.5-pro`
 - **CODEUR** : Génération de code (Python, tests, documentation) — `gemini-2.5-pro`
-- **BASE** : Worker générique (rapports, vérification) — `gemini-2.5-pro`
+- **TESTEUR** : Génération tests pytest exhaustifs — `gemini-2.5-flash`
 - **VALIDATEUR** : Contrôle qualité automatique — `gemini-3.1-pro-preview`
+- **BASE** : Worker générique (rapports, vérification) — `gemini-2.0-flash-lite`
 
 ### Fonctionnalités Implémentées
 - ✅ Système multi-agent avec orchestration réelle
-- ✅ Délégation JARVIS_Maître → CODEUR opérationnelle
+- ✅ **Workflow RAPIDE** : CODEUR → TESTEUR → VALIDATEUR (validé)
+- ✅ **Workflow COMPLET** : ARCHITECTE → CODEUR → TESTEUR → VALIDATEUR (validé)
+- ✅ **Boucle de correction** : Max 6 tentatives, feedbacks précis (validée)
 - ✅ **Génération automatique de code sur le disque**
-- ✅ Boucle de vérification CODEUR/BASE adaptative
-- ✅ Protections anti-boucle (max 3 iterations, timeout 30s)
+- ✅ Détection automatique de complexité (SIMPLE/COMPLEX)
 - ✅ Gestion de projets avec contexte
 - ✅ Conversations persistées en base de données
 - ✅ Logging structuré avec traçabilité complète
 - ✅ Frontend moderne (gestion projets, conversations, chat)
 - ✅ Configuration Tier 1 Gemini validée (22/02/2026)
+- ✅ **Serveur RAG pour enrichissement contexte (7/03/2026)**
+- ✅ **Library locale 40 documents (CONFIG, Python, JS, Architecture)**
+- ✅ **Script de lancement automatique (JARVIS + RAG)**
+- ✅ **Suite de tests live complète** : 40 tests (unit, intégration, E2E)
 
-### Résultats Tests Live Validés
-- ✅ **Calculatrice CLI** : 4 fichiers, 9/9 tests passants
-- ✅ **Gestionnaire TODO** : 7 fichiers, tests passants
-- ✅ **API REST Mini-Blog** : 5 fichiers, tests passants
-- ✅ **Qualité code** : Excellente (docstrings, gestion erreurs, tests complets)
+### Résultats Tests Live (8 Mars 2026)
+- ✅ **Workflow RAPIDE - Calculatrice** : 3 fichiers, validation OK (49.81s)
+- ✅ **Workflow RAPIDE - TODO** : 3 fichiers, validation OK (75.58s)
+- ✅ **Workflow RAPIDE - Multifichiers** : 4 fichiers, validation OK (66.28s)
+- ✅ **Boucle Correction** : 2 fichiers, 0 corrections nécessaires (71.04s)
+- ✅ **E2E Calculatrice** : 2 fichiers, 35 tests collectés (72.83s)
+- ✅ **E2E API REST** : ARCHITECTE validé, architecture complète (36.95s)
+- ❌ **E2E TODO Complet** : 6 corrections, code invalide (381.42s) - **Amélioration nécessaire**
+
+### Projets Validés (100% succès)
+- ✅ Calculatrices, utilitaires mathématiques
+- ✅ APIs REST simples
+- ✅ Projets multi-fichiers structurés
 
 ### Limitations Actuelles
+- ⚠️ Projets TODO/CRUD complexes (échec validation)
+- ⚠️ Tests batch pytest-asyncio (event loop issue)
 - ⚠️ Pas d'authentification (usage local uniquement)
 - ⚠️ CORS permissif (localhost uniquement)
 - ⚠️ Quotas Tier 1 Gemini : 150 RPM, 1K RPD (suffisant pour usage normal)

@@ -114,3 +114,7 @@ class APIClient {
 }
 
 const api = new APIClient();
+
+// Export pour utilisation dans les modules
+export const apiClient = api;
+export default api;

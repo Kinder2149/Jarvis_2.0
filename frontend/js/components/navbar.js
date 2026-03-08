@@ -53,6 +53,7 @@ class Navbar {
             this.createNavLink('/', '🏠 Home'),
             this.createNavLink('/chat', '💬 Chat'),
             this.createNavLink('/projects', '📁 Projets'),
+            this.createNavLink('/missions', '🎯 Missions'),
             this.createNavLink('/agents', '🤖 Agents'),
             this.createNavLink('/library', '📚 Librairie')
         ]);

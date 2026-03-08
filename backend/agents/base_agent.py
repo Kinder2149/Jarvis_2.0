@@ -44,6 +44,7 @@ class BaseAgent:
         self.temperature = temperature or 0.7
         self.max_tokens = max_tokens or 4096
         self.state = "idle"
+        self.last_finish_reason = "stop"  # Stocke le finish_reason de la dernière réponse
 
         self.provider = ProviderFactory.create(agent_name=name)
         self.log_file = Path("backend/logs/jarvis_audit.log")
@@ -131,6 +132,10 @@ class BaseAgent:
             messages: Liste de messages {role, content}
             session_id: Identifiant de session pour traçabilité dans les logs
             function_executor: Exécuteur de fonctions pour tool calling
+            
+        Returns:
+            Réponse texte de l'agent (pour compatibilité ascendante)
+            Note: finish_reason est stocké dans self.last_finish_reason
         """
         self.state = "working"
 
@@ -176,13 +181,25 @@ class BaseAgent:
                 session_id=session_id,
             )
 
-            response_text = await self._handle_with_function_calling(
+            response_data = await self._handle_with_function_calling(
                 validated_messages, function_executor
             )
+            
+            # Extraire response et finish_reason
+            if isinstance(response_data, dict):
+                response_text = response_data.get("content", "")
+                self.last_finish_reason = response_data.get("finish_reason", "stop")
+            else:
+                # Compatibilité ascendante si _handle_with_function_calling retourne string
+                response_text = response_data
+                self.last_finish_reason = "stop"
 
             self.log(
                 action="handle_response",
-                details={"response_length": len(response_text)},
+                details={
+                    "response_length": len(response_text),
+                    "finish_reason": self.last_finish_reason
+                },
                 session_id=session_id,
             )
 
@@ -195,8 +212,8 @@ class BaseAgent:
             raise
 
     async def _handle_with_function_calling(
-        self, messages: list[dict], function_executor=None, max_iterations: int = 3
-    ) -> str:
+        self, messages: list[dict], function_executor=None, max_iterations: int = 5
+    ) -> dict:
         """
         Gère l'envoi de messages avec support du function calling.
 
@@ -206,7 +223,7 @@ class BaseAgent:
             max_iterations: Nombre maximum d'itérations pour function calling
 
         Returns:
-            Réponse finale de l'agent
+            Dict avec {content: str, finish_reason: str}
         """
         conversation_messages = messages.copy()
         
@@ -215,11 +232,14 @@ class BaseAgent:
             conversation_messages.insert(0, {"role": "system", "content": self.system_prompt})
         
         iteration = 0
+        last_finish_reason = "stop"
+        last_content = ""
 
         # Récupérer les fonctions disponibles si function_executor fourni
         functions = None
         if function_executor:
             functions = function_executor.get_available_functions()
+            logger.info(f"Agent {self.name} - {len(functions)} functions available")
 
         while iteration < max_iterations:
             logger.info(
@@ -238,11 +258,16 @@ class BaseAgent:
             content = response.get("content", "")
             tool_calls = response.get("tool_calls", [])
             finish_reason = response.get("finish_reason", "stop")
+            last_finish_reason = finish_reason
+            
+            # Conserver le dernier contenu non vide
+            if content:
+                last_content = content
 
-            # Si pas de tool calls, retourner le contenu
+            # Si pas de tool calls, retourner le contenu avec finish_reason
             if not tool_calls or not function_executor:
-                logger.info(f"Agent {self.name} - Response: {len(content)} chars, no tool calls")
-                return content
+                logger.info(f"Agent {self.name} - Response: {len(content)} chars, finish_reason={finish_reason}")
+                return {"content": content, "finish_reason": finish_reason}
 
             # Tool calls détectés
             logger.info(f"Agent {self.name} - {len(tool_calls)} tool call(s) detected")
@@ -276,6 +301,8 @@ class BaseAgent:
 
             iteration += 1
 
-        # Max iterations atteintes
+        # Max iterations atteintes - retourner le dernier contenu non vide
         logger.warning(f"Agent {self.name} - Max iterations ({max_iterations}) reached")
-        return content
+        final_content = last_content if last_content else content
+        logger.info(f"Agent {self.name} - Returning final content: {len(final_content)} chars")
+        return {"content": final_content, "finish_reason": last_finish_reason}

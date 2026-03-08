@@ -1,8 +1,8 @@
 # Index de la Documentation - JARVIS 2.0
 
 **Statut** : REFERENCE  
-**Version** : 2.3  
-**Date** : 2026-02-18
+**Version** : 2.4  
+**Date** : 2026-03-07
 
 ## Point d'Entrée Unique
 
@@ -26,21 +26,23 @@ Documents contractuels validés (source de vérité). Toute modification = nouve
 - **AGENTS_CONFIGURATION_COMPLETE.md** (v2.0) - Configuration complète des 3 agents (prompts + functions + paramètres Mistral)
 - **INSTRUCTIONS_MISTRAL_STUDIO.md** - Instructions copier-coller pour configuration functions sur Mistral AI Studio
 
-### `config_mistral/agents/`
-Prompts exacts configurés sur Mistral AI pour chaque agent. Source de vérité pour les instructions cloud.
+### `config_agents/`
+Prompts agents JARVIS 2.0. Source de vérité pour les instructions (chargés localement via SDK Gemini).
 
 - **README.md** - Guide d'utilisation du dossier
-- **CODEUR.md** (v1.1) - Prompt agent CODEUR (spécialiste code)
-- **JARVIS_MAITRE.md** (v2.1) - Prompt agent Jarvis_Maître (orchestrateur)
-- **BASE.md** (v1.1) - Prompt agent BASE (worker générique)
+- **CODEUR.md** (v3.3) - Prompt agent CODEUR (spécialiste code, max_tokens=8192)
+- **JARVIS_MAITRE.md** (v5.2) - Prompt agent JARVIS_Maître (orchestrateur)
+- **BASE.md** (v3.1) - Prompt agent BASE (worker générique)
+- **VALIDATEUR.md** (v2.0) - Prompt agent VALIDATEUR (contrôle qualité)
 
 ### `docs/work/`
 Documents en cours (audits, analyses, brouillons). Durée de vie limitée, revue périodique.
 
-- 10 documents de travail actifs
+- **ETAT_LIBRARY.md** - État complet library (40 documents)
+- **GUIDE_TESTS_LIVE.md** - Guide validation paramétrage JARVIS 2.0
 
 ### `docs/history/`
-Archive lecture seule (traçabilité). Documents obsolètes/remplacés/terminés. 25 documents archivés.
+Archive lecture seule (traçabilité). Documents obsolètes/remplacés/terminés. 60+ documents archivés.
 
 **Documents clés** :
 - **20260212_MIGRATION_ARCHITECTURE_2_AGENTS.md** - Plan de migration vers 2 agents distincts (exécuté et validé)
@@ -51,22 +53,24 @@ Archive lecture seule (traçabilité). Documents obsolètes/remplacés/terminés
 Index, règles, templates, changelog.
 
 - **INDEX.md** - Ce document
-- **RULES.md** - Règles de gouvernance documentaire
+- **ETAT_ACTUEL_JARVIS_20260307.md** - État actuel JARVIS 2.0 (REFERENCE)
 - **CHANGELOG.md** - Historique des modifications documentaires
 - **IA_CONTEXT.md** - Document de contexte complet pour IA externe
+- **AUDIT_DOCUMENTATION_20260218.md** - Audit documentation
 
 ---
 
 ## 🎯 Documents Clés par Thématique
 
 ### Pour Démarrer
-1. `reference/ARCHITECTURE.md` - Comprendre la structure
-2. `reference/API_SPECIFICATION_V2.md` - Utiliser l'API
+1. `_meta/ETAT_ACTUEL_JARVIS_20260307.md` - État actuel système (LIRE EN PREMIER)
+2. `work/GUIDE_TESTS_LIVE.md` - Guide validation
 3. `../.env.example` - Configuration requise
 
 ### Pour Développer
-1. `reference/AGENT_SYSTEM.md` - Système d'agents (ajout d'un agent, factory, config)
-2. `reference/API_SPECIFICATION_V2.md` - Endpoints disponibles
+1. `../config_agents/` - Prompts agents (CODEUR v3.3, JARVIS_MAITRE v5.2)
+2. `../backend/agents/agent_config.py` - Configuration centralisée agents
+3. `work/ETAT_LIBRARY.md` - Library 40 documents
 
 ### Pour Onboarder une IA
 - `_meta/IA_CONTEXT.md` - Document de contexte complet pour IA externe
@@ -132,10 +136,28 @@ Index, règles, templates, changelog.
 | 2026-02-18 | tests/README.md | Documentation structure tests + usage |
 | 2026-02-18 | scripts/README.md | Documentation scripts utilitaires |
 | 2026-02-18 | pyproject.toml | Exclusion tests/manual et tests/live de pytest |
+| 2026-03-07 | config_agents/CODEUR.md | v3.2 → v3.3 — max_tokens=8192, format strict, cohérence noms |
+| 2026-03-07 | config_agents/JARVIS_MAITRE.md | v5.1 → v5.2 — Exception projets TEST en priorité |
+| 2026-03-07 | backend/agents/agent_config.py | CODEUR max_tokens 4096 → 8192 |
+| 2026-03-07 | Tests live | 3/3 (100%) — Calculatrice, TODO, MiniBlog ✅ |
+| 2026-03-07 | docs/work/ | Archivage 7 documents terminés vers docs/history/ |
+| 2026-03-07 | docs/_meta/ETAT_ACTUEL_JARVIS_20260307.md | Création document état actuel (REFERENCE) |
+| 2026-03-07 | docs/_meta/INDEX.md | v2.4 — Mise à jour structure après nettoyage |
+| 2026-03-08 | backend/ia/providers/provider_factory.py | Implémentation clés API multiples (GEMINI_API_KEY_{AGENT}) |
+| 2026-03-08 | backend/ia/providers/gemini_provider.py | Dictionnaire _last_request_times pour rate limiting par clé |
+| 2026-03-08 | .env | Ajout 5 clés API Gemini distinctes (quota total 75 req/min) |
+| 2026-03-08 | scripts/test_cles_api_multiples.py | Script test manuel clés API (5/5 clés spécifiques détectées) |
+| 2026-03-08 | tests/live/ | Restructuration complète : unit/, integration/, e2e/ |
+| 2026-03-08 | tests/live_archive_20260308/ | Archivage tests actuels (test_live_api.py, test_live_calculatrice.py) |
+| 2026-03-08 | tests/live/README.md | Guide complet tests live (règles, exemples, plan) |
+| 2026-03-08 | docs/work/SYNTHESE_MISSION_TESTS_LIVE_20260308.md | Document synthèse mission (corrections + clés API + restructuration) |
+| 2026-03-08 | docs/history/ | Archivage ANALYSE_ERREURS_TESTS_LIVE.md, CORRECTIONS_TESTS_LIVE_20260308.md |
+| 2026-03-08 | docs/_meta/INDEX.md | v2.5 — Mise à jour après mission tests live |
 
 ---
 
 ## 🔄 Revue Documentaire
 
-**Prochaine revue prévue** : 2026-03-12  
-**Responsable** : À définir
+**Dernière revue** : 2026-03-08 (Mission tests live + clés API multiples)  
+**Prochaine revue prévue** : 2026-04-08  
+**Responsable** : Keamder / Cascade

@@ -10,6 +10,7 @@ from backend.models.library import (
     LibraryDocumentCreate,
     LibraryDocumentUpdate,
 )
+from backend.models.mission import Mission, MissionPhase, MissionStatus
 from backend.models.project import Project, ProjectCreate, ProjectUpdate
 
 __all__ = [
@@ -26,4 +27,7 @@ __all__ = [
     "LibraryDocument",
     "LibraryDocumentCreate",
     "LibraryDocumentUpdate",
+    "Mission",
+    "MissionStatus",
+    "MissionPhase",
 ]

@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 
@@ -18,9 +19,20 @@ from backend.models import (
     LibraryDocumentCreate,
     LibraryDocumentUpdate,
     Message,
+    Mission,
+    MissionStatus,
+    MissionPhase,
     Project,
     ProjectCreate,
     ProjectUpdate,
+)
+from backend.models.mission_api import (
+    MissionStartRequest,
+    MissionStartResponse,
+    MissionValidateRequest,
+    MissionValidateResponse,
+    MissionContinueResponse,
+    MissionStatusResponse,
 )
 from backend.models.session_state import ProjectState, SessionState
 from backend.services import (
@@ -31,9 +43,13 @@ from backend.services import (
     file_tree_cache,
 )
 from backend.services.project_service import ProjectService
+from backend.services.mission_manager import MissionManager
 
 logger = logging.getLogger(__name__)
+mission_manager = MissionManager()
 orchestrator = SimpleOrchestrator()
+# Partager la même instance de MissionManager
+orchestrator.mission_manager = mission_manager
 from backend.services.file_service import (
     EncodingError,
     FileServiceError,
@@ -605,4 +621,187 @@ async def delete_library_document(doc_id: str):
     except HTTPException:
         raise
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================
+# ENDPOINTS MISSIONS (Workflow 5 Agents)
+# ============================================
+
+@router.post("/api/missions/start", response_model=MissionStartResponse)
+async def start_mission(request: MissionStartRequest):
+    """
+    Démarre une nouvelle mission avec workflow adaptatif.
+    
+    Détecte automatiquement la complexité et lance :
+    - Mode RAPIDE (≤3 fichiers) : CODEUR → TESTEUR → VALIDATEUR
+    - Mode COMPLET (>3 fichiers) : ARCHITECTE → validation USER → CODEUR → TESTEUR → VALIDATEUR
+    """
+    try:
+        result = await orchestrator.start_mission(
+            user_request=request.user_request,
+            project_name=request.project_name,
+            project_path=request.project_path
+        )
+        
+        return MissionStartResponse(**result)
+    
+    except Exception as e:
+        logger.error(f"Erreur start_mission: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/missions/{mission_id}", response_model=MissionStatusResponse)
+async def get_mission_status(mission_id: str):
+    """
+    Récupère le statut d'une mission.
+    """
+    try:
+        mission = mission_manager.get_mission(mission_id)
+        
+        if not mission:
+            raise HTTPException(status_code=404, detail="Mission not found")
+        
+        return MissionStatusResponse(
+            mission_id=mission.mission_id,
+            user_request=mission.user_request,
+            project_path=mission.project_path,
+            status=mission.status.value,
+            current_phase=mission.current_phase.value if mission.current_phase else None,
+            architecture_validated=mission.architecture_validated,
+            code_validated=mission.code_validated,
+            tests_validated=mission.tests_validated,
+            files_created=mission.files_created,
+            files_modified=mission.files_modified,
+            error_count=mission.error_count,
+            last_error=mission.last_error,
+            created_at=mission.created_at.isoformat(),
+            completed_at=mission.completed_at.isoformat() if mission.completed_at else None,
+            pending_validation=mission.pending_validation
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur get_mission_status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/missions/{mission_id}/validate", response_model=MissionValidateResponse)
+async def validate_architecture(mission_id: str, request: MissionValidateRequest):
+    """
+    Valide ou rejette l'architecture proposée par ARCHITECTE (mode COMPLET uniquement).
+    
+    Si validé (approved=True) : Continue workflow avec CODEUR
+    Si rejeté (approved=False) : Relance ARCHITECTE avec feedback
+    """
+    try:
+        mission = mission_manager.get_mission(mission_id)
+        
+        if not mission:
+            raise HTTPException(status_code=404, detail="Mission not found")
+        
+        if mission.status != MissionStatus.VALIDATING:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Mission not awaiting validation (status: {mission.status.value})"
+            )
+        
+        if request.approved:
+            # Approuver validation
+            mission.approve_validation()
+            mission_manager.update_mission(mission)
+            
+            logger.info(f"Mission {mission_id}: Architecture validée par USER")
+            
+            return MissionValidateResponse(
+                success=True,
+                message="Architecture validée. Workflow continue avec CODEUR.",
+                mission_status=mission.status.value
+            )
+        else:
+            # Rejeter validation
+            mission.reject_validation()
+            mission_manager.update_mission(mission)
+            
+            logger.info(f"Mission {mission_id}: Architecture rejetée par USER")
+            
+            # TODO: Relancer ARCHITECTE avec feedback
+            
+            return MissionValidateResponse(
+                success=True,
+                message="Architecture rejetée. ARCHITECTE va proposer une nouvelle version.",
+                mission_status=mission.status.value
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur validate_architecture: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/missions/{mission_id}/continue", response_model=MissionContinueResponse)
+async def continue_mission(mission_id: str):
+    """
+    Continue une mission après validation architecture (mode COMPLET uniquement).
+    
+    Lance : CODEUR → TESTEUR → VALIDATEUR
+    """
+    try:
+        result = await orchestrator.continue_complete_mode(mission_id)
+        
+        return MissionContinueResponse(**result)
+    
+    except Exception as e:
+        logger.error(f"Erreur continue_mission: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/missions", response_model=list[MissionStatusResponse])
+async def list_missions(
+    status: Optional[str] = None,
+    project_path: Optional[str] = None
+):
+    """
+    Liste toutes les missions avec filtres optionnels.
+    """
+    try:
+        # Convertir status string → MissionStatus enum
+        status_enum = None
+        if status:
+            try:
+                status_enum = MissionStatus(status)
+            except ValueError:
+                raise HTTPException(status_code=400, detail=f"Invalid status: {status}")
+        
+        missions = mission_manager.list_missions(
+            status=status_enum,
+            project_path=project_path
+        )
+        
+        return [
+            MissionStatusResponse(
+                mission_id=m.mission_id,
+                user_request=m.user_request,
+                project_path=m.project_path,
+                status=m.status.value,
+                current_phase=m.current_phase.value if m.current_phase else None,
+                architecture_validated=m.architecture_validated,
+                code_validated=m.code_validated,
+                tests_validated=m.tests_validated,
+                files_created=m.files_created,
+                files_modified=m.files_modified,
+                error_count=m.error_count,
+                last_error=m.last_error,
+                created_at=m.created_at.isoformat(),
+                completed_at=m.completed_at.isoformat() if m.completed_at else None
+            )
+            for m in missions
+        ]
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur list_missions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
