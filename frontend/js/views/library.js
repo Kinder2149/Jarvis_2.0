@@ -6,32 +6,28 @@
 import { createElement, clearContainer } from '../utils/dom.js';
 
 const API_BASE = 'http://localhost:8000';
+const RAG_API = 'http://localhost:5001';
 
 const CATEGORY_METADATA = {
-    'personal': {
-        name: 'Personnel',
-        icon: '�',
-        description: '11 documents : 5 CONFIG (profil, workflow, architecture, règles, comportement) + 6 autres (conventions, stack, workflow quotidien, UI/UX, erreurs, Flutter)'
+    'patterns': {
+        name: 'Patterns de Code',
+        icon: '📝',
+        description: 'Patterns de code validés pour génération'
     },
-    'libraries': {
-        name: 'Librairies & Frameworks',
-        icon: '�',
-        description: '10 documents : FastAPI, Pytest, Pydantic, aiosqlite, Flutter, asyncio, pathlib, JSON, datetime, uuid'
+    'rules': {
+        name: 'Règles & Standards',
+        icon: '📋',
+        description: 'Règles de développement et standards'
     },
-    'methodologies': {
-        name: 'Méthodologies',
-        icon: '�',
-        description: '9 documents : Audit>Plan>Exécution, Gouvernance docs, Revue code, Gestion erreurs, Architecture JARVIS, Tests Python, Git workflow, Code review, Refactoring'
+    'templates': {
+        name: 'Templates',
+        icon: '📄',
+        description: 'Templates de code réutilisables'
     },
-    'prompts': {
-        name: 'Prompts & Templates',
-        icon: '�',
-        description: '6 documents : Délégation CODEUR, Vérification BASE, Création projet, Analyse dette, Debugging, Optimisation'
-    },
-    'tools': {
-        name: 'Outils & Productivité',
-        icon: '🛠️',
-        description: '4 documents : VS Code shortcuts, PowerShell essentials, Debugging Python, Gemini AI'
+    'assets': {
+        name: 'Assets',
+        icon: '🎨',
+        description: 'Ressources et assets'
     }
 };
 
@@ -59,13 +55,18 @@ class LibraryView {
 
     async fetchLibraryData() {
         try {
-            const response = await fetch(`${API_BASE}/api/library`);
+            const response = await fetch(`${RAG_API}/rag/library/list`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             
-            this.documents = await response.json();
-            this.categories = this.groupByCategory(this.documents);
+            const data = await response.json();
+            if (data.status === 'success') {
+                this.documents = data.documents || [];
+                this.categories = data.categories || [];
+            } else {
+                throw new Error(data.message || 'Erreur serveur RAG');
+            }
         } catch (error) {
-            console.error('Erreur chargement library:', error);
+            console.error('Erreur chargement library RAG:', error);
             this.documents = [];
             this.categories = [];
         }
@@ -76,17 +77,19 @@ class LibraryView {
         documents.forEach(doc => {
             if (!grouped[doc.category]) {
                 const meta = CATEGORY_METADATA[doc.category] || {
-                    name: doc.category,
+                    name: doc.category.charAt(0).toUpperCase() + doc.category.slice(1),
                     icon: '📄',
                     description: ''
                 };
                 grouped[doc.category] = {
                     id: doc.category,
                     ...meta,
-                    items: []
+                    count: 0,
+                    documents: []
                 };
             }
-            grouped[doc.category].items.push(doc);
+            grouped[doc.category].documents.push(doc);
+            grouped[doc.category].count++;
         });
         return Object.values(grouped);
     }
@@ -105,17 +108,15 @@ class LibraryView {
         const header = createElement('div', { className: 'library-header' });
         
         const headerContent = createElement('div', { className: 'header-content' });
-        headerContent.appendChild(createElement('h1', {}, '📚 Library'));
-        const subtitle = `Base de connaissances pour les agents et l'utilisateur • ${this.documents.length} documents`;
+        headerContent.appendChild(createElement('h1', {}, '📚 Librairie RAG'));
+        const subtitle = `Patterns de code et ressources pour les agents • ${this.documents.length} documents`;
         headerContent.appendChild(createElement('p', { className: 'header-subtitle' }, subtitle));
         header.appendChild(headerContent);
 
+        // Pas de bouton "Nouveau document" - la librairie RAG est gérée via fichiers sur disque
         const headerActions = createElement('div', { className: 'header-actions' });
-        const addBtn = createElement('button', {
-            className: 'btn btn-primary',
-            onclick: () => this.showCreateModal()
-        }, '+ Nouveau document');
-        headerActions.appendChild(addBtn);
+        const infoText = createElement('span', { className: 'header-info' }, '📁 Fichiers dans RAG/library/');
+        headerActions.appendChild(infoText);
         header.appendChild(headerActions);
 
         return header;
@@ -125,38 +126,30 @@ class LibraryView {
         const totalDocs = this.documents.length;
         const totalCats = this.categories.length;
         
-        // Compter par catégorie
-        const personal = this.documents.filter(doc => doc.category === 'personal').length;
-        const libraries = this.documents.filter(doc => doc.category === 'libraries').length;
-        const methodologies = this.documents.filter(doc => doc.category === 'methodologies').length;
-        const prompts = this.documents.filter(doc => doc.category === 'prompts').length;
-        const tools = this.documents.filter(doc => doc.category === 'tools').length;
-        
-        const configDocs = this.documents.filter(doc => doc.category === 'personal' && doc.tags && doc.tags.includes('config')).length;
-        const agents = new Set();
-        this.documents.forEach(doc => {
-            (doc.agents || []).forEach(a => agents.add(a));
-        });
+        // Compter par catégorie RAG
+        const patterns = this.documents.filter(doc => doc.category === 'patterns').length;
+        const rules = this.documents.filter(doc => doc.category === 'rules').length;
+        const templates = this.documents.filter(doc => doc.category === 'templates').length;
+        const assets = this.documents.filter(doc => doc.category === 'assets').length;
 
         const stats = createElement('div', { className: 'library-stats' });
-        stats.appendChild(this.createStatCard('�', String(totalDocs), 'Documents total'));
-        stats.appendChild(this.createStatCard('👤', String(personal), 'Personal (dont 5 CONFIG)'));
-        stats.appendChild(this.createStatCard('📚', String(libraries), 'Libraries'));
-        stats.appendChild(this.createStatCard('�', String(methodologies), 'Méthodologies'));
-        stats.appendChild(this.createStatCard('💬', String(prompts), 'Prompts'));
-        stats.appendChild(this.createStatCard('🛠️', String(tools), 'Tools'));
+        stats.appendChild(this.createStatCard('📊', String(totalDocs), 'Documents total'));
+        stats.appendChild(this.createStatCard('�', String(patterns), 'Patterns'));
+        stats.appendChild(this.createStatCard('📋', String(rules), 'Règles'));
+        stats.appendChild(this.createStatCard('�', String(templates), 'Templates'));
+        stats.appendChild(this.createStatCard('🎨', String(assets), 'Assets'));
         return stats;
     }
 
     renderAllCategories() {
         const container = createElement('div', { className: 'categories-container' });
         
-        // Ordre d'affichage des catégories
-        const categoryOrder = ['personal', 'libraries', 'methodologies', 'prompts', 'tools'];
+        // Ordre d'affichage des catégories RAG
+        const categoryOrder = ['patterns', 'rules', 'templates', 'assets'];
         
         categoryOrder.forEach(categoryId => {
-            const category = this.categories.find(cat => cat.id === categoryId);
-            if (category && category.items.length > 0) {
+            const category = this.categories.find(cat => cat.name && cat.name.toLowerCase().includes(categoryId));
+            if (category && category.documents && category.documents.length > 0) {
                 container.appendChild(this.renderCategorySection(category));
             }
         });
@@ -167,41 +160,28 @@ class LibraryView {
     renderCategorySection(category) {
         const section = createElement('div', { className: 'category-section' });
         
+        // Récupérer métadonnées de la catégorie
+        const meta = CATEGORY_METADATA[category.name.toLowerCase()] || CATEGORY_METADATA[Object.keys(CATEGORY_METADATA).find(k => category.name.toLowerCase().includes(k))] || {
+            icon: '📄',
+            description: ''
+        };
+        
         // Header de catégorie
         const header = createElement('div', { className: 'category-header' });
-        const title = createElement('h2', {}, `${category.icon} ${category.name}`);
-        const count = createElement('span', { className: 'category-count' }, `${category.items.length} documents`);
+        const title = createElement('h2', {}, `${meta.icon} ${category.name}`);
+        const count = createElement('span', { className: 'category-count' }, `${category.count || category.documents.length} documents`);
         header.appendChild(title);
         header.appendChild(count);
         section.appendChild(header);
         
-        if (category.description) {
-            const desc = createElement('p', { className: 'category-description' }, category.description);
+        if (meta.description) {
+            const desc = createElement('p', { className: 'category-description' }, meta.description);
             section.appendChild(desc);
         }
         
         // Liste des documents
         const list = createElement('div', { className: 'documents-list' });
-        
-        // Séparer CONFIG des autres si catégorie personal
-        if (category.id === 'personal') {
-            const configDocs = category.items.filter(doc => doc.tags && doc.tags.includes('config'));
-            const otherDocs = category.items.filter(doc => !doc.tags || !doc.tags.includes('config'));
-            
-            if (configDocs.length > 0) {
-                const configHeader = createElement('h3', { className: 'subsection-title' }, '⚙️ Documents de Configuration');
-                list.appendChild(configHeader);
-                configDocs.forEach(doc => list.appendChild(this.renderDocumentItem(doc, true)));
-            }
-            
-            if (otherDocs.length > 0) {
-                const otherHeader = createElement('h3', { className: 'subsection-title' }, '📄 Autres documents personnels');
-                list.appendChild(otherHeader);
-                otherDocs.forEach(doc => list.appendChild(this.renderDocumentItem(doc, false)));
-            }
-        } else {
-            category.items.forEach(doc => list.appendChild(this.renderDocumentItem(doc, false)));
-        }
+        category.documents.forEach(doc => list.appendChild(this.renderDocumentItem(doc, false)));
         
         section.appendChild(list);
         return section;
@@ -210,18 +190,12 @@ class LibraryView {
     renderDocumentItem(doc, isConfig) {
         const item = createElement('div', { className: `document-item ${isConfig ? 'config-item' : ''}` });
         
-        // En-tête : icône + nom + badge CONFIG si applicable
+        // En-tête : icône + nom
         const itemHeader = createElement('div', { className: 'item-header' });
-        const icon = createElement('span', { className: 'item-icon' }, doc.icon || '📄');
-        const name = createElement('h4', { className: 'item-name' }, doc.name);
+        const icon = createElement('span', { className: 'item-icon' }, '📄');
+        const name = createElement('h4', { className: 'item-name' }, doc.title || doc.name);
         itemHeader.appendChild(icon);
         itemHeader.appendChild(name);
-        
-        if (isConfig) {
-            const badge = createElement('span', { className: 'config-badge-inline' }, 'CONFIG');
-            itemHeader.appendChild(badge);
-        }
-        
         item.appendChild(itemHeader);
         
         // Description
@@ -230,40 +204,10 @@ class LibraryView {
             item.appendChild(desc);
         }
         
-        // Métadonnées : tags + agents
+        // Métadonnées : taille + extension
         const meta = createElement('div', { className: 'item-meta' });
-        
-        if (doc.tags && doc.tags.length > 0) {
-            const tagsLabel = createElement('span', { className: 'meta-label' }, 'Tags: ');
-            meta.appendChild(tagsLabel);
-            const tagsContainer = createElement('span', { className: 'meta-tags' });
-            doc.tags.forEach((tag, index) => {
-                const tagSpan = createElement('span', { className: 'tag-inline' }, tag);
-                tagsContainer.appendChild(tagSpan);
-                if (index < doc.tags.length - 1) {
-                    tagsContainer.appendChild(document.createTextNode(', '));
-                }
-            });
-            meta.appendChild(tagsContainer);
-        }
-        
-        if (doc.agents && doc.agents.length > 0) {
-            if (doc.tags && doc.tags.length > 0) {
-                meta.appendChild(createElement('span', { className: 'meta-separator' }, ' • '));
-            }
-            const agentsLabel = createElement('span', { className: 'meta-label' }, 'Agents: ');
-            meta.appendChild(agentsLabel);
-            const agentsContainer = createElement('span', { className: 'meta-agents' });
-            doc.agents.forEach((agent, index) => {
-                const agentSpan = createElement('span', { className: 'agent-inline' }, agent);
-                agentsContainer.appendChild(agentSpan);
-                if (index < doc.agents.length - 1) {
-                    agentsContainer.appendChild(document.createTextNode(', '));
-                }
-            });
-            meta.appendChild(agentsContainer);
-        }
-        
+        const sizeKb = Math.round(doc.size / 1024);
+        meta.appendChild(createElement('span', { className: 'meta-label' }, `${sizeKb} Ko • ${doc.extension}`));
         item.appendChild(meta);
         
         // Bouton voir contenu
@@ -410,12 +354,12 @@ class LibraryView {
         return card;
     }
 
-    showDocumentModal(doc) {
+    async showDocumentModal(doc) {
         const overlay = createElement('div', { className: 'library-modal-overlay' });
         const modal = createElement('div', { className: 'library-modal library-modal-large' });
 
         const header = createElement('div', { className: 'library-modal-header' });
-        header.appendChild(createElement('h2', {}, `${doc.icon || '📄'} ${doc.name}`));
+        header.appendChild(createElement('h2', {}, `📄 ${doc.title || doc.name}`));
         const closeBtn = createElement('button', {
             className: 'library-modal-close',
             onclick: () => overlay.remove()
@@ -424,59 +368,53 @@ class LibraryView {
         modal.appendChild(header);
 
         const body = createElement('div', { className: 'library-modal-body' });
-        if (doc.description) {
-            body.appendChild(createElement('p', { className: 'doc-description' }, doc.description));
-        }
-
-        const meta = createElement('div', { className: 'doc-meta' });
-        if (doc.tags && doc.tags.length > 0) {
-            meta.appendChild(createElement('strong', {}, 'Tags: '));
-            const tagsContainer = createElement('div', { className: 'doc-tags' });
-            doc.tags.forEach(tag => {
-                tagsContainer.appendChild(createElement('span', { className: 'tag' }, tag));
-            });
-            meta.appendChild(tagsContainer);
-        }
-        if (doc.agents && doc.agents.length > 0) {
-            meta.appendChild(createElement('strong', {}, 'Agents: '));
-            const agentsContainer = createElement('div', { className: 'doc-agents' });
-            doc.agents.forEach(agent => {
-                agentsContainer.appendChild(createElement('span', { className: 'agent-badge' }, agent));
-            });
-            meta.appendChild(agentsContainer);
-        }
-        body.appendChild(meta);
-
-        const contentDiv = createElement('div', { className: 'doc-content' });
-        const pre = createElement('pre');
-        const code = createElement('code');
-        code.textContent = doc.content || 'Aucun contenu disponible';
-        pre.appendChild(code);
-        contentDiv.appendChild(pre);
-        body.appendChild(contentDiv);
+        
+        // Afficher loading
+        const loadingDiv = createElement('div', { className: 'loading' }, 'Chargement du contenu...');
+        body.appendChild(loadingDiv);
         modal.appendChild(body);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Récupérer le contenu depuis le serveur RAG
+        try {
+            const response = await fetch(`${RAG_API}/rag/library/document/${doc.category}/${doc.name}`);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.document) {
+                const fullDoc = data.document;
+                
+                // Remplacer loading par contenu
+                clearContainer(body);
+                
+                if (doc.description) {
+                    body.appendChild(createElement('p', { className: 'doc-description' }, doc.description));
+                }
+
+                const meta = createElement('div', { className: 'doc-meta' });
+                const sizeKb = Math.round(fullDoc.size / 1024);
+                meta.appendChild(createElement('span', { className: 'meta-label' }, `Taille: ${sizeKb} Ko • Extension: ${fullDoc.extension}`));
+                body.appendChild(meta);
+
+                const contentDiv = createElement('div', { className: 'doc-content' });
+                const pre = createElement('pre');
+                const code = createElement('code');
+                code.textContent = fullDoc.content || 'Aucun contenu disponible';
+                pre.appendChild(code);
+                contentDiv.appendChild(pre);
+                body.appendChild(contentDiv);
+            } else {
+                throw new Error(data.message || 'Erreur chargement document');
+            }
+        } catch (error) {
+            console.error('Erreur chargement document:', error);
+            clearContainer(body);
+            body.appendChild(createElement('p', { className: 'error' }, `Erreur: ${error.message}`));
+        }
 
         const footer = createElement('div', { className: 'library-modal-footer' });
         const actions = createElement('div', { className: 'modal-actions' });
         
-        const editBtn = createElement('button', {
-            className: 'btn btn-primary',
-            onclick: () => {
-                overlay.remove();
-                this.showEditModal(doc);
-            }
-        }, 'Éditer');
-        actions.appendChild(editBtn);
-
-        const deleteBtn = createElement('button', {
-            className: 'btn btn-danger',
-            onclick: () => {
-                overlay.remove();
-                this.deleteDocument(doc);
-            }
-        }, 'Supprimer');
-        actions.appendChild(deleteBtn);
-
         const closeFooterBtn = createElement('button', {
             className: 'btn btn-secondary',
             onclick: () => overlay.remove()
@@ -485,13 +423,10 @@ class LibraryView {
 
         footer.appendChild(actions);
         modal.appendChild(footer);
-        overlay.appendChild(modal);
 
         overlay.onclick = (e) => {
             if (e.target === overlay) overlay.remove();
         };
-
-        document.body.appendChild(overlay);
     }
 
     showCreateModal() {
