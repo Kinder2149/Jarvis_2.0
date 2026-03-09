@@ -107,6 +107,69 @@ class SimpleOrchestrator:
         # Par défaut : SIMPLE (principe de précaution)
         return "SIMPLE"
     
+    def detect_project_type(self, user_request: str) -> str:
+        """
+        Détecte type de projet depuis demande utilisateur.
+        
+        Args:
+            user_request: Demande utilisateur
+        
+        Returns:
+            Type projet : "calculatrice" | "todo" | "api_rest" | "crud" | "cli" | "general"
+        """
+        request_lower = user_request.lower()
+        
+        # Ordre prioritaire (du plus spécifique au plus général)
+        if any(kw in request_lower for kw in ["calculatrice", "calcul", "opération", "arithmétique", "calculator"]):
+            logger.info("Type projet: calculatrice")
+            return "calculatrice"
+        
+        elif any(kw in request_lower for kw in ["api rest", "api", "fastapi", "endpoint", "route", "rest api"]):
+            logger.info("Type projet: api_rest")
+            return "api_rest"
+        
+        elif any(kw in request_lower for kw in ["todo", "task", "tâche", "todolist", "todo list"]):
+            logger.info("Type projet: todo")
+            return "todo"
+        
+        elif any(kw in request_lower for kw in ["crud", "create read update delete", "gestion", "manager"]):
+            logger.info("Type projet: crud")
+            return "crud"
+        
+        elif any(kw in request_lower for kw in ["cli", "ligne de commande", "terminal", "argparse", "command line"]):
+            logger.info("Type projet: cli")
+            return "cli"
+        
+        else:
+            logger.info("Type projet: general")
+            return "general"
+    
+    def build_rag_query(self, project_type: str, user_request: str) -> str:
+        """
+        Construit query RAG optimale selon type projet.
+        
+        Args:
+            project_type: Type projet (detect_project_type)
+            user_request: Demande utilisateur
+        
+        Returns:
+            Query RAG optimisée
+        """
+        # Mapping type → query template
+        query_templates = {
+            "calculatrice": "pattern Python fonctions calcul arithmétique validation types",
+            "todo": "pattern CRUD Python Pydantic storage JSON persistence",
+            "api_rest": "pattern API REST FastAPI endpoints CRUD validation",
+            "crud": "pattern CRUD Python Pydantic storage models manager",
+            "cli": "pattern CLI Python argparse commandes",
+            "general": "pattern Python best practices structure"
+        }
+        
+        template = query_templates.get(project_type, query_templates["general"])
+        
+        logger.info(f"Query RAG: {template}")
+        return template
+    
     async def execute_fast_mode(
         self,
         mission: Mission,
@@ -159,10 +222,20 @@ class SimpleOrchestrator:
         try:
             # 1. Enrichir contexte avec RAG
             logger.info(f"Mission {mission.mission_id}: Enrichissement contexte RAG")
+            
+            # Détecter type projet
+            project_type = self.detect_project_type(user_request)
+            logger.info(f"Mission {mission.mission_id}: Type projet détecté = {project_type}")
+            
+            # Construire query RAG optimisée
+            rag_query = self.build_rag_query(project_type, user_request)
+            
+            # Enrichir contexte avec RAG
             rag_context = await self.rag_client.search(
-                query=f"pattern CRUD {user_request}",
+                query=rag_query,
                 top_k=3
             )
+            logger.info(f"Mission {mission.mission_id}: RAG context = {len(rag_context)} chars")
             
             # 2. CODEUR : Génère code
             logger.info(f"Mission {mission.mission_id}: Appel CODEUR")
@@ -486,13 +559,77 @@ Ne change PAS la structure ou la logique existante."""}
         architecture_doc = mission.pending_validation.get("data", {}).get("architecture", "") if mission.pending_validation else ""
         
         try:
-            # 1. CODEUR : Génère code selon architecture
-            logger.info(f"Mission {mission_id}: Appel CODEUR avec architecture")
+            # 1. Enrichir contexte avec RAG
+            logger.info(f"Mission {mission_id}: Enrichissement contexte RAG")
+            
+            # Détecter type projet
+            project_type = self.detect_project_type(mission.user_request)
+            logger.info(f"Mission {mission_id}: Type projet détecté = {project_type}")
+            
+            # Construire query RAG optimisée
+            rag_query = self.build_rag_query(project_type, mission.user_request)
+            
+            # Enrichir contexte avec RAG
+            rag_context = await self.rag_client.search(
+                query=rag_query,
+                top_k=3
+            )
+            logger.info(f"Mission {mission_id}: RAG context = {len(rag_context)} chars")
+            
+            # 2. CODEUR : Génère code selon architecture + RAG
+            logger.info(f"Mission {mission_id}: Appel CODEUR avec architecture + RAG")
             codeur = get_agent("CODEUR")
+            
+            # Construire message avec RAG + Architecture
+            if rag_context:
+                user_message = f"""=== CONTEXTE RAG (patterns validés) ===
+{rag_context}
+
+---
+
+=== ARCHITECTURE VALIDÉE ===
+{architecture_doc}
+
+---
+
+INSTRUCTIONS :
+Génère le code selon l'architecture ci-dessus.
+Utilise les patterns RAG comme référence pour la qualité du code.
+Respecte EXACTEMENT la structure définie dans l'architecture.
+
+FORMAT DE RÉPONSE OBLIGATOIRE :
+Pour CHAQUE fichier, utilise ce format EXACT :
+
+# chemin/vers/fichier.ext
+
+```langage
+code complet
+```
+
+RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
+            else:
+                user_message = f"""=== ARCHITECTURE VALIDÉE ===
+{architecture_doc}
+
+---
+
+INSTRUCTIONS :
+Génère le code selon l'architecture ci-dessus.
+
+FORMAT DE RÉPONSE OBLIGATOIRE :
+Pour CHAQUE fichier, utilise ce format EXACT :
+
+# chemin/vers/fichier.ext
+
+```langage
+code complet
+```
+
+RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
             
             codeur_messages = [
                 {"role": "system", "content": codeur.system_prompt or "Tu es CODEUR, agent spécialisé génération code."},
-                {"role": "user", "content": f"Architecture validée:\n\n{architecture_doc}\n\nGénère le code selon cette architecture."}
+                {"role": "user", "content": user_message}
             ]
             
             code_response = await codeur.handle(codeur_messages, session_id=mission_id)
