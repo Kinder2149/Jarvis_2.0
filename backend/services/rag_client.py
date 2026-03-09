@@ -29,8 +29,8 @@ class RAGClient:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    f"{self.base_url}/search",
-                    json={"query": query, "top_k": top_k},
+                    f"{self.base_url}/rag/search",
+                    json={"query": query, "n_results": top_k},
                     timeout=10.0
                 )
                 
@@ -65,7 +65,7 @@ class RAGClient:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    f"{self.base_url}/health",
+                    f"{self.base_url}/rag/health",
                     timeout=5.0
                 )
                 return response.status_code == 200

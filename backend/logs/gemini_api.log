@@ -17526,3 +17526,4 @@ AsyncGenerateContentResponse(
 2026-03-08 15:33:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Cursor object at 0x00000154612AF3C0>) completed
 2026-03-08 15:33:30 - aiosqlite - DEBUG - executing functools.partial(<built-in method close of sqlite3.Connection object at 0x000001546128D120>)
 2026-03-08 15:33:30 - aiosqlite - DEBUG - operation functools.partial(<built-in method close of sqlite3.Connection object at 0x000001546128D120>) completed
+2026-03-09 22:49:13 - root - INFO - Logging configuré : backend/logs/gemini_api.log
