@@ -35,12 +35,23 @@ class RAGClient:
                 )
                 
                 if response.status_code == 200:
-                    results = response.json()
-                    context = "\n\n".join([
-                        f"=== {r['source']} ===\n{r['content']}"
-                        for r in results.get("results", [])
-                    ])
-                    logger.info(f"RAG: {len(results.get('results', []))} résultats trouvés")
+                    data = response.json()
+                    results = data.get("results", [])
+                    
+                    if not results:
+                        logger.info("RAG: Aucun résultat trouvé")
+                        return ""
+                    
+                    # Format: chaque résultat a 'document' et 'metadata'
+                    context_parts = []
+                    for r in results:
+                        doc = r.get("document", "")
+                        metadata = r.get("metadata", {})
+                        source = metadata.get("source", "unknown")
+                        context_parts.append(f"=== {source} ===\n{doc}")
+                    
+                    context = "\n\n".join(context_parts)
+                    logger.info(f"RAG: {len(results)} résultats trouvés")
                     return context
                 else:
                     logger.warning(f"RAG: Erreur {response.status_code}")
