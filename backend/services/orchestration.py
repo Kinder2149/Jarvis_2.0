@@ -237,26 +237,7 @@ RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de c
 {code_response}
 
 Tests:
-{tests_response}
-
-VALIDE UNIQUEMENT les critères BLOQUANTS :
-- ❌ Erreurs syntaxe Python (SyntaxError, IndentationError)
-- ❌ Imports manquants ou incorrects
-- ❌ Fonctions/classes appelées mais non définies
-- ❌ Variables utilisées mais non définies
-
-IGNORE les problèmes MINEURS :
-- Style de code (PEP8, nommage)
-- Optimisations possibles
-- Edge cases non gérés
-- Documentation manquante
-
-Si le code peut S'EXÉCUTER sans erreur, réponds VALIDE.
-Si le code a des erreurs BLOQUANTES, réponds INVALIDE avec les corrections PRÉCISES (numéro ligne + description).
-
-Format de réponse :
-STATUT: VALIDE | INVALIDE
-[Si INVALIDE : liste des corrections ligne par ligne]"""}
+{tests_response}"""}
                 ]
                 
                 validation_response = await validateur.handle(validateur_messages, session_id=mission.mission_id)
@@ -540,26 +521,7 @@ Ne change PAS la structure ou la logique existante."""}
 {code_response}
 
 Tests:
-{tests_response}
-
-VALIDE UNIQUEMENT les critères BLOQUANTS :
-- ❌ Erreurs syntaxe Python (SyntaxError, IndentationError)
-- ❌ Imports manquants ou incorrects
-- ❌ Fonctions/classes appelées mais non définies
-- ❌ Variables utilisées mais non définies
-
-IGNORE les problèmes MINEURS :
-- Style de code (PEP8, nommage)
-- Optimisations possibles
-- Edge cases non gérés
-- Documentation manquante
-
-Si le code peut S'EXÉCUTER sans erreur, réponds VALIDE.
-Si le code a des erreurs BLOQUANTES, réponds INVALIDE avec les corrections PRÉCISES (numéro ligne + description).
-
-Format de réponse :
-STATUT: VALIDE | INVALIDE
-[Si INVALIDE : liste des corrections ligne par ligne]"""}
+{tests_response}"""}
                 ]
                 
                 validation_response = await validateur.handle(validateur_messages, session_id=mission_id)
