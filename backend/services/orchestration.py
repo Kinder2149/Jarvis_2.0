@@ -214,7 +214,7 @@ class SimpleOrchestrator:
         files_updated = []
         validation_result = "PENDING"
         correction_attempts = 0
-        max_corrections = 5
+        max_corrections = 2  # 2 tentatives suffisent, sinon problème structurel
         code_response = ""
         tests_response = ""
         validation_response = ""
