@@ -241,41 +241,53 @@ class SimpleOrchestrator:
             logger.info(f"Mission {mission.mission_id}: Appel CODEUR")
             codeur = get_agent("CODEUR")
             
-            # Construire message avec RAG si disponible
+            # Construire message avec MissionContext + RAG si disponible
             if rag_context:
-                user_message = f"""CONTEXTE RAG (patterns validés) :
+                user_message = f"""=== CONTEXTE MISSION ===
+{mission_context.get_summary()}
+
+---
+
+=== CONTEXTE RAG (patterns validés) ===
 {rag_context}
 
 ---
 
-DEMANDE UTILISATEUR :
+=== DEMANDE UTILISATEUR ===
 {mission.user_request}
 
 INSTRUCTIONS :
 Utilise les patterns RAG ci-dessus comme référence pour générer le code.
 Respecte EXACTEMENT la structure et les conventions des patterns.
+Si des fichiers ont déjà été créés (voir CONTEXTE MISSION), ne les recrée pas.
 
 FORMAT DE RÉPONSE OBLIGATOIRE :
 Pour CHAQUE fichier, utilise ce format EXACT :
 
 # chemin/vers/fichier.ext
 
-\`\`\`langage
+```langage
 code complet
-\`\`\`
+```
 
 RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
             else:
-                user_message = f"""{mission.user_request}
+                user_message = f"""=== CONTEXTE MISSION ===
+{mission_context.get_summary()}
+
+---
+
+=== DEMANDE UTILISATEUR ===
+{mission.user_request}
 
 FORMAT DE RÉPONSE OBLIGATOIRE :
 Pour CHAQUE fichier, utilise ce format EXACT :
 
 # chemin/vers/fichier.ext
 
-\`\`\`langage
+```langage
 code complet
-\`\`\`
+```
 
 RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
             
@@ -306,11 +318,25 @@ RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de c
                 
                 validateur_messages = [
                     {"role": "system", "content": validateur.system_prompt or "Tu es VALIDATEUR, agent contrôle qualité."},
-                    {"role": "user", "content": f"""Code à valider:
+                    {"role": "user", "content": f"""=== CONTEXTE MISSION ===
+{mission_context.get_summary()}
+
+---
+
+=== CODE À VALIDER ===
 {code_response}
 
-Tests:
-{tests_response}"""}
+---
+
+=== TESTS ===
+{tests_response}
+
+---
+
+INSTRUCTIONS :
+Valide le code et les tests selon les critères définis dans ton prompt système.
+Vérifie la cohérence avec l'architecture prévue (voir CONTEXTE MISSION).
+Si des tentatives de validation précédentes ont échoué, vérifie que les corrections ont été appliquées."""}
                 ]
                 
                 validation_response = await validateur.handle(validateur_messages, session_id=mission.mission_id)
@@ -652,13 +678,30 @@ RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de c
                 logger.info(f"Mission {mission_id}: Appel VALIDATEUR (tentative {correction_attempts + 1}/{max_corrections + 1})")
                 validateur = get_agent("VALIDATEUR")
                 
+                # Récupérer MissionContext
+                mission_context = self.mission_manager.get_mission_context(mission_id)
+                
                 validateur_messages = [
                     {"role": "system", "content": validateur.system_prompt or "Tu es VALIDATEUR, agent contrôle qualité."},
-                    {"role": "user", "content": f"""Code à valider:
+                    {"role": "user", "content": f"""=== CONTEXTE MISSION ===
+{mission_context.get_summary() if mission_context else 'Aucun contexte disponible'}
+
+---
+
+=== CODE À VALIDER ===
 {code_response}
 
-Tests:
-{tests_response}"""}
+---
+
+=== TESTS ===
+{tests_response}
+
+---
+
+INSTRUCTIONS :
+Valide le code et les tests selon les critères définis dans ton prompt système.
+Vérifie la cohérence avec l'architecture prévue (voir CONTEXTE MISSION).
+Si des tentatives de validation précédentes ont échoué, vérifie que les corrections ont été appliquées."""}
                 ]
                 
                 validation_response = await validateur.handle(validateur_messages, session_id=mission_id)
