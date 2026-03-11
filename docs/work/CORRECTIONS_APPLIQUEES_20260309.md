@@ -479,19 +479,60 @@ pytest tests/ -v --tb=short -x
 
 **Raison** : Nécessite validation avec tests E2E réels pour s'assurer que le parsing JSON fonctionne correctement avec les réponses ARCHITECTE.
 
-### Phase 6 : Tests E2E et Validation
-**Statut** : Non exécutée
+### Phase 6 : Tests E2E et Résolution Event Loop
 
-**Prochaines étapes** :
+**Statut** : ✅ **IMPLÉMENTÉE** (11 mars 2026)
+
+#### 6.1 Problème Event Loop Identifié
+
+**Symptôme** : Tests E2E échouaient en mode batch avec `RuntimeError: Event loop is closed`
+
+**Cause Racine** : Le provider Gemini créait un `GenerativeModel` dans `__init__` qui gardait une référence à l'event loop du premier test.
+
+#### 6.2 Corrections Appliquées
+
+**Fichier** : `backend/ia/providers/gemini_provider.py`
+- Suppression de `self.client` dans `__init__`
+- Reconfiguration `genai.configure()` à chaque `send_message()`
+- Création nouveau `GenerativeModel` à chaque requête
+
+**Fichier** : `tests/live/e2e/conftest.py` (créé)
+- Fixture `event_loop` avec scope `function`
+- Garantit nouvel event loop par test
+
+**Fichier** : `backend/services/rag_client.py`
+- Correction endpoints : `/rag/search` et `/rag/health`
+- Correction parsing : format `document/metadata`
+
+**Fichier** : `tests/test_rag_client.py`
+- Mock mis à jour pour nouveau format RAG
+
+#### 6.3 Résultats Tests
+
+**Tests Unitaires** : ✅ **101/101 passent (100%)**
+
+**Tests E2E Batch** : ✅ **6/9 passent (67%)**
+
+| Projet | Test | Résultat |
+|--------|------|----------|
+| Calculatrice | Détection complexité | ✅ PASSÉ |
+| Calculatrice | Fonctionnelle | ✅ PASSÉ |
+| Calculatrice | Qualité code | ✅ PASSÉ |
+| TODO | Détection complexité | ✅ PASSÉ |
+| TODO | Fonctionnelle | ✅ PASSÉ |
+| TODO | Persistance JSON | ❌ ÉCHOUÉ |
+| API REST | Détection complexité | ❌ ÉCHOUÉ |
+| API REST | Fonctionnelle | ✅ PASSÉ |
+| API REST | Qualité code | ⏸️ NON TESTÉ |
+
+**Durée totale** : 12min 45s
+
+#### 6.4 Commits Effectués
+
 ```bash
-# Tests E2E calculatrice
-pytest tests/live/e2e/test_projet_calculatrice.py -v
-
-# Tests E2E TODO
-pytest tests/live/e2e/test_projet_todo.py -v
-
-# Mesurer taux succès réel
-pytest tests/live/e2e/ -v --tb=short
+1. Fix: Correction endpoints RAG (/rag/search et /rag/health)
+2. Fix: Amélioration parsing réponse RAG (gestion format document/metadata)
+3. Fix: Résolution event loop closed tests E2E batch (reconfiguration Gemini + fixture event_loop)
 ```
 
 ---
