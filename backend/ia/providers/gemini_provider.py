@@ -36,11 +36,13 @@ class GeminiProvider(BaseProvider):
         # Stocker la clé API pour le rate limiting par clé
         self.api_key = api_key
         
+        # Stocker le nom du modèle pour recréation
+        self.model_name = model
+        
         # Délai adaptatif selon l'agent (depuis agent_config.py)
         self._min_delay_seconds = kwargs.get('min_delay_seconds', 4.0)
         
         genai.configure(api_key=api_key)
-        self.client = genai.GenerativeModel(model)
         
         logger.info(f"GeminiProvider initialized: model={model}, min_delay={self._min_delay_seconds}s")
 
@@ -77,8 +79,15 @@ class GeminiProvider(BaseProvider):
             tools = [Tool(function_declarations=self.format_functions(functions))]
 
         try:
+            # Reconfigurer genai pour chaque requête (évite event loop fermé)
+            genai.configure(api_key=self.api_key)
+            
+            # Créer un nouveau GenerativeModel pour chaque requête
+            # Évite problème "Event loop is closed" en tests batch
+            client = genai.GenerativeModel(self.model_name)
+            
             # Gemini utilise generate_content avec historique
-            chat = self.client.start_chat(history=gemini_messages[:-1])
+            chat = client.start_chat(history=gemini_messages[:-1])
             
             response = await chat.send_message_async(
                 gemini_messages[-1]["parts"],

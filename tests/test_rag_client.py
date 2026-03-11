@@ -16,8 +16,8 @@ async def test_search_success():
     mock_response.status_code = 200
     mock_response.json = lambda: {
         "results": [
-            {"source": "pattern1.md", "content": "Pattern CRUD complet"},
-            {"source": "pattern2.md", "content": "Pattern API REST"}
+            {"document": "Pattern CRUD complet", "metadata": {"source": "pattern1.md"}},
+            {"document": "Pattern API REST", "metadata": {"source": "pattern2.md"}}
         ]
     }
     
