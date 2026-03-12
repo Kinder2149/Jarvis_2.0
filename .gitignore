@@ -14,6 +14,10 @@ __pycache__/
 backend/data/
 RAG/projects/
 
+# Logs
+backend/logs/*.log
+*.log
+
 # IDE
 .vscode/
 .idea/

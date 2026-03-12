@@ -56,7 +56,7 @@ AGENT_CONFIGS = {
         "permissions": ["read", "write", "test"],
         "type": "tester",
         "temperature": 0.5,
-        "max_tokens": 8192,
+        "max_tokens": 16384,
         "prompt_file": "config_agents/TESTEUR.md",
         "min_delay_seconds": 8.0,
     },

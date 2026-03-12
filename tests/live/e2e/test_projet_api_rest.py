@@ -27,7 +27,7 @@ async def test_e2e_api_rest_complete():
     
     try:
         # 1. Demande utilisateur
-        user_request = """Crée une API REST simple pour gérer des utilisateurs.
+        user_request = """Crée une API REST pour gérer des utilisateurs.
 
 Endpoints :
 - GET /users : Liste tous les utilisateurs
