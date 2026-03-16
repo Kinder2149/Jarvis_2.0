@@ -3,6 +3,11 @@ Configuration des agents JARVIS 2.0
 Mapping agent_name → variable .env + métadonnées
 """
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 AGENT_CONFIGS = {
     "BASE": {
         "name": "BASE",
@@ -14,6 +19,7 @@ AGENT_CONFIGS = {
         "max_tokens": 4096,
         "prompt_file": "config_agents/BASE.md",
         "min_delay_seconds": 6.0,
+        "api_key_env": "GEMINI_API_KEY",  # Fallback global
     },
     "ARCHITECTE": {
         "name": "ARCHITECTE",
@@ -29,6 +35,7 @@ AGENT_CONFIGS = {
         "max_tokens": 8192,
         "prompt_file": "config_agents/ARCHITECTE.md",
         "min_delay_seconds": 8.0,
+        "api_key_env": "GEMINI_API_KEY_ARCHITECTE",
     },
     "CODEUR": {
         "name": "CODEUR",
@@ -44,6 +51,7 @@ AGENT_CONFIGS = {
         "max_tokens": 16384,
         "prompt_file": "config_agents/CODEUR.md",
         "min_delay_seconds": 10.0,
+        "api_key_env": "GEMINI_API_KEY_CODEUR",
     },
     "TESTEUR": {
         "name": "TESTEUR",
@@ -59,6 +67,7 @@ AGENT_CONFIGS = {
         "max_tokens": 16384,
         "prompt_file": "config_agents/TESTEUR.md",
         "min_delay_seconds": 8.0,
+        "api_key_env": "GEMINI_API_KEY_TESTEUR",
     },
     "VALIDATEUR": {
         "name": "VALIDATEUR",
@@ -74,6 +83,7 @@ AGENT_CONFIGS = {
         "max_tokens": 4096,
         "prompt_file": "config_agents/VALIDATEUR.md",
         "min_delay_seconds": 6.0,
+        "api_key_env": "GEMINI_API_KEY_VALIDATEUR",
     },
     "JARVIS_Maître": {
         "name": "JARVIS_Maître",
@@ -87,9 +97,10 @@ AGENT_CONFIGS = {
         "permissions": ["read", "write", "orchestrate"],
         "type": "orchestrator",
         "temperature": 0.3,
-        "max_tokens": 4096,
+        "max_tokens": 8192,
         "prompt_file": "config_agents/JARVIS_MAITRE.md",
         "min_delay_seconds": 4.0,
+        "api_key_env": "GEMINI_API_KEY_JARVIS_MAITRE",
     },
 }
 

@@ -1,5 +1,8 @@
 # Guide Utilisateur — JARVIS 2.0 Optimisé
 
+> ⚠️ **ATTENTION** : Ce document décrit l'ancien système avec workflows SIMPLE/COMPLEX.  
+> **Pour la documentation actuelle**, consultez [WORKFLOW_UNIQUE.md](../WORKFLOW_UNIQUE.md)
+
 **Version** : 2.0  
 **Date** : 7 mars 2026  
 **Destinataire** : Valentin (Chef de projet IA, non-codeur)

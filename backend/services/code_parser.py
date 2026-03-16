@@ -65,6 +65,8 @@ class CodeParser:
         """
         blocks = []
         
+        print(f"🔍 [CODE_PARSER] Recherche blocs code dans texte ({len(text)} chars)...")
+        
         # Trouver tous les blocs ```language\ncode```
         matches = re.finditer(
             CodeParser.CODE_BLOCK_PATTERN,
@@ -72,9 +74,14 @@ class CodeParser:
             re.DOTALL | re.MULTILINE
         )
         
-        for match in matches:
+        matches_list = list(matches)
+        print(f"📊 [CODE_PARSER] {len(matches_list)} blocs markdown trouvés")
+        
+        for idx, match in enumerate(matches_list):
             language = match.group(1) or "python"
             content = match.group(2).strip()
+            
+            print(f"🔎 [CODE_PARSER] Bloc {idx+1}: language={language}, {len(content)} chars")
             
             # Chercher filepath dans le contenu ou contexte
             filepath = CodeParser._extract_filepath(content, text, match.start())
@@ -85,8 +92,12 @@ class CodeParser:
                     content=content,
                     language=language
                 ))
+                print(f"✅ [CODE_PARSER] Bloc {idx+1} extrait: {filepath}")
                 logger.debug(f"Bloc code extrait: {filepath} ({language}, {len(content)} chars)")
+            else:
+                print(f"⚠️  [CODE_PARSER] Bloc {idx+1}: Aucun filepath trouvé, bloc ignoré")
         
+        print(f"📋 [CODE_PARSER] Total blocs extraits avec filepath: {len(blocks)}")
         return blocks
     
     @staticmethod
@@ -132,56 +143,88 @@ class CodeParser:
     @staticmethod
     def write_code_blocks(
         blocks: List[CodeBlock],
-        base_path: str,
+        project_path: str,
         dry_run: bool = False
-    ) -> Dict[str, any]:
+    ) -> Dict[str, List[str]]:
         """
         Écrit blocs code sur disque
         
         Args:
             blocks: Liste CodeBlock à écrire
-            base_path: Chemin base projet
+            project_path: Chemin projet
             dry_run: Si True, simule sans écrire
         
         Returns:
             Dict avec files_created, files_updated, errors
         """
-        base_path = Path(base_path)
+        project_root = Path(project_path)
         files_created = []
         files_updated = []
         errors = []
         
+        # Détecter doublons de filepath
+        filepath_counts = {}
         for block in blocks:
+            filepath_counts[block.filepath] = filepath_counts.get(block.filepath, 0) + 1
+        
+        # Alerter sur doublons
+        duplicates = {fp: count for fp, count in filepath_counts.items() if count > 1}
+        if duplicates:
+            print(f" [CODE_PARSER] Doublons détectés:")
+            for fp, count in duplicates.items():
+                print(f"   - {fp}: {count} blocs")
+            logger.warning(f"Doublons filepath détectés: {duplicates}")
+        
+        # Grouper blocs par filepath pour concaténation
+        blocks_by_filepath = {}
+        for block in blocks:
+            if block.filepath not in blocks_by_filepath:
+                blocks_by_filepath[block.filepath] = []
+            blocks_by_filepath[block.filepath].append(block)
+        
+        # Écrire un fichier par filepath (en concaténant si doublons)
+        for filepath, file_blocks in blocks_by_filepath.items():
             try:
                 # Construire chemin complet
-                filepath = base_path / block.filepath
+                file_path = project_root / filepath
                 
                 # Créer dossiers parents si nécessaire
                 if not dry_run:
-                    filepath.parent.mkdir(parents=True, exist_ok=True)
+                    file_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 # Vérifier si fichier existe
-                file_exists = filepath.exists()
+                file_exists = file_path.exists()
+                
+                # Si plusieurs blocs pour le même fichier, prendre uniquement le premier
+                # (évite écrasement par blocs markdown/README)
+                if len(file_blocks) > 1:
+                    print(f"⚠️  [CODE_PARSER] {len(file_blocks)} blocs pour {filepath}, utilisation du premier uniquement")
+                    logger.warning(f"{len(file_blocks)} blocs pour {filepath}, utilisation du premier")
+                
+                # Utiliser le premier bloc (généralement le code, pas le README)
+                content_to_write = file_blocks[0].content
                 
                 if dry_run:
                     logger.info(f"[DRY RUN] {'Mise à jour' if file_exists else 'Création'}: {filepath}")
                     if file_exists:
-                        files_updated.append(str(filepath))
+                        files_updated.append(str(file_path))
                     else:
-                        files_created.append(str(filepath))
+                        files_created.append(str(file_path))
                 else:
                     # Écrire fichier
-                    filepath.write_text(block.content, encoding='utf-8')
+                    file_path.write_text(content_to_write, encoding='utf-8')
                     
                     if file_exists:
-                        files_updated.append(str(filepath))
-                        logger.info(f"Fichier mis à jour: {filepath}")
+                        files_updated.append(str(file_path))
+                        print(f"📝 [CODE_PARSER] Fichier mis à jour: {file_path}")
+                        logger.info(f"Fichier mis à jour: {file_path}")
                     else:
-                        files_created.append(str(filepath))
-                        logger.info(f"Fichier créé: {filepath}")
+                        files_created.append(str(file_path))
+                        print(f"✅ [CODE_PARSER] Fichier créé: {file_path}")
+                        logger.info(f"Fichier créé: {file_path}")
             
             except Exception as e:
-                error_msg = f"Erreur écriture {block.filepath}: {e}"
+                error_msg = f"Erreur écriture {filepath}: {e}"
                 errors.append(error_msg)
                 logger.error(error_msg)
         

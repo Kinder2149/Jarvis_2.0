@@ -1,5 +1,8 @@
 # Résumé Optimisation JARVIS 2.0
 
+> ⚠️ **DOCUMENT HISTORIQUE** : Décrit l'ancien système avec workflows SIMPLE/COMPLEX.  
+> **Pour la documentation actuelle**, consultez [WORKFLOW_UNIQUE.md](../WORKFLOW_UNIQUE.md)
+
 **Date** : 7 mars 2026  
 **Objectif** : Transformer JARVIS en outil production optimal pour Valentin (non-codeur)
 

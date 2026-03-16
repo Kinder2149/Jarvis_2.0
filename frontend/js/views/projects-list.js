@@ -1,9 +1,11 @@
 /**
  * Projects List View - JARVIS 2.0
- * Vue liste des projets
+ * Vue liste des projets avec CRUD complet
  */
 
+import state from '../core/state.js';
 import router from '../core/router.js';
+import { API_BASE_URL } from '../config.js';
 import { createElement, clearContainer } from '../utils/dom.js';
 import { formatDate, pluralize } from '../utils/format.js';
 
@@ -85,7 +87,7 @@ class ProjectsListView {
      */
     async loadProjects() {
         try {
-            const response = await fetch('http://localhost:8000/api/projects');
+            const response = await fetch(`${API_BASE_URL}/api/projects`);
             this.projects = await response.json();
         } catch (error) {
             console.error('Erreur chargement projets:', error);
@@ -251,7 +253,7 @@ class ProjectsListView {
      */
     async deleteProject(projectId) {
         try {
-            const response = await fetch(`http://localhost:8000/api/projects/${projectId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
@@ -421,7 +423,7 @@ class ProjectsListView {
      */
     async createProject(data) {
         try {
-            const response = await fetch('http://localhost:8000/api/projects', {
+            const response = await fetch(`${API_BASE_URL}/api/projects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

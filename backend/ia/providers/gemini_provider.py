@@ -63,6 +63,23 @@ class GeminiProvider(BaseProvider):
 
         # Délai adaptatif pour respecter quota RPM
         await self._apply_rate_limit_delay()
+        
+        # Log détaillé du premier message système pour diagnostic
+        if messages and messages[0].get("role") == "system":
+            system_prompt = messages[0].get("content", "")
+            logger.info(f"GeminiProvider: System prompt détecté ({len(system_prompt)} chars)")
+            
+            # Vérifier présence marqueur workflow unique UNIQUEMENT pour JARVIS_Maître
+            # Les autres agents (ARCHITECTE, CODEUR, etc.) ne doivent PAS avoir ce marqueur
+            if "JARVIS_Maître" in system_prompt or "JARVIS Maître" in system_prompt:
+                if "[DEMANDE_CODE_CODEUR:" in system_prompt:
+                    logger.info("✅ JARVIS_Maître prompt contient [DEMANDE_CODE_CODEUR:")
+                else:
+                    logger.warning("❌ JARVIS_Maître prompt NE CONTIENT PAS [DEMANDE_CODE_CODEUR:")
+            
+            # Afficher extrait du prompt pour vérification
+            if len(system_prompt) > 500:
+                logger.debug(f"Extrait system prompt: {system_prompt[:500]}...")
 
         # Convertir messages au format Gemini
         gemini_messages = self._convert_messages(messages)

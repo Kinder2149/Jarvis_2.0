@@ -17,13 +17,13 @@ class MissionStartResponse(BaseModel):
     """Réponse démarrage mission"""
     success: bool
     mission_id: Optional[str] = None
-    complexity: Optional[str] = None
     mode: Optional[str] = None
     status: Optional[str] = None
     requires_user_validation: Optional[bool] = None
     architecture_doc: Optional[str] = None
     message: Optional[str] = None
     error: Optional[str] = None
+    user_message: Optional[str] = None
 
 
 class MissionValidateRequest(BaseModel):

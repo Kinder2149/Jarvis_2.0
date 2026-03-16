@@ -42,6 +42,29 @@ python start_jarvis_complete.py
 - **Health Check** : `http://localhost:8000/health`
 - **RAG API** : `http://localhost:5001/`
 
+### 🔧 Dépannage
+
+**Ports déjà utilisés (8000 ou 5001)** :
+
+```powershell
+# Trouver et tuer le processus sur le port 8000 (JARVIS)
+$process = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
+if ($process) { Stop-Process -Id $process -Force }
+
+# Trouver et tuer le processus sur le port 5001 (RAG)
+$process = Get-NetTCPConnection -LocalPort 5001 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
+if ($process) { Stop-Process -Id $process -Force }
+
+# Ou tuer tous les processus Python/Uvicorn
+Get-Process python,uvicorn -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+
+**Alternative (commande unique)** :
+```powershell
+# Tuer tous les processus sur les ports 8000 et 5001
+@(8000, 5001) | ForEach-Object { $p = Get-NetTCPConnection -LocalPort $_ -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess; if ($p) { Stop-Process -Id $p -Force } }
+```
+
 ### Installation
 
 1. Cloner le projet

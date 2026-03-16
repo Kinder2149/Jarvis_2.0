@@ -1,6 +1,6 @@
 """
 Orchestration Workflow 5 Agents - JARVIS 2.0
-Gestion workflow adaptatif avec modes RAPIDE et COMPLET
+Gestion workflow unique : ARCHITECTE → Validation USER → CODEUR → TESTEUR → VALIDATEUR
 """
 
 import logging
@@ -22,12 +22,9 @@ logger = logging.getLogger(__name__)
 
 class SimpleOrchestrator:
     """
-    Orchestrateur workflow 5 agents avec modes adaptatifs
+    Orchestrateur workflow unique 5 agents
     
-    Workflow RAPIDE (≤3 fichiers) :
-    - JARVIS_Maître → CODEUR → TESTEUR → VALIDATEUR
-    
-    Workflow COMPLET (>3 fichiers) :
+    Workflow UNIQUE (toutes les missions) :
     - JARVIS_Maître → ARCHITECTE → (validation USER) → CODEUR → TESTEUR → VALIDATEUR
     """
     
@@ -43,69 +40,6 @@ class SimpleOrchestrator:
         self.architecture_parser = ArchitectureParser()
         self.validation_parser = ValidationParser()
     
-    def detect_project_complexity(self, user_request: str) -> str:
-        """
-        Détecte complexité projet depuis demande utilisateur
-        
-        Args:
-            user_request: Demande utilisateur
-        
-        Returns:
-            "SIMPLE" (≤3 fichiers) ou "COMPLEX" (>3 fichiers)
-        """
-        request_lower = user_request.lower()
-        
-        # PRIORITÉ 1 : Mots-clés explicites "simple" ou "basique"
-        if "simple" in request_lower or "basique" in request_lower:
-            logger.info(f"Complexité: SIMPLE (mot-clé explicite)")
-            return "SIMPLE"
-        
-        # PRIORITÉ 2 : Mots-clés projets simples
-        simple_keywords = [
-            "calculatrice", "petit", "rapide", "script",
-            "fonction", "classe unique"
-        ]
-        
-        if any(keyword in request_lower for keyword in simple_keywords):
-            logger.info(f"Complexité: SIMPLE (mot-clé projet simple)")
-            return "SIMPLE"
-        
-        # PRIORITÉ 3 : Mots-clés projets complexes
-        complex_keywords = [
-            "api rest", "api complète", "backend complet",
-            "authentification", "auth", "base de données",
-            "crud complet", "plusieurs", "multi",
-            "architecture", "système", "application complète",
-            "frontend", "backend", "fullstack"
-        ]
-        
-        if any(keyword in request_lower for keyword in complex_keywords):
-            logger.info(f"Complexité: COMPLEX (mot-clé projet complexe)")
-            return "COMPLEX"
-        
-        # Estimation nombre fichiers par mots-clés
-        file_indicators = {
-            "fichier": 1,
-            "classe": 1,
-            "modèle": 1,
-            "service": 1,
-            "controller": 1,
-            "route": 1,
-            "composant": 1,
-            "page": 1
-        }
-        
-        estimated_files = 0
-        for keyword, count in file_indicators.items():
-            if keyword in request_lower:
-                estimated_files += count
-        
-        # Si >3 fichiers estimés → COMPLEX
-        if estimated_files > 3:
-            return "COMPLEX"
-        
-        # Par défaut : SIMPLE (principe de précaution)
-        return "SIMPLE"
     
     def detect_project_type(self, user_request: str) -> str:
         """
@@ -170,290 +104,6 @@ class SimpleOrchestrator:
         logger.info(f"Query RAG: {template}")
         return template
     
-    async def execute_fast_mode(
-        self,
-        mission: Mission,
-        user_request: str,
-        project_path: str
-    ) -> Dict:
-        """
-        Exécute workflow RAPIDE (sans ARCHITECTE)
-        
-        Workflow :
-        1. JARVIS_Maître → Analyse besoin
-        2. CODEUR → Génère code
-        3. TESTEUR → Génère tests
-        4. VALIDATEUR → Valide
-        
-        Args:
-            mission: Mission en cours
-            user_request: Demande utilisateur
-            project_path: Chemin projet
-        
-        Returns:
-            Dict avec success, files_created, validation_result
-        """
-        from backend.agents.agent_factory import get_agent
-        
-        logger.info(f"Orchestration: Mode RAPIDE pour mission {mission.mission_id}")
-        
-        mission.current_phase = MissionPhase.GENERATION_CODE
-        mission.status = MissionStatus.IN_PROGRESS
-        self.mission_manager.update_mission(mission)
-        
-        # Créer contexte mission pour suivre le workflow
-        mission_context = MissionContext(
-            mission_id=mission.mission_id,
-            user_request=user_request,
-            created_at=datetime.now(),
-            updated_at=datetime.now()
-        )
-        logger.info(f"Mission {mission.mission_id}: MissionContext créé")
-        
-        files_created = []
-        files_updated = []
-        validation_result = "PENDING"
-        correction_attempts = 0
-        max_corrections = 2  # 2 tentatives suffisent, sinon problème structurel
-        code_response = ""
-        tests_response = ""
-        validation_response = ""
-        
-        try:
-            # 1. Enrichir contexte avec RAG
-            logger.info(f"Mission {mission.mission_id}: Enrichissement contexte RAG")
-            
-            # Détecter type projet
-            project_type = self.detect_project_type(user_request)
-            logger.info(f"Mission {mission.mission_id}: Type projet détecté = {project_type}")
-            
-            # Construire query RAG optimisée
-            rag_query = self.build_rag_query(project_type, user_request)
-            
-            # Enrichir contexte avec RAG
-            rag_context = await self.rag_client.search(
-                query=rag_query,
-                top_k=3
-            )
-            logger.info(f"Mission {mission.mission_id}: RAG context = {len(rag_context)} chars")
-            
-            # 2. CODEUR : Génère code
-            logger.info(f"Mission {mission.mission_id}: Appel CODEUR")
-            codeur = get_agent("CODEUR")
-            
-            # Construire message avec MissionContext + RAG si disponible
-            if rag_context:
-                user_message = f"""=== CONTEXTE MISSION ===
-{mission_context.get_summary()}
-
----
-
-=== CONTEXTE RAG (patterns validés) ===
-{rag_context}
-
----
-
-=== DEMANDE UTILISATEUR ===
-{mission.user_request}
-
-INSTRUCTIONS :
-Utilise les patterns RAG ci-dessus comme référence pour générer le code.
-Respecte EXACTEMENT la structure et les conventions des patterns.
-Si des fichiers ont déjà été créés (voir CONTEXTE MISSION), ne les recrée pas.
-
-FORMAT DE RÉPONSE OBLIGATOIRE :
-Pour CHAQUE fichier, utilise ce format EXACT :
-
-# chemin/vers/fichier.ext
-
-```langage
-code complet
-```
-
-RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
-            else:
-                user_message = f"""=== CONTEXTE MISSION ===
-{mission_context.get_summary()}
-
----
-
-=== DEMANDE UTILISATEUR ===
-{mission.user_request}
-
-FORMAT DE RÉPONSE OBLIGATOIRE :
-Pour CHAQUE fichier, utilise ce format EXACT :
-
-# chemin/vers/fichier.ext
-
-```langage
-code complet
-```
-
-RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
-            
-            codeur_messages = [
-                {"role": "system", "content": codeur.system_prompt or "Tu es CODEUR, agent spécialisé génération code."},
-                {"role": "user", "content": user_message}
-            ]
-            
-            code_response = await codeur.handle(codeur_messages, session_id=mission.mission_id)
-            logger.info(f"Mission {mission.mission_id}: CODEUR réponse ({len(code_response)} chars)")
-            
-            # 2. TESTEUR : Génère tests
-            logger.info(f"Mission {mission.mission_id}: Appel TESTEUR")
-            testeur = get_agent("TESTEUR")
-            
-            testeur_messages = [
-                {"role": "system", "content": testeur.system_prompt or "Tu es TESTEUR, agent spécialisé génération tests."},
-                {"role": "user", "content": f"Code généré:\n\n{code_response}\n\nGénère les tests exhaustifs (80%+ couverture)."}
-            ]
-            
-            tests_response = await testeur.handle(testeur_messages, session_id=mission.mission_id)
-            logger.info(f"Mission {mission.mission_id}: TESTEUR réponse ({len(tests_response)} chars)")
-            
-            # 3. VALIDATEUR : Valide code + tests
-            while correction_attempts <= max_corrections:
-                logger.info(f"Mission {mission.mission_id}: Appel VALIDATEUR (tentative {correction_attempts + 1}/{max_corrections + 1})")
-                validateur = get_agent("VALIDATEUR")
-                
-                validateur_messages = [
-                    {"role": "system", "content": validateur.system_prompt or "Tu es VALIDATEUR, agent contrôle qualité."},
-                    {"role": "user", "content": f"""=== CONTEXTE MISSION ===
-{mission_context.get_summary()}
-
----
-
-=== CODE À VALIDER ===
-{code_response}
-
----
-
-=== TESTS ===
-{tests_response}
-
----
-
-INSTRUCTIONS :
-Valide le code et les tests selon les critères définis dans ton prompt système.
-Vérifie la cohérence avec l'architecture prévue (voir CONTEXTE MISSION).
-Si des tentatives de validation précédentes ont échoué, vérifie que les corrections ont été appliquées."""}
-                ]
-                
-                validation_response = await validateur.handle(validateur_messages, session_id=mission.mission_id)
-                logger.info(f"Mission {mission.mission_id}: VALIDATEUR réponse: {validation_response[:200]}")
-                
-                # Parser feedback VALIDATEUR
-                is_valid = self.validation_parser.is_valid(validation_response)
-                corrections = self.validation_parser.parse_corrections(validation_response)
-                
-                # Mettre à jour MissionContext
-                mission_context.add_validation_attempt(
-                    status="VALID" if is_valid else "INVALID",
-                    errors=[c["description"] for c in corrections],
-                    corrections=[]
-                )
-                
-                if is_valid:
-                    validation_result = "VALID"
-                    logger.info(f"Mission {mission.mission_id}: Code VALIDÉ")
-                    break
-                else:
-                    validation_result = "INVALID"
-                    logger.warning(f"Mission {mission.mission_id}: Code INVALIDE - {len(corrections)} corrections nécessaires")
-                    
-                    if correction_attempts < max_corrections:
-                        # 4. CODEUR : Correction avec détails parsés
-                        logger.info(f"Mission {mission.mission_id}: Appel CODEUR pour correction")
-                        
-                        # Construire liste corrections détaillées
-                        corrections_detail = "\n".join([
-                            f"- {c['file']} ligne {c['line']}: {c['description']}"
-                            for c in corrections
-                        ]) if corrections else "Aucune correction spécifique détectée"
-                        
-                        correction_messages = [
-                            {"role": "system", "content": codeur.system_prompt or "Tu es CODEUR, agent spécialisé génération code."},
-                            {"role": "user", "content": f"""Code actuel:
-{code_response}
-
-CORRECTIONS NÉCESSAIRES (tentative {correction_attempts + 1}/{max_corrections}) :
-{corrections_detail}
-
-FEEDBACK COMPLET VALIDATEUR:
-{validation_response}
-
-INSTRUCTIONS :
-Corrige UNIQUEMENT les erreurs listées ci-dessus.
-Pour chaque correction, applique exactement ce qui est demandé.
-Ne modifie PAS le reste du code.
-Ne change PAS la structure ou la logique existante."""}
-                        ]
-                        
-                        code_response = await codeur.handle(correction_messages, session_id=mission.mission_id)
-                        logger.info(f"Mission {mission.mission_id}: CODEUR correction ({len(code_response)} chars)")
-                        
-                        correction_attempts += 1
-                    else:
-                        logger.error(f"Mission {mission.mission_id}: Max corrections atteint, code reste INVALIDE")
-                        break
-            
-            # 5. Marquer mission selon résultat
-            if validation_result == "VALID":
-                mission.code_validated = True
-                mission.tests_validated = True
-                
-                # 6. Écrire fichiers sur disque
-                logger.info(f"Mission {mission.mission_id}: Écriture fichiers code")
-                code_write_result = CodeParser.parse_and_write(code_response, project_path)
-                
-                logger.info(f"Mission {mission.mission_id}: Écriture fichiers tests")
-                tests_write_result = CodeParser.parse_and_write(tests_response, project_path)
-                
-                # Combiner résultats
-                files_created = code_write_result["files_created"] + tests_write_result["files_created"]
-                files_updated = code_write_result["files_updated"] + tests_write_result["files_updated"]
-                
-                # Mettre à jour MissionContext avec fichiers créés
-                for filepath in files_created:
-                    mission_context.add_file(filepath, "created")
-                
-                mission.files_created = files_created
-                mission.files_modified = files_updated
-                
-                logger.info(f"Mission {mission.mission_id}: {len(files_created)} fichiers créés, {len(files_updated)} mis à jour")
-                logger.info(f"Mission {mission.mission_id}: Mode RAPIDE complété avec succès")
-            else:
-                logger.error(f"Mission {mission.mission_id}: Mode RAPIDE échoué (validation)")
-            
-            # Logger résumé MissionContext
-            logger.info(f"Mission {mission.mission_id}: Résumé contexte:\n{mission_context.get_summary()}")
-            
-            self.mission_manager.update_mission(mission)
-            
-            return {
-                "success": validation_result == "VALID",
-                "mode": "FAST",
-                "files_created": files_created,
-                "validation_result": validation_result,
-                "code_response": code_response,
-                "tests_response": tests_response,
-                "validation_response": validation_response,
-                "correction_attempts": correction_attempts,
-                "mission_context": mission_context.model_dump()
-            }
-            
-        except Exception as e:
-            logger.error(f"Mission {mission.mission_id}: Erreur mode RAPIDE: {e}")
-            mission.mark_failed(str(e))
-            self.mission_manager.update_mission(mission)
-            
-            return {
-                "success": False,
-                "mode": "FAST",
-                "error": str(e),
-                "files_created": [],
-                "validation_result": "ERROR"
-            }
     
     async def execute_complete_mode(
         self,
@@ -482,7 +132,8 @@ Ne change PAS la structure ou la logique existante."""}
         """
         from backend.agents.agent_factory import get_agent
         
-        logger.info(f"Orchestration: Mode COMPLET pour mission {mission.mission_id}")
+        print(f"🚀 [EXECUTE_COMPLETE_MODE] Démarré pour mission {mission.mission_id}")
+        logger.info(f"Orchestration: Workflow unique pour mission {mission.mission_id}")
         
         mission.current_phase = MissionPhase.ARCHITECTURE
         mission.status = MissionStatus.IN_PROGRESS
@@ -496,17 +147,27 @@ Ne change PAS la structure ou la logique existante."""}
         
         try:
             # 1. ARCHITECTE : Propose architecture
+            print(f"📞 [EXECUTE_COMPLETE_MODE] Appel ARCHITECTE...")
             logger.info(f"Mission {mission.mission_id}: Appel ARCHITECTE")
             architecte = get_agent("ARCHITECTE")
+            print(f"✅ [EXECUTE_COMPLETE_MODE] ARCHITECTE récupéré : {architecte.name}")
             
             architecte_messages = [
                 {"role": "system", "content": architecte.system_prompt or "Tu es ARCHITECTE, agent conception architecture."},
                 {"role": "user", "content": f"Projet: {project_path}\n\nDemande: {user_request}\n\nConçois l'architecture AVANT le code. Propose structure fichiers, justifie choix, explique en langage simple."}
             ]
             
-            architecture_response = await architecte.handle(architecte_messages, session_id=mission.mission_id)
+            print(f"📤 [EXECUTE_COMPLETE_MODE] Envoi messages à ARCHITECTE ({len(architecte_messages)} messages)...")
+            logger.info(f"Mission {mission.mission_id}: Envoi {len(architecte_messages)} messages à ARCHITECTE")
+            
+            # IMPORTANT : ARCHITECTE ne doit PAS avoir function_executor (pas de tools)
+            architecture_response = await architecte.handle(architecte_messages, session_id=mission.mission_id, function_executor=None)
+            
+            print(f"✅ [EXECUTE_COMPLETE_MODE] ARCHITECTE réponse reçue ({len(architecture_response)} chars)")
+            print(f"📄 [EXECUTE_COMPLETE_MODE] Architecture (premiers 500 chars):\n{architecture_response[:500]}...")
             architecture_doc = architecture_response
             logger.info(f"Mission {mission.mission_id}: ARCHITECTE réponse ({len(architecture_response)} chars)")
+            logger.info(f"Mission {mission.mission_id}: Architecture preview: {architecture_response[:500]}...")
             
             # 2. Demander validation USER
             logger.info(f"Mission {mission.mission_id}: Demande validation architecture USER")
@@ -525,11 +186,23 @@ Ne change PAS la structure ou la logique existante."""}
                 "files_created": [],
                 "validation_result": "AWAITING_USER_VALIDATION",
                 "requires_user_validation": True,
-                "mission_id": mission.mission_id
+                "mission_id": mission.mission_id,
+                "user_message": f"""
+✅ **Architecture proposée par l'ARCHITECTE**
+
+{architecture_doc}
+
+---
+
+⏸️ **Le workflow est en pause**
+
+Consultez le bloc "Workflow" à gauche pour valider l'architecture.
+Cliquez sur "✅ Valider l'architecture" pour continuer le workflow.
+"""
             }
             
         except Exception as e:
-            logger.error(f"Mission {mission.mission_id}: Erreur mode COMPLET (phase architecture): {e}")
+            logger.error(f"Mission {mission.mission_id}: Erreur workflow (phase architecture): {e}")
             mission.mark_failed(str(e))
             self.mission_manager.update_mission(mission)
             
@@ -570,7 +243,7 @@ Ne change PAS la structure ou la logique existante."""}
         if not mission.architecture_validated:
             return {"success": False, "error": "Architecture not validated"}
         
-        logger.info(f"Mission {mission_id}: Continuation mode COMPLET après validation architecture")
+        logger.info(f"Mission {mission_id}: Continuation workflow après validation architecture")
         
         mission.current_phase = MissionPhase.GENERATION_CODE
         mission.status = MissionStatus.IN_PROGRESS
@@ -590,26 +263,34 @@ Ne change PAS la structure ou la logique existante."""}
             
             # Détecter type projet
             project_type = self.detect_project_type(mission.user_request)
+            print(f"🔍 [RAG] Type projet détecté: {project_type}")
             logger.info(f"Mission {mission_id}: Type projet détecté = {project_type}")
             
-            # Construire query RAG optimisée
+            # Construire query RAG
             rag_query = self.build_rag_query(project_type, mission.user_request)
+            print(f"🔍 [RAG] Query construite: {rag_query}")
+            logger.info(f"Mission {mission_id}: RAG query = {rag_query}")
             
             # Enrichir contexte avec RAG
             rag_context = await self.rag_client.search(
                 query=rag_query,
                 top_k=3
             )
-            logger.info(f"Mission {mission_id}: RAG context = {len(rag_context)} chars")
+            print(f"📚 [RAG] Context reçu ({len(rag_context)} chars):")
+            print(f"{rag_context[:500]}...")
+            print(f"{'='*80}")
+            logger.info(f"Mission {mission_id}: RAG context complet: {rag_context}")
             
             # 2. CODEUR : Génère code selon architecture + RAG
+            print(f"📞 [CONTINUE_COMPLETE_MODE] Appel CODEUR...")
             logger.info(f"Mission {mission_id}: Appel CODEUR avec architecture + RAG")
             codeur = get_agent("CODEUR")
+            print(f"✅ [CONTINUE_COMPLETE_MODE] CODEUR récupéré : {codeur.name}")
             
-            # Construire message avec RAG + Architecture
+            # Construire message avec DEMANDE UTILISATEUR en priorité
             if rag_context:
-                user_message = f"""=== CONTEXTE RAG (patterns validés) ===
-{rag_context}
+                user_message = f"""=== DEMANDE UTILISATEUR (PRIORITÉ ABSOLUE) ===
+{mission.user_request}
 
 ---
 
@@ -618,10 +299,17 @@ Ne change PAS la structure ou la logique existante."""}
 
 ---
 
+=== CONTEXTE RAG (patterns de référence) ===
+{rag_context}
+
+---
+
 INSTRUCTIONS :
-Génère le code selon l'architecture ci-dessus.
-Utilise les patterns RAG comme référence pour la qualité du code.
-Respecte EXACTEMENT la structure définie dans l'architecture.
+Génère le code pour répondre à la DEMANDE UTILISATEUR ci-dessus.
+Respecte EXACTEMENT l'architecture validée.
+Utilise les patterns RAG comme référence pour la qualité du code UNIQUEMENT.
+
+⚠️ IMPORTANT : Génère le code pour la DEMANDE UTILISATEUR, PAS pour les exemples du contexte RAG.
 
 FORMAT DE RÉPONSE OBLIGATOIRE :
 Pour CHAQUE fichier, utilise ce format EXACT :
@@ -634,13 +322,19 @@ code complet
 
 RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de code."""
             else:
-                user_message = f"""=== ARCHITECTURE VALIDÉE ===
+                user_message = f"""=== DEMANDE UTILISATEUR ===
+{mission.user_request}
+
+---
+
+=== ARCHITECTURE VALIDÉE ===
 {architecture_doc}
 
 ---
 
 INSTRUCTIONS :
-Génère le code selon l'architecture ci-dessus.
+Génère le code pour répondre à la DEMANDE UTILISATEUR ci-dessus.
+Respecte EXACTEMENT l'architecture validée.
 
 FORMAT DE RÉPONSE OBLIGATOIRE :
 Pour CHAQUE fichier, utilise ce format EXACT :
@@ -658,12 +352,21 @@ RÈGLE CRITIQUE : Il DOIT y avoir une ligne vide entre le chemin et le bloc de c
                 {"role": "user", "content": user_message}
             ]
             
+            print(f"📤 [CODEUR] Prompt user (premiers 1000 chars):")
+            print(f"{user_message[:1000]}...")
+            print(f"{'='*80}")
+            logger.info(f"Mission {mission_id}: CODEUR prompt user complet: {user_message}")
+            
             code_response = await codeur.handle(codeur_messages, session_id=mission_id)
+            print(f"✅ [CONTINUE_COMPLETE_MODE] CODEUR réponse reçue ({len(code_response)} chars)")
+            print(f"📄 [CONTINUE_COMPLETE_MODE] Code (premiers 500 chars):\n{code_response[:500]}...")
             logger.info(f"Mission {mission_id}: CODEUR réponse ({len(code_response)} chars)")
             
             # 2. TESTEUR : Génère tests
+            print(f"📞 [CONTINUE_COMPLETE_MODE] Appel TESTEUR...")
             logger.info(f"Mission {mission_id}: Appel TESTEUR")
             testeur = get_agent("TESTEUR")
+            print(f"✅ [CONTINUE_COMPLETE_MODE] TESTEUR récupéré : {testeur.name}")
             
             testeur_messages = [
                 {"role": "system", "content": testeur.system_prompt or "Tu es TESTEUR, agent spécialisé génération tests."},
@@ -705,16 +408,33 @@ Si des tentatives de validation précédentes ont échoué, vérifie que les cor
                 ]
                 
                 validation_response = await validateur.handle(validateur_messages, session_id=mission_id)
-                logger.info(f"Mission {mission_id}: VALIDATEUR réponse: {validation_response[:200]}")
+                print(f"📋 [VALIDATEUR] Réponse complète ({len(validation_response)} chars):")
+                print(f"{validation_response}")
+                print(f"{'='*80}")
+                logger.info(f"Mission {mission_id}: VALIDATEUR réponse complète: {validation_response}")
                 
-                # Détecter si VALIDE ou INVALIDE (chercher "STATUT: VALIDE" au début de la réponse)
-                response_start = validation_response[:100].upper()
-                if "STATUT: VALIDE" in response_start:
+                # Détecter si VALIDE ou INVALIDE (chercher "STATUT: VALIDE" dans les 500 premiers chars)
+                response_start = validation_response[:500].upper()
+                print(f"🔍 [VALIDATEUR] Détection dans (500 premiers chars): '{response_start[:200]}...'")
+                
+                # Détection flexible : chercher variations possibles
+                is_valid = (
+                    "STATUT: VALIDE" in response_start or
+                    "STATUT:VALIDE" in response_start or
+                    "STATUS: VALID" in response_start or
+                    "STATUS:VALID" in response_start
+                )
+                
+                print(f"🔍 [VALIDATEUR] Contient 'STATUT: VALIDE' ? {'OUI' if is_valid else 'NON'}")
+                
+                if is_valid:
                     validation_result = "VALID"
+                    print(f"✅ [VALIDATEUR] Code VALIDÉ")
                     logger.info(f"Mission {mission_id}: Code VALIDÉ")
                     break
                 else:
                     validation_result = "INVALID"
+                    print(f"❌ [VALIDATEUR] Code INVALIDE (tentative {correction_attempts + 1})")
                     logger.warning(f"Mission {mission_id}: Code INVALIDE (tentative {correction_attempts + 1})")
                     
                     if correction_attempts < max_corrections:
@@ -758,6 +478,7 @@ Respecte l'architecture définie."""}
                 # 6. Écrire fichiers sur disque
                 project_path = mission.project_path
                 
+                print(f"💾 [ORCHESTRATION] Écriture fichiers (validation RÉUSSIE)...")
                 logger.info(f"Mission {mission_id}: Écriture fichiers code")
                 code_write_result = CodeParser.parse_and_write(code_response, project_path)
                 
@@ -772,9 +493,27 @@ Respecte l'architecture définie."""}
                 mission.files_modified = files_updated
                 
                 logger.info(f"Mission {mission_id}: {len(files_created)} fichiers créés, {len(files_updated)} mis à jour")
-                logger.info(f"Mission {mission_id}: Mode COMPLET complété avec succès")
+                logger.info(f"Mission {mission_id}: Workflow complété avec succès")
             else:
-                logger.error(f"Mission {mission_id}: Mode COMPLET échoué (validation)")
+                # Mode debug : Écrire fichiers même si validation échoue (pour inspection)
+                print(f"⚠️ [ORCHESTRATION] Validation ÉCHOUÉE mais écriture fichiers pour debug...")
+                logger.warning(f"Mission {mission_id}: Validation échouée, écriture fichiers pour debug")
+                
+                project_path = mission.project_path
+                
+                code_write_result = CodeParser.parse_and_write(code_response, project_path)
+                tests_write_result = CodeParser.parse_and_write(tests_response, project_path)
+                
+                # Combiner résultats
+                files_created = code_write_result["files_created"] + tests_write_result["files_created"]
+                files_updated = code_write_result["files_updated"] + tests_write_result["files_updated"]
+                
+                mission.files_created = files_created
+                mission.files_modified = files_updated
+                
+                print(f"📁 [ORCHESTRATION] {len(files_created)} fichiers créés malgré validation échouée")
+                logger.warning(f"Mission {mission_id}: {len(files_created)} fichiers créés (mode debug)")
+                logger.error(f"Mission {mission_id}: Workflow échoué (validation)")
             
             self.mission_manager.update_mission(mission)
             
@@ -791,7 +530,7 @@ Respecte l'architecture définie."""}
             }
             
         except Exception as e:
-            logger.error(f"Mission {mission_id}: Erreur mode COMPLET (phase code): {e}")
+            logger.error(f"Mission {mission_id}: Erreur workflow (phase code): {e}")
             mission.mark_failed(str(e))
             self.mission_manager.update_mission(mission)
             
@@ -810,7 +549,7 @@ Respecte l'architecture définie."""}
         project_path: str
     ) -> Dict:
         """
-        Démarre nouvelle mission avec workflow adaptatif
+        Démarre nouvelle mission avec workflow unique
         
         Args:
             user_request: Demande utilisateur
@@ -842,21 +581,15 @@ Respecte l'architecture définie."""}
             project_path=project_path
         )
         
-        # 3. Détecter complexité
-        complexity = self.detect_project_complexity(user_request)
+        print(f"📋 [ORCHESTRATION] Mission {mission_id} créée")
+        logger.info(f"Mission {mission_id} créée - Workflow unique (ARCHITECTE → CODEUR → TESTEUR → VALIDATEUR)")
         
-        logger.info(f"Mission {mission_id} créée - Complexité: {complexity}")
-        
-        # 4. Exécuter workflow adaptatif
-        if complexity == "SIMPLE":
-            result = await self.execute_fast_mode(mission, user_request, project_path)
-        else:
-            result = await self.execute_complete_mode(mission, user_request, project_path)
+        # 3. Exécuter workflow unique (toujours COMPLET)
+        result = await self.execute_complete_mode(mission, user_request, project_path)
         
         return {
             "success": True,
             "mission_id": mission_id,
-            "complexity": complexity,
             "mode": result["mode"],
             "status": mission.status.value
         }
@@ -873,8 +606,8 @@ Respecte l'architecture définie."""}
         """
         Traite réponse agent et orchestre workflow si nécessaire
         
-        Méthode de compatibilité avec API existante.
-        Pour l'instant, retourne simplement la réponse sans orchestration.
+        Détecte les délégations dans la réponse de JARVIS_Maître :
+        - [DEMANDE_CODE_CODEUR: ...] → Lance workflow 5 agents
         
         Args:
             response: Réponse de l'agent
@@ -887,11 +620,116 @@ Respecte l'architecture définie."""}
         Returns:
             Tuple (response, delegation_results)
         """
-        # TODO Phase 6.2-6.3 : Implémenter détection délégation et orchestration
-        # Pour l'instant, mode passthrough (compatibilité)
-        logger.info(f"Orchestration: process_response appelé pour session {session_id}")
+        import re
         
-        return response, []
+        # Logs console pour diagnostic
+        print(f"\n🔍 [ORCHESTRATION] process_response appelé - session {session_id}")
+        print(f"📝 [ORCHESTRATION] Réponse ({len(response)} chars): {response[:200]}...")
+        
+        logger.info(f"Orchestration: process_response appelé pour session {session_id}")
+        logger.info(f"Orchestration: Réponse complète ({len(response)} chars): {response[:500]}...")
+        
+        # Détecter [DEMANDE_CODE_CODEUR: ...]
+        delegation_pattern = r'\[DEMANDE_CODE_CODEUR:\s*(.*?)\]'
+        match = re.search(delegation_pattern, response, re.DOTALL)
+        
+        if not match:
+            print(f"❌ [ORCHESTRATION] Aucune délégation détectée")
+            print(f"⚠️  [ORCHESTRATION] Pattern recherché: {delegation_pattern}")
+            print(f"⚠️  [ORCHESTRATION] Réponse ne contient pas [DEMANDE_CODE_CODEUR:]")
+            
+            logger.warning(f"Orchestration: ❌ Aucune délégation détectée pour session {session_id}")
+            logger.warning(f"Orchestration: Pattern recherché: {delegation_pattern}")
+            logger.warning(f"Orchestration: Réponse ne contient pas de marqueur [DEMANDE_CODE_CODEUR:]")
+            return response, []
+        
+        print(f"✅ [ORCHESTRATION] Marqueur [DEMANDE_CODE_CODEUR:] détecté")
+        logger.info(f"Orchestration: ✅ Délégation détectée pour session {session_id}")
+        
+        # Extraire la demande utilisateur
+        user_request = match.group(1).strip()
+        logger.info(f"Orchestration: Demande extraite ({len(user_request)} chars)")
+        
+        # Vérifier que project_path est disponible
+        if not project_path:
+            logger.error(f"Orchestration: project_path manquant pour session {session_id}")
+            error_msg = "\n\n❌ **ERREUR** : Impossible de démarrer le workflow (project_path manquant)"
+            return response + error_msg, []
+        
+        # Détecter nom projet depuis project_path
+        from pathlib import Path
+        project_name = Path(project_path).name
+        
+        try:
+            # Démarrer la mission avec workflow unique
+            print(f"🚀 [ORCHESTRATION] Démarrage mission pour projet '{project_name}'")
+            logger.info(f"Orchestration: Démarrage mission pour projet '{project_name}'")
+            
+            mission_result = await self.start_mission(
+                user_request=user_request,
+                project_name=project_name,
+                project_path=project_path
+            )
+            
+            logger.info(f"Orchestration: Mission démarrée - {mission_result}")
+            
+            # Construire réponse enrichie
+            if mission_result.get("success"):
+                mission_id = mission_result.get("mission_id")
+                mode = mission_result.get("mode")
+                user_message = mission_result.get("user_message", "")
+                
+                # Si user_message existe (workflow en pause pour validation), l'afficher
+                if user_message:
+                    enriched_response = f"""{response}
+
+---
+
+{user_message}"""
+                else:
+                    # Sinon, message standard de démarrage
+                    enriched_response = f"""{response}
+
+---
+
+✅ **Workflow démarré**
+
+- **Mission ID** : `{mission_id}`
+- **Mode** : {mode}
+- **Projet** : {project_name}
+
+Le workflow est en cours d'exécution. Consultez le bloc "Workflow" à gauche pour suivre l'avancement."""
+                
+                delegation_results = [{
+                    "agent_name": mode,
+                    "success": True,
+                    "mission_id": mission_id,
+                    "files_written": []
+                }]
+                
+                return enriched_response, delegation_results
+            
+            else:
+                error_msg = mission_result.get("message", "Erreur inconnue")
+                enriched_response = f"""{response}
+
+---
+
+❌ **Erreur workflow**
+
+{error_msg}"""
+                
+                return enriched_response, []
+        
+        except Exception as e:
+            logger.exception(f"Orchestration: Erreur démarrage mission pour session {session_id}")
+            error_response = f"""{response}
+
+---
+
+❌ **ERREUR** : {str(e)}"""
+            
+            return error_response, []
     
     async def finalize_mission(self, mission_id: str) -> Dict:
         """

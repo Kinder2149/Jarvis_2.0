@@ -6,7 +6,9 @@ Gestion du cycle de vie des missions avec persistance JSON
 from typing import Dict, List, Optional
 from pathlib import Path
 import json
+from datetime import datetime
 from backend.models.mission import Mission, MissionStatus
+from backend.models.mission_context import MissionContext
 
 
 class MissionManager:
@@ -179,3 +181,33 @@ class MissionManager:
             m for m in self.missions.values()
             if m.status in [MissionStatus.PENDING, MissionStatus.IN_PROGRESS]
         ]
+    
+    def get_mission_context(self, mission_id: str) -> Optional[MissionContext]:
+        """
+        Crée et retourne un MissionContext depuis une Mission
+        
+        Args:
+            mission_id: ID mission
+        
+        Returns:
+            MissionContext si mission trouvée, None sinon
+        """
+        mission = self.get_mission(mission_id)
+        
+        if not mission:
+            return None
+        
+        # Créer MissionContext basique depuis Mission
+        now = datetime.now()
+        context = MissionContext(
+            mission_id=mission.mission_id,
+            user_request=mission.user_request,
+            created_at=mission.created_at,
+            updated_at=now
+        )
+        
+        # Ajouter fichiers créés si disponibles
+        for filepath in mission.files_created:
+            context.files_created[filepath] = ""  # Contenu non stocké dans Mission
+        
+        return context

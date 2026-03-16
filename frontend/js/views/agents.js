@@ -1,11 +1,12 @@
 /**
  * Agents View - JARVIS 2.0
- * Page de visualisation détaillée de tous les agents
+ * Vue détaillée des agents disponibles
  */
 
 import { createElement, clearContainer } from '../utils/dom.js';
+import { API_BASE_URL } from '../config.js';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = API_BASE_URL;
 
 class AgentsView {
     constructor() {

@@ -1,5 +1,8 @@
+import logging
 from backend.agents.base_agent import BaseAgent
 from backend.agents.agent_config import get_agent_config
+
+logger = logging.getLogger(__name__)
 
 
 class Architecte(BaseAgent):
@@ -26,6 +29,7 @@ class Architecte(BaseAgent):
         agent_id: str,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        api_key: str | None = None,
     ):
         # Récupérer la config pour obtenir le prompt_file
         config = get_agent_config("ARCHITECTE")
@@ -43,4 +47,20 @@ class Architecte(BaseAgent):
             temperature=temperature,
             max_tokens=max_tokens,
             prompt_file=config.get("prompt_file"),
+            api_key=api_key,
         )
+        
+        # Log pour vérifier que le prompt contient les instructions ARCHITECTE
+        if self.system_prompt:
+            logger.info(f"ARCHITECTE prompt chargé ({len(self.system_prompt)} chars)")
+            
+            # Vérifier présence des sections critiques
+            if "ANALYSE" in self.system_prompt and "RÉFLEXION" in self.system_prompt:
+                logger.info("✅ Prompt contient sections ANALYSE et RÉFLEXION")
+            else:
+                logger.warning("❌ Prompt NE CONTIENT PAS sections ANALYSE/RÉFLEXION")
+            
+            if "STRUCTURE FICHIERS" in self.system_prompt or "structure de fichiers" in self.system_prompt:
+                logger.info("✅ Prompt contient instructions structure fichiers")
+            else:
+                logger.warning("❌ Prompt NE CONTIENT PAS instructions structure fichiers")

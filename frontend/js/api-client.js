@@ -1,5 +1,7 @@
+import { API_BASE_URL } from './config.js';
+
 class APIClient {
-    constructor(baseURL = 'http://localhost:8000') {
+    constructor(baseURL = API_BASE_URL) {
         this.baseURL = baseURL;
     }
     

@@ -4,9 +4,10 @@
  */
 
 import { createElement, clearContainer } from '../utils/dom.js';
+import { API_BASE_URL, RAG_API_URL } from '../config.js';
 
-const API_BASE = 'http://localhost:8000';
-const RAG_API = 'http://localhost:5001';
+const API_BASE = API_BASE_URL;
+const RAG_API = RAG_API_URL;
 
 const CATEGORY_METADATA = {
     'patterns': {

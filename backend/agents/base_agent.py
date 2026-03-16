@@ -35,6 +35,7 @@ class BaseAgent:
         temperature: float | None = None,
         max_tokens: int | None = None,
         prompt_file: str | None = None,
+        api_key: str | None = None,
     ):
         self.id = agent_id
         self.name = name
@@ -46,7 +47,7 @@ class BaseAgent:
         self.state = "idle"
         self.last_finish_reason = "stop"  # Stocke le finish_reason de la dernière réponse
 
-        self.provider = ProviderFactory.create(agent_name=name)
+        self.provider = ProviderFactory.create(agent_name=name, api_key=api_key)
         self.log_file = Path("backend/logs/jarvis_audit.log")
         
         # Charger le system_prompt depuis le fichier si fourni
@@ -259,6 +260,20 @@ class BaseAgent:
             tool_calls = response.get("tool_calls", [])
             finish_reason = response.get("finish_reason", "stop")
             last_finish_reason = finish_reason
+            
+            # Log détaillé pour JARVIS_Maître pour diagnostic
+            if self.name == "JARVIS_Maître" and content:
+                logger.info(f"Agent {self.name} - Réponse brute ({len(content)} chars)")
+                
+                # Vérifier présence du marqueur unique
+                if "[DEMANDE_CODE_CODEUR:" in content:
+                    logger.info("✅ Réponse contient [DEMANDE_CODE_CODEUR:")
+                else:
+                    logger.warning("❌ Réponse ne contient AUCUN marqueur de délégation")
+                
+                # Afficher un extrait de la réponse pour analyse
+                if len(content) > 500:
+                    logger.info(f"Extrait réponse: {content[:500]}...")
             
             # Conserver le dernier contenu non vide
             if content:

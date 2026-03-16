@@ -40,6 +40,11 @@ async def lifespan(app: FastAPI):
     ProviderFactory.clear_cache()
     logger.info("Provider cache cleared - configuration rechargée depuis .env")
     
+    # Vider le cache des agents pour forcer rechargement des prompts
+    from backend.agents.agent_factory import clear_cache
+    clear_cache()
+    logger.info("Agent cache cleared - prompts système rechargés depuis fichiers .md")
+    
     await db_instance.initialize()
     await db_instance.seed_library_if_empty()
     yield

@@ -4,7 +4,9 @@
  */
 
 import { createElement, clearContainer, scrollToBottom } from '../utils/dom.js';
+import { API_BASE_URL } from '../config.js';
 import { formatTime } from '../utils/format.js';
+import { WorkflowMonitor } from './workflow-monitor.js';
 
 class Chat {
     constructor(options = {}) {
@@ -17,6 +19,7 @@ class Chat {
         this.input = null;
         this.messages = [];
         this.isLoading = false;
+        this.workflowMonitor = null;
     }
 
     /**
@@ -26,7 +29,8 @@ class Chat {
     render() {
         this.element = createElement('div', { className: 'chat-container' }, [
             this.renderMessagesContainer(),
-            this.renderInputContainer()
+            this.renderInputContainer(),
+            this.renderWorkflowMonitor()
         ]);
 
         if (this.conversationId) {
@@ -53,6 +57,21 @@ class Chat {
      * Rend le conteneur d'input
      * @returns {HTMLElement}
      */
+    /**
+     * Rend le conteneur du WorkflowMonitor
+     * @returns {HTMLElement}
+     */
+    renderWorkflowMonitor() {
+        const container = createElement('div', {
+            id: 'workflow-monitor-container',
+            style: 'display: none;'
+        });
+
+        this.workflowMonitor = new WorkflowMonitor('workflow-monitor-container');
+
+        return container;
+    }
+
     renderInputContainer() {
         this.input = createElement('textarea', {
             className: 'chat-input',
@@ -96,7 +115,7 @@ class Chat {
 
         try {
             const response = await fetch(
-                `http://localhost:8000/api/conversations/${this.conversationId}/messages?limit=100`
+                `${API_BASE_URL}/api/conversations/${this.conversationId}/messages?limit=100`
             );
             const messages = await response.json();
             this.messages = messages;
@@ -292,7 +311,7 @@ class Chat {
 
         try {
             const response = await fetch(
-                `http://localhost:8000/api/conversations/${this.conversationId}/messages`,
+                `${API_BASE_URL}/api/conversations/${this.conversationId}/messages`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -313,6 +332,15 @@ class Chat {
                         content: data.response, 
                         timestamp: new Date().toISOString() 
                     });
+                }
+
+                // Détecter délégation et démarrer monitoring workflow
+                if (data.delegations && data.delegations.length > 0) {
+                    const delegation = data.delegations[0];
+                    if (delegation.mission_id) {
+                        console.log('Délégation détectée, mission_id:', delegation.mission_id);
+                        this.workflowMonitor.startMonitoring(delegation.mission_id);
+                    }
                 }
             } else {
                 this.addErrorMessage(data.detail || 'Erreur lors de l\'envoi du message.');

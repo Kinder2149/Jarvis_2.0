@@ -11,7 +11,7 @@ class StateManager {
             
             // Agents
             agents: [],
-            currentAgent: localStorage.getItem('current_agent') || 'BASE',
+            currentAgent: localStorage.getItem('current_agent') || 'JARVIS_Maître',
             
             // Conversations
             conversations: [],
@@ -93,7 +93,7 @@ class StateManager {
         const defaultState = {
             currentView: 'home',
             agents: [],
-            currentAgent: 'BASE',
+            currentAgent: 'JARVIS_Maître',
             conversations: [],
             currentConversation: null,
             projects: [],

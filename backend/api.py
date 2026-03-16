@@ -283,14 +283,20 @@ async def send_message(conversation_id: str, msg: ChatMessage):
         await db_instance.add_message(conversation_id, "user", original_content)
 
         # Créer FunctionExecutor avec contexte projet si disponible
+        # IMPORTANT : Ne PAS passer function_executor à JARVIS_Maître en mode projet
+        # pour éviter boucle infinie function calls (get_project_structure, etc.)
+        # JARVIS_Maître doit uniquement générer le marqueur [DEMANDE_CODE_CODEUR:]
         function_executor = None
         if conversation["project_id"]:
             project = await db_instance.get_project(conversation["project_id"])
-            function_executor = FunctionExecutor(
-                db_instance=db_instance, project_path=project["path"] if project else None
-            )
+            # Créer function_executor uniquement si agent != JARVIS_Maître
+            if conversation["agent_id"] != "JARVIS_Maître":
+                function_executor = FunctionExecutor(
+                    db_instance=db_instance, project_path=project["path"] if project else None
+                )
         else:
             # Chat simple : KB seulement (pas de project_path)
+            # JARVIS_Maître en chat simple peut avoir accès à la KB
             function_executor = FunctionExecutor(db_instance=db_instance)
 
         agent = get_agent(conversation["agent_id"])
@@ -300,6 +306,42 @@ async def send_message(conversation_id: str, msg: ChatMessage):
             response = await agent.handle(
                 messages_for_api, session_id=conversation_id, function_executor=function_executor
             )
+
+            # Validation : JARVIS_Maître ne doit PAS générer de code directement
+            if conversation["agent_id"] == "JARVIS_Maître" and conversation["project_id"]:
+                # Détecter blocs de code dans la réponse
+                import re
+                code_blocks = re.findall(r'```(?:python|javascript|typescript|java|dart|go|rust|cpp|c\+\+)', response, re.IGNORECASE)
+                has_delegation_marker = '[DEMANDE_CODE_CODEUR:' in response
+                
+                if code_blocks and not has_delegation_marker:
+                    logger.warning(f"❌ JARVIS_Maître a généré du code directement sans délégation (conversation {conversation_id})")
+                    logger.warning(f"Blocs code détectés: {len(code_blocks)}")
+                    
+                    # Rejeter la réponse et demander reformulation
+                    error_response = """❌ **ERREUR DE DÉLÉGATION**
+
+Je ne peux pas générer de code directement. Je dois déléguer au CODEUR.
+
+Format attendu :
+```
+[DEMANDE_CODE_CODEUR: Crée les fichiers suivants pour [projet] :
+- fichier1.py : [description]
+- fichier2.py : [description]
+Utilise [framework], [dépendances]]
+```
+
+Merci de reformuler ta demande."""
+                    
+                    await db_instance.add_message(conversation_id, "assistant", error_response)
+                    
+                    return {
+                        "response": error_response,
+                        "conversation_id": conversation_id,
+                        "agent_id": conversation["agent_id"],
+                        "delegations": [],
+                        "error": "code_without_delegation"
+                    }
 
             # Orchestration : uniquement en mode projet avec Jarvis_maitre
             delegation_results = []
@@ -631,11 +673,9 @@ async def delete_library_document(doc_id: str):
 @router.post("/api/missions/start", response_model=MissionStartResponse)
 async def start_mission(request: MissionStartRequest):
     """
-    Démarre une nouvelle mission avec workflow adaptatif.
+    Démarre une nouvelle mission avec workflow unique.
     
-    Détecte automatiquement la complexité et lance :
-    - Mode RAPIDE (≤3 fichiers) : CODEUR → TESTEUR → VALIDATEUR
-    - Mode COMPLET (>3 fichiers) : ARCHITECTE → validation USER → CODEUR → TESTEUR → VALIDATEUR
+    Workflow : ARCHITECTE → validation USER → CODEUR → TESTEUR → VALIDATEUR
     """
     try:
         result = await orchestrator.start_mission(
@@ -690,7 +730,7 @@ async def get_mission_status(mission_id: str):
 @router.post("/api/missions/{mission_id}/validate", response_model=MissionValidateResponse)
 async def validate_architecture(mission_id: str, request: MissionValidateRequest):
     """
-    Valide ou rejette l'architecture proposée par ARCHITECTE (mode COMPLET uniquement).
+    Valide ou rejette l'architecture proposée par ARCHITECTE.
     
     Si validé (approved=True) : Continue workflow avec CODEUR
     Si rejeté (approved=False) : Relance ARCHITECTE avec feedback
@@ -744,7 +784,7 @@ async def validate_architecture(mission_id: str, request: MissionValidateRequest
 @router.post("/api/missions/{mission_id}/continue", response_model=MissionContinueResponse)
 async def continue_mission(mission_id: str):
     """
-    Continue une mission après validation architecture (mode COMPLET uniquement).
+    Continue une mission après validation architecture.
     
     Lance : CODEUR → TESTEUR → VALIDATEUR
     """

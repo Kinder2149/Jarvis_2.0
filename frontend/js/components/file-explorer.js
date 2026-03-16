@@ -1,9 +1,10 @@
 /**
  * File Explorer Component - JARVIS 2.0
- * Explorateur de fichiers pour projets
+ * Explorateur de fichiers pour les projets
  */
 
 import { createElement, clearContainer } from '../utils/dom.js';
+import { API_BASE_URL } from '../config.js';
 import { formatFileSize } from '../utils/format.js';
 
 class FileExplorer {
@@ -37,7 +38,7 @@ class FileExplorer {
 
         try {
             const response = await fetch(
-                `http://localhost:8000/api/projects/${this.projectId}/files/tree?max_depth=3`
+                `${API_BASE_URL}/api/projects/${this.projectId}/files/tree?max_depth=3`
             );
             this.fileTree = await response.json();
         } catch (error) {
@@ -231,7 +232,7 @@ class FileExplorer {
                 
                 // Charger le contenu du fichier
                 const response = await fetch(
-                    `http://localhost:8000/api/projects/${this.projectId}/files/read?path=${encodeURIComponent(path)}`
+                    `${API_BASE_URL}/api/projects/${this.projectId}/files/read?path=${encodeURIComponent(path)}`
                 );
 
                 if (response.ok) {

@@ -4,6 +4,7 @@
  */
 
 import { createElement, clearContainer } from '../utils/dom.js';
+import { API_BASE_URL } from '../config.js';
 import { formatDate, pluralize } from '../utils/format.js';
 
 class ConversationList {
@@ -38,9 +39,9 @@ class ConversationList {
         try {
             let url;
             if (this.projectId) {
-                url = `http://localhost:8000/api/projects/${this.projectId}/conversations`;
+                url = `${API_BASE_URL}/api/projects/${this.projectId}/conversations`;
             } else {
-                url = 'http://localhost:8000/api/conversations';
+                url = `${API_BASE_URL}/api/conversations`;
             }
 
             const response = await fetch(url);
@@ -284,7 +285,7 @@ class ConversationList {
     async deleteConversation(conversationId) {
         try {
             const response = await fetch(
-                `http://localhost:8000/api/conversations/${conversationId}`,
+                `${API_BASE_URL}/api/conversations/${conversationId}`,
                 { method: 'DELETE' }
             );
 

@@ -1,5 +1,8 @@
 # Configuration Gemini 5 Agents — JARVIS 2.0
 
+> ℹ️ **NOTE** : Les sections mentionnant "Mode RAPIDE/COMPLET" sont obsolètes.  
+> Le système utilise maintenant un **workflow unique**. Voir [WORKFLOW_UNIQUE.md](../WORKFLOW_UNIQUE.md)
+
 **Date** : 7 mars 2026  
 **Version** : 1.0  
 **Tier** : Tier 1 (gratuit avec facturation activée)

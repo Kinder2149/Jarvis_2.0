@@ -4,6 +4,7 @@
  */
 
 import state from '../core/state.js';
+import { API_BASE_URL } from '../config.js';
 import { createElement } from '../utils/dom.js';
 
 class AgentSelector {
@@ -18,7 +19,7 @@ class AgentSelector {
      */
     async loadAgents() {
         try {
-            const response = await fetch('http://localhost:8000/agents');
+            const response = await fetch(`${API_BASE_URL}/agents`);
             const data = await response.json();
             this.agents = data.agents;
             state.set('agents', this.agents);

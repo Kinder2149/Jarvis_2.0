@@ -4,6 +4,7 @@
  */
 
 import state from '../core/state.js';
+import { API_BASE_URL } from '../config.js';
 import { createElement, clearContainer } from '../utils/dom.js';
 import AgentSelector from '../components/agent-selector.js';
 import Chat from '../components/chat.js';
@@ -118,7 +119,7 @@ class ChatSimpleView {
      */
     async createConversation(agentId) {
         try {
-            const response = await fetch('http://localhost:8000/api/conversations', {
+            const response = await fetch(`${API_BASE_URL}/api/conversations`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
