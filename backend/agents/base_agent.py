@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from backend.ia.providers.provider_factory import ProviderFactory
+from backend.providers.provider_factory import ProviderFactory
 
 LOG_MAX_BYTES = 5 * 1024 * 1024
 

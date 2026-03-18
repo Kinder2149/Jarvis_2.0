@@ -19,7 +19,7 @@ class AgentSelector {
      */
     async loadAgents() {
         try {
-            const response = await fetch(`${API_BASE_URL}/agents`);
+            const response = await fetch(`${API_BASE_URL}/api/agents`);
             const data = await response.json();
             this.agents = data.agents;
             state.set('agents', this.agents);
@@ -27,7 +27,7 @@ class AgentSelector {
             console.error('Erreur chargement agents:', error);
             this.agents = [
                 { id: 'BASE', name: 'BASE', role: 'Assistant générique' },
-                { id: 'JARVIS_Maître', name: 'JARVIS_Maître', role: 'Assistant personnel' }
+                { id: 'JARVIS_MAITRE', name: 'JARVIS_MAITRE', role: 'Assistant personnel' }
             ];
         }
     }

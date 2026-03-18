@@ -3,26 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>JARVIS 2.0 - Assistant IA Personnel</title>
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="/frontend/css/base.css">
-    <link rel="stylesheet" href="/frontend/css/layout.css">
+    <title>JARVIS 2.0 - Chat</title>
     <link rel="stylesheet" href="/frontend/css/chat.css">
-    <link rel="stylesheet" href="/frontend/css/components.css">
-    <link rel="stylesheet" href="/frontend/css/agents.css">
-    <link rel="stylesheet" href="/frontend/css/agents-enhanced.css">
-    <link rel="stylesheet" href="/frontend/css/library.css">
-    <link rel="stylesheet" href="/frontend/css/workflow-monitor.css">
 </head>
 <body>
-    <!-- Conteneur principal de l'application -->
-    <div id="app"></div>
+    <div id="app">
+        <header class="chat-header">
+            <div class="header-left">
+                <h1>🤖 JARVIS 2.0</h1>
+            </div>
+            <div class="header-right">
+                <div id="agent-selector-container"></div>
+                <button id="btn-new-conversation" class="btn-secondary">⟳ Nouvelle</button>
+            </div>
+        </header>
 
-    <!-- Application principale (ES6 Modules) -->
-    <script type="module" src="/frontend/app.js"></script>
+        <main class="chat-container">
+            <div id="chat-messages" class="messages-container">
+                <div class="empty-state">
+                    <div class="empty-icon">💬</div>
+                    <h2>Aucune conversation active</h2>
+                    <p>Sélectionnez un agent et cliquez sur "Activer" pour commencer.</p>
+                </div>
+            </div>
+
+            <div id="chat-input-container" class="input-container" style="display: none;">
+                <textarea id="chat-input" placeholder="Tapez votre message..." rows="3"></textarea>
+                <button id="btn-send" class="btn-primary">Envoyer</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/frontend/js/chat.js"></script>
 </body>
 </html>

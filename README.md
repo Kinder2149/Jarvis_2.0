@@ -1,242 +1,190 @@
-# JARVIS 2.0
+# JARVIS 2.0 - Chat Simple Multi-Agents
 
-Assistant IA personnel multi-agent pour la génération de code. Architecture 100% Gemini (Google AI) - Configuration Tier 1 validée le 22 février 2026.
+Assistant IA personnel avec chat simple et sélection d'agent. Architecture simplifiée sans base de données, stockage JSON unique.
 
-**Statut** : ✅ OPÉRATIONNEL (08/03/2026) - Tests live validés (85.7% succès)
+**Statut** : ✅ OPÉRATIONNEL - Version simplifiée (18/03/2026)
 
 ## 🚀 Démarrage Rapide
 
-### ⚡ LANCEMENT EN 1 COMMANDE (RECOMMANDÉ)
-
-**Windows (PowerShell)** :
-```powershell
-cd "d:\Coding\AppWindows\Jarvis 2.0"
-.\start_jarvis_complete.ps1
-```
-
-**Alternative (Python multi-plateforme)** :
-```bash
-python start_jarvis_complete.py
-```
-
-**Le script lance automatiquement** :
-- ✅ Serveur JARVIS (backend + frontend) sur http://localhost:8000
-- ✅ Serveur RAG (enrichissement contexte) sur http://localhost:5001
-- ✅ Vérification et installation des dépendances
-- ✅ Configuration .env (créé depuis .env.example si absent)
-
-**Options** :
-- `--SkipRAG` / `--skip-rag` : Lancer sans serveur RAG
-- `--Force` / `--force` : Forcer le lancement même si ports occupés
-
-**Guide complet** : Voir [`DEMARRAGE_RAPIDE.md`](DEMARRAGE_RAPIDE.md)
-
-### Prérequis
-- Python 3.11+
-- Clé API Google Gemini (Tier 1) : https://aistudio.google.com/app/apikey
-- Compte Google Cloud avec facturation activée (pour Tier 1)
-
-### URLs Importantes
-- **Application** : `http://localhost:8000/`
-- **API Docs** : `http://localhost:8000/docs`
-- **Health Check** : `http://localhost:8000/health`
-- **RAG API** : `http://localhost:5001/`
-
-### 🔧 Dépannage
-
-**Ports déjà utilisés (8000 ou 5001)** :
-
-```powershell
-# Trouver et tuer le processus sur le port 8000 (JARVIS)
-$process = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
-if ($process) { Stop-Process -Id $process -Force }
-
-# Trouver et tuer le processus sur le port 5001 (RAG)
-$process = Get-NetTCPConnection -LocalPort 5001 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
-if ($process) { Stop-Process -Id $process -Force }
-
-# Ou tuer tous les processus Python/Uvicorn
-Get-Process python,uvicorn -ErrorAction SilentlyContinue | Stop-Process -Force
-```
-
-**Alternative (commande unique)** :
-```powershell
-# Tuer tous les processus sur les ports 8000 et 5001
-@(8000, 5001) | ForEach-Object { $p = Get-NetTCPConnection -LocalPort $_ -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess; if ($p) { Stop-Process -Id $p -Force } }
-```
-
 ### Installation
 
-1. Cloner le projet
+1. **Cloner le projet**
 ```bash
-cd "d:\Coding\AppWindows\Jarvis 2.0"
+cd "c:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0"
 ```
 
-2. Installer les dépendances
+2. **Installer les dépendances**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Configurer l'environnement
+3. **Configurer l'environnement**
 ```bash
 cp .env.example .env
-# Éditer .env avec votre clé Gemini :
-# - GEMINI_API_KEY (Google AI Studio)
-# - Configuration agents → modèles Gemini (voir .env.example)
+# Éditer .env avec votre clé Gemini
 ```
 
-4. Lancer le backend
+4. **Lancer l'application**
 ```bash
+python start_server.py
+# ou
 uvicorn backend.app:app --reload --port 8000
 ```
 
-Important : exécuter cette commande depuis la racine du projet (sinon erreur `ModuleNotFoundError: No module named 'backend'`).
-
-5. Ouvrir l'application
-```text
+5. **Ouvrir l'application**
+```
 http://localhost:8000/
 ```
 
-## 📚 Documentation
+## 📋 Prérequis
 
-**Point d'entrée** : [`docs/_meta/INDEX.md`](docs/_meta/INDEX.md)
+- Python 3.11+
+- Clé API Google Gemini : https://aistudio.google.com/app/apikey
 
-### Documents de Référence
-- **Architecture** : [`docs/reference/ARCHITECTURE.md`](docs/reference/ARCHITECTURE.md)
-- **API** : [`docs/reference/API_SPECIFICATION.md`](docs/reference/API_SPECIFICATION.md)
-- **Agents** : [`docs/reference/AGENT_SYSTEM.md`](docs/reference/AGENT_SYSTEM.md)
-- **Optimisation Quotas API** : [`docs/reference/OPTIMISATION_QUOTAS_API.md`](docs/reference/OPTIMISATION_QUOTAS_API.md)
+## 🏗️ Architecture
 
-## 🏗️ Structure
+### Backend
+- **FastAPI** : API REST minimaliste
+- **Stockage JSON** : Fichier unique `backend/data/conversations.json`
+- **5 Agents IA** : JARVIS_MAITRE, ARCHITECTE, CODEUR, TESTEUR, VALIDATEUR
+- **Pas de base de données** : Système déconnecté, BDD archivée
+
+### Frontend
+- **Vanilla JavaScript** : SPA avec router
+- **3 Pages** : Home, Chat, Agents
+- **Chat avec dropdown** : Sélection d'agent avant conversation
+
+### Archivés
+- Base de données SQLite → `_archived/`
+- Système RAG → `_archived/RAG/`
+- Documentation workflow → `docs/history/archived_workflow_2026_03_18/`
+
+## 🤖 Agents Disponibles
+
+| Agent | Rôle | Modèle |
+|-------|------|--------|
+| **JARVIS_MAITRE** | Assistant personnel, orchestrateur | gemini-2.0-flash |
+| **ARCHITECTE** | Conception architecture projets | gemini-2.5-pro |
+| **CODEUR** | Génération de code Python | gemini-2.5-pro |
+| **TESTEUR** | Génération tests pytest | gemini-2.5-flash |
+| **VALIDATEUR** | Contrôle qualité code | gemini-3.1-pro-preview |
+
+## 📡 API
+
+### Endpoints Disponibles
+
+**Conversations**
+- `POST /api/conversations` - Créer conversation avec agent
+- `GET /api/conversations` - Lister conversations
+- `GET /api/conversations/{id}` - Détail conversation
+- `DELETE /api/conversations/{id}` - Supprimer conversation
+
+**Messages**
+- `GET /api/conversations/{id}/messages` - Historique messages
+- `POST /api/conversations/{id}/messages` - Envoyer message
+
+**Agents**
+- `GET /agents` - Liste agents disponibles
+
+**Health Check**
+- `GET /health` - Vérification serveur
+
+## 💬 Utilisation
+
+1. **Ouvrir l'application** : http://localhost:8000/
+2. **Sélectionner un agent** dans le dropdown
+3. **Cliquer sur "Activer"** pour créer une conversation
+4. **Chatter** avec l'agent sélectionné
+5. **Changer d'agent** : bouton "Nouvelle" pour créer une nouvelle conversation
+
+## 📁 Structure Projet
 
 ```
-Jarvis 2.0/
-├── backend/          # API FastAPI
-│   ├── agents/       # Système d'agents
-│   ├── ia/           # Providers IA (Gemini)
-│   ├── api.py        # Routes
-│   └── app.py        # Point d'entrée
-├── frontend/         # Interface utilisateur
-├── docs/             # Documentation structurée
-│   ├── reference/    # Docs contractuels
-│   ├── work/         # Docs en cours
-│   ├── history/      # Archives
-│   └── _meta/        # Index et règles
-└── .env              # Configuration (non versionné)
+Jarvis-2.0/
+├── backend/
+│   ├── agents/              # 5 agents IA
+│   ├── ia/                  # Providers (Gemini)
+│   ├── models/              # Models Pydantic simplifiés
+│   ├── storage/             # ConversationStore (JSON)
+│   ├── api.py               # Routes API (7 endpoints)
+│   └── app.py               # Application FastAPI
+├── frontend/
+│   ├── js/
+│   │   ├── views/           # home.js, chat-simple.js, agents.js
+│   │   ├── components/      # navbar.js, chat.js, agent-selector.js
+│   │   └── core/            # router.js, state.js
+│   ├── css/                 # Styles
+│   └── index.html
+├── _archived/               # BDD, RAG, Workflow (archivés)
+├── config_agents/           # Configuration agents (.md)
+├── .env                     # Configuration (non versionné)
+├── requirements.txt         # Dépendances Python
+└── README.md
 ```
 
 ## 🔧 Configuration
 
-### Configuration Tier 1 Gemini (Validée)
+### Variables d'Environnement (.env)
 
-Variables requises dans `.env` :
 ```env
-# Provider Gemini unique
-GEMINI_API_KEY=<votre_clé_google>
-GEMINI_MODEL=gemini-2.5-pro
+# Clé API Gemini
+GEMINI_API_KEY=votre_clé_ici
 
-# Configuration agents → modèles Gemini
-JARVIS_MAITRE_PROVIDER=gemini
-JARVIS_MAITRE_MODEL=gemini-2.5-pro
-
-BASE_PROVIDER=gemini
-BASE_MODEL=gemini-2.5-pro
-
-CODEUR_PROVIDER=gemini
+# Configuration agents (optionnel, valeurs par défaut)
+JARVIS_MAITRE_MODEL=gemini-2.0-flash
+ARCHITECTE_MODEL=gemini-2.5-pro
 CODEUR_MODEL=gemini-2.5-pro
-
-VALIDATEUR_PROVIDER=gemini
+TESTEUR_MODEL=gemini-2.5-flash
 VALIDATEUR_MODEL=gemini-3.1-pro-preview
 ```
 
-**Avantages** :
-- ✅ Configuration 100% Gemini (Tier 1)
-- ✅ Qualité code excellente (gemini-2.5-pro)
-- ✅ Quotas Tier 1 : 150 RPM, 2M TPM, 1K RPD
-- ✅ Coût quasi-nul (<$0.05 pour 3 projets complets)
-- ✅ Tests live validés : 3/3 réussis (Calculatrice, TODO, MiniBlog)
+## ✅ Fonctionnalités
 
-## 📡 API
+- ✅ Chat simple avec sélection d'agent
+- ✅ 5 agents IA spécialisés
+- ✅ Stockage conversations en JSON
+- ✅ Interface moderne et épurée
+- ✅ Navigation simplifiée (3 pages)
+- ✅ Pas de base de données
+- ✅ Pas de système de workflow complexe
 
-### Health Check
-```bash
-GET http://localhost:8000/
+## ❌ Fonctionnalités Supprimées
+
+- ❌ Projets et gestion de fichiers
+- ❌ Missions et workflow multi-agents
+- ❌ Orchestration automatique
+- ❌ Knowledge Base / Library
+- ❌ Base de données SQLite
+- ❌ Système RAG
+
+## 🔮 Évolution Future
+
+Si besoin de réintégrer les fonctionnalités avancées :
+- Tout est archivé dans `_archived/`
+- Documentation workflow dans `docs/history/archived_workflow_2026_03_18/`
+- Base de données dans `_archived/jarvis_data.db.backup_2026_03_18`
+- Système RAG dans `_archived/RAG/`
+
+## 📚 Documentation
+
+- **Architecture simplifiée** : `ARCHITECTURE_SIMPLE.md`
+- **Plan de redémarrage** : `.windsurf/plans/jarvis-reset-simple-chat-2c04c6.md`
+
+## 🐛 Dépannage
+
+**Port 8000 déjà utilisé** :
+```powershell
+# Tuer le processus sur le port 8000
+$p = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
+if ($p) { Stop-Process -Id $p -Force }
 ```
 
-### Chat
+**Erreur module backend** :
 ```bash
-POST http://localhost:8000/chat
-Content-Type: application/json
-
-{
-  "message": "Bonjour",
-  "session_id": "optional-uuid"
-}
+# Vérifier que vous êtes à la racine du projet
+cd "c:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0"
+python -m uvicorn backend.app:app --reload
 ```
-
-## ✅ État Actuel
-
-**Version** : 2.3 (Tests Live Validés - 8 Mars 2026)  
-**Statut** : ✅ Système opérationnel - JARVIS + RAG + Tests validés  
-**Tests** : 238/241 tests unitaires (99%), **6/7 tests live individuels (85.7%)**
-
-### Agents Disponibles
-- **JARVIS_Maître** : Orchestrateur principal (délégation, coordination) — `gemini-2.0-flash`
-- **ARCHITECTE** : Conception architecture projets complexes — `gemini-2.5-pro`
-- **CODEUR** : Génération de code (Python, tests, documentation) — `gemini-2.5-pro`
-- **TESTEUR** : Génération tests pytest exhaustifs — `gemini-2.5-flash`
-- **VALIDATEUR** : Contrôle qualité automatique — `gemini-3.1-pro-preview`
-- **BASE** : Worker générique (rapports, vérification) — `gemini-2.0-flash-lite`
-
-### Fonctionnalités Implémentées
-- ✅ Système multi-agent avec orchestration réelle
-- ✅ **Workflow RAPIDE** : CODEUR → TESTEUR → VALIDATEUR (validé)
-- ✅ **Workflow COMPLET** : ARCHITECTE → CODEUR → TESTEUR → VALIDATEUR (validé)
-- ✅ **Boucle de correction** : Max 6 tentatives, feedbacks précis (validée)
-- ✅ **Génération automatique de code sur le disque**
-- ✅ Détection automatique de complexité (SIMPLE/COMPLEX)
-- ✅ Gestion de projets avec contexte
-- ✅ Conversations persistées en base de données
-- ✅ Logging structuré avec traçabilité complète
-- ✅ Frontend moderne (gestion projets, conversations, chat)
-- ✅ Configuration Tier 1 Gemini validée (22/02/2026)
-- ✅ **Serveur RAG pour enrichissement contexte (7/03/2026)**
-- ✅ **Library locale 40 documents (CONFIG, Python, JS, Architecture)**
-- ✅ **Script de lancement automatique (JARVIS + RAG)**
-- ✅ **Suite de tests live complète** : 40 tests (unit, intégration, E2E)
-
-### Résultats Tests Live (8 Mars 2026)
-- ✅ **Workflow RAPIDE - Calculatrice** : 3 fichiers, validation OK (49.81s)
-- ✅ **Workflow RAPIDE - TODO** : 3 fichiers, validation OK (75.58s)
-- ✅ **Workflow RAPIDE - Multifichiers** : 4 fichiers, validation OK (66.28s)
-- ✅ **Boucle Correction** : 2 fichiers, 0 corrections nécessaires (71.04s)
-- ✅ **E2E Calculatrice** : 2 fichiers, 35 tests collectés (72.83s)
-- ✅ **E2E API REST** : ARCHITECTE validé, architecture complète (36.95s)
-- ❌ **E2E TODO Complet** : 6 corrections, code invalide (381.42s) - **Amélioration nécessaire**
-
-### Projets Validés (100% succès)
-- ✅ Calculatrices, utilitaires mathématiques
-- ✅ APIs REST simples
-- ✅ Projets multi-fichiers structurés
-
-### Limitations Actuelles
-- ⚠️ Projets TODO/CRUD complexes (échec validation)
-- ⚠️ Tests batch pytest-asyncio (event loop issue)
-- ⚠️ Pas d'authentification (usage local uniquement)
-- ⚠️ CORS permissif (localhost uniquement)
-- ⚠️ Quotas Tier 1 Gemini : 150 RPM, 1K RPD (suffisant pour usage normal)
-
-## 🔮 Prochaines Étapes
-
-Voir [`docs/work/TACHES_RESTANTES.md`](docs/work/TACHES_RESTANTES.md) pour le suivi détaillé.
-
-### Vision Long Terme (Non Implémentée)
-Voir [`JARVIS_Base_Document_Complet.md`](JARVIS_Base_Document_Complet.md) pour la vision complète :
-- Orchestration réelle (routage intelligent, délégation)
-- 9 agents spécialisés (ARCHITECTE, AUDITEUR, PLANIFICATEUR, EXÉCUTANT, etc.)
-- Persistance SQLite (sessions, historique, traçabilité)
-- Sécurité production (auth JWT, rate limiting, CORS strict)
-- Streaming (SSE/WebSocket)
 
 ## 📄 Licence
 

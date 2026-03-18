@@ -52,10 +52,7 @@ class Navbar {
         const nav = createElement('ul', { className: 'navbar-nav' }, [
             this.createNavLink('/', '🏠 Home'),
             this.createNavLink('/chat', '💬 Chat'),
-            this.createNavLink('/projects', '📁 Projets'),
-            this.createNavLink('/missions', '🎯 Missions'),
-            this.createNavLink('/agents', '🤖 Agents'),
-            this.createNavLink('/library', '📚 Librairie')
+            this.createNavLink('/agents', '🤖 Agents')
         ]);
 
         return nav;

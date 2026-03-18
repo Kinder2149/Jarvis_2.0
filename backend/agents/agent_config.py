@@ -9,18 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 AGENT_CONFIGS = {
-    "BASE": {
-        "name": "BASE",
-        "role": "Assistant générique",
-        "description": "Agent neutre servant de worker pour tâches génériques. Template uniquement.",
-        "permissions": ["read", "write"],
-        "type": "worker",
-        "temperature": 0.7,
-        "max_tokens": 4096,
-        "prompt_file": "config_agents/BASE.md",
-        "min_delay_seconds": 6.0,
-        "api_key_env": "GEMINI_API_KEY",  # Fallback global
-    },
+    # NOTE: BASE est un template uniquement, pas un agent actif (pas de clé API)
     "ARCHITECTE": {
         "name": "ARCHITECTE",
         "role": "Agent de conception architecture",
@@ -160,7 +149,6 @@ def list_agents_detailed() -> list[dict]:
         "CODEUR": os.getenv("CODEUR_MODEL", "gemini-2.5-pro"),
         "TESTEUR": os.getenv("TESTEUR_MODEL", "gemini-2.0-flash"),
         "VALIDATEUR": os.getenv("VALIDATEUR_MODEL", "gemini-3.1-pro-preview"),
-        "BASE": os.getenv("BASE_MODEL", "gemini-2.5-pro"),
     }
     
     agents = []

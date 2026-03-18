@@ -1,23 +1,28 @@
+"""
+Application FastAPI simplifiée - JARVIS 2.0
+Chat simple multi-agents sans base de données
+"""
+
 import logging
-from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Charger .env AVANT tous les autres imports (override=True pour forcer rechargement)
+# Charger .env AVANT tous les autres imports
 load_dotenv(override=True)
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from backend.api import router
-from backend.db.database import db_instance
+from backend.chat.api import router, initialiser_stockage_conversations
+from backend.chat.stockage import StockageConversations
 from backend.logging_config import setup_logging
-from backend.ia.providers.provider_factory import ProviderFactory
+from backend.providers.provider_factory import ProviderFactory
 
-# Configuration du logging au démarrage
+# Configuration du logging
 setup_logging(log_level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -34,26 +39,24 @@ class NoCacheStaticMiddleware(BaseHTTPMiddleware):
         return response
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Vider le cache des providers pour forcer rechargement avec nouveau .env
-    ProviderFactory.clear_cache()
-    logger.info("Provider cache cleared - configuration rechargée depuis .env")
-    
-    # Vider le cache des agents pour forcer rechargement des prompts
-    from backend.agents.agent_factory import clear_cache
-    clear_cache()
-    logger.info("Agent cache cleared - prompts système rechargés depuis fichiers .md")
-    
-    await db_instance.initialize()
-    await db_instance.seed_library_if_empty()
-    yield
+# Initialisation du stockage de conversations
+stockage_conversations = StockageConversations()
+initialiser_stockage_conversations(stockage_conversations)
+logger.info("StockageConversations initialisé")
+
+# Vider le cache des providers pour forcer rechargement avec nouveau .env
+ProviderFactory.clear_cache()
+logger.info("Provider cache cleared - configuration rechargée depuis .env")
+
+# Vider le cache des agents pour forcer rechargement des prompts
+from backend.agents.agent_factory import clear_cache
+clear_cache()
+logger.info("Agent cache cleared - prompts système rechargés depuis fichiers .md")
 
 
 app = FastAPI(
-    title="JARVIS",
-    description="Application FastAPI principale pour JARVIS 2.0 - Dernière modification: 2026-02-18 11:06",
-    lifespan=lifespan
+    title="JARVIS 2.0 - Chat Simple",
+    description="Application de chat simple multi-agents",
 )
 
 app.add_middleware(NoCacheStaticMiddleware)
@@ -77,26 +80,20 @@ app.include_router(router)
 frontend_path = Path(__file__).parent.parent / "frontend"
 app.mount("/frontend", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
 
-# Servir index.html à la racine
-from fastapi.responses import FileResponse
+
+@app.get("/")
+async def root():
+    """Servir index.html à la racine"""
+    return FileResponse(frontend_path / "index.html")
+
 
 @app.get("/index.html")
 async def serve_index():
     """Servir index.html"""
     return FileResponse(frontend_path / "index.html")
 
+
 @app.get("/health")
 async def health():
-    """Health check endpoint - répond immédiatement sans dépendances"""
-    return {"status": "ok"}
-
-
-@app.get("/")
-async def root():
-    """Rediriger vers index.html"""
-    return FileResponse(frontend_path / "index.html")
-
-
-@app.get("/health_check")
-def health_check():
-    return {"status": "Jarvis backend running"}
+    """Health check endpoint"""
+    return {"status": "ok", "message": "JARVIS 2.0 - Chat Simple"}
