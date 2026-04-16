@@ -136,10 +136,10 @@ JARVIS/
 - **Module code complet** : 6 workflows, 142 tests, rollback atomique, clôture automatique
 
 **🚧 En cours**
-- Module chat : backend livré, routes 200 OK, chat simple fonctionnel (prompt système modifiable, message envoyable) — À compléter : lecture dossier local, accès internet, project_id nullable
+- Module chat enrichi : lecture dossier local + accès internet via web search
 
 **❌ Bugs connus**
-- start.bat ne se lance pas — serveur démarré manuellement (non bloquant)
+- Aucun
 
 **🔒 Hors scope MVP**
 - Authentification
@@ -207,16 +207,15 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Clôture module chat + cadrage module chat enrichi
-**Contexte :** Module chat livré (142/142 tests). Deux bugs critiques corrigés (clé API masquée écrasée + ChatConfig manquant dans schema). Session cadrage : décisions prises sur périmètre élargi (lecture dossier + internet), architecture module projet, project_id nullable.
-**Blocage :** start.bat ne fonctionne pas (lancement manuel). Test live chat non encore réalisé post-corrections.
-**Résultat attendu :** Prompt A (clôture : fix start.bat + project_id nullable + git commit) + Prompt B (module chat enrichi : dossier local + internet) produits et validés.
+**Objectif :** Module chat enrichi (lecture dossier local + accès internet)
+**Contexte :** Module chat de base clôturé. start.bat fixé (uvicorn --reload + navigateur). project_id confirmé nullable (déjà implémenté dans database.py ligne 83). 142/142 tests passent. Git commit effectué.
+**Blocage :** Aucun
+**Résultat attendu :** Module chat enrichi livré (lecture dossier local + accès internet via web search).
 
 ---
 
 ## 9. BACKLOG
 
-1. **Clôture module chat de base** — fix start.bat + ajout project_id nullable sur conversations + git commit
-2. **Module chat enrichi** — lecture dossier local (chat sans projet = dossier temp ; chat avec projet = dossier projet hérité) + accès internet via web search
-3. **Module projet** — conteneur regroupant missions code + conversations chat + contexte partagé + lien dossier local
-4. **Phase 4 UI avancée** — éditeur diff interactif, historique replay
+1. **Module chat enrichi** — lecture dossier local (chat sans projet = dossier temp ; chat avec projet = dossier projet hérité) + accès internet via web search
+2. **Module projet** — conteneur regroupant missions code + conversations chat + contexte partagé + lien dossier local
+3. **Phase 4 UI avancée** — éditeur diff interactif, historique replay
