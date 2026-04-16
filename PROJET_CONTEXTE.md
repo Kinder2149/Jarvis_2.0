@@ -209,10 +209,10 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Backend V2 Readiness livré
-**Contexte :** 5 améliorations backend pour frontend V2 : coût total par session (GET /projects/{id}/sessions), preview dernier message (GET /chat/conversations), listing fichiers locaux (GET /files/{id}/local-list), auto-titrage conversations (1er message), logs filtrables par projet (GET /pipelines/logs?project_id). 162/162 tests passent.
+**Objectif :** Frontend V1 améliorations livré
+**Contexte :** Clarification affichage 3 modules (projets, code, chat) avec titres, icônes et descriptions. Tests automatiques frontend créés (Playwright, 5 tests : pages, navigation, CSS). 5/5 tests passent.
 **Blocage :** Aucun
-**Résultat attendu :** Backend prêt pour frontend V2.
+**Résultat attendu :** Frontend V1 validé, prêt pour V2 complète.
 
 ---
 
