@@ -28,6 +28,13 @@
         <label>Google (optionnel)</label>
         <input type="password" id="google-key" placeholder="AIza...">
       </div>
+      <div style="margin-top: 1rem;">
+        <label>Clé Brave Search (optionnel)</label>
+        <input type="password" id="web-search-key" placeholder="Laisser vide pour désactiver la recherche web">
+        <div style="margin-top: 0.25rem; font-size: 0.75rem; color: var(--text-muted);">
+          <a href="https://brave.com/search/api/" target="_blank" style="color: var(--accent); text-decoration: none;">Obtenir une clé gratuite → search.brave.com/app</a>
+        </div>
+      </div>
     </div>
     
     <div class="card">
@@ -105,6 +112,7 @@
       const openrouterInput = document.getElementById('openrouter-key');
       const anthropicInput = document.getElementById('anthropic-key');
       const googleInput = document.getElementById('google-key');
+      const webSearchInput = document.getElementById('web-search-key');
       
       if (config.api_keys.openrouter_key && config.api_keys.openrouter_key.startsWith('...')) {
         openrouterInput.value = '';
@@ -127,6 +135,13 @@
         googleInput.value = config.api_keys.google_key || '';
       }
       
+      if (config.api_keys.web_search_key && config.api_keys.web_search_key.startsWith('...')) {
+        webSearchInput.value = '';
+        webSearchInput.placeholder = 'Clé enregistrée (masquée)';
+      } else {
+        webSearchInput.value = config.api_keys.web_search_key || '';
+      }
+      
       document.getElementById('model-routing').value = config.model_preferences.routing;
       document.getElementById('model-structuring').value = config.model_preferences.structuring;
       document.getElementById('model-code').value = config.model_preferences.code;
@@ -145,12 +160,14 @@
       const openrouterValue = document.getElementById('openrouter-key').value;
       const anthropicValue = document.getElementById('anthropic-key').value;
       const googleValue = document.getElementById('google-key').value;
+      const webSearchValue = document.getElementById('web-search-key').value;
       
       const config = {
         api_keys: {
           openrouter_key: (openrouterValue && !openrouterValue.startsWith('...')) ? openrouterValue : '',
           anthropic_key: (anthropicValue && !anthropicValue.startsWith('...')) ? anthropicValue : '',
-          google_key: (googleValue && !googleValue.startsWith('...')) ? googleValue : ''
+          google_key: (googleValue && !googleValue.startsWith('...')) ? googleValue : '',
+          web_search_key: (webSearchValue && !webSearchValue.startsWith('...')) ? webSearchValue : ''
         },
         model_preferences: {
           routing: document.getElementById('model-routing').value,

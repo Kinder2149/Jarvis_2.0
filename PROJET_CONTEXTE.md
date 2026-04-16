@@ -117,7 +117,7 @@ JARVIS/
 - Gestion projets CRUD (enregistrement, liste, suppression)
 - Pipeline engine complet (6 workflows, state machine, persistance SQLite)
 - Routing modèles par type de tâche (routing/structuring/code/analysis)
-- Suite de tests 142/142 (unitaires + intégration)
+- Suite de tests 159/159 (unitaires + intégration)
 - Configuration modèles équilibrée (routing=Gemini Flash, code=Haiku, analysis=Sonnet)
 - Roadmap OpenRouter validée (6 slugs testés live)
 - Tous les workflows testés live (session_start, session_end, bug_simple, mission_complexe, nouveau_projet, projet_existant)
@@ -134,10 +134,10 @@ JARVIS/
 - Architecture respectée : context_manager seul lecteur/écrivain de PROJET_CONTEXTE.md
 - Prompts (25) : format corrigé, JSON pur, chemin inside bloc code
 - **Module code complet** : 6 workflows, 142 tests, rollback atomique, clôture automatique
-- **Module chat enrichi** : lecture dossier local (folder_path nullable, héritage depuis projet, GRAPH_REPORT prioritaire) + accès internet (web search via Brave API, détection auto, désactivation gracieuse sans clé)
+- **Module chat enrichi complet** : lecture dossier local (folder_path nullable, héritage projet, GRAPH_REPORT prioritaire, UI sidebar + bandeau info) + accès internet (web search Brave API, détection auto, indicateur 🔍, icône 🌐, désactivation gracieuse). 159/159 tests.
 
 **🚧 En cours**
-- Module chat frontend : UI pour définir folder_path + indicateur recherche web
+- Aucun
 
 **❌ Bugs connus**
 - Aucun
@@ -190,7 +190,7 @@ JARVIS/
 | 2026-04-16 | Module chat : périmètre élargi | Lecture dossier local + accès internet inclus dans le module chat (pas reporté au module projet) |
 | 2026-04-16 | project_id nullable sur conversations | Toute conversation chat aura un project_id nullable dès maintenant — évite migration future |
 | 2026-04-16 | Architecture module projet | Un projet est un conteneur : il regroupe missions code + conversations chat + contexte partagé + lien dossier local |
-| 2026-04-16 | start.bat : bug identifié | Le serveur se lance manuellement en attendant le fix — non bloquant |
+| 2026-04-16 | start.bat : corrigé | python -m uvicorn + start /min + pause — lancement double-clic fonctionnel |
 
 ---
 
@@ -208,15 +208,14 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Module chat frontend (UI folder_path + indicateur web search)
-**Contexte :** Module chat enrichi backend livré (folder_path, read_local_folder, read_local_file, search_web). 159/159 tests passent. Reste à implémenter : UI chat.html pour définir/afficher folder_path + indicateur recherche web + settings.html champ clé web search.
+**Objectif :** Module chat enrichi complet livré
+**Contexte :** Backend + frontend livrés. 159/159 tests passent. UI folder_path (sidebar + bouton définir/modifier + bandeau info) + indicateur recherche web (🔍 + 🌐) + champ clé Brave Search dans settings.
 **Blocage :** Aucun
-**Résultat attendu :** Frontend chat complet avec gestion dossier local + recherche web.
+**Résultat attendu :** Module chat enrichi complet et fonctionnel.
 
 ---
 
 ## 9. BACKLOG
 
-1. **Module chat enrichi frontend** — UI pour définir/afficher folder_path + indicateur recherche web + champ clé web search dans settings
-2. **Module projet** — conteneur regroupant missions code + conversations chat + contexte partagé + lien dossier local
-3. **Phase 4 UI avancée** — éditeur diff interactif, historique replay
+1. **Module projet** — conteneur regroupant missions code + conversations chat + contexte partagé + lien dossier local
+2. **Phase 4 UI avancée** — éditeur diff interactif, historique replay
