@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS - Chat</title>
+  <link rel="stylesheet" href="/app/assets/style.css">
+</head>
+<body>
+  <div class="header">
+    <h1><a href="/app/index.html" style="color: inherit; text-decoration: none;">← JARVIS</a></h1>
+    <span>Chat</span>
+  </div>
+  
+  <div class="chat-layout">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+      <div class="project-select-bar">
+        <select id="project-select">
+          <option value="">Aucun projet</option>
+        </select>
+      </div>
+      
+      <div class="chat-sidebar-header">
+        <button class="btn btn-primary" style="width: 100%;" onclick="newConversation()">+ Nouvelle conversation</button>
+      </div>
+      
+      <div class="chat-sidebar-list" id="conversations-list">
+        <!-- Conversations chargées dynamiquement -->
+      </div>
+    </div>
+    
+    <!-- Main chat area -->
+    <div class="chat-main">
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-empty">
+          <span style="font-size: 2rem;">💬</span>
+          <span>Sélectionne ou crée une conversation</span>
+        </div>
+      </div>
+      
+      <div class="chat-input-area">
+        <textarea id="chat-input" class="chat-textarea" placeholder="Écris un message..." rows="1"></textarea>
+        <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app/assets/app.js"></script>
+  <script>
+    let currentConvId = null;
+    let currentProjectId = null;
+    let conversations = [];
+    let isSending = false;
+
+    // Chargement initial
+    async function init() {
+      await loadProjects();
+      await loadConversations();
+      setupTextareaAutoResize();
+    }
+
+    // Charger les projets
+    async function loadProjects() {
+      try {
+        const projects = await fetchAPI('/projects');
+        const select = document.getElementById('project-select');
+        
+        projects.forEach(p => {
+          const option = document.createElement('option');
+          option.value = p.id;
+          option.textContent = p.name;
+          select.appendChild(option);
+        });
+        
+        select.addEventListener('change', (e) => {
+          currentProjectId = e.target.value || null;
+          loadConversations();
+        });
+      } catch (e) {
+        console.error('Erreur chargement projets:', e);
+      }
+    }
+
+    // Charger les conversations
+    async function loadConversations() {
+      try {
+        const url = currentProjectId 
+          ? `/chat/conversations?project_id=${currentProjectId}`
+          : '/chat/conversations';
+        
+        conversations = await fetchAPI(url);
+        
+        const list = document.getElementById('conversations-list');
+        
+        if (conversations.length === 0) {
+          list.innerHTML = '<p style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">Aucune conversation</p>';
+          return;
+        }
+        
+        list.innerHTML = conversations.map(conv => `
+          <div class="conversation-item ${conv.id === currentConvId ? 'active' : ''}" 
+               data-id="${conv.id}" 
+               onclick="selectConversation(${conv.id})">
+            <span class="conv-title">${conv.title}</span>
+            <span class="conv-delete" onclick="event.stopPropagation(); deleteConversation(${conv.id})">✕</span>
+          </div>
+        `).join('');
+        
+        // Si currentConvId n'est plus dans la liste, le réinitialiser
+        if (currentConvId && !conversations.find(c => c.id === currentConvId)) {
+          currentConvId = null;
+          showEmptyState();
+        }
+      } catch (e) {
+        console.error('Erreur chargement conversations:', e);
+        showToast('Erreur chargement conversations', 'error');
+      }
+    }
+
+    // Nouvelle conversation
+    async function newConversation() {
+      try {
+        const body = {
+          project_id: currentProjectId ? parseInt(currentProjectId) : null,
+          title: 'Nouvelle conversation'
+        };
+        
+        const conv = await fetchAPI('/chat/conversations', 'POST', body);
+        await loadConversations();
+        selectConversation(conv.id);
+      } catch (e) {
+        console.error('Erreur création conversation:', e);
+        showToast('Erreur création conversation', 'error');
+      }
+    }
+
+    // Sélectionner une conversation
+    async function selectConversation(id) {
+      currentConvId = id;
+      
+      // Mettre à jour l'UI
+      document.querySelectorAll('.conversation-item').forEach(item => {
+        item.classList.toggle('active', parseInt(item.dataset.id) === id);
+      });
+      
+      try {
+        const conv = await fetchAPI(`/chat/conversations/${id}`);
+        
+        const messagesDiv = document.getElementById('chat-messages');
+        messagesDiv.innerHTML = '';
+        
+        if (conv.messages.length === 0) {
+          messagesDiv.innerHTML = '<div class="chat-empty"><span style="font-size: 2rem;">💬</span><span>Commence la conversation</span></div>';
+        } else {
+          conv.messages.forEach(msg => renderMessage(msg));
+          scrollToBottom();
+        }
+      } catch (e) {
+        console.error('Erreur chargement conversation:', e);
+        showToast('Erreur chargement conversation', 'error');
+      }
+    }
+
+    // Afficher un message
+    function renderMessage(msg) {
+      const messagesDiv = document.getElementById('chat-messages');
+      
+      // Supprimer l'état vide si présent
+      const emptyState = messagesDiv.querySelector('.chat-empty');
+      if (emptyState) emptyState.remove();
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${msg.role}`;
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      
+      if (msg.role === 'assistant') {
+        bubble.innerHTML = renderMarkdown(msg.content);
+      } else {
+        bubble.textContent = msg.content;
+      }
+      
+      const time = document.createElement('div');
+      time.className = 'message-time';
+      const date = new Date(msg.created_at);
+      time.textContent = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      
+      messageDiv.appendChild(bubble);
+      messageDiv.appendChild(time);
+      messagesDiv.appendChild(messageDiv);
+    }
+
+    // Envoyer un message
+    async function sendMessage() {
+      if (isSending || !currentConvId) return;
+      
+      const input = document.getElementById('chat-input');
+      const content = input.value.trim();
+      
+      if (!content) return;
+      
+      isSending = true;
+      const sendBtn = document.getElementById('send-btn');
+      sendBtn.disabled = true;
+      
+      // Afficher le message user immédiatement
+      const userMsg = {
+        role: 'user',
+        content: content,
+        created_at: new Date().toISOString()
+      };
+      renderMessage(userMsg);
+      
+      // Vider l'input
+      input.value = '';
+      input.style.height = 'auto';
+      
+      // Afficher l'indicateur de frappe
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message assistant';
+      typingDiv.innerHTML = `
+        <div class="message-bubble">
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      `;
+      document.getElementById('chat-messages').appendChild(typingDiv);
+      scrollToBottom();
+      
+      try {
+        const response = await fetchAPI(`/chat/conversations/${currentConvId}/messages`, 'POST', { content });
+        
+        // Supprimer l'indicateur de frappe
+        typingDiv.remove();
+        
+        // Afficher la réponse de l'assistant
+        renderMessage(response.assistant_message);
+        scrollToBottom();
+        
+      } catch (e) {
+        console.error('Erreur envoi message:', e);
+        typingDiv.remove();
+        showToast(e.message || 'Erreur envoi message', 'error');
+      } finally {
+        isSending = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    // Supprimer une conversation
+    async function deleteConversation(id) {
+      if (!confirm('Supprimer cette conversation ?')) return;
+      
+      try {
+        await fetchAPI(`/chat/conversations/${id}`, 'DELETE');
+        
+        if (currentConvId === id) {
+          currentConvId = null;
+          showEmptyState();
+        }
+        
+        await loadConversations();
+        showToast('Conversation supprimée');
+      } catch (e) {
+        console.error('Erreur suppression conversation:', e);
+        showToast('Erreur suppression conversation', 'error');
+      }
+    }
+
+    // Afficher l'état vide
+    function showEmptyState() {
+      const messagesDiv = document.getElementById('chat-messages');
+      messagesDiv.innerHTML = `
+        <div class="chat-empty">
+          <span style="font-size: 2rem;">💬</span>
+          <span>Sélectionne ou crée une conversation</span>
+        </div>
+      `;
+    }
+
+    // Scroll vers le bas
+    function scrollToBottom() {
+      const messagesDiv = document.getElementById('chat-messages');
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Auto-resize textarea
+    function setupTextareaAutoResize() {
+      const textarea = document.getElementById('chat-input');
+      
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 140) + 'px';
+      });
+      
+      textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    }
+
+    // Initialisation
+    init();
+  </script>
+</body>
+</html>

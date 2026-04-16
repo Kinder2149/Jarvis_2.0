@@ -1,0 +1,13 @@
+{
+  "api_keys": {
+    "openrouter_key": "sk-or-VOTRE_CLE_OPENROUTER_ICI",
+    "anthropic_key": "",
+    "google_key": ""
+  },
+  "model_preferences": {
+    "routing": "google/gemini-2.0-flash-001",
+    "structuring": "google/gemini-2.0-flash-001",
+    "code": "anthropic/claude-haiku-4.5",
+    "analysis": "anthropic/claude-sonnet-4.5"
+  }
+}

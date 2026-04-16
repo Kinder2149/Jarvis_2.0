@@ -1,39 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS 2.0 - Chat</title>
-    <link rel="stylesheet" href="/frontend/css/chat.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS - Dashboard</title>
+  <link rel="stylesheet" href="/app/assets/style.css">
 </head>
 <body>
-    <div id="app">
-        <header class="chat-header">
-            <div class="header-left">
-                <h1>🤖 JARVIS 2.0</h1>
-            </div>
-            <div class="header-right">
-                <div id="agent-selector-container"></div>
-                <button id="btn-new-conversation" class="btn-secondary">⟳ Nouvelle</button>
-            </div>
-        </header>
-
-        <main class="chat-container">
-            <div id="chat-messages" class="messages-container">
-                <div class="empty-state">
-                    <div class="empty-icon">💬</div>
-                    <h2>Aucune conversation active</h2>
-                    <p>Sélectionnez un agent et cliquez sur "Activer" pour commencer.</p>
-                </div>
-            </div>
-
-            <div id="chat-input-container" class="input-container" style="display: none;">
-                <textarea id="chat-input" placeholder="Tapez votre message..." rows="3"></textarea>
-                <button id="btn-send" class="btn-primary">Envoyer</button>
-            </div>
-        </main>
+  <div class="header">
+    <h1>JARVIS</h1>
+    <div style="display: flex; gap: 1rem;">
+      <a href="/app/chat.html" class="btn btn-primary">💬 Chat</a>
+      <a href="/app/settings.html">⚙ Paramètres</a>
     </div>
+  </div>
+  
+  <div class="container">
+    <div id="projects-grid" class="grid"></div>
+    <div style="text-align: center; margin-top: 2rem;">
+      <button class="btn btn-primary" onclick="showAddProjectModal()">+ Ajouter un projet</button>
+    </div>
+  </div>
 
-    <script type="module" src="/frontend/js/chat.js"></script>
+  <script src="/app/assets/app.js"></script>
+  <script>
+    async function loadProjects() {
+      const projects = await fetchAPI('/projects');
+      const grid = document.getElementById('projects-grid');
+      
+      if (projects.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Aucun projet enregistré</p>';
+        return;
+      }
+      
+      grid.innerHTML = projects.map(p => `
+        <div class="card">
+          <h3>${p.name}</h3>
+          <span class="badge badge-info">${p.type}</span>
+          <p style="color: var(--text-muted); margin: 0.5rem 0;">${p.path}</p>
+          <button class="btn btn-primary" onclick="location.href='/app/project.html?id=${p.id}'">Ouvrir →</button>
+        </div>
+      `).join('');
+    }
+    
+    function showAddProjectModal() {
+      const form = `
+        <input type="text" id="project-name" placeholder="Nom du projet" style="margin-bottom: 0.5rem;">
+        <input type="text" id="project-path" placeholder="Chemin du projet" style="margin-bottom: 0.5rem;">
+        <select id="project-type">
+          <option value="Outil IA">Outil IA</option>
+          <option value="Web">Web</option>
+          <option value="Mobile">Mobile</option>
+        </select>
+      `;
+      
+      showModal('Nouveau projet', form, async () => {
+        const name = document.getElementById('project-name').value;
+        const path = document.getElementById('project-path').value;
+        const type = document.getElementById('project-type').value;
+        
+        await fetchAPI('/projects', 'POST', { name, path, type });
+        showToast('Projet ajouté');
+        loadProjects();
+      });
+    }
+    
+    loadProjects();
+  </script>
 </body>
 </html>

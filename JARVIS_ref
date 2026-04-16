@@ -1,0 +1,173 @@
+# JARVIS — Guide d'utilisation
+
+> Ce document explique COMMENT UTILISER JARVIS.
+> Pour l'état technique et les décisions : voir PROJET_CONTEXTE.md
+> Dernière mise à jour : 2026-04-16
+
+---
+
+## CE QUE JARVIS FAIT POUR TOI
+
+Tu décris ce que tu veux faire. JARVIS :
+1. Choisit automatiquement le bon modèle pour chaque étape
+2. Injecte le bon contexte de ton projet à chaque étape
+3. Te demande de valider aux 2 points critiques maximum
+4. Applique les fichiers directement dans ton projet
+5. Met à jour PROJET_CONTEXTE.md et CHANGELOG.md automatiquement
+
+Tu gardes la main sur : choisir le workflow, valider le diagnostic, valider le code.
+Tu ne touches plus à : sélectionner un modèle, copier du contexte, appliquer les fichiers.
+
+---
+
+## QUEL WORKFLOW UTILISER ?
+Tu veux travailler sur un projet ?
+│
+├── Début de ta session de travail
+│ → session_start (~15s, $0.001)
+│
+├── Fin de ta session de travail
+│ → session_end (~30s, $0.002)
+│
+├── Tu as un bug à corriger
+│ → bug_simple (~45s, $0.005)
+│
+├── Tu veux ajouter une fonctionnalité
+│ → mission_complexe (~3min, $0.03)
+│ └── Si très architecturale : cadrage Claude Projects d'abord
+│
+├── Tu démarres un nouveau projet
+│ → nouveau_projet (~4min, $0.03)
+│
+└── Tu veux auditer / onboarder un projet existant
+→ projet_existant (~4min, $0.04)
+
+**Règle si tu doutes :** Cadrage Claude Projects (Partie 2A) avant de lancer JARVIS.
+JARVIS exécute — Claude Projects décide.
+---
+## LES 6 WORKFLOWS EN DÉTAIL
+---
+### session_start — Début de session
+**Tu fais :** Sélectionner le projet → Lancer → Lire (aucune saisie)
+**JARVIS fait :**
+- Lit nom, statut, dernière session, premier item backlog (sections 1, 8, 9)
+- Produit un résumé d'orientation en 5 lignes
+**Résultat :** Tu sais exactement où tu en étais et quoi faire ensuite.
+**Aucune validation requise.**
+---
+### session_end — Fin de session
+**Tu fais :** Lancer → Lire le résumé → Valider ou modifier
+**JARVIS fait :**
+- Analyse ce qui a été fait (sections 1, 4, 6, 8, 9)
+- Génère le résumé de session + ligne CHANGELOG
+- Après ta validation → écrit automatiquement PROJET_CONTEXTE.md section 8
+  et CHANGELOG.md
+**Résultat :** Projet documenté, prêt pour la prochaine session.
+**1 validation (le résumé de clôture).**
+---
+### bug_simple — Correction de bug
+**Tu fais :**
+1. Décrire le bug en 1-3 phrases
+2. Lire le diagnostic → **Valider ou Rejeter** (checkpoint 1)
+3. Lire la correction → **Appliquer et valider** ou Rejeter (checkpoint 2)
+**JARVIS fait (5 étapes auto + 2 validations) :**
+| # | Étape | Ce qui se passe |
+|---|-------|-----------------|
+| 0 | Classification | Classe le type de bug |
+| 1 | Collecte info | Pose 3 questions de diagnostic |
+| 2 | **Diagnostic** ⚠️ | Identifie couche, cause, fichiers — **tu valides** |
+| 3 | **Correction** ⚠️ | Génère le code corrigé — **tu appliques et valides** |
+| 4 | Clôture | Met à jour PROJET_CONTEXTE.md + CHANGELOG.md |
+**À l'étape Correction :**
+- `✗ Rejeter` → pipeline annulé
+- `✎ Modifier` → tu edites le code avant validation
+- `✓ Valider (sans appliquer)` → continue, tu appliques à la main
+- `✓ Appliquer et valider` → JARVIS écrit les fichiers sur disque + continue
+**Format du code produit :**
+```python
+chemin/vers/fichier.py
+[contenu complet du fichier corrigé]
+
+JARVIS détecte le chemin en première ligne du bloc et écrit chaque fichier.
+Si un fichier échoue, tout est annulé (écriture atomique).
+---
+### mission_complexe — Nouvelle fonctionnalité
+**Tu fais :**
+1. Décrire la fonctionnalité voulue
+2. Lire le cadrage (faisabilité, risques, questions éventuelles) → **Valider** (checkpoint 1)
+3. Lire le code généré → **Appliquer et valider** (checkpoint 2)
+**JARVIS fait (7 étapes) :**
+| # | Étape | Ce qui se passe |
+|---|-------|-----------------|
+| 0 | Classification | Classe la mission |
+| 1 | **Cadrage** ⚠️ | Vérifie cohérence avec le projet, risques — **tu valides** |
+| 2 | Document mission | Produit le doc de mission formel |
+| 3 | Sélection fichiers | Identifie les fichiers à modifier (max 8) |
+| 4 | **Exécution** ⚠️ | Génère le code multi-fichiers — **tu appliques et valides** |
+| 5 | Vérification | Checklist de test manuel en 3 étapes |
+| 6 | Clôture | Met à jour PROJET_CONTEXTE.md + CHANGELOG.md |
+**Quand cadrer avec Claude Projects d'abord :**
+- Feature qui touche l'architecture globale
+- Feature qui implique de nouvelles dépendances
+- Feature dont le scope n'est pas encore clair
+---
+### nouveau_projet — Démarrer un projet from scratch
+**Tu fais :**
+1. Décrire ton idée (quelques phrases)
+2. Répondre à 5 questions de clarification (type, objectif, features, contraintes)
+3. Valider le PROJET_CONTEXTE.md produit (checkpoint 1)
+4. Valider le plan de structure — arborescence et fichiers (checkpoint 2)
+**JARVIS fait (7 étapes) :**
+| # | Étape | Ce qui se passe |
+|---|-------|-----------------|
+| 0 | Capture besoin | Pose 5 questions de clarification |
+| 1 | Q/R | Structure tes réponses en données structurées |
+| 2 | **Draft PROJET_CONTEXTE** ⚠️ | Génère les 9 sections — **tu valides** |
+| 3 | Validation stack | Vérifie cohérence avec STACK_STANDARD.md |
+| 4 | **Plan structure** ⚠️ | Arborescence + liste des fichiers — **tu valides** |
+| 5 | Création fichiers | Code minimal fonctionnel pour chaque fichier |
+| 6 | Confirmation | Résumé du projet créé |
+**Résultat :** Dossier projet avec structure de base, PROJET_CONTEXTE.md complet,
+fichiers initiaux fonctionnels.
+---
+### projet_existant — Auditer / onboarder un projet
+**Tu fais :**
+1. Enregistrer le projet dans JARVIS (chemin du dossier)
+2. Lancer "Audit projet existant" (aucune saisie initiale)
+3. Répondre aux questions sur les zones ambiguës
+4. Valider le PROJET_CONTEXTE.md produit (checkpoint 1)
+5. Valider le plan de nettoyage documentation (checkpoint 2)
+**JARVIS fait (7 étapes) :**
+| # | Étape | Ce qui se passe |
+|---|-------|-----------------|
+| 0 | Scan projet | Arborescence, stats, technologies détectées |
+| 1 | Audit code | Analyse complète avec graphify (si disponible) |
+| 2 | Questions zones grises | Identifie 5 zones ambiguës |
+| 3 | Q/R complémentaires | Structure tes réponses |
+| 4 | **Production PROJET_CONTEXTE** ⚠️ | 9 sections complètes — **tu valides** |
+| 5 | **Nettoyage docs** ⚠️ | Liste des .md à archiver — **tu valides** |
+| 6 | Plan refactoring | P1/P2/P3 priorités |
+**Résultat :** PROJET_CONTEXTE.md complet, docs parasites archivés,
+plan de refactoring prêt.
+---
+## CE QUE JARVIS FAIT vs CE QUE TU FAIS
+| Avant (Claude Projects + Cascade) | Avec JARVIS |
+|-----------------------------------|-------------|
+| Tu choisis le modèle | JARVIS route automatiquement |
+| Tu prépares et copies le contexte | JARVIS injecte les bonnes sections |
+| Tu écris le prompt de cadrage | JARVIS fait le cadrage |
+| Tu colles dans Cascade et attends | JARVIS appelle le bon modèle |
+| Tu copies le code dans chaque fichier | JARVIS écrit atomiquement |
+| Tu mets à jour PROJET_CONTEXTE.md | JARVIS met à jour à la clôture |
+Tu gardes la main sur (toujours) :
+- Quel workflow lancer
+- Valider la pertinence du diagnostic
+- Valider le code avant application sur disque
+---
+## MODÈLES ET COÛTS
+| Type de tâche | Modèle | Coût |
+|---------------|--------|------|
+| Routing / Classification / JSON | Gemini Flash 2.0 | $0.10/Mtok |
+| Génération de code / Correction | Claude Haiku 4.5 | $1.00/Mtok |
+| Analyse approfondie / Cadrage | Claude Sonnet 4.5 | $3.00/Mtok |
+Les coûts réels sont affichés sous chaque step dans l'UI après exécution.

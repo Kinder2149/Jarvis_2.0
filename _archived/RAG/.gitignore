@@ -1,7 +1,0 @@
-*.ini
-__pycache__/
-/my_env/
-env_v2/
-.env
-
-/data/

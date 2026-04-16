@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS - Paramètres</title>
+  <link rel="stylesheet" href="/app/assets/style.css">
+</head>
+<body>
+  <div class="header">
+    <h1><a href="/app/index.html" style="color: inherit; text-decoration: none;">← JARVIS</a></h1>
+    <span>Paramètres</span>
+  </div>
+  
+  <div class="container">
+    <div class="card">
+      <h2>Clés API</h2>
+      <div style="margin-top: 1rem;">
+        <label>OpenRouter (principal)</label>
+        <input type="password" id="openrouter-key" placeholder="sk-or-...">
+        <button class="btn btn-primary" style="margin-top: 0.5rem;" onclick="testConnection('openrouter')">Tester</button>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Anthropic (optionnel)</label>
+        <input type="password" id="anthropic-key" placeholder="sk-ant-...">
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Google (optionnel)</label>
+        <input type="password" id="google-key" placeholder="AIza...">
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Modèles par défaut</h2>
+      <div style="margin-top: 1rem;">
+        <label>Routing <span style="color:var(--text-muted);font-size:0.75rem;">(rapide, bon marché — $0.10/Mtok)</span></label>
+        <select id="model-routing">
+          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash — $0.10/Mtok ✓</option>
+          <option value="google/gemini-2.5-flash">Gemini 2.5 Flash — $0.30/Mtok</option>
+          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Gratuit</option>
+        </select>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Structuring <span style="color:var(--text-muted);font-size:0.75rem;">(structuration JSON — $0.10/Mtok)</span></label>
+        <select id="model-structuring">
+          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash — $0.10/Mtok ✓</option>
+          <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5 — $1.00/Mtok</option>
+          <option value="google/gemini-2.5-flash">Gemini 2.5 Flash — $0.30/Mtok</option>
+        </select>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Code <span style="color:var(--text-muted);font-size:0.75rem;">(génération de code — $1.00/Mtok)</span></label>
+        <select id="model-code">
+          <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5 — $1.00/Mtok ✓</option>
+          <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 — $3.00/Mtok</option>
+          <option value="deepseek/deepseek-r1-0528">DeepSeek R1 — $0.50/Mtok</option>
+        </select>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Analysis <span style="color:var(--text-muted);font-size:0.75rem;">(analyse approfondie — $3.00/Mtok)</span></label>
+        <select id="model-analysis">
+          <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 — $3.00/Mtok ✓</option>
+          <option value="anthropic/claude-opus-4.5">Claude Opus 4.5 — $5.00/Mtok</option>
+          <option value="google/gemini-2.5-pro">Gemini 2.5 Pro — $1.25/Mtok</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Chat JARVIS</h2>
+      <div style="margin-top: 1rem;">
+        <label>Modèle chat</label>
+        <select id="chat-model">
+          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash — $0.10/Mtok</option>
+          <option value="google/gemini-2.5-flash">Gemini 2.5 Flash — $0.30/Mtok</option>
+          <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5 — $1.00/Mtok</option>
+          <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 — $3.00/Mtok ✓</option>
+          <option value="anthropic/claude-opus-4.5">Claude Opus 4.5 — $5.00/Mtok</option>
+          <option value="google/gemini-2.5-pro">Gemini 2.5 Pro — $1.25/Mtok</option>
+        </select>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Dossier METHODO (contexte injecté)</label>
+        <input type="text" id="chat-methodo-path" placeholder="C:\DEV\METHODO">
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>Note de session</label>
+        <textarea id="chat-session-note" rows="2" placeholder="Ce sur quoi tu travailles en ce moment..."></textarea>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label>System prompt JARVIS</label>
+        <textarea id="chat-system-prompt" rows="10" style="font-family: monospace; font-size: 0.85rem;"></textarea>
+      </div>
+      <button class="btn btn-success" style="margin-top: 1rem;" onclick="saveChatConfig()">Sauvegarder les paramètres chat</button>
+    </div>
+    
+    <button class="btn btn-success" onclick="saveConfig()">Sauvegarder</button>
+  </div>
+
+  <script src="/app/assets/app.js"></script>
+  <script>
+    async function loadConfig() {
+      const config = await fetchAPI('/config');
+      
+      const openrouterInput = document.getElementById('openrouter-key');
+      const anthropicInput = document.getElementById('anthropic-key');
+      const googleInput = document.getElementById('google-key');
+      
+      if (config.api_keys.openrouter_key && config.api_keys.openrouter_key.startsWith('...')) {
+        openrouterInput.value = '';
+        openrouterInput.placeholder = 'Clé enregistrée (masquée)';
+      } else {
+        openrouterInput.value = config.api_keys.openrouter_key || '';
+      }
+      
+      if (config.api_keys.anthropic_key && config.api_keys.anthropic_key.startsWith('...')) {
+        anthropicInput.value = '';
+        anthropicInput.placeholder = 'Clé enregistrée (masquée)';
+      } else {
+        anthropicInput.value = config.api_keys.anthropic_key || '';
+      }
+      
+      if (config.api_keys.google_key && config.api_keys.google_key.startsWith('...')) {
+        googleInput.value = '';
+        googleInput.placeholder = 'Clé enregistrée (masquée)';
+      } else {
+        googleInput.value = config.api_keys.google_key || '';
+      }
+      
+      document.getElementById('model-routing').value = config.model_preferences.routing;
+      document.getElementById('model-structuring').value = config.model_preferences.structuring;
+      document.getElementById('model-code').value = config.model_preferences.code;
+      document.getElementById('model-analysis').value = config.model_preferences.analysis;
+      
+      // Charger config chat
+      if (config.chat) {
+        document.getElementById('chat-model').value = config.chat.model || 'anthropic/claude-sonnet-4.5';
+        document.getElementById('chat-methodo-path').value = config.chat.methodo_path || 'C:\\DEV\\METHODO';
+        document.getElementById('chat-session-note').value = config.chat.session_note || '';
+        document.getElementById('chat-system-prompt').value = config.chat.system_prompt_preset || '';
+      }
+    }
+    
+    async function saveConfig() {
+      const openrouterValue = document.getElementById('openrouter-key').value;
+      const anthropicValue = document.getElementById('anthropic-key').value;
+      const googleValue = document.getElementById('google-key').value;
+      
+      const config = {
+        api_keys: {
+          openrouter_key: (openrouterValue && !openrouterValue.startsWith('...')) ? openrouterValue : '',
+          anthropic_key: (anthropicValue && !anthropicValue.startsWith('...')) ? anthropicValue : '',
+          google_key: (googleValue && !googleValue.startsWith('...')) ? googleValue : ''
+        },
+        model_preferences: {
+          routing: document.getElementById('model-routing').value,
+          structuring: document.getElementById('model-structuring').value,
+          code: document.getElementById('model-code').value,
+          analysis: document.getElementById('model-analysis').value
+        }
+      };
+      
+      await fetchAPI('/config', 'POST', config);
+      showToast('Configuration sauvegardée');
+    }
+    
+    async function testConnection(provider) {
+      try {
+        const result = await fetchAPI('/config/test', 'POST', { provider });
+        showToast(result.message, result.status === 'success' ? 'success' : 'error');
+      } catch (e) {
+        showToast('Échec du test', 'error');
+      }
+    }
+    
+    async function saveChatConfig() {
+      // Récupérer la config actuelle pour ne pas écraser les autres champs
+      const currentConfig = await fetchAPI('/config');
+      
+      currentConfig.chat = {
+        model: document.getElementById('chat-model').value,
+        methodo_path: document.getElementById('chat-methodo-path').value,
+        session_note: document.getElementById('chat-session-note').value,
+        system_prompt_preset: document.getElementById('chat-system-prompt').value
+      };
+      
+      await fetchAPI('/config', 'POST', currentConfig);
+      showToast('Paramètres chat sauvegardés');
+    }
+    
+    loadConfig();
+  </script>
+</body>
+</html>

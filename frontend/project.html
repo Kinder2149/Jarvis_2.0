@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS - Projet</title>
+  <link rel="stylesheet" href="/app/assets/style.css">
+</head>
+<body>
+  <div class="header">
+    <h1><a href="/app/index.html" style="color: inherit; text-decoration: none;">← JARVIS</a></h1>
+    <span id="project-name"></span>
+  </div>
+  
+  <div class="container">
+    <div id="active-session-banner"></div>
+    <div class="card">
+      <h2>Actions</h2>
+      <div id="actions-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+        <button class="btn btn-primary" onclick="startWorkflow('session_start')">🚀 Début de session</button>
+        <button class="btn btn-primary" onclick="startWorkflow('mission_complexe')">🎯 Nouvelle mission</button>
+        <button class="btn btn-warning" onclick="startWorkflow('bug_simple')">🐛 Bug rapide</button>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('contexte')">PROJET_CONTEXTE</div>
+      <div class="tab" onclick="switchTab('changelog')">CHANGELOG</div>
+      <div class="tab" onclick="switchTab('backlog')">BACKLOG</div>
+      <div class="tab" onclick="switchTab('sessions')">SESSIONS</div>
+    </div>
+    
+    <div id="tab-contexte" class="tab-content active">
+      <div class="card" id="contexte-content"></div>
+    </div>
+    
+    <div id="tab-changelog" class="tab-content">
+      <div class="card" id="changelog-content"></div>
+    </div>
+    
+    <div id="tab-backlog" class="tab-content">
+      <div class="card" id="backlog-content"></div>
+    </div>
+    
+    <div id="tab-sessions" class="tab-content">
+      <div class="card" id="sessions-content"></div>
+    </div>
+  </div>
+
+  <script src="/app/assets/app.js"></script>
+  <script>
+    const projectId = new URLSearchParams(location.search).get('id');
+    
+    async function loadProject() {
+      const project = await fetchAPI(`/projects/${projectId}`);
+      document.getElementById('project-name').textContent = project.name;
+      
+      if (!project.has_projet_contexte) {
+        const actionsDiv = document.getElementById('actions-buttons');
+        actionsDiv.innerHTML += '<button class="btn btn-primary" onclick="startWorkflow(\'nouveau_projet\')">✨ Nouveau projet</button><button class="btn btn-primary" onclick="startWorkflow(\'projet_existant\')">📦 Audit projet</button>';
+      }
+      
+      if (project.active_session) {
+        const banner = document.getElementById('active-session-banner');
+        banner.innerHTML = '<div style="background: var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;"><span>⚡ Pipeline en cours — ' + project.active_session.workflow_type + '</span><a href="/app/pipeline.html?session_id=' + project.active_session.id + '" style="color: white; font-weight: 600; text-decoration: none;">Reprendre →</a></div>';
+      }
+      
+      if (project.has_projet_contexte) {
+        const contexte = await fetchAPI(`/files/${projectId}/read`, 'POST', { filepath: 'PROJET_CONTEXTE.md' });
+        document.getElementById('contexte-content').innerHTML = renderMarkdown(contexte.content);
+        
+        const section9Match = contexte.content.match(/## 9\.?[^#]*([\s\S]*?)(?=\n## |$)/i);
+        if (section9Match) {
+          document.getElementById('backlog-content').innerHTML = renderMarkdown('## 9. BACKLOG\n' + section9Match[1]);
+        }
+      }
+      
+      try {
+        const changelog = await fetchAPI(`/files/${projectId}/read`, 'POST', { filepath: 'CHANGELOG.md' });
+        document.getElementById('changelog-content').innerHTML = renderMarkdown(changelog.content);
+      } catch (e) {}
+      
+      loadSessions();
+    }
+    
+    async function loadSessions() {
+      try {
+        const sessions = await fetchAPI(`/projects/${projectId}/sessions`);
+        const sessionsContent = document.getElementById('sessions-content');
+        
+        if (sessions.length === 0) {
+          sessionsContent.innerHTML = '<p style="color: var(--text-muted);">Aucune session enregistrée</p>';
+          return;
+        }
+        
+        const statusColors = {
+          'COMPLETED': 'success',
+          'FAILED': 'danger',
+          'RUNNING': 'info',
+          'WAITING_VALIDATION': 'warning',
+          'ABORTED': 'secondary'
+        };
+        
+        let tableHTML = '<table style="width: 100%; border-collapse: collapse;"><thead><tr style="border-bottom: 2px solid var(--border);"><th style="padding: 0.75rem; text-align: left;">Date</th><th style="padding: 0.75rem; text-align: left;">Workflow</th><th style="padding: 0.75rem; text-align: left;">Statut</th><th style="padding: 0.75rem; text-align: left;">Étapes</th><th style="padding: 0.75rem; text-align: left;">Lien</th></tr></thead><tbody>';
+        
+        sessions.forEach(s => {
+          const date = new Date(s.created_at).toLocaleDateString('fr-FR');
+          const badgeClass = statusColors[s.status] || 'secondary';
+          tableHTML += '<tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.75rem;">' + date + '</td><td style="padding: 0.75rem;">' + s.workflow_type + '</td><td style="padding: 0.75rem;"><span class="badge badge-' + badgeClass + '">' + s.status + '</span></td><td style="padding: 0.75rem;">' + (s.current_step_index + 1) + ' / ' + (s.total_steps || '?') + '</td><td style="padding: 0.75rem;"><a href="/app/pipeline.html?session_id=' + s.id + '" style="color: var(--accent);">Voir →</a></td></tr>';
+        });
+        
+        tableHTML += '</tbody></table>';
+        sessionsContent.innerHTML = tableHTML;
+      } catch (e) {
+        document.getElementById('sessions-content').innerHTML = '<p style="color: var(--text-muted);">Erreur de chargement</p>';
+      }
+    }
+    
+    async function startWorkflow(workflowType) {
+      const input = prompt('Description (optionnel):');
+      const result = await fetchAPI('/pipelines/start', 'POST', {
+        project_id: parseInt(projectId),
+        workflow_type: workflowType,
+        initial_input: input || ''
+      });
+      
+      location.href = `/app/pipeline.html?session_id=${result.session.id}`;
+    }
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const clickedTab = event ? event.target : null;
+      if (clickedTab) clickedTab.classList.add('active');
+      
+      const tabContent = document.getElementById('tab-' + tab);
+      if (tabContent) tabContent.classList.add('active');
+    }
+    
+    loadProject();
+  </script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+{
+  "session_start": {
+    "workflow_type": "session_start",
+    "display_name": "Début de session",
+    "phases": ["Orientation"],
+    "steps": [
+      {
+        "index": 0,
+        "name": "orientation",
+        "display_name": "Orientation du projet",
+        "model_type": "routing",
+        "prompt_key": "orientation",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Orientation",
+        "context_envelope": {
+          "projet_contexte_sections": [1, 8, 9],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": false,
+          "include_file_list": false
+        }
+      }
+    ]
+  },
+  "session_end": {
+    "workflow_type": "session_end",
+    "display_name": "Fin de session",
+    "phases": ["Clôture"],
+    "steps": [
+      {
+        "index": 0,
+        "name": "cloture_docs",
+        "display_name": "Mise à jour documentation",
+        "model_type": "structuring",
+        "prompt_key": "cloture",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Clôture",
+        "context_envelope": {
+          "projet_contexte_sections": [1, 4, 6, 8, 9],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": false,
+          "include_file_list": false
+        }
+      }
+    ]
+  },
+  "bug_simple": {
+    "workflow_type": "bug_simple",
+    "display_name": "Correction bug rapide",
+    "phases": ["Analyse", "Diagnostic", "Correction"],
+    "steps": [
+      {
+        "index": 0,
+        "name": "routing",
+        "display_name": "Classification du bug",
+        "model_type": "routing",
+        "prompt_key": "bug_routing",
+        "requires_validation": false,
+        "output_type": "json",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 1,
+        "name": "collecte_info",
+        "display_name": "Collecte d'informations",
+        "model_type": "routing",
+        "prompt_key": "bug_collecte",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [2],
+          "stack_standard": false,
+          "previous_steps_output": ["routing"],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 2,
+        "name": "diagnostic",
+        "display_name": "Diagnostic technique",
+        "model_type": "code",
+        "prompt_key": "bug_diagnostic",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Diagnostic",
+        "context_envelope": {
+          "projet_contexte_sections": [2, 3, 4],
+          "stack_standard": false,
+          "previous_steps_output": ["collecte_info"],
+          "user_input": true,
+          "include_file_list": false,
+          "graphify_report": true
+        }
+      },
+      {
+        "index": 3,
+        "name": "correction",
+        "display_name": "Correction du code",
+        "model_type": "code",
+        "prompt_key": "bug_correction",
+        "requires_validation": true,
+        "output_type": "diff",
+        "phase": "Correction",
+        "context_envelope": {
+          "projet_contexte_sections": [2],
+          "stack_standard": false,
+          "previous_steps_output": ["diagnostic"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 4,
+        "name": "cloture",
+        "display_name": "Clôture et documentation",
+        "model_type": "structuring",
+        "prompt_key": "cloture",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Correction",
+        "context_envelope": {
+          "projet_contexte_sections": [4, 8],
+          "stack_standard": false,
+          "previous_steps_output": ["diagnostic", "correction"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      }
+    ]
+  },
+  "mission_complexe": {
+    "workflow_type": "mission_complexe",
+    "display_name": "Mission complexe",
+    "phases": ["Analyse", "Plan", "Exécution"],
+    "steps": [
+      {
+        "index": 0,
+        "name": "routing",
+        "display_name": "Classification de la mission",
+        "model_type": "routing",
+        "prompt_key": "mission_routing",
+        "requires_validation": false,
+        "output_type": "json",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [1],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 1,
+        "name": "cadrage",
+        "display_name": "Cadrage de la mission",
+        "model_type": "analysis",
+        "prompt_key": "cadrage",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [1, 4, 5, 6],
+          "stack_standard": true,
+          "previous_steps_output": [],
+          "user_input": true,
+          "include_file_list": false,
+          "graphify_report": true
+        }
+      },
+      {
+        "index": 2,
+        "name": "document_mission",
+        "display_name": "Document de mission",
+        "model_type": "analysis",
+        "prompt_key": "document_mission",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [1, 4, 5, 6],
+          "stack_standard": false,
+          "previous_steps_output": ["cadrage"],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 3,
+        "name": "selection_contexte",
+        "display_name": "Sélection des fichiers",
+        "model_type": "routing",
+        "prompt_key": "selection_contexte",
+        "requires_validation": false,
+        "output_type": "json",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["document_mission"],
+          "user_input": false,
+          "include_file_list": true
+        }
+      },
+      {
+        "index": 4,
+        "name": "execution",
+        "display_name": "Exécution du code",
+        "model_type": "code",
+        "prompt_key": "execution",
+        "requires_validation": true,
+        "output_type": "diff",
+        "phase": "Exécution",
+        "context_envelope": {
+          "projet_contexte_sections": [2],
+          "stack_standard": false,
+          "previous_steps_output": ["document_mission"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 5,
+        "name": "verification",
+        "display_name": "Vérification",
+        "model_type": "code",
+        "prompt_key": "verification",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Exécution",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["execution", "document_mission"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 6,
+        "name": "cloture",
+        "display_name": "Clôture et documentation",
+        "model_type": "structuring",
+        "prompt_key": "cloture",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Exécution",
+        "context_envelope": {
+          "projet_contexte_sections": [4, 6, 8, 9],
+          "stack_standard": false,
+          "previous_steps_output": ["document_mission", "execution"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      }
+    ]
+  },
+  "nouveau_projet": {
+    "workflow_type": "nouveau_projet",
+    "display_name": "Nouveau projet",
+    "phases": ["Analyse", "Plan", "Exécution"],
+    "steps": [
+      {
+        "index": 0,
+        "name": "capture_besoin",
+        "display_name": "Capture du besoin",
+        "model_type": "routing",
+        "prompt_key": "capture_besoin",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 1,
+        "name": "qa",
+        "display_name": "Questions/Réponses",
+        "model_type": "routing",
+        "prompt_key": "qa",
+        "requires_validation": false,
+        "output_type": "json",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["capture_besoin"],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 2,
+        "name": "draft_projet_contexte",
+        "display_name": "Brouillon PROJET_CONTEXTE.md",
+        "model_type": "structuring",
+        "prompt_key": "draft_projet_contexte",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": true,
+          "previous_steps_output": ["qa"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 3,
+        "name": "validation_stack",
+        "display_name": "Validation de la stack",
+        "model_type": "routing",
+        "prompt_key": "validation_stack",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": true,
+          "previous_steps_output": ["draft_projet_contexte"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 4,
+        "name": "plan_structure",
+        "display_name": "Plan de structure",
+        "model_type": "code",
+        "prompt_key": "plan_structure",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["draft_projet_contexte"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 5,
+        "name": "creation_fichiers",
+        "display_name": "Création des fichiers",
+        "model_type": "code",
+        "prompt_key": "creation_fichiers",
+        "requires_validation": false,
+        "output_type": "diff",
+        "phase": "Exécution",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["plan_structure"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 6,
+        "name": "confirmation_finale",
+        "display_name": "Confirmation finale",
+        "model_type": "routing",
+        "prompt_key": "confirmation_finale",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Exécution",
+        "context_envelope": {
+          "projet_contexte_sections": [1],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": false,
+          "include_file_list": false
+        }
+      }
+    ]
+  },
+  "projet_existant": {
+    "workflow_type": "projet_existant",
+    "display_name": "Audit projet existant",
+    "phases": ["Analyse", "Plan", "Exécution"],
+    "steps": [
+      {
+        "index": 0,
+        "name": "scan_projet",
+        "display_name": "Scan du projet",
+        "model_type": "routing",
+        "prompt_key": "scan_projet",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": [],
+          "user_input": false,
+          "include_file_list": true
+        }
+      },
+      {
+        "index": 1,
+        "name": "audit_code",
+        "display_name": "Audit du code",
+        "model_type": "analysis",
+        "prompt_key": "audit_code",
+        "requires_validation": false,
+        "output_type": "json",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": true,
+          "previous_steps_output": [],
+          "user_input": false,
+          "include_file_list": true,
+          "graphify_report": true
+        }
+      },
+      {
+        "index": 2,
+        "name": "questions_grises",
+        "display_name": "Questions zones grises",
+        "model_type": "analysis",
+        "prompt_key": "questions_grises",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["audit_code"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 3,
+        "name": "qa_complementaire",
+        "display_name": "Q/R complémentaires",
+        "model_type": "routing",
+        "prompt_key": "qa_complementaire",
+        "requires_validation": false,
+        "output_type": "json",
+        "phase": "Analyse",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["questions_grises"],
+          "user_input": true,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 4,
+        "name": "production_projet_contexte",
+        "display_name": "Production PROJET_CONTEXTE.md",
+        "model_type": "structuring",
+        "prompt_key": "production_projet_contexte",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": true,
+          "previous_steps_output": ["audit_code", "qa_complementaire"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 5,
+        "name": "nettoyage_docs",
+        "display_name": "Nettoyage documentation",
+        "model_type": "structuring",
+        "prompt_key": "nettoyage_docs",
+        "requires_validation": true,
+        "output_type": "text",
+        "phase": "Plan",
+        "context_envelope": {
+          "projet_contexte_sections": [],
+          "stack_standard": false,
+          "previous_steps_output": ["production_projet_contexte"],
+          "user_input": false,
+          "include_file_list": true
+        }
+      },
+      {
+        "index": 6,
+        "name": "plan_refacto",
+        "display_name": "Plan de refactoring",
+        "model_type": "analysis",
+        "prompt_key": "plan_refacto",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Exécution",
+        "context_envelope": {
+          "projet_contexte_sections": [4, 9],
+          "stack_standard": false,
+          "previous_steps_output": ["production_projet_contexte"],
+          "user_input": false,
+          "include_file_list": false
+        }
+      }
+    ]
+  }
+}

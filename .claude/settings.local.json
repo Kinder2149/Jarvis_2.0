@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import graphify; print\\('graphify importable'\\)\")",
+      "WebSearch",
+      "WebFetch(domain:openrouter.ai)",
+      "WebFetch(domain:costgoat.com)",
+      "Bash(pip install:*)",
+      "Bash(python -m pytest tests/unit/ tests/integration/ -v --tb=short)",
+      "Bash(python -m pytest tests/integration/test_api_pipelines.py::TestStartPipeline::test_404_si_projet_inconnu -v --tb=long)",
+      "Bash(python -m pytest tests/integration/test_api_pipelines.py -v --tb=short)"
+    ]
+  }
+}

@@ -1,28 +1,23 @@
-# Environnement
-.env
-venv/
-env/
+# Config sensible
+backend/data/config.json
+backend/data/jarvis.db
+backend/data/*.db
+backend/data/*.db-journal
 
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
+*.pyc
+*.pyo
 .pytest_cache/
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+.coverage
 
-# Données runtime
-backend/data/
-RAG/projects/
-
-# Logs
-backend/logs/*.log
-*.log
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# Graphify
+graphify-out/
 
 # OS
 .DS_Store
