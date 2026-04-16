@@ -64,6 +64,12 @@ def init_db():
     except sqlite3.OperationalError:
         pass
     
+    try:
+        cursor.execute("ALTER TABLE conversations ADD COLUMN folder_path TEXT")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+    
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS model_decision_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,6 +88,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
             title TEXT NOT NULL DEFAULT 'Nouvelle conversation',
+            folder_path TEXT,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         )

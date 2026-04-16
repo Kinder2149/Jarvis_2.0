@@ -3,9 +3,12 @@
 from pathlib import Path
 import logging
 import httpx
+import re
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
+MAX_FILE_SIZE = 50 * 1024  # 50 Ko
 
 
 def read_methodo_context(methodo_path: str) -> str:
@@ -118,7 +121,170 @@ def get_project_context(project_path: str) -> str | None:
         return None
 
 
-def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None) -> str:
+def read_local_folder(folder_path: str, recursive: bool = False) -> dict:
+    """Liste les fichiers d'un dossier local.
+    
+    Args:
+        folder_path: Chemin absolu vers le dossier
+        recursive: Si True, liste récursivement
+        
+    Returns:
+        Dict avec files (liste), graph_report (bool), error (str optionnel)
+    """
+    try:
+        folder = Path(folder_path).resolve()
+        
+        if not folder.exists():
+            return {"files": [], "graph_report": False, "error": "Dossier introuvable"}
+        
+        if not folder.is_dir():
+            return {"files": [], "graph_report": False, "error": "Chemin n'est pas un dossier"}
+        
+        # Vérifier si GRAPH_REPORT.md existe
+        graph_report_path = folder / "graphify-out" / "GRAPH_REPORT.md"
+        has_graph_report = graph_report_path.exists()
+        
+        files = []
+        
+        if recursive:
+            for file_path in folder.rglob("*"):
+                if file_path.is_file():
+                    try:
+                        size = file_path.stat().st_size
+                        rel_path = file_path.relative_to(folder)
+                        files.append({"path": str(rel_path), "size": size})
+                    except Exception:
+                        continue
+        else:
+            for file_path in folder.iterdir():
+                if file_path.is_file():
+                    try:
+                        size = file_path.stat().st_size
+                        files.append({"path": file_path.name, "size": size})
+                    except Exception:
+                        continue
+        
+        return {
+            "files": sorted(files, key=lambda x: x["path"]),
+            "graph_report": has_graph_report,
+            "error": None
+        }
+    
+    except Exception as e:
+        logger.error(f"Erreur lecture dossier {folder_path} : {e}")
+        return {"files": [], "graph_report": False, "error": str(e)}
+
+
+def read_local_file(folder_path: str, relative_path: str) -> dict:
+    """Lit le contenu d'un fichier dans le dossier local.
+    
+    Args:
+        folder_path: Chemin absolu vers le dossier racine
+        relative_path: Chemin relatif du fichier dans le dossier
+        
+    Returns:
+        Dict avec content (str), truncated (bool), error (str optionnel)
+    """
+    try:
+        folder = Path(folder_path).resolve()
+        file_path = (folder / relative_path).resolve()
+        
+        # Sécurité : vérifier que le fichier est bien dans folder_path
+        if not str(file_path).startswith(str(folder)):
+            return {"content": "", "truncated": False, "error": "Accès refusé (path traversal)"}
+        
+        if not file_path.exists():
+            return {"content": "", "truncated": False, "error": "Fichier introuvable"}
+        
+        if not file_path.is_file():
+            return {"content": "", "truncated": False, "error": "Chemin n'est pas un fichier"}
+        
+        # Vérifier la taille
+        file_size = file_path.stat().st_size
+        
+        if file_size > MAX_FILE_SIZE:
+            # Lire les premiers 50 Ko
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read(MAX_FILE_SIZE)
+            return {
+                "content": content,
+                "truncated": True,
+                "error": None
+            }
+        
+        # Lire le fichier complet
+        content = file_path.read_text(encoding="utf-8", errors="ignore")
+        
+        return {
+            "content": content,
+            "truncated": False,
+            "error": None
+        }
+    
+    except Exception as e:
+        logger.error(f"Erreur lecture fichier {relative_path} dans {folder_path} : {e}")
+        return {"content": "", "truncated": False, "error": str(e)}
+
+
+async def search_web(query: str, api_key: str | None = None) -> dict:
+    """Effectue une recherche web et retourne les résultats.
+    
+    Args:
+        query: Requête de recherche
+        api_key: Clé API pour le provider de recherche (optionnel)
+        
+    Returns:
+        Dict avec results (liste), error (str optionnel)
+    """
+    if not api_key:
+        logger.info("Recherche web désactivée : pas de clé API")
+        return {"results": [], "error": "Recherche web désactivée (clé API manquante)"}
+    
+    try:
+        # Utiliser Brave Search API (gratuit avec clé)
+        headers = {
+            "Accept": "application/json",
+            "X-Subscription-Token": api_key
+        }
+        
+        params = {
+            "q": query,
+            "count": 5
+        }
+        
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                "https://api.search.brave.com/res/v1/web/search",
+                headers=headers,
+                params=params
+            )
+            
+            if response.status_code != 200:
+                logger.warning(f"Erreur recherche web : {response.status_code}")
+                return {"results": [], "error": f"Erreur API ({response.status_code})"}
+            
+            data = response.json()
+            
+            # Extraire les résultats
+            results = []
+            for item in data.get("web", {}).get("results", [])[:5]:
+                results.append({
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "description": item.get("description", "")
+                })
+            
+            return {"results": results, "error": None}
+    
+    except httpx.TimeoutException:
+        logger.warning("Timeout recherche web")
+        return {"results": [], "error": "Timeout"}
+    except Exception as e:
+        logger.error(f"Erreur recherche web : {e}")
+        return {"results": [], "error": str(e)}
+
+
+def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None, folder_context: str | None = None) -> str:
     """Construit le system prompt complet pour le chat.
     
     Args:
@@ -126,6 +292,7 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
         methodo_context: Contexte METHODO (vide si absent)
         session_note: Note de session utilisateur (vide si absent)
         project_context: Contexte projet (None si pas de projet)
+        folder_context: Liste fichiers dossier local (None si pas de dossier)
         
     Returns:
         System prompt complet
@@ -144,6 +311,10 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
         parts.append("---")
         parts.append(f"PROJET ACTIF :\n{project_context}")
     
+    if folder_context is not None:
+        parts.append("---")
+        parts.append(f"DOSSIER LOCAL :\n{folder_context}")
+    
     return "\n\n".join(parts)
 
 
@@ -157,7 +328,7 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
         config: Configuration JARVIS (clés API, modèle chat, etc.)
         
     Returns:
-        Dict avec user_message_id, assistant_message_id, content, tokens
+        Dict avec user_message_id, assistant_message_id, content, tokens, web_search_used
         
     Raises:
         Exception: Si conversation introuvable ou erreur API
@@ -172,6 +343,7 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
         raise Exception(f"Conversation {conversation_id} introuvable")
     
     project_id = conv_row["project_id"]
+    folder_path = conv_row["folder_path"]
     project_path = None
     
     # Récupérer le project_path si projet défini
@@ -181,6 +353,13 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
         if project_row:
             project_path = project_row["path"]
     
+    # Déterminer le dossier local à utiliser
+    local_folder = None
+    if folder_path:
+        local_folder = folder_path
+    elif project_path:
+        local_folder = project_path
+    
     # Construire le contexte
     methodo_path = config.get("chat", {}).get("methodo_path", "")
     methodo_context = read_methodo_context(methodo_path) if methodo_path else ""
@@ -189,10 +368,63 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     if project_path:
         project_context = get_project_context(project_path)
     
+    # Contexte dossier local
+    folder_context = None
+    if local_folder:
+        folder_data = read_local_folder(local_folder, recursive=False)
+        if not folder_data["error"]:
+            files_list = "\n".join([f"- {f['path']} ({f['size']} bytes)" for f in folder_data["files"][:50]])
+            folder_context = f"Dossier : {local_folder}\n\nFichiers disponibles :\n{files_list}"
+            
+            # Priorité GRAPH_REPORT.md si présent
+            if folder_data["graph_report"]:
+                graph_result = read_local_file(local_folder, "graphify-out/GRAPH_REPORT.md")
+                if not graph_result["error"]:
+                    folder_context += f"\n\n=== GRAPH_REPORT.md ===\n{graph_result['content'][:8000]}"
+    
+    # Détection fichiers à lire dans le message utilisateur
+    file_content_injected = ""
+    if local_folder:
+        # Patterns : "lis [fichier]", "ouvre [fichier]", "lit [fichier]"
+        file_patterns = [
+            r'(?:lis|ouvre|lit|lire|ouvrir)\s+([^\s]+)',
+            r'(?:fichier|file)\s+([^\s]+)'
+        ]
+        
+        for pattern in file_patterns:
+            matches = re.findall(pattern, user_content, re.IGNORECASE)
+            for filename in matches:
+                filename = filename.strip('"`\'')
+                file_result = read_local_file(local_folder, filename)
+                if not file_result["error"]:
+                    truncated_msg = " [TRONQUÉ]" if file_result["truncated"] else ""
+                    file_content_injected += f"\n\n=== Contenu de {filename}{truncated_msg} ===\n{file_result['content']}"
+    
+    # Détection recherche web
+    web_search_used = False
+    web_results_text = ""
+    web_search_patterns = [
+        r'(?:cherche|recherche|trouve|search)',
+        r'(?:internet|web|en ligne)',
+        r'(?:dernière version|version actuelle|aujourd\'hui|actuellement)'
+    ]
+    
+    should_search = any(re.search(pattern, user_content, re.IGNORECASE) for pattern in web_search_patterns)
+    
+    if should_search:
+        web_search_key = config.get("api_keys", {}).get("web_search_key")
+        if web_search_key:
+            search_result = await search_web(user_content, web_search_key)
+            if not search_result["error"] and search_result["results"]:
+                web_search_used = True
+                web_results_text = "\n\n=== Résultats recherche web ===\n"
+                for i, result in enumerate(search_result["results"], 1):
+                    web_results_text += f"{i}. {result['title']}\n   {result['url']}\n   {result['description']}\n\n"
+    
     # Construire le system prompt
     preset = config.get("chat", {}).get("system_prompt_preset", "")
     session_note = config.get("chat", {}).get("session_note", "")
-    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context)
+    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context, folder_context)
     
     # Récupérer les 20 derniers messages
     cursor.execute(
@@ -201,10 +433,13 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     )
     history = [{"role": row["role"], "content": row["content"]} for row in cursor.fetchall()]
     
+    # Construire le message utilisateur enrichi
+    enriched_user_content = user_content + file_content_injected + web_results_text
+    
     # Construire les messages pour l'API
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(history)
-    messages.append({"role": "user", "content": user_content})
+    messages.append({"role": "user", "content": enriched_user_content})
     
     # Appel API OpenRouter
     openrouter_key = config.get("api_keys", {}).get("openrouter_key", "")
@@ -283,5 +518,6 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
         "assistant_message_id": assistant_message_id,
         "content": assistant_content,
         "input_tokens": input_tokens,
-        "output_tokens": output_tokens
+        "output_tokens": output_tokens,
+        "web_search_used": web_search_used
     }

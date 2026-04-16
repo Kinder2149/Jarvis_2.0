@@ -9,7 +9,10 @@ from backend.services.chat_service import (
     read_methodo_context,
     get_project_context,
     build_system_prompt,
-    send_chat_message
+    send_chat_message,
+    read_local_folder,
+    read_local_file,
+    search_web
 )
 
 
@@ -166,6 +169,7 @@ class TestSendChatMessage:
                 id INTEGER PRIMARY KEY,
                 project_id INTEGER,
                 title TEXT,
+                folder_path TEXT,
                 created_at TEXT,
                 updated_at TEXT
             )
@@ -254,6 +258,7 @@ class TestSendChatMessage:
                 id INTEGER PRIMARY KEY,
                 project_id INTEGER,
                 title TEXT,
+                folder_path TEXT,
                 created_at TEXT,
                 updated_at TEXT
             )
@@ -300,3 +305,168 @@ class TestSendChatMessage:
             assert "Clé API invalide" in str(exc_info.value)
         
         conn.close()
+
+
+class TestReadLocalFolder:
+    """read_local_folder() : liste fichiers d'un dossier local."""
+
+    def test_dossier_present_non_recursif(self, tmp_path):
+        """Dossier avec fichiers → liste retournée."""
+        (tmp_path / "file1.txt").write_text("contenu 1")
+        (tmp_path / "file2.md").write_text("contenu 2")
+        subdir = tmp_path / "subdir"
+        subdir.mkdir()
+        (subdir / "file3.txt").write_text("contenu 3")
+        
+        result = read_local_folder(str(tmp_path), recursive=False)
+        
+        assert result["error"] is None
+        assert len(result["files"]) == 2
+        assert any(f["path"] == "file1.txt" for f in result["files"])
+        assert any(f["path"] == "file2.md" for f in result["files"])
+        assert not any(f["path"] == "subdir/file3.txt" for f in result["files"])
+
+    def test_dossier_present_recursif(self, tmp_path):
+        """Dossier avec sous-dossiers → liste récursive."""
+        (tmp_path / "file1.txt").write_text("contenu 1")
+        subdir = tmp_path / "subdir"
+        subdir.mkdir()
+        (subdir / "file2.txt").write_text("contenu 2")
+        
+        result = read_local_folder(str(tmp_path), recursive=True)
+        
+        assert result["error"] is None
+        assert len(result["files"]) == 2
+        assert any("file1.txt" in f["path"] for f in result["files"])
+        assert any("subdir" in f["path"] and "file2.txt" in f["path"] for f in result["files"])
+
+    def test_graph_report_detecte(self, tmp_path):
+        """GRAPH_REPORT.md présent → graph_report=True."""
+        graphify_dir = tmp_path / "graphify-out"
+        graphify_dir.mkdir()
+        (graphify_dir / "GRAPH_REPORT.md").write_text("# Graph Report")
+        
+        result = read_local_folder(str(tmp_path))
+        
+        assert result["graph_report"] is True
+
+    def test_dossier_absent(self):
+        """Dossier inexistant → erreur."""
+        result = read_local_folder("/chemin/inexistant")
+        
+        assert result["error"] is not None
+        assert "introuvable" in result["error"].lower()
+
+    def test_chemin_fichier_pas_dossier(self, tmp_path):
+        """Chemin vers fichier (pas dossier) → erreur."""
+        file_path = tmp_path / "file.txt"
+        file_path.write_text("contenu")
+        
+        result = read_local_folder(str(file_path))
+        
+        assert result["error"] is not None
+        assert "pas un dossier" in result["error"].lower()
+
+
+class TestReadLocalFile:
+    """read_local_file() : lit contenu fichier avec sécurité."""
+
+    def test_fichier_present_petit(self, tmp_path):
+        """Fichier < 50 Ko → contenu complet."""
+        file_path = tmp_path / "test.txt"
+        file_path.write_text("Contenu test")
+        
+        result = read_local_file(str(tmp_path), "test.txt")
+        
+        assert result["error"] is None
+        assert result["content"] == "Contenu test"
+        assert result["truncated"] is False
+
+    def test_fichier_trop_grand_tronque(self, tmp_path):
+        """Fichier > 50 Ko → tronqué."""
+        file_path = tmp_path / "big.txt"
+        content = "x" * (60 * 1024)  # 60 Ko
+        file_path.write_text(content)
+        
+        result = read_local_file(str(tmp_path), "big.txt")
+        
+        assert result["error"] is None
+        assert len(result["content"]) <= 50 * 1024
+        assert result["truncated"] is True
+
+    def test_path_traversal_bloque(self, tmp_path):
+        """Tentative path traversal → accès refusé."""
+        (tmp_path / "file.txt").write_text("contenu")
+        
+        result = read_local_file(str(tmp_path), "../../../etc/passwd")
+        
+        assert result["error"] is not None
+        assert "path traversal" in result["error"].lower()
+
+    def test_fichier_absent(self, tmp_path):
+        """Fichier inexistant → erreur."""
+        result = read_local_file(str(tmp_path), "absent.txt")
+        
+        assert result["error"] is not None
+        assert "introuvable" in result["error"].lower()
+
+    def test_chemin_vers_dossier(self, tmp_path):
+        """Chemin vers dossier (pas fichier) → erreur."""
+        subdir = tmp_path / "subdir"
+        subdir.mkdir()
+        
+        result = read_local_file(str(tmp_path), "subdir")
+        
+        assert result["error"] is not None
+        assert "pas un fichier" in result["error"].lower()
+
+
+class TestSearchWeb:
+    """search_web() : recherche web via API."""
+
+    @pytest.mark.asyncio
+    async def test_sans_cle_api_desactive(self):
+        """Pas de clé API → recherche désactivée gracieusement."""
+        result = await search_web("test query", api_key=None)
+        
+        assert result["error"] is not None
+        assert "désactivée" in result["error"].lower()
+        assert result["results"] == []
+
+    @pytest.mark.asyncio
+    async def test_avec_cle_api_mock_success(self):
+        """Avec clé API → résultats retournés."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "web": {
+                "results": [
+                    {"title": "Result 1", "url": "https://example.com/1", "description": "Desc 1"},
+                    {"title": "Result 2", "url": "https://example.com/2", "description": "Desc 2"}
+                ]
+            }
+        }
+        
+        with patch("httpx.AsyncClient") as mock_client:
+            mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
+            
+            result = await search_web("test query", api_key="fake_key")
+            
+            assert result["error"] is None
+            assert len(result["results"]) == 2
+            assert result["results"][0]["title"] == "Result 1"
+            assert result["results"][0]["url"] == "https://example.com/1"
+
+    @pytest.mark.asyncio
+    async def test_erreur_api_gere(self):
+        """Erreur API → erreur retournée gracieusement."""
+        mock_response = MagicMock()
+        mock_response.status_code = 500
+        
+        with patch("httpx.AsyncClient") as mock_client:
+            mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
+            
+            result = await search_web("test query", api_key="fake_key")
+            
+            assert result["error"] is not None
+            assert result["results"] == []

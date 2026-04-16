@@ -26,6 +26,7 @@ def load_config():
 class ConversationCreate(BaseModel):
     project_id: int | None = None
     title: str | None = None
+    folder_path: str | None = None
 
 
 class MessageCreate(BaseModel):
@@ -43,9 +44,17 @@ def create_conversation(data: ConversationCreate):
     title = data.title if data.title else "Nouvelle conversation"
     now = datetime.utcnow().isoformat()
     
+    # Hériter du local_path du projet si project_id défini et folder_path non fourni
+    folder_path = data.folder_path
+    if data.project_id and not folder_path:
+        cursor.execute("SELECT path FROM projects WHERE id = ?", (data.project_id,))
+        project_row = cursor.fetchone()
+        if project_row:
+            folder_path = project_row["path"]
+    
     cursor.execute(
-        "INSERT INTO conversations (project_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)",
-        (data.project_id, title, now, now)
+        "INSERT INTO conversations (project_id, title, folder_path, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+        (data.project_id, title, folder_path, now, now)
     )
     conversation_id = cursor.lastrowid
     db.commit()
@@ -58,6 +67,7 @@ def create_conversation(data: ConversationCreate):
         "id": row["id"],
         "project_id": row["project_id"],
         "title": row["title"],
+        "folder_path": row["folder_path"],
         "created_at": row["created_at"]
     }
 
@@ -88,6 +98,7 @@ def list_conversations(project_id: int | None = None):
             "id": row["id"],
             "title": row["title"],
             "project_id": row["project_id"],
+            "folder_path": row["folder_path"],
             "updated_at": row["updated_at"],
             "message_count": message_count
         })
@@ -130,6 +141,7 @@ def get_conversation(conv_id: int):
         "id": conv_row["id"],
         "title": conv_row["title"],
         "project_id": conv_row["project_id"],
+        "folder_path": conv_row["folder_path"],
         "created_at": conv_row["created_at"],
         "messages": messages
     }
@@ -170,6 +182,24 @@ async def send_message(conv_id: int, data: MessageCreate):
     except Exception as e:
         db.close()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/conversations/{conv_id}/folder")
+def update_conversation_folder(conv_id: int, folder_path: str | None = None):
+    """Définit ou modifie le folder_path d'une conversation."""
+    db = get_connection()
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT * FROM conversations WHERE id = ?", (conv_id,))
+    if not cursor.fetchone():
+        db.close()
+        raise HTTPException(status_code=404, detail="Conversation introuvable")
+    
+    cursor.execute("UPDATE conversations SET folder_path = ? WHERE id = ?", (folder_path, conv_id))
+    db.commit()
+    db.close()
+    
+    return {"updated": True, "folder_path": folder_path}
 
 
 @router.delete("/conversations/{conv_id}")

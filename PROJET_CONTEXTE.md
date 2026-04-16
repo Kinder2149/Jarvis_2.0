@@ -134,9 +134,10 @@ JARVIS/
 - Architecture respectée : context_manager seul lecteur/écrivain de PROJET_CONTEXTE.md
 - Prompts (25) : format corrigé, JSON pur, chemin inside bloc code
 - **Module code complet** : 6 workflows, 142 tests, rollback atomique, clôture automatique
+- **Module chat enrichi** : lecture dossier local (folder_path nullable, héritage depuis projet, GRAPH_REPORT prioritaire) + accès internet (web search via Brave API, détection auto, désactivation gracieuse sans clé)
 
 **🚧 En cours**
-- Module chat enrichi : lecture dossier local + accès internet via web search
+- Module chat frontend : UI pour définir folder_path + indicateur recherche web
 
 **❌ Bugs connus**
 - Aucun
@@ -207,15 +208,15 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Module chat enrichi (lecture dossier local + accès internet)
-**Contexte :** Module chat de base clôturé. start.bat fixé (uvicorn --reload + navigateur). project_id confirmé nullable (déjà implémenté dans database.py ligne 83). 142/142 tests passent. Git commit effectué.
+**Objectif :** Module chat frontend (UI folder_path + indicateur web search)
+**Contexte :** Module chat enrichi backend livré (folder_path, read_local_folder, read_local_file, search_web). 159/159 tests passent. Reste à implémenter : UI chat.html pour définir/afficher folder_path + indicateur recherche web + settings.html champ clé web search.
 **Blocage :** Aucun
-**Résultat attendu :** Module chat enrichi livré (lecture dossier local + accès internet via web search).
+**Résultat attendu :** Frontend chat complet avec gestion dossier local + recherche web.
 
 ---
 
 ## 9. BACKLOG
 
-1. **Module chat enrichi** — lecture dossier local (chat sans projet = dossier temp ; chat avec projet = dossier projet hérité) + accès internet via web search
+1. **Module chat enrichi frontend** — UI pour définir/afficher folder_path + indicateur recherche web + champ clé web search dans settings
 2. **Module projet** — conteneur regroupant missions code + conversations chat + contexte partagé + lien dossier local
 3. **Phase 4 UI avancée** — éditeur diff interactif, historique replay

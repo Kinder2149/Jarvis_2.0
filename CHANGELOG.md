@@ -2,6 +2,7 @@
 
 | Date | Mission | Description | Fichiers |
 |------|---------|-------------|----------|
+| 2026-04-16 | Module chat enrichi backend | Lecture dossier local (folder_path nullable, h\u00e9ritage projet, read_local_folder, read_local_file, s\u00e9curit\u00e9 path traversal, GRAPH_REPORT prioritaire). Recherche web (search_web via Brave API, d\u00e9tection auto, d\u00e9sactivation gracieuse). 159/159 tests. | database.py, chat_service.py, chat.py, config.py, tests/ |
 | 2026-04-16 | Clôture module chat | Fix start.bat (lancement uvicorn + navigateur fonctionnel). Confirmation project_id nullable sur conversations (déjà implémenté). 142/142 tests passent. | start.bat |
 | 2026-04-16 | Module chat | Backend complet (chat_service.py, routers/chat.py, 2 tables DB). Frontend complet (chat.html, settings section, styles). System prompt JARVIS défini. METHODO injectée via JARVIS_INDEX.md. 142/142 tests. | database.py, chat_service.py, chat.py, chat.html, settings.html, style.css, index.html, tests/ |
 | 2026-04-16 | Méthode JARVIS documentée | GUIDE.md, REGLES_GLOBALES.md, REGLES_CASCADE_SETTINGS.md mis à jour. JARVIS = outil principal, Cascade = fallback. JARVIS_INDEX.md créé. | METHODO/ |

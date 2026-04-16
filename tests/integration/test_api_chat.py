@@ -208,3 +208,72 @@ class TestDeleteConversation:
         response = c.delete("/api/chat/conversations/99999")
         
         assert response.status_code == 404
+
+
+class TestConversationFolderPath:
+    """Tests folder_path sur conversations."""
+
+    def test_creation_avec_folder_path_explicite(self, client_and_db):
+        """Création avec folder_path → folder_path présent."""
+        c = client_and_db
+        
+        response = c.post("/api/chat/conversations", json={
+            "title": "Chat Dossier",
+            "folder_path": "C:\\Test\\Folder"
+        })
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data["folder_path"] == "C:\\Test\\Folder"
+
+    def test_creation_avec_projet_herite_path(self, client_and_db):
+        """Création avec project_id → hérite du path du projet."""
+        c = client_and_db
+        
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = c.post("/api/projects", json={
+                "name": "Test Project",
+                "path": tmpdir,
+                "type": "Web"
+            }).json()
+            
+            response = c.post("/api/chat/conversations", json={
+                "project_id": project["id"],
+                "title": "Chat Projet"
+            })
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data["folder_path"] == tmpdir
+
+    def test_update_folder_path(self, client_and_db):
+        """PATCH /conversations/{id}/folder → met à jour folder_path."""
+        c = client_and_db
+        
+        conv = c.post("/api/chat/conversations", json={"title": "Test"}).json()
+        
+        response = c.patch(f"/api/chat/conversations/{conv['id']}/folder?folder_path=C:\\New\\Path")
+        
+        assert response.status_code == 200
+        assert response.json()["folder_path"] == "C:\\New\\Path"
+        
+        # Vérifier que la conversation a bien été mise à jour
+        conv_data = c.get(f"/api/chat/conversations/{conv['id']}").json()
+        assert conv_data["folder_path"] == "C:\\New\\Path"
+
+    def test_liste_conversations_inclut_folder_path(self, client_and_db):
+        """GET /conversations → folder_path inclus dans la liste."""
+        c = client_and_db
+        
+        c.post("/api/chat/conversations", json={
+            "title": "Conv 1",
+            "folder_path": "C:\\Folder1"
+        })
+        
+        response = c.get("/api/chat/conversations")
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["folder_path"] == "C:\\Folder1"
