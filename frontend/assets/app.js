@@ -4,7 +4,16 @@ async function fetchAPI(endpoint, method = 'GET', body = null) {
   
   try {
     const response = await fetch(`/api${endpoint}`, options);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      let errorMsg = `HTTP ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData.detail) errorMsg = errorData.detail;
+      } catch (e) {
+        // Pas de JSON, garder le message HTTP
+      }
+      throw new Error(errorMsg);
+    }
     return await response.json();
   } catch (error) {
     showToast(`Erreur: ${error.message}`, 'error');

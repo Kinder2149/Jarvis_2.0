@@ -209,10 +209,10 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Fixes critiques + sélecteur modèle chat livré
-**Contexte :** Fix erreur 400 création projet (local_path optionnel), ajout sélecteur modèle dans chat.html (4 modèles : Sonnet, Haiku, Gemini Flash, Opus), backend accept paramètre model optionnel. Graphify mis à jour (573 nodes, 598 edges). 162/162 tests passent.
+**Objectif :** Fix UX création projet + chat livré
+**Contexte :** Amélioration messages d'erreur (fetchAPI affiche detail backend), logging création projet, validation frontend (trim + vérif champs vides). Fix UX chat : inputs désactivés par défaut, activés après sélection conversation, placeholder explicite. 162/162 tests passent.
 **Blocage :** Aucun
-**Résultat attendu :** Bugs corrigés, chat avec choix modèle fonctionnel.
+**Résultat attendu :** Messages d'erreur clairs, UX chat intuitive.
 
 ---
 

@@ -60,13 +60,23 @@
       `;
       
       showModal('Nouveau projet', form, async () => {
-        const name = document.getElementById('project-name').value;
-        const path = document.getElementById('project-path').value;
+        const name = document.getElementById('project-name').value.trim();
+        const path = document.getElementById('project-path').value.trim();
         const type = document.getElementById('project-type').value;
         
-        await fetchAPI('/projects', 'POST', { name, path, type });
-        showToast('Projet ajouté');
-        loadProjects();
+        if (!name || !path) {
+          showToast('Nom et chemin requis', 'error');
+          return;
+        }
+        
+        try {
+          await fetchAPI('/projects', 'POST', { name, path, type });
+          showToast('Projet ajouté');
+          loadProjects();
+        } catch (error) {
+          console.error('Erreur création projet:', error);
+          showToast('Erreur: Vérifiez que le chemin existe', 'error');
+        }
       });
     }
     

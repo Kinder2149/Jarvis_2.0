@@ -31,8 +31,13 @@ def list_projects():
 
 @router.post("")
 def create_project(project: ProjectCreate):
+    import logging
+    logger = logging.getLogger("jarvis")
+    logger.info(f"Création projet - Données reçues: name={project.name}, path={project.path}, type={project.type}, local_path={project.local_path}")
+    
     path = Path(project.path)
     if not path.exists():
+        logger.error(f"Chemin inexistant: {project.path}")
         raise HTTPException(status_code=400, detail="Le chemin spécifié n'existe pas")
     
     name = project.name
@@ -76,6 +81,7 @@ def create_project(project: ProjectCreate):
             "created_at": ""
         }
     except Exception as e:
+        logger.error(f"Erreur création projet: {str(e)}", exc_info=True)
         conn.close()
         raise HTTPException(status_code=400, detail=f"Erreur lors de la création: {str(e)}")
 
