@@ -81,3 +81,18 @@
 2026-04-16 19:32:26 | INFO | JARVIS démarré
 2026-04-16 19:32:27 | INFO | JARVIS démarré
 2026-04-16 19:32:46 | INFO | Création projet - Données reçues: name=Test, path=C:/DEV, type=Outil IA, local_path=None
+2026-04-16 19:35:34 | INFO | JARVIS démarré
+2026-04-16 19:35:47 | INFO | Création projet - Données reçues: name=Jarvis, path=C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0, type=Outil IA, local_path=None
+2026-04-16 19:35:47 | ERROR | Erreur création projet: UNIQUE constraint failed: projects.path
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\routers\projects.py", line 66, in create_project
+    cursor.execute(
+    ~~~~~~~~~~~~~~^
+        "INSERT INTO projects (name, path, type, local_path) VALUES (?, ?, ?, ?)",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        (name, str(path), type_project, local_path)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+sqlite3.IntegrityError: UNIQUE constraint failed: projects.path
+2026-04-16 19:36:26 | INFO | JARVIS démarré

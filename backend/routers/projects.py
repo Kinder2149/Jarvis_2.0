@@ -83,7 +83,13 @@ def create_project(project: ProjectCreate):
     except Exception as e:
         logger.error(f"Erreur création projet: {str(e)}", exc_info=True)
         conn.close()
-        raise HTTPException(status_code=400, detail=f"Erreur lors de la création: {str(e)}")
+        
+        # Message d'erreur clair pour l'utilisateur
+        error_msg = str(e)
+        if "UNIQUE constraint failed: projects.path" in error_msg:
+            raise HTTPException(status_code=400, detail=f"Ce chemin existe déjà dans un autre projet")
+        else:
+            raise HTTPException(status_code=400, detail=f"Erreur lors de la création: {error_msg}")
 
 @router.get("/{project_id}")
 def get_project(project_id: int):
