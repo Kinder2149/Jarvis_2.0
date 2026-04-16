@@ -70,6 +70,12 @@ def init_db():
     except sqlite3.OperationalError:
         pass
     
+    try:
+        cursor.execute("ALTER TABLE projects ADD COLUMN local_path TEXT")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+    
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS model_decision_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

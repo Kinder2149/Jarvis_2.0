@@ -56,8 +56,27 @@
 
     // Chargement initial
     async function init() {
+      // Récupérer params URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const conversationId = urlParams.get('conversation_id');
+      const projectId = urlParams.get('project_id');
+      
       await loadProjects();
+      
+      // Pré-sélectionner le projet si fourni
+      if (projectId) {
+        currentProjectId = projectId;
+        const select = document.getElementById('project-select');
+        select.value = projectId;
+      }
+      
       await loadConversations();
+      
+      // Sélectionner automatiquement la conversation si fournie
+      if (conversationId) {
+        await selectConversation(parseInt(conversationId));
+      }
+      
       setupTextareaAutoResize();
     }
 

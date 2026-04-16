@@ -2,6 +2,7 @@
 
 | Date | Mission | Description | Fichiers |
 |------|---------|-------------|----------|
+| 2026-04-16 | Module projet complet | Backend : local_path sur projects (migration ALTER TABLE, schemas, PATCH endpoint). Frontend : project.html avec 3 onglets (Contexte, Missions, Chat), affichage local_path + bouton définir/modifier, navigation depuis index.html et chat.html. Héritage local_path → folder_path. 162/162 tests. | database.py, schemas/project.py, projects.py, chat.py, project.html, chat.html, tests/ |
 | 2026-04-16 | Module chat enrichi frontend | UI folder_path (sidebar affichage + bouton définir/modifier + prompt natif + bandeau info). Indicateur recherche web (🔍 pendant envoi + 🌐 dans bulle réponse). Champ clé Brave Search dans settings. 159/159 tests. | chat.html, settings.html, style.css, TEST_MANUEL_CHAT_ENRICHI.md |
 | 2026-04-16 | Module chat enrichi backend | Lecture dossier local (folder_path nullable, héritage projet, read_local_folder, read_local_file, sécurité path traversal, GRAPH_REPORT prioritaire). Recherche web (search_web via Brave API, détection auto, désactivation gracieuse). 159/159 tests. | database.py, chat_service.py, chat.py, config.py, tests/ |
 | 2026-04-16 | Clôture module chat | Fix start.bat (lancement uvicorn + navigateur fonctionnel). Confirmation project_id nullable sur conversations (déjà implémenté). 142/142 tests passent. | start.bat |

@@ -121,3 +121,75 @@ class TestDeleteProject:
         projects = client_with_temp_db.get("/api/projects").json()
         ids = [p["id"] for p in projects]
         assert created["id"] not in ids
+
+
+class TestProjectLocalPath:
+
+    def test_create_project_avec_local_path(self, client_with_temp_db, tmp_path):
+        """Création projet avec local_path → local_path présent."""
+        project_dir = tmp_path / "projet_local"
+        project_dir.mkdir()
+        local_dir = tmp_path / "local_folder"
+        local_dir.mkdir()
+        
+        response = client_with_temp_db.post("/api/projects", json={
+            "name": "Projet Local",
+            "path": str(project_dir),
+            "type": "web",
+            "local_path": str(local_dir)
+        })
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data["local_path"] == str(local_dir)
+
+    def test_patch_project_local_path(self, client_with_temp_db, tmp_path):
+        """PATCH /projects/{id} avec local_path → met à jour."""
+        project_dir = tmp_path / "projet_patch"
+        project_dir.mkdir()
+        
+        created = client_with_temp_db.post("/api/projects", json={
+            "name": "Patch Test",
+            "path": str(project_dir),
+            "type": "web"
+        }).json()
+        
+        local_dir = tmp_path / "new_local"
+        local_dir.mkdir()
+        
+        response = client_with_temp_db.patch(
+            f"/api/projects/{created['id']}?local_path={str(local_dir)}"
+        )
+        
+        assert response.status_code == 200
+        assert response.json()["local_path"] == str(local_dir)
+        
+        # Vérifier que GET retourne bien le local_path
+        project_data = client_with_temp_db.get(f"/api/projects/{created['id']}").json()
+        assert project_data["local_path"] == str(local_dir)
+
+    def test_conversation_herite_folder_path_du_projet(self, client_with_temp_db, tmp_path):
+        """Conversation créée avec project_id hérite du local_path."""
+        project_dir = tmp_path / "projet_conv"
+        project_dir.mkdir()
+        local_dir = tmp_path / "local_conv"
+        local_dir.mkdir()
+        
+        # Créer projet avec local_path
+        project = client_with_temp_db.post("/api/projects", json={
+            "name": "Projet Conv",
+            "path": str(project_dir),
+            "type": "web",
+            "local_path": str(local_dir)
+        }).json()
+        
+        # Créer conversation avec project_id
+        conv_response = client_with_temp_db.post("/api/chat/conversations", json={
+            "project_id": project["id"],
+            "title": "Test Conv"
+        })
+        
+        assert conv_response.status_code == 200
+        conv_data = conv_response.json()
+        # La conversation doit hériter du local_path du projet
+        assert conv_data["folder_path"] == str(local_dir)

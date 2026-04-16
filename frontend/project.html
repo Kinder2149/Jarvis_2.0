@@ -14,6 +14,7 @@
   
   <div class="container">
     <div id="active-session-banner"></div>
+    <div id="local-path-display" style="margin-bottom: 1rem;"></div>
     <div class="card">
       <h2>Actions</h2>
       <div id="actions-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
@@ -24,7 +25,9 @@
     </div>
     
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('contexte')">PROJET_CONTEXTE</div>
+      <div class="tab active" onclick="switchTab('contexte')">Contexte</div>
+      <div class="tab" onclick="switchTab('missions')">Missions</div>
+      <div class="tab" onclick="switchTab('chat')">Chat</div>
       <div class="tab" onclick="switchTab('changelog')">CHANGELOG</div>
       <div class="tab" onclick="switchTab('backlog')">BACKLOG</div>
       <div class="tab" onclick="switchTab('sessions')">SESSIONS</div>
@@ -32,6 +35,14 @@
     
     <div id="tab-contexte" class="tab-content active">
       <div class="card" id="contexte-content"></div>
+    </div>
+    
+    <div id="tab-missions" class="tab-content">
+      <div class="card" id="missions-content"></div>
+    </div>
+    
+    <div id="tab-chat" class="tab-content">
+      <div class="card" id="chat-content"></div>
     </div>
     
     <div id="tab-changelog" class="tab-content">
@@ -50,10 +61,36 @@
   <script src="/app/assets/app.js"></script>
   <script>
     const projectId = new URLSearchParams(location.search).get('id');
+    let currentProject = null;
     
     async function loadProject() {
       const project = await fetchAPI(`/projects/${projectId}`);
+      currentProject = project;
       document.getElementById('project-name').textContent = project.name;
+      
+      // Afficher local_path
+      const localPathDiv = document.getElementById('local-path-display');
+      if (project.local_path) {
+        localPathDiv.innerHTML = `
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="color: var(--text-muted); font-size: 0.875rem;">Dossier local</span><br>
+              <strong>📁 ${project.local_path}</strong>
+            </div>
+            <button class="btn btn-primary" onclick="defineLocalPath()" style="font-size: 0.875rem;">Modifier</button>
+          </div>
+        `;
+      } else {
+        localPathDiv.innerHTML = `
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="color: var(--text-muted); font-size: 0.875rem;">Dossier local</span><br>
+              <span>📁 Aucun dossier local</span>
+            </div>
+            <button class="btn btn-primary" onclick="defineLocalPath()" style="font-size: 0.875rem;">Définir</button>
+          </div>
+        `;
+      }
       
       if (!project.has_projet_contexte) {
         const actionsDiv = document.getElementById('actions-buttons');
@@ -81,6 +118,8 @@
       } catch (e) {}
       
       loadSessions();
+      loadMissions();
+      loadConversations();
     }
     
     async function loadSessions() {
@@ -125,6 +164,109 @@
       });
       
       location.href = `/app/pipeline.html?session_id=${result.session.id}`;
+    }
+    
+    async function loadMissions() {
+      try {
+        const sessions = await fetchAPI(`/projects/${projectId}/sessions`);
+        const missionsContent = document.getElementById('missions-content');
+        
+        if (sessions.length === 0) {
+          missionsContent.innerHTML = '<p style="color: var(--text-muted);">Aucune mission en cours</p>';
+          return;
+        }
+        
+        const statusColors = {
+          'COMPLETED': 'success',
+          'FAILED': 'danger',
+          'RUNNING': 'info',
+          'WAITING_VALIDATION': 'warning',
+          'ABORTED': 'secondary'
+        };
+        
+        let html = '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
+        sessions.forEach(s => {
+          const date = new Date(s.created_at).toLocaleDateString('fr-FR');
+          const badgeClass = statusColors[s.status] || 'secondary';
+          html += `
+            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>${s.workflow_type}</strong><br>
+                <span style="font-size: 0.875rem; color: var(--text-muted);">${date} — Étape ${s.current_step_index + 1}/${s.total_steps || '?'}</span><br>
+                <span class="badge badge-${badgeClass}" style="margin-top: 0.5rem;">${s.status}</span>
+              </div>
+              <a href="/app/pipeline.html?session_id=${s.id}" class="btn btn-primary" style="font-size: 0.875rem;">Voir</a>
+            </div>
+          `;
+        });
+        html += '</div>';
+        missionsContent.innerHTML = html;
+      } catch (e) {
+        document.getElementById('missions-content').innerHTML = '<p style="color: var(--text-muted);">Erreur de chargement</p>';
+      }
+    }
+    
+    async function loadConversations() {
+      try {
+        const conversations = await fetchAPI(`/chat/conversations?project_id=${projectId}`);
+        const chatContent = document.getElementById('chat-content');
+        
+        if (conversations.length === 0) {
+          chatContent.innerHTML = `
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Aucune conversation</p>
+            <button class="btn btn-primary" onclick="createConversation()">+ Nouvelle conversation</button>
+          `;
+          return;
+        }
+        
+        let html = '<button class="btn btn-primary" onclick="createConversation()" style="margin-bottom: 1rem;">+ Nouvelle conversation</button>';
+        html += '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
+        conversations.forEach(conv => {
+          const date = new Date(conv.created_at).toLocaleDateString('fr-FR');
+          const messageCount = conv.messages ? conv.messages.length : 0;
+          html += `
+            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>${conv.title}</strong><br>
+                <span style="font-size: 0.875rem; color: var(--text-muted);">${date} — ${messageCount} message(s)</span>
+              </div>
+              <a href="/app/chat.html?conversation_id=${conv.id}" class="btn btn-primary" style="font-size: 0.875rem;">Ouvrir</a>
+            </div>
+          `;
+        });
+        html += '</div>';
+        chatContent.innerHTML = html;
+      } catch (e) {
+        document.getElementById('chat-content').innerHTML = '<p style="color: var(--text-muted);">Erreur de chargement</p>';
+      }
+    }
+    
+    async function createConversation() {
+      try {
+        const conv = await fetchAPI('/chat/conversations', 'POST', {
+          project_id: parseInt(projectId),
+          title: 'Nouvelle conversation'
+        });
+        location.href = `/app/chat.html?conversation_id=${conv.id}`;
+      } catch (e) {
+        showToast('Erreur création conversation', 'error');
+      }
+    }
+    
+    async function defineLocalPath() {
+      const currentPath = currentProject?.local_path || '';
+      const newPath = prompt('Chemin du dossier local (laisser vide pour retirer) :', currentPath);
+      
+      if (newPath === null) return;
+      
+      try {
+        const folderPath = newPath.trim() || null;
+        await fetchAPI(`/projects/${projectId}?local_path=${encodeURIComponent(folderPath || '')}`, 'PATCH');
+        showToast(folderPath ? 'Dossier défini' : 'Dossier retiré');
+        await loadProject();
+      } catch (e) {
+        showToast('Erreur définition dossier', 'error');
+      }
     }
     
     function switchTab(tab) {

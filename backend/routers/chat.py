@@ -47,10 +47,10 @@ def create_conversation(data: ConversationCreate):
     # Hériter du local_path du projet si project_id défini et folder_path non fourni
     folder_path = data.folder_path
     if data.project_id and not folder_path:
-        cursor.execute("SELECT path FROM projects WHERE id = ?", (data.project_id,))
+        cursor.execute("SELECT local_path FROM projects WHERE id = ?", (data.project_id,))
         project_row = cursor.fetchone()
-        if project_row:
-            folder_path = project_row["path"]
+        if project_row and "local_path" in project_row.keys():
+            folder_path = project_row["local_path"]
     
     cursor.execute(
         "INSERT INTO conversations (project_id, title, folder_path, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",

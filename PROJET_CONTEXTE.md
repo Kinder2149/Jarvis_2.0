@@ -96,15 +96,15 @@ JARVIS/
 │ ├── config.json ← clés API + mapping modèles
 │ ├── pipelines.json ← 6 workflows définis
 │ └── prompts.json ← templates prompts par step
-└── frontend/
+└├── frontend/
 ├── index.html ← dashboard projets
 ├── pipeline.html ← pipeline actif (page principale)
-├── project.html ← vue projet (PROJET_CONTEXTE, logs, backlog)
+├── project.html ← vue projet unifiée (3 onglets : Contexte, Missions, Chat + dossier local)
+├── chat.html ← interface chat enrichie (folder_path, web search)
 ├── settings.html ← clés API + modèles par défaut
 └── assets/
 ├── style.css ← thème sombre, variables CSS, composants
 └── app.js ← fetch API, rendu markdown/diff, gestion état UI
-
 
 **Services actifs :** 8 / 20 maximum
 **Fichiers frontend :** 6 / illimité (pas de contrainte ici)
@@ -135,6 +135,7 @@ JARVIS/
 - Prompts (25) : format corrigé, JSON pur, chemin inside bloc code
 - **Module code complet** : 6 workflows, 142 tests, rollback atomique, clôture automatique
 - **Module chat enrichi complet** : lecture dossier local (folder_path nullable, héritage projet, GRAPH_REPORT prioritaire, UI sidebar + bandeau info) + accès internet (web search Brave API, détection auto, indicateur 🔍, icône 🌐, désactivation gracieuse). 159/159 tests.
+- **Module projet complet** : conteneur unifié regroupant missions code (pipelines) + conversations chat + contexte partagé (PROJET_CONTEXTE.md) + lien dossier local (local_path). UI project.html avec 3 onglets (Contexte, Missions, Chat). Navigation depuis index.html et chat.html. 162/162 tests.
 
 **🚧 En cours**
 - Aucun
@@ -208,14 +209,13 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Module chat enrichi complet livré
-**Contexte :** Backend + frontend livrés. 159/159 tests passent. UI folder_path (sidebar + bouton définir/modifier + bandeau info) + indicateur recherche web (🔍 + 🌐) + champ clé Brave Search dans settings.
+**Objectif :** Module projet complet livré
+**Contexte :** Backend (local_path sur projects, migration, PATCH endpoint) + frontend (project.html avec 3 onglets : Contexte/Missions/Chat, affichage local_path, bouton définir/modifier, navigation depuis index.html et chat.html). 162/162 tests passent.
 **Blocage :** Aucun
-**Résultat attendu :** Module chat enrichi complet et fonctionnel.
+**Résultat attendu :** Module projet complet et fonctionnel.
 
 ---
 
 ## 9. BACKLOG
 
-1. **Module projet** — conteneur regroupant missions code + conversations chat + contexte partagé + lien dossier local
-2. **Phase 4 UI avancée** — éditeur diff interactif, historique replay
+1. **Phase 4 UI avancée** — éditeur diff interactif, historique replay

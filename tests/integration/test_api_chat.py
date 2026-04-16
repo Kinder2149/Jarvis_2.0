@@ -227,25 +227,27 @@ class TestConversationFolderPath:
         assert data["folder_path"] == "C:\\Test\\Folder"
 
     def test_creation_avec_projet_herite_path(self, client_and_db):
-        """Création avec project_id → hérite du path du projet."""
+        """Création avec project_id → hérite du local_path du projet."""
         c = client_and_db
         
         import tempfile
         with tempfile.TemporaryDirectory() as tmpdir:
-            project = c.post("/api/projects", json={
-                "name": "Test Project",
-                "path": tmpdir,
-                "type": "Web"
-            }).json()
-            
-            response = c.post("/api/chat/conversations", json={
-                "project_id": project["id"],
-                "title": "Chat Projet"
-            })
-            
-            assert response.status_code == 200
-            data = response.json()
-            assert data["folder_path"] == tmpdir
+            with tempfile.TemporaryDirectory() as local_dir:
+                project = c.post("/api/projects", json={
+                    "name": "Test Project",
+                    "path": tmpdir,
+                    "type": "Web",
+                    "local_path": local_dir
+                }).json()
+                
+                response = c.post("/api/chat/conversations", json={
+                    "project_id": project["id"],
+                    "title": "Chat Projet"
+                })
+                
+                assert response.status_code == 200
+                data = response.json()
+                assert data["folder_path"] == local_dir
 
     def test_update_folder_path(self, client_and_db):
         """PATCH /conversations/{id}/folder → met à jour folder_path."""

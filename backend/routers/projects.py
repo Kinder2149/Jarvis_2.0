@@ -16,11 +16,13 @@ def list_projects():
     
     projects = []
     for row in rows:
+        local_path = row["local_path"] if "local_path" in row.keys() else None
         projects.append({
             "id": row["id"],
             "name": row["name"],
             "path": row["path"],
             "type": row["type"],
+            "local_path": local_path,
             "has_projet_contexte": Path(row["path"]).joinpath("PROJET_CONTEXTE.md").exists(),
             "created_at": row["created_at"]
         })
@@ -55,9 +57,10 @@ def create_project(project: ProjectCreate):
     cursor = conn.cursor()
     
     try:
+        local_path = project.local_path if hasattr(project, 'local_path') else None
         cursor.execute(
-            "INSERT INTO projects (name, path, type) VALUES (?, ?, ?)",
-            (name, str(path), type_project)
+            "INSERT INTO projects (name, path, type, local_path) VALUES (?, ?, ?, ?)",
+            (name, str(path), type_project, local_path)
         )
         conn.commit()
         project_id = cursor.lastrowid
@@ -68,6 +71,7 @@ def create_project(project: ProjectCreate):
             "name": name,
             "path": str(path),
             "type": type_project,
+            "local_path": local_path,
             "has_projet_contexte": has_projet_contexte,
             "created_at": ""
         }
@@ -93,11 +97,13 @@ def get_project(project_id: int):
     session_row = cursor.fetchone()
     conn.close()
     
+    local_path = row["local_path"] if "local_path" in row.keys() else None
     project_data = {
         "id": row["id"],
         "name": row["name"],
         "path": row["path"],
         "type": row["type"],
+        "local_path": local_path,
         "has_projet_contexte": Path(row["path"]).joinpath("PROJET_CONTEXTE.md").exists(),
         "created_at": row["created_at"]
     }
@@ -169,3 +175,24 @@ def get_project_sessions(project_id: int):
         })
     
     return sessions
+
+@router.patch("/{project_id}")
+def update_project(project_id: int, local_path: str | None = None):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM projects WHERE id = ?", (project_id,))
+    row = cursor.fetchone()
+    
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Projet non trouvé")
+    
+    cursor.execute(
+        "UPDATE projects SET local_path = ? WHERE id = ?",
+        (local_path, project_id)
+    )
+    conn.commit()
+    conn.close()
+    
+    return {"message": "Projet mis à jour", "local_path": local_path}
