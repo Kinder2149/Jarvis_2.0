@@ -209,10 +209,10 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Fix UX création projet + chat livré
-**Contexte :** Amélioration messages d'erreur (fetchAPI affiche detail backend), logging création projet, validation frontend (trim + vérif champs vides). Fix UX chat : inputs désactivés par défaut, activés après sélection conversation, placeholder explicite. 162/162 tests passent.
+**Objectif :** Boutons suppression projets + conversations livré
+**Contexte :** Ajout bouton supprimer (icône 🗑️) sur cartes projet (index.html) avec confirmation. Bouton supprimer conversations déjà présent (chat.html). Message d'erreur amélioré pour chemin projet existant. 162/162 tests passent.
 **Blocage :** Aucun
-**Résultat attendu :** Messages d'erreur clairs, UX chat intuitive.
+**Résultat attendu :** Suppression projets et conversations fonctionnelle.
 
 ---
 

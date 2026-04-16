@@ -43,7 +43,10 @@
           <h3>${p.name}</h3>
           <span class="badge badge-info">${p.type}</span>
           <p style="color: var(--text-muted); margin: 0.5rem 0;">${p.path}</p>
-          <button class="btn btn-primary" onclick="location.href='/app/project.html?id=${p.id}'">Ouvrir →</button>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button class="btn btn-primary" onclick="location.href='/app/project.html?id=${p.id}'" style="flex: 1;">Ouvrir →</button>
+            <button class="btn btn-danger" onclick="deleteProject(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑️</button>
+          </div>
         </div>
       `).join('');
     }
@@ -78,6 +81,20 @@
           showToast('Erreur: Vérifiez que le chemin existe', 'error');
         }
       });
+    }
+    
+    async function deleteProject(id, name) {
+      if (!confirm(`Supprimer le projet "${name}" ?\n\nCette action est irréversible.`)) {
+        return;
+      }
+      
+      try {
+        await fetchAPI(`/projects/${id}`, 'DELETE');
+        showToast('Projet supprimé');
+        loadProjects();
+      } catch (error) {
+        console.error('Erreur suppression projet:', error);
+      }
     }
     
     loadProjects();

@@ -2,6 +2,7 @@
 
 | Date | Mission | Description | Fichiers |
 |------|---------|-------------|----------|
+| 2026-04-16 | Boutons suppression projets + conversations | Ajout bouton supprimer (🗑️) sur cartes projet avec confirmation. Message d'erreur amélioré pour chemin projet existant ("Ce chemin existe déjà dans un autre projet"). Bouton supprimer conversations déjà présent. 162/162 tests. | backend/routers/projects.py, frontend/index.html |
 | 2026-04-16 | Fix UX création projet + chat | Amélioration messages d'erreur (fetchAPI affiche detail backend), logging création projet, validation frontend (trim + vérif champs vides). Fix UX chat : inputs désactivés par défaut, activés après sélection conversation, placeholder explicite "Crée ou sélectionne une conversation". 162/162 tests. | backend/routers/projects.py, frontend/index.html, chat.html, assets/app.js |
 | 2026-04-16 | Fixes critiques + sélecteur modèle chat | Fix erreur 400 création projet (local_path optionnel backend). Ajout sélecteur modèle dans chat (4 modèles : Sonnet, Haiku, Gemini Flash, Opus). Backend accepte paramètre model optionnel. Graphify mis à jour (573 nodes, 598 edges). 162/162 tests. | backend/routers/projects.py, chat.py, frontend/chat.html |
 | 2026-04-16 | Frontend V1 améliorations | Clarification affichage 3 modules (projets, code, chat) : titres, icônes, descriptions. Tests automatisés Playwright créés (5 tests : pages, navigation, CSS). 5/5 tests passent. | frontend/index.html, project.html, chat.html, assets/style.css, tests/frontend/test_frontend_v1.py |

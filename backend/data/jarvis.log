@@ -96,3 +96,4 @@ Traceback (most recent call last):
     ^
 sqlite3.IntegrityError: UNIQUE constraint failed: projects.path
 2026-04-16 19:36:26 | INFO | JARVIS démarré
+2026-04-16 19:37:04 | INFO | JARVIS démarré
