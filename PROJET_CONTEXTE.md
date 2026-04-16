@@ -209,10 +209,10 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Frontend V1 améliorations livré
-**Contexte :** Clarification affichage 3 modules (projets, code, chat) avec titres, icônes et descriptions. Tests automatiques frontend créés (Playwright, 5 tests : pages, navigation, CSS). 5/5 tests passent.
+**Objectif :** Fixes critiques + sélecteur modèle chat livré
+**Contexte :** Fix erreur 400 création projet (local_path optionnel), ajout sélecteur modèle dans chat.html (4 modèles : Sonnet, Haiku, Gemini Flash, Opus), backend accept paramètre model optionnel. Graphify mis à jour (573 nodes, 598 edges). 162/162 tests passent.
 **Blocage :** Aucun
-**Résultat attendu :** Frontend V1 validé, prêt pour V2 complète.
+**Résultat attendu :** Bugs corrigés, chat avec choix modèle fonctionnel.
 
 ---
 

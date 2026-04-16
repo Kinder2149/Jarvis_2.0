@@ -57,7 +57,7 @@ def create_project(project: ProjectCreate):
     cursor = conn.cursor()
     
     try:
-        local_path = project.local_path if hasattr(project, 'local_path') else None
+        local_path = project.local_path
         cursor.execute(
             "INSERT INTO projects (name, path, type, local_path) VALUES (?, ?, ?, ?)",
             (name, str(path), type_project, local_path)

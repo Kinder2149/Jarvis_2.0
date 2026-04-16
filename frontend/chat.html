@@ -43,6 +43,15 @@
       </div>
       
       <div class="chat-input-area">
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
+          <label style="font-size: 0.875rem; color: var(--text-muted);">Modèle :</label>
+          <select id="chat-model-select" style="flex: 1; max-width: 300px;">
+            <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5</option>
+            <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5</option>
+            <option value="google/gemini-2.0-flash-001">Gemini Flash 2.0</option>
+            <option value="anthropic/claude-opus-4">Claude Opus 4</option>
+          </select>
+        </div>
         <textarea id="chat-input" class="chat-textarea" placeholder="Écris un message..." rows="1"></textarea>
         <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Envoyer</button>
       </div>
@@ -293,7 +302,11 @@
       scrollToBottom();
       
       try {
-        const response = await fetchAPI(`/chat/conversations/${currentConvId}/messages`, 'POST', { content });
+        const selectedModel = document.getElementById('chat-model-select').value;
+        const response = await fetchAPI(`/chat/conversations/${currentConvId}/messages`, 'POST', { 
+          content,
+          model: selectedModel
+        });
         
         // Si recherche web utilisée, changer temporairement l'indicateur
         if (response.web_search_used) {

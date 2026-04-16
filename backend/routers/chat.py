@@ -31,6 +31,7 @@ class ConversationCreate(BaseModel):
 
 class MessageCreate(BaseModel):
     content: str
+    model: str | None = None
 
 
 # ─── Routes ────────────────────────────────────────────────────────────────────
@@ -168,6 +169,12 @@ async def send_message(conv_id: int, data: MessageCreate):
     """Envoie un message dans une conversation et retourne la réponse."""
     db = get_connection()
     config = load_config()
+    
+    # Override du modèle si fourni
+    if data.model:
+        if "chat" not in config:
+            config["chat"] = {}
+        config["chat"]["model"] = data.model
     
     try:
         result = await send_chat_message(conv_id, data.content, db, config)
