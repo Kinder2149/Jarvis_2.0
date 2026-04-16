@@ -95,3 +95,66 @@ def apply_file_changes(project_id: int, request: ApplyFilesRequest):
         raise HTTPException(status_code=500, detail="Échec de l'application des modifications")
     
     return {"success": True}
+
+@router.get("/{project_id}/local-list")
+def list_local_files(project_id: int):
+    """Liste les fichiers du dossier local du projet (récursif, profondeur max 3)."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT local_path FROM projects WHERE id = ?", (project_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        raise HTTPException(status_code=404, detail="Projet non trouvé")
+    
+    local_path = row["local_path"]
+    
+    if not local_path:
+        return {"files": [], "error": "Aucun dossier local défini"}
+    
+    local_dir = Path(local_path)
+    if not local_dir.exists() or not local_dir.is_dir():
+        return {"files": [], "error": "Aucun dossier local défini"}
+    
+    # Exclusions
+    exclude_names = {"__pycache__", ".git", "node_modules", ".env"}
+    exclude_extensions = {".pyc"}
+    
+    files = []
+    
+    def scan_directory(directory: Path, current_depth: int = 0, max_depth: int = 3):
+        if current_depth > max_depth:
+            return
+        
+        try:
+            for item in directory.iterdir():
+                # Exclure
+                if item.name in exclude_names:
+                    continue
+                if item.suffix in exclude_extensions:
+                    continue
+                
+                relative_path = item.relative_to(local_dir)
+                
+                if item.is_file():
+                    files.append({
+                        "name": item.name,
+                        "path": str(relative_path),
+                        "size": item.stat().st_size,
+                        "type": "file"
+                    })
+                elif item.is_dir():
+                    files.append({
+                        "name": item.name,
+                        "path": str(relative_path),
+                        "size": 0,
+                        "type": "dir"
+                    })
+                    scan_directory(item, current_depth + 1, max_depth)
+        except PermissionError:
+            pass
+    
+    scan_directory(local_dir)
+    
+    return {"files": files}

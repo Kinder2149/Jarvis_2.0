@@ -94,13 +94,29 @@ def list_conversations(project_id: int | None = None):
         cursor.execute("SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?", (conv_id,))
         message_count = cursor.fetchone()["count"]
         
+        # Récupérer le dernier message assistant
+        cursor.execute(
+            "SELECT content, created_at FROM messages WHERE conversation_id = ? AND role = 'assistant' ORDER BY created_at DESC LIMIT 1",
+            (conv_id,)
+        )
+        last_msg = cursor.fetchone()
+        
+        last_message_preview = None
+        last_message_at = None
+        if last_msg:
+            content = last_msg["content"] or ""
+            last_message_preview = content[:80]
+            last_message_at = last_msg["created_at"]
+        
         conversations.append({
             "id": row["id"],
             "title": row["title"],
             "project_id": row["project_id"],
             "folder_path": row["folder_path"],
             "updated_at": row["updated_at"],
-            "message_count": message_count
+            "message_count": message_count,
+            "last_message_preview": last_message_preview,
+            "last_message_at": last_message_at
         })
     
     db.close()

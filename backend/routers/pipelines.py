@@ -225,7 +225,7 @@ def get_pipeline_costs(session_id: int):
     return costs
 
 @router.get("/logs")
-def get_logs(lines: int = Query(default=100)):
+def get_logs(lines: int = Query(default=100), project_id: int | None = None):
     if not LOG_PATH.exists():
         return {"lines": []}
     
@@ -233,7 +233,30 @@ def get_logs(lines: int = Query(default=100)):
         with open(LOG_PATH, "r", encoding="utf-8") as f:
             all_lines = f.readlines()
         
-        last_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
+        # Filtrage par project_id si fourni
+        if project_id is not None:
+            # Récupérer les session_id du projet
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM sessions WHERE project_id = ?", (project_id,))
+            session_ids = [str(row["id"]) for row in cursor.fetchall()]
+            conn.close()
+            
+            if not session_ids:
+                return {"lines": []}
+            
+            # Filtrer les lignes contenant ces session_id
+            filtered_lines = []
+            for line in all_lines:
+                for session_id in session_ids:
+                    if f"session {session_id}" in line.lower() or f"session_id={session_id}" in line.lower():
+                        filtered_lines.append(line)
+                        break
+            
+            last_lines = filtered_lines[-lines:] if len(filtered_lines) > lines else filtered_lines
+        else:
+            last_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
+        
         return {"lines": [line.rstrip() for line in last_lines]}
     
     except Exception:

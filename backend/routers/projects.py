@@ -160,10 +160,38 @@ def get_project_sessions(project_id: int):
         (project_id,)
     )
     rows = cursor.fetchall()
-    conn.close()
+    
+    # Table de prix modèles ($/M tokens)
+    model_prices = {
+        "google/gemini-2.0-flash-001": 0.10,
+        "google/gemini-flash-2.0": 0.10,
+        "anthropic/claude-haiku-4.5": 1.00,
+        "anthropic/claude-haiku-4-5": 1.00,
+        "anthropic/claude-sonnet-4.5": 3.00,
+        "anthropic/claude-sonnet-4-5": 3.00,
+        "anthropic/claude-opus-4": 5.00,
+        "anthropic/claude-opus-4.5": 5.00
+    }
     
     sessions = []
     for row in rows:
+        session_id = row["id"]
+        
+        # Calculer coût total pour cette session
+        cursor.execute(
+            "SELECT model_id_chosen, input_tokens, output_tokens FROM model_decision_log WHERE session_id = ?",
+            (session_id,)
+        )
+        log_rows = cursor.fetchall()
+        
+        total_cost_usd = 0.0
+        for log_row in log_rows:
+            model_id = log_row["model_id_chosen"]
+            price = model_prices.get(model_id, 1.00)
+            input_tokens = log_row["input_tokens"] or 0
+            output_tokens = log_row["output_tokens"] or 0
+            total_cost_usd += (input_tokens + output_tokens) / 1_000_000 * price
+        
         sessions.append({
             "id": row["id"],
             "project_id": row["project_id"],
@@ -171,9 +199,11 @@ def get_project_sessions(project_id: int):
             "status": row["status"],
             "current_step_index": row["current_step_index"],
             "total_steps": row["total_steps"],
-            "created_at": row["created_at"]
+            "created_at": row["created_at"],
+            "total_cost_usd": round(total_cost_usd, 4)
         })
     
+    conn.close()
     return sessions
 
 @router.patch("/{project_id}")

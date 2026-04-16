@@ -117,7 +117,7 @@ JARVIS/
 - Gestion projets CRUD (enregistrement, liste, suppression)
 - Pipeline engine complet (6 workflows, state machine, persistance SQLite)
 - Routing modèles par type de tâche (routing/structuring/code/analysis)
-- Suite de tests 159/159 (unitaires + intégration)
+- Suite de tests 162/162 (unitaires + intégration) + 4 tests live (OpenRouter, chat, pipeline, dossier local)
 - Configuration modèles équilibrée (routing=Gemini Flash, code=Haiku, analysis=Sonnet)
 - Roadmap OpenRouter validée (6 slugs testés live)
 - Tous les workflows testés live (session_start, session_end, bug_simple, mission_complexe, nouveau_projet, projet_existant)
@@ -209,13 +209,13 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour
-**Objectif :** Module projet complet livré
-**Contexte :** Backend (local_path sur projects, migration, PATCH endpoint) + frontend (project.html avec 3 onglets : Contexte/Missions/Chat, affichage local_path, bouton définir/modifier, navigation depuis index.html et chat.html). 162/162 tests passent.
+**Objectif :** Backend V2 Readiness livré
+**Contexte :** 5 améliorations backend pour frontend V2 : coût total par session (GET /projects/{id}/sessions), preview dernier message (GET /chat/conversations), listing fichiers locaux (GET /files/{id}/local-list), auto-titrage conversations (1er message), logs filtrables par projet (GET /pipelines/logs?project_id). 162/162 tests passent.
 **Blocage :** Aucun
-**Résultat attendu :** Module projet complet et fonctionnel.
+**Résultat attendu :** Backend prêt pour frontend V2.
 
 ---
 
 ## 9. BACKLOG
 
-1. **Phase 4 UI avancée** — éditeur diff interactif, historique replay
+1. **Phase 4 UI avancée** — éditeur diff interactif (sélection chunks, annotations), historique replay (rejouer une session passée)

@@ -498,6 +498,25 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     )
     user_message_id = cursor.lastrowid
     
+    # Auto-titrage sur le premier message
+    cursor.execute("SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?", (conversation_id,))
+    message_count = cursor.fetchone()["count"]
+    
+    if message_count == 1:
+        # Premier message → mettre à jour le titre
+        title = user_content[:60]
+        # Couper proprement sur un mot
+        if len(user_content) > 60:
+            last_space = title.rfind(' ')
+            if last_space > 30:  # Garder au moins 30 caractères
+                title = title[:last_space]
+            title += "..."
+        
+        cursor.execute(
+            "UPDATE conversations SET title = ? WHERE id = ?",
+            (title, conversation_id)
+        )
+    
     # Sauvegarder le message assistant
     cursor.execute(
         "INSERT INTO messages (conversation_id, role, content, input_tokens, output_tokens, created_at) VALUES (?, ?, ?, ?, ?, ?)",
