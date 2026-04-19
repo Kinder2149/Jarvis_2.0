@@ -9,7 +9,31 @@
       "Bash(python -m pytest tests/unit/ tests/integration/ -v --tb=short)",
       "Bash(python -m pytest tests/integration/test_api_pipelines.py::TestStartPipeline::test_404_si_projet_inconnu -v --tb=long)",
       "Bash(python -m pytest tests/integration/test_api_pipelines.py -v --tb=short)",
-      "Bash(curl -s -X POST http://localhost:8000/api/pipelines/26/abort)"
+      "Bash(curl -s -X POST http://localhost:8000/api/pipelines/26/abort)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('backend/data/pipelines.json', encoding='utf-8'\\)\\); print\\('workflows:', list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\('backend/data/prompts.json', encoding='utf-8'\\)\\); atelier=[k for k in d.keys\\(\\) if 'atelier' in k]; print\\('prompts atelier:', atelier\\)\")",
+      "Bash(python -c \"from backend.database import init_db, get_connection; init_db\\(\\); conn=get_connection\\(\\); tables=[r[0] for r in conn.execute\\(\\\\\"SELECT name FROM sqlite_master WHERE type='table'\\\\\"\\).fetchall\\(\\)]; print\\('tables:', tables\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(python tests/test_atelier_e2e.py)",
+      "Bash(python -c \"import sys; sys.stdout.reconfigure\\(encoding='utf-8'\\); print\\('ok'\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\('C:/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json', encoding='utf-8'\\)\\); steps=d.get\\('atelier_restauration',{}\\).get\\('steps',[]\\); [print\\(s['index'], s['name'], s['display_name'], s.get\\('model_type'\\), s.get\\('output_type'\\), s.get\\('requires_validation'\\)\\) for s in steps]\")",
+      "Bash(python -c \"from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code\\(Path\\('.'\\)\\)\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('backend/data/prompts.json'\\)\\); keys=[k for k in d if 'atelier' in k]; print\\('Clés atelier:', keys\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('backend/data/prompts.json', encoding='utf-8'\\)\\); ak=[k for k in d if 'atelier' in k]; print\\('Clés atelier:', ak\\); [print\\(k, ':', len\\(d[k]\\), 'chars'\\) for k in ak]\")",
+      "Bash(dir \"C:\\\\DEV\\\\PROJETS\\\\Clients\\\\Pointe_de_reve\" /b)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m pytest tests/conftest.py tests/test_atelier_e2e.py -v --tb=short --co)",
+      "Bash(python -m pytest tests/test_atelier_e2e.py -v --tb=short -x)",
+      "Bash(python -m pytest tests/ -v --tb=line --ignore=tests/test_atelier_e2e.py --ignore=tests/test_front_ux.py --ignore=tests/test_frontend_e2e.py)",
+      "Bash(python -m pytest tests/integration/ tests/frontend/ -v --tb=line)",
+      "Bash(python -m pytest tests/unit/test_pipeline_engine.py::TestLoadPromptTemplate::test_tous_les_prompt_keys_existent tests/unit/test_chat_service.py::TestSendChatMessage::test_envoi_message_mock_success -v --tb=long)",
+      "Bash(python -m pytest tests/unit/test_chat_service.py -v --tb=line)",
+      "Bash(python3 -c \"import json; f=open\\('backend/data/prompts.json'\\); data=json.load\\(f\\); print\\('\\\\n'.join\\(sorted\\(data.keys\\(\\)\\)\\)\\)\")",
+      "Bash(grep -E \"\\\\.\\(py|md\\)$\")",
+      "Bash(grep -B5 -A5 \"masquer\\\\|mask\\\\|\\\\\\\\.\\\\\\\\.\\\\\\\\.\" /c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/routers/models.py)",
+      "Read(//c/DEV/PROJETS/Clients/**)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'--- {k} ---'\\); [print\\(f'  step: {s[\\\\\"name\\\\\"]} | context: {list\\(s.get\\(\\\\\"context_envelope\\\\\",{}\\).keys\\(\\)\\)}'\\) for s in d[k].get\\('steps',[]\\)] for k in d]\")"
     ]
   }
 }

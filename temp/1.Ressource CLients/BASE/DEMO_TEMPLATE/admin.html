@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espace Gérant — {{NOM_ETABLISSEMENT}}</title>
+  <link rel="icon" href="{{URL_LOGO}}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="{{GOOGLE_FONTS_URL}}" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ÉCRAN LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-container">
+      <img src="{{URL_LOGO}}" alt="{{NOM_ETABLISSEMENT}}" style="height:60px; margin-bottom:1.5rem; display:block; margin-left:auto; margin-right:auto;" />
+      <h2>Espace Gérant</h2>
+      <p>{{NOM_ETABLISSEMENT}}</p>
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="passwordInput">Mot de passe</label>
+          <div class="password-field">
+            <input type="password" id="passwordInput" name="password" placeholder="Entrez votre mot de passe" autocomplete="off" />
+            <button type="button" class="password-toggle" id="passwordToggle">👁️</button>
+          </div>
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <button type="button" class="btn-submit" id="loginBtn">Accéder à mon espace</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="admin-dashboard" id="adminDashboard">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <img src="{{URL_LOGO}}" alt="{{NOM_ETABLISSEMENT}}" style="height:45px;" />
+        <h2 style="margin:0; font-size:1.5rem;">Espace Gérant — {{NOM_ETABLISSEMENT}}</h2>
+      </div>
+      <div class="dashboard-header-actions">
+        <button type="button" class="btn-logout" id="logoutBtn">Se déconnecter</button>
+      </div>
+    </div>
+
+    <!-- Contenu -->
+    <div class="dashboard-content">
+
+      <!-- Date du jour -->
+      <div style="margin-bottom:1.5rem; padding:1rem; background-color:var(--card-bg); border-radius:8px; border-left:4px solid var(--accent);">
+        <p style="margin:0; font-size:0.9rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Aujourd'hui</p>
+        <p style="margin:0.5rem 0 0 0; font-size:1.3rem; color:var(--text-main); font-weight:600;" id="todayDate"></p>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <div class="kpi-label">Demandes aujourd'hui</div>
+          <div class="kpi-value" id="kpiToday">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">En attente de confirmation</div>
+          <div class="kpi-value" id="kpiPending">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Confirmées cette semaine</div>
+          <div class="kpi-value" id="kpiConfirmedWeek">0</div>
+        </div>
+      </div>
+
+      <!-- Réservations en attente (section prioritaire) -->
+      <section style="background-color:var(--card-bg); border:1px solid var(--border-soft); border-radius:8px; padding:1.5rem; margin-bottom:2rem;">
+        <h3 style="margin-top:0; border-bottom:2px solid var(--border-soft); padding-bottom:0.75rem; margin-bottom:1.5rem;">En attente de confirmation</h3>
+        <div id="pendingReservationsContainer" class="reservations-list">
+          <p style="color:var(--text-secondary); text-align:center; padding:1rem;">Aucune réservation en attente.</p>
+        </div>
+      </section>
+
+      <!-- Onglets -->
+      <div class="admin-tabs" id="adminTabs">
+        <button type="button" class="admin-tab active" data-tab="reservations">📅 Réservations</button>
+        <button type="button" class="admin-tab" data-tab="menu-ardoise">🍽️ Menu & Ardoise</button>
+      </div>
+
+      <!-- TAB : Réservations -->
+      <div class="tab-content active" id="tab-reservations">
+        <h3 style="margin-top:0;">Gérer les réservations</h3>
+        <div style="margin:2rem 0;">
+          <p style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; color:var(--text-secondary); margin-bottom:1rem;">Semaine</p>
+          <div class="week-calendar" id="weekCalendar"></div>
+        </div>
+        <div style="margin:2rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
+          <button type="button" class="admin-tab active" id="filterAll">Tous</button>
+          <button type="button" class="admin-tab" id="filterDejeuner">Déjeuner</button>
+          <button type="button" class="admin-tab" id="filterDiner">Dîner</button>
+        </div>
+        <div id="reservationsContainer" class="reservations-list">
+          <p style="color:var(--text-secondary); text-align:center; padding:1rem;">Aucune réservation pour cette sélection.</p>
+        </div>
+      </div>
+
+      <!-- TAB : Menu & Ardoise -->
+      <div class="tab-content" id="tab-menu-ardoise">
+        <h3 style="margin-top:0;">Gérer votre offre</h3>
+
+        <!-- ARDOISE DU JOUR -->
+        <div class="editor-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:2px solid var(--border-soft); padding-bottom:0.75rem;">
+            <h3 style="margin:0;">Ardoise du jour</h3>
+            <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+              <input type="checkbox" id="ardoiseDisponible" checked style="width:20px; height:20px; cursor:pointer;" />
+              <span style="font-size:0.9rem; font-weight:600; color:var(--text-main);">Disponible aujourd'hui</span>
+            </label>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+            <!-- Entrée du jour -->
+            <div style="display:grid; grid-template-columns:1fr 130px; gap:1rem; align-items:end;">
+              <div class="editor-field">
+                <label for="ardoiseEntree">Entrée du jour (optionnel)</label>
+                <input type="text" id="ardoiseEntree" placeholder="Ex : Velouté de butternut" />
+              </div>
+              <div class="editor-field">
+                <label for="ardoiseEntreePrix">Prix</label>
+                <input type="text" id="ardoiseEntreePrix" placeholder="8,00 €" />
+              </div>
+            </div>
+
+            <!-- Plat du jour -->
+            <div style="display:grid; grid-template-columns:1fr 130px; gap:1rem; align-items:end;">
+              <div class="editor-field">
+                <label for="ardoisePlat">Plat du jour *</label>
+                <input type="text" id="ardoisePlat" placeholder="Ex : Côte de veau normande" />
+              </div>
+              <div class="editor-field">
+                <label for="ardoisePlatPrix">Prix *</label>
+                <input type="text" id="ardoisePlatPrix" placeholder="22,00 €" />
+              </div>
+            </div>
+            <div class="editor-field">
+              <label for="ardoisePlatNote">Note / cuisson (optionnel)</label>
+              <input type="text" id="ardoisePlatNote" placeholder="Ex : Cuisson selon votre goût" />
+            </div>
+
+            <!-- Dessert du jour -->
+            <div style="display:grid; grid-template-columns:1fr 130px; gap:1rem; align-items:end;">
+              <div class="editor-field">
+                <label for="ardoiseDessert">Dessert du jour (optionnel)</label>
+                <input type="text" id="ardoiseDessert" placeholder="Ex : Tarte tatin maison" />
+              </div>
+              <div class="editor-field">
+                <label for="ardoiseDessertPrix">Prix</label>
+                <input type="text" id="ardoiseDessertPrix" placeholder="7,00 €" />
+              </div>
+            </div>
+
+            <!-- Formule du jour -->
+            <div style="background:var(--bg-alt); border-radius:8px; padding:1rem; border:1px solid var(--border-soft);">
+              <label style="display:flex; align-items:center; gap:0.75rem; cursor:pointer;">
+                <input type="checkbox" id="formuleActive" style="width:18px; height:18px; cursor:pointer;" />
+                <span style="font-weight:600; font-size:0.95rem; color:var(--text-main);">Proposer une formule du jour</span>
+              </label>
+              <div id="formuleFields" style="display:none; margin-top:1rem;">
+                <div style="display:grid; grid-template-columns:1fr 130px; gap:1rem; align-items:end;">
+                  <div class="editor-field">
+                    <label for="formuleLabel">Libellé de la formule</label>
+                    <input type="text" id="formuleLabel" placeholder="Ex : Entrée + Plat + Dessert" />
+                  </div>
+                  <div class="editor-field">
+                    <label for="formulePrix">Prix</label>
+                    <input type="text" id="formulePrix" placeholder="29,00 €" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="editor-actions" style="margin-top:1.5rem;">
+            <button type="button" class="btn-submit" id="ardoiseSaveBtn" style="width:auto; padding:0.75rem 2rem;">Mettre à jour l'ardoise</button>
+          </div>
+          <div class="confirmation-message" id="ardoiseConfirmation">✓ Ardoise mise à jour — visible sur le site au rechargement</div>
+
+          <!-- Aperçu ardoise -->
+          <div style="margin-top:2rem; padding-top:2rem; border-top:1px solid var(--border-soft);">
+            <p style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; color:var(--text-secondary); margin-bottom:1rem;">Aperçu sur votre site</p>
+            <div style="background-color:rgba(83,135,94,0.08); border:2px solid var(--accent); border-radius:8px; padding:1.5rem;">
+              <div style="display:inline-block; background-color:var(--accent); color:white; padding:0.4rem 0.8rem; border-radius:4px; font-size:0.8rem; font-weight:600; text-transform:uppercase; margin-bottom:1rem;">Aujourd'hui</div>
+              <div id="ardoisePreviewContent"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARTE DES MENUS -->
+        <div class="editor-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:2px solid var(--border-soft); padding-bottom:0.75rem;">
+            <h3 style="margin:0;">Carte des menus</h3>
+            <button type="button" class="btn-secondary" id="addCategoryBtn" style="width:auto;">+ Catégorie</button>
+          </div>
+          <div id="menuCategoriesContainer">
+            <p style="color:var(--text-secondary); text-align:center; padding:2rem;">Aucune catégorie. Cliquez sur "+ Catégorie" pour commencer.</p>
+          </div>
+          <div class="editor-actions" style="margin-top:2rem;">
+            <button type="button" class="btn-submit" id="menuSaveBtn" style="width:auto; padding:0.75rem 2rem;">Enregistrer la carte</button>
+          </div>
+          <div class="confirmation-message" id="menuConfirmation">✓ Carte enregistrée !</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL UNIVERSEL (remplace tous les prompt/confirm) -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h4 id="modal-title"></h4>
+      <p id="modal-message" style="margin:0 0 1.25rem 0; color:var(--text-secondary); display:none;"></p>
+      <div id="modal-fields"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="modal-cancel">Annuler</button>
+        <button type="button" class="btn-submit" id="modal-confirm" style="width:auto; padding:0.75rem 1.5rem;">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

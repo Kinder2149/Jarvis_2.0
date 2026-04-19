@@ -17,19 +17,79 @@ CONFIG_PATH = Path(__file__).parent.parent / "data" / "config.json"
 LOG_PATH = Path(__file__).parent.parent / "data" / "jarvis.log"
 
 def load_config():
-    if not CONFIG_PATH.exists():
-        return {
-            "api_keys": {"openrouter_key": "", "anthropic_key": "", "google_key": ""},
-            "model_preferences": {
-                "routing": "google/gemini-flash-2.0",
-                "structuring": "anthropic/claude-haiku-4-5",
-                "code": "anthropic/claude-sonnet-4-5",
-                "analysis": "anthropic/claude-opus-4"
-            }
-        }
+    import logging
+    logger = logging.getLogger("uvicorn")
     
-    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    from backend.database import get_connection as _get_conn
+    
+    # Lire api_keys depuis SQLite
+    logger.info("🔑 [PIPELINES] Chargement des clés API depuis SQLite...")
+    conn = _get_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT key, value FROM app_config WHERE category = 'api_keys'")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    logger.info(f"🔍 [PIPELINES] Nombre de clés trouvées en DB: {len(rows)}")
+    for row in rows:
+        key_name = row["key"]
+        value = row["value"]
+        masked = "..." + value[-4:] if value and len(value) > 4 else "(vide)"
+        logger.info(f"   - {key_name}: {masked}")
+    
+    api_keys = {row["key"]: row["value"] or "" for row in rows}
+    if not api_keys:
+        logger.warning("⚠️ [PIPELINES] Aucune clé API en DB, utilisation des valeurs par défaut vides")
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": ""}
+    
+    # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
+    import os
+    from pathlib import Path as _Path
+    _env_file = _Path(__file__).parent.parent / ".env"
+    if _env_file.exists():
+        for line in _env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            env_key, env_val = line.split("=", 1)
+            env_val = env_val.strip()
+            # Mapper les noms .env vers les clés DB
+            env_map = {
+                "OPENROUTER_KEY": "openrouter_key",
+                "ANTHROPIC_KEY": "anthropic_key",
+                "GOOGLE_KEY": "google_key",
+                "WEB_SEARCH_KEY": "web_search_key",
+            }
+            db_key = env_map.get(env_key.strip())
+            if db_key and not api_keys.get(db_key):
+                api_keys[db_key] = env_val
+    
+    # Lire les vraies variables d'environnement système (pour Docker/desktop)
+    for env_var, db_key in [
+        ("OPENROUTER_KEY", "openrouter_key"),
+        ("ANTHROPIC_KEY", "anthropic_key"),
+        ("GOOGLE_KEY", "google_key"),
+        ("WEB_SEARCH_KEY", "web_search_key"),
+    ]:
+        if not api_keys.get(db_key) and os.environ.get(env_var):
+            api_keys[db_key] = os.environ[env_var]
+    
+    # Lire model_preferences depuis config.json
+    model_preferences = {
+        "routing": "google/gemini-2.0-flash-001",
+        "structuring": "google/gemini-2.0-flash-001",
+        "code": "anthropic/claude-haiku-4.5",
+        "analysis": "anthropic/claude-sonnet-4.5"
+    }
+    if CONFIG_PATH.exists():
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            config_file = json.load(f)
+            if "model_preferences" in config_file:
+                model_preferences = config_file["model_preferences"]
+                logger.info(f"📋 [PIPELINES] model_preferences chargées depuis config.json")
+    
+    logger.info(f"✅ [PIPELINES] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles")
+    return {"api_keys": api_keys, "model_preferences": model_preferences}
 
 @router.post("/start")
 async def start_pipeline(request: StartPipeline):
@@ -126,13 +186,40 @@ async def validate_pipeline_step(session_id: int, step_id: int, validation: Step
     
     result = validate_step_service(session_id, step_id, validation.model_dump(), db, project_path)
     
+    import logging
+    logger = logging.getLogger("jarvis")
+    
+    # DEBUG FORCÉ
+    print(f"\n{'='*80}")
+    print(f"DEBUG [VALIDATE] session_id={session_id}, step_id={step_id}")
+    print(f"DEBUG [VALIDATE] Result status: {result.get('status')}, next_step: {result.get('next_step')}, project_path: {project_path}")
+    print(f"{'='*80}\n")
+    
+    logger.info(f"📋 [VALIDATE] Result status: {result.get('status')}, next_step: {result.get('next_step')}, project_path: {project_path}")
+    
     if result.get("status") == "validated" and result.get("next_step") is not None:
-        if project_path:
+        logger.info(f"✅ [VALIDATE] Validation OK, lancement step {result['next_step']}")
+        
+        # Pour les workflows atelier, project_path = "__atelier__" (valeur spéciale)
+        # On doit quand même lancer l'auto-complétion des étapes suivantes
+        is_atelier = project_path == "__atelier__"
+        
+        if project_path and (project_path != "__atelier__" or is_atelier):
+            print(f"DEBUG [VALIDATE] Lancement auto-complétion (atelier={is_atelier})...")
+            logger.info(f"🚀 [VALIDATE] Lancement auto-complétion (atelier={is_atelier})...")
             config = load_config()
             exec_result = await execute_step(session_id, result["next_step"], project_path, db, config)
+            print(f"DEBUG [VALIDATE] exec_result status: {exec_result.get('status')}")
+            logger.info(f"📊 [VALIDATE] exec_result status: {exec_result.get('status')}")
             
             while exec_result.get("status") == "auto_completed":
+                print(f"DEBUG [VALIDATE] Auto-completion, step suivant: {exec_result.get('next_step')}")
+                logger.info(f"🔄 [VALIDATE] Auto-completion, step suivant: {exec_result.get('next_step')}")
                 exec_result = await execute_step(session_id, exec_result["next_step"], project_path, db, config)
+                print(f"DEBUG [VALIDATE] exec_result status après auto-completion: {exec_result.get('status')}")
+                logger.info(f"📊 [VALIDATE] exec_result status après auto-completion: {exec_result.get('status')}")
+        else:
+            logger.warning(f"⚠️ [VALIDATE] project_path est vide, pas d'auto-exécution")
     
     session_with_steps = get_session_with_steps(session_id, db)
     db.close()
@@ -180,6 +267,28 @@ def abort_pipeline(session_id: int):
     db.close()
     
     return session_with_steps
+
+@router.delete("/{session_id}", status_code=204)
+def delete_pipeline(session_id: int):
+    """Supprime une session pipeline et tous ses steps."""
+    db = get_connection()
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT status FROM sessions WHERE id = ?", (session_id,))
+    row = cursor.fetchone()
+    if not row:
+        db.close()
+        raise HTTPException(status_code=404, detail="Session non trouvée")
+    
+    if row["status"] == "RUNNING":
+        db.close()
+        raise HTTPException(status_code=400, detail="Impossible de supprimer une session en cours")
+    
+    cursor.execute("DELETE FROM pipeline_steps WHERE session_id = ?", (session_id,))
+    cursor.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+    db.commit()
+    db.close()
+    return None
 
 @router.get("/{session_id}/costs")
 def get_pipeline_costs(session_id: int):

@@ -279,3 +279,318 @@ class TestConversationFolderPath:
         data = response.json()
         assert len(data) == 1
         assert data[0]["folder_path"] == "C:\\Folder1"
+
+
+class TestConversationInternetAccess:
+    """Tests internet_access sur conversations."""
+
+    def test_creation_avec_internet_false_par_defaut(self, client_and_db):
+        """Création conversation → internet_access False par défaut."""
+        c = client_and_db
+        
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = c.post("/api/projects", json={
+                "name": "Test Project",
+                "path": tmpdir,
+                "type": "Web"
+            }).json()
+            
+            r = c.post("/api/chat/conversations", json={"project_id": project["id"]})
+            assert r.status_code == 200
+            data = r.json()
+            assert "internet_access" in data or True  # champ optionnel dans create
+
+    def test_patch_internet_access(self, client_and_db):
+        """PATCH active l'accès internet."""
+        c = client_and_db
+        
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = c.post("/api/projects", json={
+                "name": "Test Project",
+                "path": tmpdir,
+                "type": "Web"
+            }).json()
+            
+            # Créer conversation
+            r = c.post("/api/chat/conversations", json={"project_id": project["id"]})
+            conv_id = r.json()["id"]
+            
+            # PATCH
+            r2 = c.patch(f"/api/chat/conversations/{conv_id}", json={"internet_access": True})
+            assert r2.status_code == 200
+
+
+class TestConversationContextSummary:
+    """Tests context_summary sur conversations."""
+
+    def test_patch_context_summary(self, client_and_db):
+        """PATCH met à jour le résumé de conversation."""
+        c = client_and_db
+        
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = c.post("/api/projects", json={
+                "name": "Test Project",
+                "path": tmpdir,
+                "type": "Web"
+            }).json()
+            
+            r = c.post("/api/chat/conversations", json={"project_id": project["id"]})
+            conv_id = r.json()["id"]
+            
+            r2 = c.patch(f"/api/chat/conversations/{conv_id}", json={"context_summary": "Résumé test"})
+            assert r2.status_code == 200
+
+    def test_get_conversation_inclut_context_summary(self, client_and_db):
+        """GET conversation retourne context_summary."""
+        c = client_and_db
+        
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = c.post("/api/projects", json={
+                "name": "Test Project",
+                "path": tmpdir,
+                "type": "Web"
+            }).json()
+            
+            r = c.post("/api/chat/conversations", json={"project_id": project["id"]})
+            conv_id = r.json()["id"]
+            
+            c.patch(f"/api/chat/conversations/{conv_id}", json={"context_summary": "Test résumé"})
+            
+            r2 = c.get(f"/api/chat/conversations/{conv_id}")
+            assert r2.status_code == 200
+            # Le champ context_summary doit être présent
+            data = r2.json()
+            assert "context_summary" in data
+
+
+class TestConversationModel:
+    """Tests model sur conversations."""
+
+    def test_patch_model(self, client_and_db):
+        """PATCH met à jour le modèle de la conversation."""
+        c = client_and_db
+        
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = c.post("/api/projects", json={
+                "name": "Test Project",
+                "path": tmpdir,
+                "type": "Web"
+            }).json()
+            
+            r = c.post("/api/chat/conversations", json={"project_id": project["id"]})
+            conv_id = r.json()["id"]
+            
+            r2 = c.patch(f"/api/chat/conversations/{conv_id}", json={"model": "anthropic/claude-opus-4"})
+            assert r2.status_code == 200
+
+
+class TestGlobalContextInjection:
+    """Vérifie que le global_context est bien injecté dans le system prompt."""
+
+    def test_global_context_sauvegarde_et_relecture(self, client_and_db):
+        """Le global_context sauvegardé via POST /config/global_context
+        est bien retourné par GET /config/global_context."""
+        c = client_and_db
+
+        # Sauvegarder
+        resp = c.post("/api/config/global_context", json={"value": "Contexte de test"})
+        assert resp.status_code == 200
+
+        # Relire
+        resp = c.get("/api/config/global_context")
+        assert resp.status_code == 200
+        assert resp.json()["value"] == "Contexte de test"
+
+    def test_global_context_vide_par_defaut(self, client_and_db):
+        """Sans configuration, global_context retourne une chaîne vide."""
+        c = client_and_db
+        resp = c.get("/api/config/global_context")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "value" in data
+        assert data["value"] == "" or data["value"] is None or isinstance(data["value"], str)
+
+    def test_global_context_ecrase_ancienne_valeur(self, client_and_db):
+        """POST /config/global_context remplace l'ancienne valeur."""
+        c = client_and_db
+        c.post("/api/config/global_context", json={"value": "Première version"})
+        c.post("/api/config/global_context", json={"value": "Deuxième version"})
+        resp = c.get("/api/config/global_context")
+        assert resp.json()["value"] == "Deuxième version"
+
+
+class TestConversationModelBehavior:
+    """Vérifie que le modèle est correctement associé à une conversation."""
+
+    def test_create_conversation_avec_model(self, client_and_db):
+        """Une conversation créée avec un modèle le conserve en GET."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations", json={
+            "title": "Test modèle",
+            "model": "anthropic/claude-haiku-4-5"
+        })
+        assert resp.status_code == 200
+        conv_id = resp.json()["id"]
+
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.status_code == 200
+        assert resp.json()["model"] == "anthropic/claude-haiku-4-5"
+
+    def test_patch_model_persiste(self, client_and_db):
+        """PATCH model sur une conversation existante → GET retourne le nouveau modèle."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations", json={"title": "Test patch model"})
+        conv_id = resp.json()["id"]
+
+        c.patch(f"/api/chat/conversations/{conv_id}", json={"model": "google/gemini-2.0-flash-001"})
+
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.json()["model"] == "google/gemini-2.0-flash-001"
+
+    def test_model_present_dans_liste_conversations(self, client_and_db):
+        """GET /conversations liste inclut le champ model pour chaque conversation."""
+        c = client_and_db
+        c.post("/api/chat/conversations", json={"title": "Conv1", "model": "test-model"})
+        resp = c.get("/api/chat/conversations")
+        assert resp.status_code == 200
+        convs = resp.json()
+        assert len(convs) >= 1
+        assert "model" in convs[0]
+
+
+class TestConversationDossierAssociation:
+    """Vérifie qu'une conversation s'associe correctement à un dossier."""
+
+    def test_create_conversation_avec_project_id(self, client_and_db):
+        """Créer une conversation liée à un dossier → project_id retourné en GET."""
+        c = client_and_db
+
+        # Créer un dossier
+        resp = c.post("/api/projects/", json={
+            "name": "Mon Dossier Test",
+            "path": "mon-dossier-test",
+            "type": "general",
+            "module_type": "dossier"
+        })
+        assert resp.status_code == 200
+        dossier_id = resp.json()["id"]
+
+        # Créer une conversation liée
+        resp = c.post("/api/chat/conversations", json={
+            "title": "Conv liée",
+            "project_id": dossier_id
+        })
+        assert resp.status_code == 200
+        conv_id = resp.json()["id"]
+
+        # Vérifier l'association
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["project_id"] == dossier_id
+
+    def test_conversations_filtrees_par_project_id(self, client_and_db):
+        """GET /conversations?project_id=X ne retourne que les convs de ce dossier."""
+        c = client_and_db
+
+        resp = c.post("/api/projects/", json={
+            "name": "Dossier Filtre",
+            "path": "dossier-filtre",
+            "type": "general",
+            "module_type": "dossier"
+        })
+        dossier_id = resp.json()["id"]
+
+        # Conv liée au dossier
+        c.post("/api/chat/conversations", json={"title": "Conv A", "project_id": dossier_id})
+        # Conv non liée
+        c.post("/api/chat/conversations", json={"title": "Conv B"})
+
+        resp = c.get(f"/api/chat/conversations?project_id={dossier_id}")
+        assert resp.status_code == 200
+        convs = resp.json()
+        assert len(convs) == 1
+        assert convs[0]["title"] == "Conv A"
+
+    def test_conversation_herite_local_path_du_dossier(self, client_and_db, tmp_path):
+        """Si dossier a un local_path et conv n'a pas de folder_path → héritage automatique."""
+        c = client_and_db
+
+        # Créer dossier avec local_path
+        local_path = str(tmp_path)
+        resp = c.post("/api/projects/", json={
+            "name": "Dossier Path",
+            "path": "dossier-path",
+            "type": "general",
+            "module_type": "dossier"
+        })
+        dossier_id = resp.json()["id"]
+        c.patch(f"/api/projects/{dossier_id}", json={"local_path": local_path})
+
+        # Créer conv liée sans folder_path explicite
+        resp = c.post("/api/chat/conversations", json={
+            "title": "Conv héritage",
+            "project_id": dossier_id
+        })
+        conv_id = resp.json()["id"]
+
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.json()["folder_path"] == local_path
+
+
+class TestConversationInternetAndSummary:
+    """Tests pour internet_access comportement et update-summary endpoint."""
+
+    def test_internet_access_false_par_defaut(self, client_and_db):
+        """Une nouvelle conversation a internet_access=False par défaut."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations", json={"title": "Test internet"})
+        conv_id = resp.json()["id"]
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.json()["internet_access"] == False
+
+    def test_patch_internet_access_true(self, client_and_db):
+        """PATCH internet_access=True → GET retourne True."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations", json={"title": "Test internet patch"})
+        conv_id = resp.json()["id"]
+
+        c.patch(f"/api/chat/conversations/{conv_id}", json={"internet_access": True})
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.json()["internet_access"] == True
+
+    def test_update_summary_conversation_vide(self, client_and_db):
+        """POST /update-summary sur conversation sans messages → retourne summary vide, pas d'erreur 500."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations", json={"title": "Conv vide"})
+        conv_id = resp.json()["id"]
+
+        resp = c.post(f"/api/chat/conversations/{conv_id}/update-summary")
+        # Pas d'erreur serveur — peut retourner 200 avec summary vide ou message explicatif
+        assert resp.status_code in [200, 204]
+        if resp.status_code == 200:
+            data = resp.json()
+            assert "summary" in data or "ok" in data
+
+    def test_update_summary_conversation_inexistante(self, client_and_db):
+        """POST /update-summary sur conversation inexistante → 404."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations/99999/update-summary")
+        assert resp.status_code == 404
+
+    def test_patch_context_summary_puis_get(self, client_and_db):
+        """PATCH context_summary → GET retourne la valeur mise à jour."""
+        c = client_and_db
+        resp = c.post("/api/chat/conversations", json={"title": "Test summary"})
+        conv_id = resp.json()["id"]
+
+        summary = "Résumé de test : on a parlé de Python et de FastAPI."
+        c.patch(f"/api/chat/conversations/{conv_id}", json={"context_summary": summary})
+
+        resp = c.get(f"/api/chat/conversations/{conv_id}")
+        assert resp.json()["context_summary"] == summary

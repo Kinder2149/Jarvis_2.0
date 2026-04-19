@@ -3,437 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS - Chat</title>
-  <link rel="stylesheet" href="/app/assets/style.css">
+  <title>JARVIS — Chat</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <div class="header">
-    <h1><a href="/app/index.html" style="color: inherit; text-decoration: none;">← JARVIS</a></h1>
-    <div>
-      <span style="font-weight: 600;">💬 Module Chat</span>
-      <span style="color: var(--text-muted); font-size: 0.875rem; margin-left: 1rem;">Conversations IA enrichies (dossier local, web search)</span>
-    </div>
-  </div>
-  
-  <div class="chat-layout">
-    <!-- Sidebar -->
-    <div class="chat-sidebar">
-      <div class="project-select-bar">
-        <select id="project-select">
-          <option value="">Aucun projet</option>
-        </select>
-      </div>
-      
-      <div class="chat-sidebar-header">
-        <button class="btn btn-primary" style="width: 100%;" onclick="newConversation()">+ Nouvelle conversation</button>
-      </div>
-      
-      <div class="chat-sidebar-list" id="conversations-list">
-        <!-- Conversations chargées dynamiquement -->
-      </div>
-    </div>
-    
-    <!-- Main chat area -->
-    <div class="chat-main">
-      <div class="chat-messages" id="chat-messages">
-        <div class="chat-empty">
-          <span style="font-size: 2rem;">💬</span>
-          <span>Sélectionne ou crée une conversation</span>
-        </div>
-      </div>
-      
-      <div class="chat-input-area">
-        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
-          <label style="font-size: 0.875rem; color: var(--text-muted);">Modèle :</label>
-          <select id="chat-model-select" style="flex: 1; max-width: 300px;">
-            <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5</option>
-            <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5</option>
-            <option value="google/gemini-2.0-flash-001">Gemini Flash 2.0</option>
-            <option value="anthropic/claude-opus-4">Claude Opus 4</option>
-          </select>
-        </div>
-        <textarea id="chat-input" class="chat-textarea" placeholder="Crée ou sélectionne une conversation pour commencer..." rows="1" disabled></textarea>
-        <button id="send-btn" class="btn btn-primary" onclick="sendMessage()" disabled>Envoyer</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="/app/assets/app.js"></script>
-  <script>
-    let currentConvId = null;
-    let currentProjectId = null;
-    let currentConv = null;
-    let conversations = [];
-    let isSending = false;
-
-    // Chargement initial
-    async function init() {
-      // Récupérer params URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const conversationId = urlParams.get('conversation_id');
-      const projectId = urlParams.get('project_id');
-      
-      await loadProjects();
-      
-      // Pré-sélectionner le projet si fourni
-      if (projectId) {
-        currentProjectId = projectId;
-        const select = document.getElementById('project-select');
-        select.value = projectId;
-      }
-      
-      await loadConversations();
-      
-      // Sélectionner automatiquement la conversation si fournie
-      if (conversationId) {
-        await selectConversation(parseInt(conversationId));
-      }
-      
-      setupTextareaAutoResize();
-    }
-
-    // Charger les projets
-    async function loadProjects() {
-      try {
-        const projects = await fetchAPI('/projects');
-        const select = document.getElementById('project-select');
-        
-        projects.forEach(p => {
-          const option = document.createElement('option');
-          option.value = p.id;
-          option.textContent = p.name;
-          select.appendChild(option);
-        });
-        
-        select.addEventListener('change', (e) => {
-          currentProjectId = e.target.value || null;
-          loadConversations();
-        });
-      } catch (e) {
-        console.error('Erreur chargement projets:', e);
-      }
-    }
-
-    // Charger les conversations
-    async function loadConversations() {
-      try {
-        const url = currentProjectId 
-          ? `/chat/conversations?project_id=${currentProjectId}`
-          : '/chat/conversations';
-        
-        conversations = await fetchAPI(url);
-        
-        const list = document.getElementById('conversations-list');
-        
-        if (conversations.length === 0) {
-          list.innerHTML = '<p style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">Aucune conversation</p>';
-          return;
-        }
-        
-        list.innerHTML = conversations.map(conv => {
-          const folderDisplay = conv.folder_path 
-            ? `<div class="conv-folder" title="${conv.folder_path}">
-                 📁 ${truncatePath(conv.folder_path, 30)}${conv.project_id ? ' (projet)' : ''}
-               </div>`
-            : '';
-          
-          return `
-            <div class="conversation-item ${conv.id === currentConvId ? 'active' : ''}" 
-                 data-id="${conv.id}" 
-                 onclick="selectConversation(${conv.id})">
-              <span class="conv-title">${conv.title}</span>
-              ${folderDisplay}
-              <button class="conv-folder-btn" onclick="event.stopPropagation(); defineFolderPath(${conv.id})" title="${conv.folder_path ? 'Modifier le dossier' : 'Définir un dossier'}">
-                📁 ${conv.folder_path ? '[...]' : 'Définir'}
-              </button>
-              <span class="conv-delete" onclick="event.stopPropagation(); deleteConversation(${conv.id})">✕</span>
-            </div>
-          `;
-        }).join('');
-        
-        // Si currentConvId n'est plus dans la liste, le réinitialiser
-        if (currentConvId && !conversations.find(c => c.id === currentConvId)) {
-          currentConvId = null;
-          showEmptyState();
-        }
-      } catch (e) {
-        console.error('Erreur chargement conversations:', e);
-        showToast('Erreur chargement conversations', 'error');
-      }
-    }
-
-    // Nouvelle conversation
-    async function newConversation() {
-      try {
-        const body = {
-          project_id: currentProjectId ? parseInt(currentProjectId) : null,
-          title: 'Nouvelle conversation'
-        };
-        
-        const conv = await fetchAPI('/chat/conversations', 'POST', body);
-        await loadConversations();
-        selectConversation(conv.id);
-      } catch (e) {
-        console.error('Erreur création conversation:', e);
-        showToast('Erreur création conversation', 'error');
-      }
-    }
-
-    // Sélectionner une conversation
-    async function selectConversation(id) {
-      currentConvId = id;
-      
-      // Activer les inputs
-      document.getElementById('chat-input').disabled = false;
-      document.getElementById('send-btn').disabled = false;
-      
-      // Mettre à jour l'UI
-      document.querySelectorAll('.conversation-item').forEach(item => {
-        item.classList.toggle('active', parseInt(item.dataset.id) === id);
-      });
-      
-      try {
-        const conv = await fetchAPI(`/chat/conversations/${id}`);
-        currentConv = conv;
-        
-        const messagesDiv = document.getElementById('chat-messages');
-        messagesDiv.innerHTML = '';
-        
-        if (conv.messages.length === 0) {
-          // Afficher bandeau info si dossier défini
-          if (conv.folder_path) {
-            messagesDiv.innerHTML = `
-              <div class="folder-info-banner">
-                📂 Dossier lié : <strong>${truncatePath(conv.folder_path, 50)}</strong><br>
-                <span style="font-size: 0.875rem; color: var(--text-muted);">JARVIS peut lire les fichiers si tu lui demandes.</span>
-              </div>
-              <div class="chat-empty"><span style="font-size: 2rem;">💬</span><span>Commence la conversation</span></div>
-            `;
-          } else {
-            messagesDiv.innerHTML = '<div class="chat-empty"><span style="font-size: 2rem;">💬</span><span>Commence la conversation</span></div>';
-          }
-        } else {
-          conv.messages.forEach(msg => renderMessage(msg));
-          scrollToBottom();
-        }
-      } catch (e) {
-        console.error('Erreur chargement conversation:', e);
-        showToast('Erreur chargement conversation', 'error');
-      }
-    }
-
-    // Afficher un message
-    function renderMessage(msg, webSearchUsed = false) {
-      const messagesDiv = document.getElementById('chat-messages');
-      
-      // Supprimer l'état vide et bandeau info si présents
-      const emptyState = messagesDiv.querySelector('.chat-empty');
-      if (emptyState) emptyState.remove();
-      const folderBanner = messagesDiv.querySelector('.folder-info-banner');
-      if (folderBanner) folderBanner.remove();
-      
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${msg.role}`;
-      
-      const bubble = document.createElement('div');
-      bubble.className = 'message-bubble';
-      
-      if (msg.role === 'assistant') {
-        bubble.innerHTML = renderMarkdown(msg.content);
-        
-        // Ajouter icône 🌐 si recherche web utilisée
-        if (webSearchUsed) {
-          const webIcon = document.createElement('span');
-          webIcon.className = 'web-search-icon';
-          webIcon.textContent = '🌐';
-          webIcon.title = 'Sources web utilisées';
-          bubble.appendChild(webIcon);
-        }
-      } else {
-        bubble.textContent = msg.content;
-      }
-      
-      const time = document.createElement('div');
-      time.className = 'message-time';
-      const date = new Date(msg.created_at);
-      time.textContent = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      
-      messageDiv.appendChild(bubble);
-      messageDiv.appendChild(time);
-      messagesDiv.appendChild(messageDiv);
-    }
-
-    // Envoyer un message
-    async function sendMessage() {
-      if (isSending || !currentConvId) return;
-      
-      const input = document.getElementById('chat-input');
-      const content = input.value.trim();
-      
-      if (!content) return;
-      
-      isSending = true;
-      const sendBtn = document.getElementById('send-btn');
-      sendBtn.disabled = true;
-      
-      // Afficher le message user immédiatement
-      const userMsg = {
-        role: 'user',
-        content: content,
-        created_at: new Date().toISOString()
-      };
-      renderMessage(userMsg);
-      
-      // Vider l'input
-      input.value = '';
-      input.style.height = 'auto';
-      
-      // Afficher l'indicateur de frappe
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'message assistant';
-      typingDiv.id = 'typing-indicator';
-      typingDiv.innerHTML = `
-        <div class="message-bubble">
-          <div class="typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content">
+      <div id="page-chat" class="chat-layout">
+        <!-- Header conversation -->
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <h1 class="chat-title" id="chat-title">Chargement...</h1>
+            <div id="chat-dossier-badge" class="dossier-badge"></div>
           </div>
-          <div class="typing-text">⏳ JARVIS réfléchit...</div>
+          <div class="chat-header-right">
+            <!-- Modèle -->
+            <select id="chat-model-select" class="model-select-compact" title="Modèle IA">
+              <option value="">Modèle par défaut</option>
+            </select>
+            <!-- Toggle Internet -->
+            <div class="internet-toggle" title="Accès internet">
+              <span class="internet-icon">🌐</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-internet">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <!-- Bouton résumé -->
+            <button id="btn-toggle-summary" class="btn-icon" title="Contexte de la conversation">📋</button>
+            <!-- Bouton dossier -->
+            <button id="btn-toggle-folder" class="btn-icon" title="Dossier lié">📂</button>
+            <!-- Supprimer -->
+            <button id="btn-delete-conversation" class="btn-icon btn-danger-icon" title="Supprimer">🗑️</button>
+          </div>
         </div>
-      `;
-      document.getElementById('chat-messages').appendChild(typingDiv);
-      scrollToBottom();
-      
-      try {
-        const selectedModel = document.getElementById('chat-model-select').value;
-        const response = await fetchAPI(`/chat/conversations/${currentConvId}/messages`, 'POST', { 
-          content,
-          model: selectedModel
-        });
-        
-        // Si recherche web utilisée, changer temporairement l'indicateur
-        if (response.web_search_used) {
-          const typingText = typingDiv.querySelector('.typing-text');
-          if (typingText) {
-            typingText.textContent = '🔍 Recherche effectuée';
-          }
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-        
-        // Supprimer l'indicateur de frappe
-        typingDiv.remove();
-        
-        // Afficher la réponse de l'assistant
-        renderMessage(response.assistant_message, response.web_search_used);
-        scrollToBottom();
-        
-      } catch (e) {
-        console.error('Erreur envoi message:', e);
-        typingDiv.remove();
-        showToast(e.message || 'Erreur envoi message', 'error');
-      } finally {
-        isSending = false;
-        sendBtn.disabled = false;
-        input.focus();
-      }
-    }
 
-    // Supprimer une conversation
-    async function deleteConversation(id) {
-      if (!confirm('Supprimer cette conversation ?')) return;
-      
-      try {
-        await fetchAPI(`/chat/conversations/${id}`, 'DELETE');
-        
-        if (currentConvId === id) {
-          currentConvId = null;
-          showEmptyState();
-        }
-        
-        await loadConversations();
-        showToast('Conversation supprimée');
-      } catch (e) {
-        console.error('Erreur suppression conversation:', e);
-        showToast('Erreur suppression conversation', 'error');
-      }
-    }
-
-    // Afficher l'état vide
-    function showEmptyState() {
-      const messagesDiv = document.getElementById('chat-messages');
-      messagesDiv.innerHTML = `
-        <div class="chat-empty">
-          <span style="font-size: 2rem;">💬</span>
-          <span>Sélectionne ou crée une conversation</span>
+        <!-- Panneau Résumé -->
+        <div id="panel-summary" class="conv-panel" style="display:none">
+          <div class="conv-panel-header">
+            <span>📋 Contexte de la conversation</span>
+            <div class="conv-panel-actions">
+              <button id="btn-regenerate-summary" class="btn-small">♻️ Régénérer</button>
+              <button id="btn-save-summary" class="btn-small btn-primary">� Sauvegarder</button>
+            </div>
+          </div>
+          <textarea id="summary-textarea" rows="6" class="textarea-full" 
+            placeholder="Le résumé de la conversation apparaîtra ici automatiquement après 10 messages, ou cliquez sur ♻️ pour le générer maintenant."></textarea>
+          <p class="text-muted summary-hint">Ce résumé est injecté dans le contexte de l'IA. Vous pouvez l'éditer manuellement.</p>
         </div>
-      `;
-    }
 
-    // Scroll vers le bas
-    function scrollToBottom() {
-      const messagesDiv = document.getElementById('chat-messages');
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
+        <!-- Panneau Dossier -->
+        <div id="panel-folder" class="conv-panel" style="display:none">
+          <div class="conv-panel-header">
+            <span>📂 Dossier Windows lié</span>
+          </div>
+          <div class="folder-config">
+            <div class="folder-path-row">
+              <input type="text" id="folder-path-input" placeholder="C:\Chemin\vers\le\dossier" class="form-input">
+              <button id="btn-save-folder" class="btn-primary btn-small">Lier</button>
+            </div>
+            <div id="folder-files-list" class="folder-files"></div>
+          </div>
+        </div>
 
-    // Auto-resize textarea
-    function setupTextareaAutoResize() {
-      const textarea = document.getElementById('chat-input');
-      
-      textarea.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 140) + 'px';
-      });
-      
-      textarea.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
-        }
-      });
-    }
+        <!-- Zone messages -->
+        <div id="chat-messages" class="chat-messages"></div>
 
-    // Définir/modifier le dossier d'une conversation
-    async function defineFolderPath(convId) {
-      const conv = conversations.find(c => c.id === convId);
-      if (!conv) return;
-      
-      const currentPath = conv.folder_path || '';
-      const newPath = prompt(
-        'Chemin du dossier local (laisser vide pour retirer) :', 
-        currentPath
-      );
-      
-      // Annulation
-      if (newPath === null) return;
-      
-      try {
-        const folderPath = newPath.trim() || null;
-        await fetchAPI(`/chat/conversations/${convId}/folder?folder_path=${encodeURIComponent(folderPath || '')}`, 'PATCH');
-        
-        // Recharger les conversations
-        await loadConversations();
-        
-        // Si c'est la conversation active, la recharger
-        if (currentConvId === convId) {
-          await selectConversation(convId);
-        }
-        
-        showToast(folderPath ? 'Dossier défini' : 'Dossier retiré');
-      } catch (e) {
-        console.error('Erreur définition dossier:', e);
-        showToast('Erreur définition dossier', 'error');
-      }
-    }
+        <!-- Zone saisie -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <textarea
+              id="chat-input"
+              placeholder="Votre message..."
+              rows="1"
+              maxlength="10000"
+            ></textarea>
+            <button id="btn-send" class="btn-send" title="Envoyer (Ctrl+Entrée)">
+              <span id="btn-send-text">↑</span>
+              <span id="btn-send-spinner" class="spinner" style="display:none"></span>
+            </button>
+          </div>
+          <div class="chat-input-hint">Ctrl+Entrée pour envoyer</div>
+        </div>
+      </div>
+    </main>
+    <aside id="explorer" class="explorer--hidden"></aside>
+  </div>
+  <div id="toast-container"></div>
 
-    // Tronquer un chemin depuis la droite
-    function truncatePath(path, maxLength) {
-      if (!path || path.length <= maxLength) return path;
-      return '...' + path.slice(-(maxLength - 3));
-    }
-
-    // Initialisation
-    init();
-  </script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/explorer.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/chat.js"></script>
 </body>
 </html>

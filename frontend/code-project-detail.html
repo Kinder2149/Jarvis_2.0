@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS — Projet Code</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content">
+      <div id="page-project">
+
+  <!-- ZONE 1 : Header + instructions -->
+  <div class="project-header">
+    <div class="project-header-main">
+      <h1 class="project-title" id="project-name">Chargement...</h1>
+      <span class="code-project-badge" id="project-category-badge"></span>
+    </div>
+  </div>
+  <div class="project-path" id="project-path"></div>
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2 class="section-title">📋 Instructions projet</h2>
+      <button id="btn-save-instructions" class="btn-secondary btn-sm" style="display:none">💾 Sauvegarder</button>
+    </div>
+    <div style="padding:1rem">
+      <textarea id="instructions-input" rows="3" class="textarea-full"
+        placeholder="Instructions spécifiques à ce projet (stack, conventions, contraintes…)"
+        style="font-size:0.875rem"></textarea>
+    </div>
+  </div>
+
+  <!-- ZONE 2 : Scan -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2 class="section-title">🔍 Scan projet</h2>
+      <button id="btn-rescan" class="btn-secondary btn-sm">↺ Re-scanner</button>
+    </div>
+    <div id="scan-zone" style="padding:1rem">
+      <div style="color:var(--text-muted);font-size:0.875rem">Scan en cours…</div>
+    </div>
+  </div>
+
+  <!-- ZONE 3 : Mission (2 étapes) -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2 class="section-title">🚀 Nouvelle mission</h2>
+    </div>
+    <div style="padding:1.5rem">
+
+      <!-- Étape A : saisie -->
+      <div id="mission-step-a">
+        <textarea id="mission-input" rows="4" class="textarea-full"
+          placeholder="Décrivez votre mission : bug, fonctionnalité, audit…"></textarea>
+        <div style="margin-top:1rem">
+          <button id="btn-analyze" class="btn-primary">🔍 Analyser →</button>
+        </div>
+      </div>
+
+      <!-- Étape B : résultat routing (caché par défaut) -->
+      <div id="mission-step-b" style="display:none">
+        <div style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+          <span style="font-weight:500;color:var(--text-primary)">Workflow détecté :</span>
+          <span id="workflow-badge" class="badge"></span>
+          <span id="confidence-badge" class="badge"></span>
+        </div>
+        <p id="reasoning-text" style="font-style:italic;color:var(--text-muted);font-size:0.875rem;margin-bottom:1rem"></p>
+        <div class="card" style="background:var(--bg-secondary);padding:1rem;margin-bottom:1rem">
+          <div style="font-weight:500;margin-bottom:0.5rem;color:var(--text-primary)">Mission reformulée :</div>
+          <div id="mission-structured-text" style="color:var(--text-primary)"></div>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="display:block;margin-bottom:0.5rem;font-weight:500;color:var(--text-primary)">
+            Corriger le workflow si nécessaire :
+          </label>
+          <select id="workflow-override" class="input-field">
+            <option value="bug_simple">🐛 Bug Simple</option>
+            <option value="mission_complexe">🎯 Mission Complexe</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:0.75rem">
+          <button id="btn-launch" class="btn-primary">▶ Lancer la mission</button>
+          <button id="btn-back-mission" class="btn-secondary">← Modifier</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ZONE 4 : Historique sessions -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2 class="section-title">⚙️ Sessions</h2>
+      <button id="btn-toggle-sessions" class="btn-secondary btn-sm" style="display:none">Voir tout</button>
+    </div>
+    <div id="sessions-list" style="padding:1rem"></div>
+  </div>
+
+  <!-- ZONE 5 : Chats -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="section-title">💬 Chats</h2>
+      <button id="btn-new-chat" class="btn-secondary btn-sm">+ Nouveau chat</button>
+    </div>
+    <div id="conversations-list" style="padding:1rem"></div>
+  </div>
+
+</div>
+    </main>
+    <aside id="explorer" class="explorer--hidden"></aside>
+  </div>
+  <div id="toast-container"></div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/code-project-detail.js"></script>
+</body>
+</html>

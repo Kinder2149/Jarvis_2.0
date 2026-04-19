@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Gérant — Le Tourbillon de la Vigne</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=32&h=32&fit=crop" type="image/png">
+  <style>
+    /* Overrides spécifiques admin (exceptions justifiées) */
+    .login-container.hidden {
+      display: none !important;
+    }
+    .admin-container.hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== ÉCRAN LOGIN ===== -->
+<div class="login-container" id="loginContainer">
+  <div class="login-box">
+    <img src="https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=100&h=100&fit=crop" alt="Logo Le Tourbillon de la Vigne" style="height: 60px; width: auto; margin-bottom: 1rem; object-fit: contain;">
+    <h2>Espace Gérant</h2>
+    <p class="subtitle">Le Tourbillon de la Vigne</p>
+    
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <div class="password-field">
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Entrez votre mot de passe"
+            required
+            autocomplete="off"
+          />
+          <button 
+            type="button" 
+            class="password-toggle" 
+            id="togglePassword"
+            onclick="togglePasswordVisibility()"
+            title="Afficher/masquer"
+          >
+            👁️
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Accéder à mon espace</button>
+
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ADMIN ===== -->
+<div class="admin-container" id="adminContainer">
+  
+  <!-- HEADER -->
+  <div class="admin-header">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <img 
+        src="https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=100&h=100&fit=crop" 
+        alt="Logo Le Tourbillon de la Vigne" 
+        class="logo-admin"
+      >
+      <h2>Espace Gérant — Le Tourbillon de la Vigne</h2>
+    </div>
+    <div class="admin-header-right">
+      <button class="btn-logout" onclick="handleLogout()">Se déconnecter</button>
+    </div>
+  </div>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="admin-content">
+
+    <!-- VUE AUJOURD'HUI (première chose visible) -->
+    <div id="viewToday" style="margin-bottom: 3rem;">
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-main);">
+        📅 Aujourd'hui — <span id="todayDate"></span>
+      </h3>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="label">Demandes aujourd'hui</div>
+          <div class="value" id="kpiToday">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">En attente de confirmation</div>
+          <div class="value" id="kpiPending">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Confirmées cette semaine</div>
+          <div class="value" id="kpiWeek">0</div>
+        </div>
+      </div>
+
+      <!-- RÉSERVATIONS EN ATTENTE (priorité) -->
+      <div style="background-color: #ffffff; border: 1px solid var(--border-soft); border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
+        <h4 style="font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--text-main);">
+          ⚠️ En attente de votre confirmation
+        </h4>
+        <div id="todayPendingList" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <p style="color: var(--text-secondary); text-align: center;">Aucune réservation en attente aujourd'hui</p>
+        </div>
+      </div>
+
+      <!-- TOUTES RÉSERVATIONS DU JOUR -->
+      <div style="background-color: #ffffff; border: 1px solid var(--border-soft); border-radius: 8px; padding: 2rem;">
+        <h4 style="font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--text-main);">
+          📋 Toutes les réservations
+        </h4>
+        <div id="todayAllList" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <p style="color: var(--text-secondary); text-align: center;">Aucune réservation aujourd'hui</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONGLETS -->
+    <div style="margin-top: 3rem;">
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="reservations" onclick="switchTab('reservations')">📅 Réservations</button>
+        <button class="tab-btn" data-tab="menu" onclick="switchTab('menu')">🍽️ Menu & Ardoise</button>
+        <button class="tab-btn" data-tab="reviews" onclick="switchTab('reviews')">⭐ Avis clients</button>
+      </div>
+
+      <!-- TAB: RÉSERVATIONS -->
+      <div class="tab-content active" id="tab-reservations">
+        <div style="background-color: #ffffff; border: 1px solid var(--border-soft); border-radius: 8px; padding: 2rem;">
+          
+          <!-- CALENDRIER 7 JOURS -->
+          <h3 style="margin-bottom: 1.5rem;">📆 Calendrier — Prochains 7 jours</h3>
+          <div id="calendarWeek" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.8rem; margin-bottom: 2rem;">
+            <!-- Généré par JS -->
+          </div>
+
+          <!-- FILTRES -->
+          <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <button class="tab-btn active" data-filter="tous" onclick="filterByService('tous')">Tous</button>
+            <button class="tab-btn" data-filter="dejeuner" onclick="filterByService('dejeuner')">🍽️ Déjeuner</button>
+            <button class="tab-btn" data-filter="diner" onclick="filterByService('diner')">🍷 Dîner</button>
+          </div>
+
+          <!-- LISTE RÉSERVATIONS ONGLET -->
+          <h3 style="margin-bottom: 1.5rem;" id="reservationListTitle">Réservations</h3>
+          <div id="reservationsList" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <p style="color: var(--text-secondary); text-align: center;">Aucune réservation sélectionnée</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: MENU & ARDOISE -->
+      <div class="tab-content" id="tab-menu">
+        <div style="background-color: #ffffff; border: 1px solid var(--border-soft); border-radius: 8px; padding: 2rem;">
+          
+          <!-- ARDOISE DU JOUR -->
+          <div style="margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border-soft);">
+            <h3 style="margin-bottom: 1.5rem;">🎯 Ardoise du jour</h3>
+            
+            <form id="ardoiseForm" onsubmit="saveArdoise(event)" style="max-width: 100%; background-color: var(--bg-main); padding: 1.5rem; border-radius: 8px;">
+              
+              <!-- Toggle disponibilité -->
+              <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
+                  <input type="checkbox" id="ardoiseAvailable" checked style="width: 20px; height: 20px; cursor: pointer;">
+                  <span style="font-weight: 500;">Ardoise disponible aujourd'hui</span>
+                </label>
+              </div>
+
+              <!-- Plat du jour (obligatoire) -->
+              <div class="form-group">
+                <label for="ardoisePlat">Plat du jour *</label>
+                <input type="text" id="ardoisePlat" placeholder="ex: Filet de bœuf sauce poivre" required>
+              </div>
+
+              <!-- Prix plat -->
+              <div class="form-group">
+                <label for="ardoisePlatPrix">Prix du plat *</label>
+                <input type="text" id="ardoisePlatPrix" placeholder="ex: 22,00 €" required>
+              </div>
+
+              <!-- Note (cuisson, accompagnement) -->
+              <div class="form-group">
+                <label for="ardoiseNote">Note (cuisson, accompagnement...)</label>
+                <textarea id="ardoiseNote" placeholder="ex: Cuisson selon votre goût" style="min-height: 60px;"></textarea>
+              </div>
+
+              <!-- Entrée (optionnel) -->
+              <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-soft);">
+                <h4 style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-secondary); text-transform: uppercase;">Optionnel — Entrée du jour</h4>
+                <div class="form-group">
+                  <label for="ardoiseEntree">Nom</label>
+                  <input type="text" id="ardoiseEntree" placeholder="ex: Velouté de butternut">
+                </div>
+                <div class="form-group">
+                  <label for="ardoiseEntreePrix">Prix</label>
+                  <input type="text" id="ardoiseEntreePrix" placeholder="ex: 8,00 €">
+                </div>
+              </div>
+
+              <!-- Dessert (optionnel) -->
+              <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-soft);">
+                <h4 style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-secondary); text-transform: uppercase;">Optionnel — Dessert du jour</h4>
+                <div class="form-group">
+                  <label for="ardoiseDessert">Nom</label>
+                  <input type="text" id="ardoiseDessert" placeholder="ex: Fondant au chocolat">
+                </div>
+                <div class="form-group">
+                  <label for="ardoiseDessertPrix">Prix</label>
+                  <input type="text" id="ardoiseDessertPrix" placeholder="ex: 7,00 €">
+                </div>
+              </div>
+
+              <!-- Formule -->
+              <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-soft);">
+                <h4 style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-secondary); text-transform: uppercase;">Optionnel — Formule complète</h4>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                  <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
+                    <input type="checkbox" id="formuleActive" style="width: 20px; height: 20px; cursor: pointer;">
+                    <span style="font-weight: 500;">Activer la formule Entrée + Plat + Dessert</span>
+                  </label>
+                </div>
+                <div class="form-group" id="formuleFields" style="display: none;">
+                  <label for="formulePrix">Prix de la formule</label>
+                  <input type="text" id="formulePrix" placeholder="ex: 32,00 €">
+                </div>
+              </div>
+
+              <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="submit" class="btn-submit" style="flex: 0 0 auto; min-width: 200px;">Mettre à jour l'ardoise</button>
+              </div>
+            </form>
+
+            <!-- Confirmation ardoise -->
+            <div id="ardoiseConfirmation" style="display: none; margin-top: 1.5rem; background-color: rgba(61, 155, 95, 0.1); border-left: 4px solid var(--success); padding: 1rem; border-radius: 4px; color: var(--success);">
+              ✓ Ardoise mise à jour avec succès !
+            </div>
+          </div>
+
+          <!-- CARTE DES MENUS -->
+          <div>
+            <h3 style="margin-bottom: 1.5rem;">🍽️ Carte des menus</h3>
+            
+            <form id="menuForm" onsubmit="saveMenu(event)" style="max-width: 100%; background-color: var(--bg-main); padding: 1.5rem; border-radius: 8px;">
+              
+              <div id="categoriesContainer" style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Généré par JS -->
+              </div>
+
+              <button type="button" class="btn-secondary" onclick="addCategory()" style="margin-top: 2rem; width: 100%;">+ Ajouter une catégorie</button>
+
+              <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="submit" class="btn-submit" style="flex: 0 0 auto; min-width: 200px;">Enregistrer la carte</button>
+              </div>
+            </form>
+
+            <!-- Confirmation menu -->
+            <div id="menuConfirmation" style="display: none; margin-top: 1.5rem; background-color: rgba(61, 155, 95, 0.1); border-left: 4px solid var(--success); padding: 1rem; border-radius: 4px; color: var(--success);">
+              ✓ Carte enregistrée avec succès !
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: AVIS CLIENTS -->
+      <div class="tab-content" id="tab-reviews">
+        <div style="background-color: #ffffff; border: 1px solid var(--border-soft); border-radius: 8px; padding: 2rem;">
+          
+          <h3 style="margin-bottom: 1.5rem;">
+            ⭐ Avis clients — Modération
+            <span id="reviewsPendingBadge" style="display: inline-block; margin-left: 1rem; background-color: var(--warning); color: white; padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">0 en attente</span>
+          </h3>
+
+          <div id="reviewsList" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <p style="color: var(--text-secondary); text-align: center;">Aucun avis pour le moment</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>

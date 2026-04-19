@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pointe de Rêve — Restaurant Villeurbanne</title>
+  <link rel="icon" href="https://www.pointedereve.com/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&family=Lato:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- HEADER & NAVIGATION -->
+<header>
+  <nav>
+    <a href="#top" class="nav-logo">
+      <img src="https://www.pointedereve.com/assets/logo.png" alt="Logo Pointe de Rêve">
+    </a>
+    <a href="admin.html" class="btn-admin">🔒 Espace Gérant</a>
+  </nav>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero" style="background-image: url('https://images.unsplash.com/photo-1504674900152-b8b80e7f798b?w=1400&h=900&fit=crop');">
+  <div class="hero-content">
+    <h1>Pointe de Rêve</h1>
+    <p class="subtitle">Une cuisine de qualité, une cuisine maison qui change au gré des saisons</p>
+    <a href="#reservation" class="btn-primary">Réserver une table</a>
+  </div>
+</section>
+
+<!-- PRÉSENTATION SECTION -->
+<section class="section-alt">
+  <div class="section-container">
+    <h2>Notre histoire</h2>
+    <p style="max-width: 800px; margin: 0 auto; text-align: center; font-size: 1.05rem; line-height: 1.8;">
+      Depuis 2013, Pointe de Rêve vous accueille dans une ambiance simple et familiale. Régis, Véronique et Anaïs mettent tout leur cœur à vous proposer une cuisine de qualité, une cuisine maison qui change au gré des saisons. Vous régaler est notre priorité.
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem; text-align: center;">
+      <div>
+        <h3 style="color: var(--accent); margin-bottom: 0.5rem;">Régis</h3>
+        <p style="color: var(--text-secondary);">Chef & Fondateur</p>
+      </div>
+      <div>
+        <h3 style="color: var(--accent); margin-bottom: 0.5rem;">Véronique</h3>
+        <p style="color: var(--text-secondary);">Responsable Salle</p>
+      </div>
+      <div>
+        <h3 style="color: var(--accent); margin-bottom: 0.5rem;">Anaïs</h3>
+        <p style="color: var(--text-secondary);">Équipe</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTRE CARTE SECTION -->
+<section class="section-main">
+  <div class="section-container">
+    <h2>Notre carte</h2>
+    
+    <!-- Menu Categories Tabs -->
+    <div class="menu-categories" id="menuCategories">
+      <button class="menu-category-btn active" data-category="0">Entrées</button>
+      <button class="menu-category-btn" data-category="1">Plats</button>
+      <button class="menu-category-btn" data-category="2">Desserts</button>
+      <button class="menu-category-btn" data-category="3">Fromage et Glaces</button>
+      <button class="menu-category-btn" data-category="4">Les maxi</button>
+      <button class="menu-category-btn" data-category="5">Menu Enfant</button>
+    </div>
+
+    <!-- Menu Items Display -->
+    <div class="menu-items" id="menuItems"></div>
+  </div>
+</section>
+
+<!-- ARDOISE DU JOUR SECTION -->
+<section class="section-alt" id="ardoise-section" style="display: none;">
+  <div class="section-container">
+    <div class="ardoise-section" id="ardoise-container">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <span style="background-color: var(--accent); color: #ffffff; padding: 0.3rem 0.8rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem;">Aujourd'hui</span>
+        <h3 style="margin: 0;">Ardoise du jour</h3>
+      </div>
+      
+      <!-- Entrée du jour -->
+      <div class="ardoise-item" id="ardoise-entree" style="display: none;">
+        <h4 id="ardoise-entree-nom"></h4>
+        <div style="display: flex; gap: 1rem;">
+          <span class="price" id="ardoise-entree-prix"></span>
+        </div>
+      </div>
+
+      <!-- Plat du jour -->
+      <div class="ardoise-item" id="ardoise-plat">
+        <h4 id="ardoise-plat-nom" style="font-weight: 700; color: var(--text-main);"></h4>
+        <div class="note" id="ardoise-plat-note" style="display: none;"></div>
+        <span class="price" id="ardoise-plat-prix" style="display: block; margin-top: 0.5rem;"></span>
+      </div>
+
+      <!-- Dessert du jour -->
+      <div class="ardoise-item" id="ardoise-dessert" style="display: none;">
+        <h4 id="ardoise-dessert-nom"></h4>
+        <div style="display: flex; gap: 1rem;">
+          <span class="price" id="ardoise-dessert-prix"></span>
+        </div>
+      </div>
+
+      <!-- Formule -->
+      <div class="ardoise-item" id="ardoise-formule" style="display: none; background-color: rgba(212, 165, 116, 0.12); padding: 1rem; border-radius: 4px; margin-top: 1.5rem;">
+        <h4 id="ardoise-formule-label" style="color: var(--accent); margin-bottom: 0.5rem;"></h4>
+        <span class="price" id="ardoise-formule-prix"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RÉSERVATION SECTION -->
+<section class="section-main" id="reservation">
+  <div class="section-container">
+    <h2>Réserver une table</h2>
+    
+    <form id="reservationForm" class="form-section">
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="prenom">Votre prénom *</label>
+        <input type="text" id="prenom" name="prenom" required minlength="2" placeholder="Ex: Marie">
+      </div>
+
+      <!-- Téléphone -->
+      <div class="form-group">
+        <label for="telephone">Votre téléphone *</label>
+        <input type="tel" id="telephone" name="telephone" required placeholder="06 12 34 56 78">
+      </div>
+
+      <!-- Date -->
+      <div class="form-group">
+        <label for="date">Date souhaitée *</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <!-- Service (Déjeuner / Dîner) -->
+      <div class="form-group">
+        <label style="margin-bottom: 1rem;">Service *</label>
+        <div class="services-grid" style="max-width: 100%; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+          <div class="service-card" data-service="dejeuner">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">🌞 Déjeuner</h3>
+            <p style="margin: 0; font-size: 0.9rem;">12h00 - 14h00</p>
+          </div>
+          <div class="service-card" data-service="diner">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">🌙 Dîner</h3>
+            <p style="margin: 0; font-size: 0.9rem;">19h00 - 22h30</p>
+          </div>
+        </div>
+        <input type="hidden" id="service" name="service" required>
+      </div>
+
+      <!-- Couverts (Stepper) -->
+      <div class="form-group">
+        <label for="couverts">Nombre de couverts *</label>
+        <div class="stepper" style="margin-top: 1rem;">
+          <button type="button" id="couverts-minus" class="stepper-btn">−</button>
+          <input type="number" id="couverts" name="couverts" min="1" max="12" value="2" readonly style="background-color: var(--bg-alt);">
+          <button type="button" id="couverts-plus" class="stepper-btn">+</button>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div class="form-group">
+        <label for="message">Message (allergie, occasion spéciale...)</label>
+        <textarea id="message" name="message" placeholder="Allergie, occasion spéciale, demandes particulières..." maxlength="300"></textarea>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-primary" style="width: 100%;">Réserver ma table</button>
+    </form>
+
+    <!-- Confirmation Message -->
+    <div id="confirmationMessage" class="confirmation-message hidden" style="position: relative; margin-top: 1.5rem; top: auto; right: auto; background-color: rgba(61, 155, 95, 0.15); color: var(--success); border-radius: 4px; padding: 1rem; text-align: center; display: none;">
+      ✓ Votre réservation a été enregistrée ! Nous vous recontacterons rapidement pour confirmer.
+    </div>
+  </div>
+</section>
+
+<!-- INFOS PRATIQUES SECTION -->
+<section class="section-alt">
+  <div class="section-container">
+    <h2>Nous trouver</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+      <div class="card">
+        <h3>📍 Adresse</h3>
+        <p>83, Avenue Roger Sallengro</p>
+        <p style="font-weight: 600; margin-bottom: 1rem;">69100 VILLEURBANNE</p>
+        <a href="https://maps.google.com/?q=83+Avenue+Roger+Sallengro+69100+VILLEURBANNE" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 500;">Voir sur Google Maps →</a>
+      </div>
+
+      <div class="card">
+        <h3>🕐 Horaires</h3>
+        <p><strong>Lundi à Samedi</strong></p>
+        <p>Midi : 12h00 - 14h00</p>
+        <p style="margin-bottom: 1rem;"><strong>Jeudi & Vendredi</strong></p>
+        <p>Soir : 19h00 - 22h30</p>
+      </div>
+
+      <div class="card">
+        <h3>☎️ Nous appeler</h3>
+        <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">09 80 59 87 16</p>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">N'hésitez pas à nous contacter pour des questions ou des demandes spéciales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p style="margin-bottom: 1rem;">© 2024 Pointe de Rêve — Restaurant à Villeurbanne</p>
+  <p style="font-size: 0.85rem; color: var(--text-secondary);">
+    <a href="admin.html" style="color: var(--text-secondary); text-decoration: underline;">Espace gérant</a>
+  </p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>

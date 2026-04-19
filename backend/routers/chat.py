@@ -15,10 +15,92 @@ CONFIG_PATH = Path(__file__).parent.parent / "data" / "config.json"
 
 
 def load_config():
-    if not CONFIG_PATH.exists():
-        return {}
-    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    import logging
+    logger = logging.getLogger("uvicorn")
+    
+    from backend.database import get_connection as _get_conn
+    
+    logger.info("🔑 [CHAT] Chargement des clés API depuis SQLite...")
+    conn = _get_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT key, value FROM app_config WHERE category = 'api_keys'")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    logger.info(f"🔍 [CHAT] Nombre de clés trouvées en DB: {len(rows)}")
+    for row in rows:
+        key_name = row["key"]
+        value = row["value"]
+        masked = "..." + value[-4:] if value and len(value) > 4 else "(vide)"
+        logger.info(f"   - {key_name}: {masked}")
+    
+    api_keys = {row["key"]: row["value"] or "" for row in rows}
+    if not api_keys:
+        logger.warning("⚠️ [CHAT] Aucune clé API en DB, utilisation des valeurs par défaut vides")
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": ""}
+    
+    # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
+    import os
+    from pathlib import Path as _Path
+    _env_file = _Path(__file__).parent.parent / ".env"
+    if _env_file.exists():
+        for line in _env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            env_key, env_val = line.split("=", 1)
+            env_val = env_val.strip()
+            # Mapper les noms .env vers les clés DB
+            env_map = {
+                "OPENROUTER_KEY": "openrouter_key",
+                "ANTHROPIC_KEY": "anthropic_key",
+                "GOOGLE_KEY": "google_key",
+                "WEB_SEARCH_KEY": "web_search_key",
+            }
+            db_key = env_map.get(env_key.strip())
+            if db_key and not api_keys.get(db_key):
+                api_keys[db_key] = env_val
+    
+    # Lire les vraies variables d'environnement système (pour Docker/desktop)
+    for env_var, db_key in [
+        ("OPENROUTER_KEY", "openrouter_key"),
+        ("ANTHROPIC_KEY", "anthropic_key"),
+        ("GOOGLE_KEY", "google_key"),
+        ("WEB_SEARCH_KEY", "web_search_key"),
+    ]:
+        if not api_keys.get(db_key) and os.environ.get(env_var):
+            api_keys[db_key] = os.environ[env_var]
+    
+    model_preferences = {
+        "routing": "google/gemini-2.0-flash-001",
+        "structuring": "google/gemini-2.0-flash-001",
+        "code": "anthropic/claude-haiku-4.5",
+        "analysis": "anthropic/claude-sonnet-4.5"
+    }
+    
+    chat_config = {
+        "model": "anthropic/claude-sonnet-4.5",
+        "methodo_path": "C:\\DEV\\METHODO",
+        "session_note": "",
+        "system_prompt_preset": ""
+    }
+    
+    if CONFIG_PATH.exists():
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            config_file = json.load(f)
+            if "model_preferences" in config_file:
+                model_preferences = config_file["model_preferences"]
+                logger.info(f"📋 [CHAT] model_preferences chargées depuis config.json")
+            if "chat" in config_file:
+                chat_config.update(config_file["chat"])
+                logger.info(f"💬 [CHAT] chat config chargée depuis config.json")
+    
+    logger.info(f"✅ [CHAT] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles")
+    return {
+        "api_keys": api_keys,
+        "model_preferences": model_preferences,
+        "chat": chat_config
+    }
 
 
 # ─── Schémas Pydantic ──────────────────────────────────────────────────────────
@@ -27,6 +109,8 @@ class ConversationCreate(BaseModel):
     project_id: int | None = None
     title: str | None = None
     folder_path: str | None = None
+    internet_access: bool = False
+    model: str = ""
 
 
 class MessageCreate(BaseModel):
@@ -54,8 +138,8 @@ def create_conversation(data: ConversationCreate):
             folder_path = project_row["local_path"]
     
     cursor.execute(
-        "INSERT INTO conversations (project_id, title, folder_path, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-        (data.project_id, title, folder_path, now, now)
+        "INSERT INTO conversations (project_id, title, folder_path, internet_access, context_summary, model, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (data.project_id, title, folder_path, 1 if data.internet_access else 0, "", data.model or "", now, now)
     )
     conversation_id = cursor.lastrowid
     db.commit()
@@ -69,6 +153,9 @@ def create_conversation(data: ConversationCreate):
         "project_id": row["project_id"],
         "title": row["title"],
         "folder_path": row["folder_path"],
+        "internet_access": bool(row["internet_access"]) if "internet_access" in row.keys() else False,
+        "context_summary": row["context_summary"] if "context_summary" in row.keys() else "",
+        "model": row["model"] if "model" in row.keys() else "",
         "created_at": row["created_at"]
     }
 
@@ -114,6 +201,9 @@ def list_conversations(project_id: int | None = None):
             "title": row["title"],
             "project_id": row["project_id"],
             "folder_path": row["folder_path"],
+            "internet_access": bool(row["internet_access"]) if "internet_access" in row.keys() else False,
+            "context_summary": row["context_summary"] if "context_summary" in row.keys() else "",
+            "model": row["model"] if "model" in row.keys() else "",
             "updated_at": row["updated_at"],
             "message_count": message_count,
             "last_message_preview": last_message_preview,
@@ -159,6 +249,9 @@ def get_conversation(conv_id: int):
         "title": conv_row["title"],
         "project_id": conv_row["project_id"],
         "folder_path": conv_row["folder_path"],
+        "internet_access": bool(conv_row["internet_access"]) if "internet_access" in conv_row.keys() else False,
+        "context_summary": conv_row["context_summary"] if "context_summary" in conv_row.keys() else "",
+        "model": conv_row["model"] if "model" in conv_row.keys() else "",
         "created_at": conv_row["created_at"],
         "messages": messages
     }
@@ -167,8 +260,13 @@ def get_conversation(conv_id: int):
 @router.post("/conversations/{conv_id}/messages")
 async def send_message(conv_id: int, data: MessageCreate):
     """Envoie un message dans une conversation et retourne la réponse."""
+    import logging
+    logger = logging.getLogger("uvicorn")
+    
     db = get_connection()
     config = load_config()
+    
+    logger.info(f"📥 [CHAT] Config chargée: api_keys={list(config.get('api_keys', {}).keys())}, chat={config.get('chat', {})}")
     
     # Override du modèle si fourni
     if data.model:
@@ -207,22 +305,171 @@ async def send_message(conv_id: int, data: MessageCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.patch("/conversations/{conv_id}/folder")
-def update_conversation_folder(conv_id: int, folder_path: str | None = None):
-    """Définit ou modifie le folder_path d'une conversation."""
+class ConversationUpdate(BaseModel):
+    folder_path: str | None = None
+    internet_access: bool | None = None
+    model: str | None = None
+    context_summary: str | None = None
+
+
+@router.patch("/conversations/{conv_id}")
+def update_conversation(conv_id: int, data: ConversationUpdate):
+    """Met à jour les champs d'une conversation (folder_path, internet_access, model, context_summary)."""
     db = get_connection()
     cursor = db.cursor()
     
     cursor.execute("SELECT * FROM conversations WHERE id = ?", (conv_id,))
-    if not cursor.fetchone():
+    conv_row = cursor.fetchone()
+    if not conv_row:
         db.close()
         raise HTTPException(status_code=404, detail="Conversation introuvable")
     
-    cursor.execute("UPDATE conversations SET folder_path = ? WHERE id = ?", (folder_path, conv_id))
+    # Construire la requête UPDATE dynamiquement
+    updates = []
+    params = []
+    
+    if data.folder_path is not None:
+        updates.append("folder_path = ?")
+        params.append(data.folder_path)
+    
+    if data.internet_access is not None:
+        updates.append("internet_access = ?")
+        params.append(1 if data.internet_access else 0)
+    
+    if data.model is not None:
+        updates.append("model = ?")
+        params.append(data.model)
+    
+    if data.context_summary is not None:
+        updates.append("context_summary = ?")
+        params.append(data.context_summary)
+    
+    if not updates:
+        db.close()
+        return {"updated": False, "message": "Aucun champ à mettre à jour"}
+    
+    params.append(conv_id)
+    query = f"UPDATE conversations SET {', '.join(updates)} WHERE id = ?"
+    cursor.execute(query, params)
     db.commit()
+    
+    # Récupérer la conversation mise à jour
+    cursor.execute("SELECT * FROM conversations WHERE id = ?", (conv_id,))
+    updated_row = cursor.fetchone()
     db.close()
     
-    return {"updated": True, "folder_path": folder_path}
+    return {
+        "id": updated_row["id"],
+        "title": updated_row["title"],
+        "project_id": updated_row["project_id"],
+        "folder_path": updated_row["folder_path"],
+        "internet_access": bool(updated_row["internet_access"]) if "internet_access" in updated_row.keys() else False,
+        "context_summary": updated_row["context_summary"] if "context_summary" in updated_row.keys() else "",
+        "model": updated_row["model"] if "model" in updated_row.keys() else "",
+        "updated_at": updated_row["updated_at"]
+    }
+
+
+@router.patch("/conversations/{conv_id}/folder")
+def update_conversation_folder(conv_id: int, folder_path: str | None = None):
+    """Définit ou modifie le folder_path d'une conversation (rétrocompatibilité)."""
+    return update_conversation(conv_id, ConversationUpdate(folder_path=folder_path))
+
+
+@router.post("/conversations/{conversation_id}/update-summary")
+async def update_conversation_summary(conversation_id: int):
+    """Génère et met à jour le résumé de la conversation via LLM."""
+    import logging
+    logger = logging.getLogger("uvicorn")
+    
+    db = get_connection()
+    cursor = db.cursor()
+    
+    # 1. Récupérer la conversation
+    cursor.execute("SELECT * FROM conversations WHERE id = ?", (conversation_id,))
+    conv_row = cursor.fetchone()
+    if not conv_row:
+        db.close()
+        raise HTTPException(status_code=404, detail="Conversation introuvable")
+    
+    # 2. Récupérer tous les messages
+    cursor.execute(
+        "SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY created_at ASC",
+        (conversation_id,)
+    )
+    messages = cursor.fetchall()
+    
+    if not messages:
+        db.close()
+        return {"summary": "", "ok": True, "message": "Aucun message à résumer"}
+    
+    # 3. Récupérer context_summary actuel
+    previous_summary = conv_row["context_summary"] if "context_summary" in conv_row.keys() else ""
+    
+    # 4. Récupérer global_context
+    try:
+        cursor.execute("SELECT value FROM app_config WHERE key = 'global_context'")
+        global_context_row = cursor.fetchone()
+        global_context = global_context_row["value"] if global_context_row else ""
+    except Exception:
+        global_context = ""
+    
+    # 5. Construire l'historique
+    conversation_history = "\n".join([
+        f"{msg['role'].upper()}: {msg['content'][:500]}" for msg in messages
+    ])
+    
+    # 6. Construire le prompt de résumé
+    prompt = f"""{global_context}
+---
+Tu es un assistant de synthèse de conversation.
+Résumé précédent : {previous_summary if previous_summary else "(aucun)"}
+Historique des échanges :
+{conversation_history}
+
+Produis un résumé concis (max 400 mots) qui capture :
+- Les sujets abordés et décisions prises
+- Les informations techniques importantes (fichiers, erreurs, solutions)
+- L'état actuel de la conversation et ce qui reste à faire
+
+Format : texte libre, structuré par thèmes si nécessaire. Pas de liste de messages."""
+    
+    # 7. Appeler le LLM (routing, cheap)
+    config = load_config()
+    
+    # Utiliser get_model_id pour routing
+    from backend.services.model_router import get_model_id
+    model_id = get_model_id("routing", config)
+    
+    # Appeler call_model
+    from backend.services.model_router import call_model
+    
+    try:
+        result = await call_model(
+            model_id=model_id,
+            messages=[{"role": "user", "content": prompt}],
+            api_keys=config.get("api_keys", {}),
+            model_preferences=config.get("model_preferences", {})
+        )
+        
+        new_summary = result["content"]
+        
+        # 8. Sauvegarder le résumé
+        cursor.execute(
+            "UPDATE conversations SET context_summary = ? WHERE id = ?",
+            (new_summary, conversation_id)
+        )
+        db.commit()
+        db.close()
+        
+        logger.info(f"📋 [CHAT] Résumé mis à jour pour conversation {conversation_id}")
+        
+        return {"summary": new_summary, "ok": True}
+    
+    except Exception as e:
+        db.close()
+        logger.error(f"❌ [CHAT] Erreur génération résumé : {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur génération résumé : {str(e)}")
 
 
 @router.delete("/conversations/{conv_id}")

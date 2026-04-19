@@ -16,6 +16,11 @@ def _create_schema(conn: sqlite3.Connection):
             name TEXT NOT NULL,
             path TEXT NOT NULL UNIQUE,
             type TEXT NOT NULL,
+            local_path TEXT,
+            instructions TEXT DEFAULT '',
+            module_type TEXT DEFAULT 'dossier',
+            category TEXT,
+            parent_dossier_id INTEGER REFERENCES projects(id),
             created_at TEXT DEFAULT (datetime('now'))
         );
 
@@ -62,6 +67,10 @@ def _create_schema(conn: sqlite3.Connection):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
             title TEXT NOT NULL DEFAULT 'Nouvelle conversation',
+            folder_path TEXT,
+            internet_access INTEGER DEFAULT 0,
+            context_summary TEXT DEFAULT '',
+            model TEXT DEFAULT '',
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         );
@@ -117,13 +126,16 @@ def sample_config():
 
 @pytest.fixture
 def project_in_db(db, tmp_path):
-    """Crée un projet de test dans la DB en mémoire avec un dossier réel."""
+    """Crée un projet de test dans la DB en mémoire avec un dossier réel.
+    
+    Note : module_type='dossier' par défaut (projet classique, pas module code).
+    """
     project_dir = tmp_path / "test_project"
     project_dir.mkdir()
     cursor = db.cursor()
     cursor.execute(
-        "INSERT INTO projects (name, path, type) VALUES (?, ?, ?)",
-        ("Test Project", str(project_dir), "web")
+        "INSERT INTO projects (name, path, type, module_type) VALUES (?, ?, ?, ?)",
+        ("Test Project", str(project_dir), "web", "dossier")
     )
     db.commit()
     return {"id": cursor.lastrowid, "path": str(project_dir)}
@@ -133,3 +145,46 @@ def project_in_db(db, tmp_path):
 def temp_db_path(tmp_path):
     """Chemin vers un fichier SQLite temporaire (pour les tests d'intégration API)."""
     return tmp_path / "test_jarvis.db"
+
+
+# ─── Fixtures Playwright (E2E) ────────────────────────────────────────────────
+
+@pytest.fixture(scope="session")
+def browser():
+    """Browser Playwright partagé pour toute la session de tests E2E."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        pytest.skip("Playwright non installé")
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        yield browser
+        browser.close()
+
+
+@pytest.fixture(scope="function")
+def page(browser):
+    """Page Playwright isolée par test, avec capture des erreurs console."""
+    context = browser.new_context()
+    page = context.new_page()
+    
+    # Capture les erreurs JS console
+    page.on("console", lambda msg: print(f"[CONSOLE {msg.type}] {msg.text}") if msg.type == "error" else None)
+    
+    yield page
+    context.close()
+
+
+@pytest.fixture(scope="session")
+def api_base():
+    """URL de base de l'API JARVIS pour les tests E2E."""
+    return "http://localhost:8000/api"
+
+
+@pytest.fixture
+def global_context_in_db(tmp_path):
+    """Pré-rempli app_config avec un global_context de test."""
+    # Cette fixture est utilisée dans les tests d'intégration
+    # via client_and_db — le client doit initialiser app_config au démarrage
+    return "Tu es un assistant de test. Contexte global actif."

@@ -93,6 +93,33 @@ def read_methodo_context(methodo_path: str) -> str:
     return "\n\n".join(sections)
 
 
+def read_graphify_report(project_path: str, max_lines: int = 80) -> str:
+    """Lit les premières lignes du GRAPH_REPORT.md du projet sélectionné.
+    
+    Args:
+        project_path: Chemin absolu vers le dossier du projet
+        max_lines: Nombre de lignes maximum à lire (évite de surcharger le contexte)
+        
+    Returns:
+        String avec le résumé du graphe, ou "" si absent
+    """
+    if not project_path:
+        return ""
+    
+    report_path = Path(project_path) / "graphify-out" / "GRAPH_REPORT.md"
+    
+    if not report_path.exists():
+        return ""
+    
+    try:
+        lines = report_path.read_text(encoding="utf-8").splitlines()
+        excerpt = "\n".join(lines[:max_lines])
+        return excerpt
+    except Exception as e:
+        logger.warning(f"Erreur lecture graphify report : {e}")
+        return ""
+
+
 def get_project_context(project_path: str) -> str | None:
     """Lit PROJET_CONTEXTE.md depuis le projet.
     
@@ -284,7 +311,7 @@ async def search_web(query: str, api_key: str | None = None) -> dict:
         return {"results": [], "error": str(e)}
 
 
-def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None, folder_context: str | None = None) -> str:
+def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None, folder_context: str | None = None, global_context: str = "", context_summary: str = "", graphify_context: str = "") -> str:
     """Construit le system prompt complet pour le chat.
     
     Args:
@@ -293,11 +320,26 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
         session_note: Note de session utilisateur (vide si absent)
         project_context: Contexte projet (None si pas de projet)
         folder_context: Liste fichiers dossier local (None si pas de dossier)
+        global_context: Contexte global (Prompt Générique) injecté en premier
+        context_summary: Résumé de la conversation (vide si absent)
+        graphify_context: Graphe du projet (vide si absent)
         
     Returns:
         System prompt complet
     """
-    parts = [preset]
+    parts = []
+    
+    # Global context EN PREMIER
+    if global_context:
+        parts.append(global_context)
+        parts.append("---")
+    
+    # Résumé de conversation APRÈS global_context
+    if context_summary:
+        parts.append(f"📋 RÉSUMÉ DE CETTE CONVERSATION :\n{context_summary}")
+        parts.append("---")
+    
+    parts.append(preset)
     
     if methodo_context:
         parts.append("---")
@@ -310,6 +352,11 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
     if project_context is not None:
         parts.append("---")
         parts.append(f"PROJET ACTIF :\n{project_context}")
+    
+    if graphify_context:
+        parts.append("\n--- GRAPHE PROJET (structure et dépendances) ---")
+        parts.append(graphify_context)
+        parts.append("--- FIN GRAPHE ---\n")
     
     if folder_context is not None:
         parts.append("---")
@@ -344,6 +391,9 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     
     project_id = conv_row["project_id"]
     folder_path = conv_row["folder_path"]
+    internet_access = bool(conv_row["internet_access"]) if "internet_access" in conv_row.keys() else False
+    context_summary = conv_row["context_summary"] if "context_summary" in conv_row.keys() else ""
+    conv_model = conv_row["model"] if "model" in conv_row.keys() else ""
     project_path = None
     
     # Récupérer le project_path si projet défini
@@ -367,6 +417,8 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     project_context = None
     if project_path:
         project_context = get_project_context(project_path)
+    
+    graphify_context = read_graphify_report(project_path) if project_path else ""
     
     # Contexte dossier local
     folder_context = None
@@ -400,31 +452,41 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
                     truncated_msg = " [TRONQUÉ]" if file_result["truncated"] else ""
                     file_content_injected += f"\n\n=== Contenu de {filename}{truncated_msg} ===\n{file_result['content']}"
     
-    # Détection recherche web
+    # Détection recherche web (conditionnée sur internet_access)
     web_search_used = False
     web_results_text = ""
-    web_search_patterns = [
-        r'(?:cherche|recherche|trouve|search)',
-        r'(?:internet|web|en ligne)',
-        r'(?:dernière version|version actuelle|aujourd\'hui|actuellement)'
-    ]
     
-    should_search = any(re.search(pattern, user_content, re.IGNORECASE) for pattern in web_search_patterns)
+    if internet_access:
+        web_search_patterns = [
+            r'(?:cherche|recherche|trouve|search)',
+            r'(?:internet|web|en ligne)',
+            r'(?:dernière version|version actuelle|aujourd\'hui|actuellement)'
+        ]
+        
+        should_search = any(re.search(pattern, user_content, re.IGNORECASE) for pattern in web_search_patterns)
+        
+        if should_search:
+            web_search_key = config.get("api_keys", {}).get("web_search_key")
+            if web_search_key:
+                search_result = await search_web(user_content, web_search_key)
+                if not search_result["error"] and search_result["results"]:
+                    web_search_used = True
+                    web_results_text = "\n\n=== Résultats recherche web ===\n"
+                    for i, result in enumerate(search_result["results"], 1):
+                        web_results_text += f"{i}. {result['title']}\n   {result['url']}\n   {result['description']}\n\n"
     
-    if should_search:
-        web_search_key = config.get("api_keys", {}).get("web_search_key")
-        if web_search_key:
-            search_result = await search_web(user_content, web_search_key)
-            if not search_result["error"] and search_result["results"]:
-                web_search_used = True
-                web_results_text = "\n\n=== Résultats recherche web ===\n"
-                for i, result in enumerate(search_result["results"], 1):
-                    web_results_text += f"{i}. {result['title']}\n   {result['url']}\n   {result['description']}\n\n"
+    # Récupérer global_context depuis app_config
+    try:
+        cursor.execute("SELECT value FROM app_config WHERE key = 'global_context'")
+        global_context_row = cursor.fetchone()
+        global_context = global_context_row["value"] if global_context_row else ""
+    except Exception:
+        global_context = ""
     
     # Construire le system prompt
     preset = config.get("chat", {}).get("system_prompt_preset", "")
     session_note = config.get("chat", {}).get("session_note", "")
-    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context, folder_context)
+    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context, folder_context, global_context, context_summary, graphify_context)
     
     # Récupérer les 20 derniers messages
     cursor.execute(
@@ -443,7 +505,11 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     
     # Appel API OpenRouter
     openrouter_key = config.get("api_keys", {}).get("openrouter_key", "")
-    model = config.get("chat", {}).get("model", "anthropic/claude-sonnet-4-5")
+    # Utiliser conv_model en priorité si défini
+    model = conv_model or config.get("chat", {}).get("model", "anthropic/claude-sonnet-4-5")
+    
+    logger.info(f"🔑 [CHAT_SERVICE] openrouter_key présente: {bool(openrouter_key)}, longueur: {len(openrouter_key) if openrouter_key else 0}")
+    logger.info(f"🤖 [CHAT_SERVICE] Modèle: {model}")
     
     if not openrouter_key:
         raise Exception("Clé API OpenRouter manquante dans la configuration")
@@ -531,6 +597,22 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     )
     
     db.commit()
+    
+    # Auto-update du résumé toutes les 10 paires user/assistant
+    cursor.execute(
+        "SELECT COUNT(*) as count FROM messages WHERE conversation_id = ? AND role = 'user'",
+        (conversation_id,)
+    )
+    user_message_count = cursor.fetchone()["count"]
+    
+    if user_message_count % 10 == 0 and user_message_count > 0:
+        logger.info(f"📋 [CHAT_SERVICE] Déclenchement auto-update résumé — {user_message_count} paires pour conv {conversation_id}")
+        import asyncio
+        from backend.routers.chat import update_conversation_summary
+        try:
+            asyncio.ensure_future(update_conversation_summary(conversation_id))
+        except Exception as e:
+            logger.warning(f"⚠️ [CHAT_SERVICE] Erreur auto-update résumé : {e}")
     
     return {
         "user_message_id": user_message_id,

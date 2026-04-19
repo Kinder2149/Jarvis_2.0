@@ -3,101 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS - Dashboard</title>
-  <link rel="stylesheet" href="/app/assets/style.css">
+  <title>JARVIS — Dashboard</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <div class="header">
-    <h1>JARVIS</h1>
-    <div style="display: flex; gap: 1rem;">
-      <a href="/app/chat.html" class="btn btn-primary">💬 Chat</a>
-      <a href="/app/settings.html">⚙ Paramètres</a>
-    </div>
-  </div>
-  
-  <div class="container">
-    <div class="module-header">
-      <div>
-        <h2>📁 Module Projets</h2>
-        <p style="color: var(--text-muted); margin-top: 0.5rem;">Gérez vos projets et lancez des workflows IA (missions code, sessions)</p>
-      </div>
-      <button class="btn btn-primary" onclick="showAddProjectModal()">+ Ajouter un projet</button>
-    </div>
-    
-    <div id="projects-grid" class="grid"></div>
-  </div>
-
-  <script src="/app/assets/app.js"></script>
-  <script>
-    async function loadProjects() {
-      const projects = await fetchAPI('/projects');
-      const grid = document.getElementById('projects-grid');
-      
-      if (projects.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Aucun projet enregistré</p>';
-        return;
-      }
-      
-      grid.innerHTML = projects.map(p => `
-        <div class="card">
-          <h3>${p.name}</h3>
-          <span class="badge badge-info">${p.type}</span>
-          <p style="color: var(--text-muted); margin: 0.5rem 0;">${p.path}</p>
-          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-            <button class="btn btn-primary" onclick="location.href='/app/project.html?id=${p.id}'" style="flex: 1;">Ouvrir →</button>
-            <button class="btn btn-danger" onclick="deleteProject(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑️</button>
-          </div>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content">
+      <div id="page-dashboard">
+        <!-- Header bilan -->
+        <div class="dashboard-header">
+          <h1 class="dashboard-title">Bonjour</h1>
+          <div class="dashboard-subtitle" id="dashboard-subtitle">Chargement...</div>
         </div>
-      `).join('');
-    }
-    
-    function showAddProjectModal() {
-      const form = `
-        <input type="text" id="project-name" placeholder="Nom du projet" style="margin-bottom: 0.5rem;">
-        <input type="text" id="project-path" placeholder="Chemin du projet" style="margin-bottom: 0.5rem;">
-        <select id="project-type">
-          <option value="Outil IA">Outil IA</option>
-          <option value="Web">Web</option>
-          <option value="Mobile">Mobile</option>
-        </select>
-      `;
-      
-      showModal('Nouveau projet', form, async () => {
-        const name = document.getElementById('project-name').value.trim();
-        const path = document.getElementById('project-path').value.trim();
-        const type = document.getElementById('project-type').value;
-        
-        if (!name || !path) {
-          showToast('Nom et chemin requis', 'error');
-          return;
-        }
-        
-        try {
-          await fetchAPI('/projects', 'POST', { name, path, type });
-          showToast('Projet ajouté');
-          loadProjects();
-        } catch (error) {
-          console.error('Erreur création projet:', error);
-          showToast('Erreur: Vérifiez que le chemin existe', 'error');
-        }
-      });
-    }
-    
-    async function deleteProject(id, name) {
-      if (!confirm(`Supprimer le projet "${name}" ?\n\nCette action est irréversible.`)) {
-        return;
-      }
-      
-      try {
-        await fetchAPI(`/projects/${id}`, 'DELETE');
-        showToast('Projet supprimé');
-        loadProjects();
-      } catch (error) {
-        console.error('Erreur suppression projet:', error);
-      }
-    }
-    
-    loadProjects();
-  </script>
+
+        <!-- Pipeline actif (caché si aucun) -->
+        <div id="active-pipeline-section" class="dashboard-section" style="display:none">
+          <h2 class="section-title" id="active-pipeline-title">Sessions actives</h2>
+          <div id="active-pipeline-list"></div>
+        </div>
+
+        <!-- Filtres date -->
+        <div class="dashboard-filters">
+          <button class="filter-btn filter-btn--active" data-period="today">Aujourd'hui</button>
+          <button class="filter-btn" data-period="yesterday">Hier</button>
+          <button class="filter-btn" data-period="week">Cette semaine</button>
+        </div>
+
+        <!-- Timeline activité -->
+        <div class="dashboard-section">
+          <h2 class="section-title">Activité récente</h2>
+          <div id="activity-timeline"></div>
+        </div>
+
+        <!-- Stats résumé -->
+        <div id="dashboard-stats" class="dashboard-stats"></div>
+      </div>
+    </main>
+    <aside id="explorer" class="explorer--hidden"></aside>
+  </div>
+  <div id="toast-container"></div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/dashboard.js"></script>
 </body>
 </html>

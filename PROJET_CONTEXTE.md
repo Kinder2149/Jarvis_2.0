@@ -58,7 +58,7 @@
 **Gestion chemins :** `pathlib.Path` systématiquement (compatibilité Windows)
 **Appels modèles :** OpenRouter API via `httpx` (async) — endpoint : `https://openrouter.ai/api/v1/chat/completions`
 **Clés directes optionnelles :** Anthropic, Google (fallback si OpenRouter indisponible)
-**Config :** `backend/data/config.json` (clés API + préférences modèles)
+**Config :** Table `app_config` dans `jarvis.db` (clés API) + `backend/data/config.json` (préférences modèles uniquement)
 **Workflows :** `backend/data/pipelines.json` (6 workflows définis comme données)
 **Prompts :** `backend/data/prompts.json` (templates par étape, variables `{{var}}`)
 **Diff :** `difflib` Python stdlib (unified diff) — rendu CSS côté frontend
@@ -70,75 +70,87 @@
 
 
 JARVIS/
-├── start.bat ← démarrage Windows (double-clic)
+├── start.bat                  ← démarrage Windows (double-clic)
 ├── requirements.txt
 ├── PROJET_CONTEXTE.md
-├── STACK_STANDARD.md
 ├── CHANGELOG.md
 ├── backend/
-│ ├── main.py ← FastAPI app, CORS, routes, static files
-│ ├── routers/
-│ │ ├── projects.py ← CRUD projets + import depuis PROJET_CONTEXTE.md
-│ │ ├── pipelines.py ← start, status, validate step, retry step
-│ │ ├── models.py ← appel OpenRouter/direct + test connexion
-│ │ └── files.py ← read, write, diff, apply, archive docs
-│ ├── services/
-│ │ ├── pipeline_engine.py ← state machine, orchestration, persistance
-│ │ ├── model_router.py ← sélection modèle, appel API, log décisions
-│ │ ├── context_manager.py ← construction context envelopes par étape
-│ │ └── file_service.py ← pathlib, diff, rollback all-or-nothing
-│ ├── schemas/
-│ │ ├── project.py
-│ │ ├── pipeline.py
-│ │ └── config.py
-│ └── data/
-│ ├── jarvis.db ← SQLite
-│ ├── config.json ← clés API + mapping modèles
-│ ├── pipelines.json ← 6 workflows définis
-│ └── prompts.json ← templates prompts par step
-└├── frontend/
-├── index.html ← dashboard projets
-├── pipeline.html ← pipeline actif (page principale)
-├── project.html ← vue projet unifiée (3 onglets : Contexte, Missions, Chat + dossier local)
-├── chat.html ← interface chat enrichie (folder_path, web search)
-├── settings.html ← clés API + modèles par défaut
-└── assets/
-├── style.css ← thème sombre, variables CSS, composants
-└── app.js ← fetch API, rendu markdown/diff, gestion état UI
+│   ├── main.py                ← FastAPI app, CORS, routes, static files, migration SQLite
+│   ├── database.py            ← get_connection, migrations tables
+│   ├── routers/
+│   │   ├── projects.py        ← CRUD projets (+ champ instructions, local_path)
+│   │   ├── pipelines.py       ← start, status, validate step, retry step, abort, logs
+│   │   ├── models.py          ← config clés API (SQLite), test connexion, modèles disponibles
+│   │   ├── files.py           ← read, write, diff, apply, archive docs, local-list
+│   │   ├── chat.py            ← conversations, messages, titrage auto
+│   │   └── atelier.py         ← CRUD prospects, start pipeline atelier, export ZIP
+│   ├── services/
+│   │   ├── pipeline_engine.py ← state machine, orchestration, persistance
+│   │   ├── model_router.py    ← sélection modèle, appel API, log décisions
+│   │   ├── context_manager.py ← construction context envelopes par étape
+│   │   ├── file_service.py    ← pathlib, diff, rollback all-or-nothing
+│   │   ├── chat_service.py    ← historique messages, titrage auto, lecture dossier local, web search
+│   │   └── atelier_service.py ← logique pipeline atelier, export ZIP fichiers démo
+│   ├── schemas/
+│   │   ├── project.py
+│   │   ├── pipeline.py
+│   │   └── config.py
+│   └── data/
+│       ├── jarvis.db          ← SQLite (tables: projects, sessions, pipeline_steps, conversations, messages, app_config, prospects)
+│       ├── config.json        ← model_preferences uniquement (clés API dans jarvis.db)
+│       ├── pipelines.json     ← 6 workflows Module Code + workflow atelier_prospection
+│       └── prompts.json       ← templates prompts par step
+└── frontend/
+    ├── index.html             ← dashboard (timeline activité, sessions actives/bloquées, stats)
+    ├── project.html           ← hub projet (instructions, local_path, sessions+conversations unifiées)
+    ├── module-code.html       ← suivi temps réel workflow IA (steps, validation, diff, polling 2s)
+    ├── chat.html              ← conversation IA (markdown, folder_path, web search, sélecteur modèle)
+    ├── atelier.html           ← Atelier Connecté (kanban 6 colonnes + vue pipeline prospect)
+    └── settings.html          ← config clés API 3 providers + sélecteurs modèles par type
+    └── assets/
+        ├── style.css          ← thème sombre, variables CSS, layout 3 panneaux, composants
+        └── js/
+            ├── api.js         ← toutes les routes API (BASE_URL = window.location.origin)
+            ├── shared.js      ← renderMarkdown, formatDate, statusBadge, costBadge, escapeHtml
+            ├── sidebar.js     ← sidebar collapsible, modals nouveau chat/module/projet
+            ├── ui.js          ← showModal, closeModal, showToast
+            ├── dashboard.js   ← timeline, sessions actives/bloquées, stats semaine
+            ├── project.js     ← hub projet, instructions éditables, liste unifiée sessions+chats
+            ├── module-code.js ← polling pipeline, steps, zone validation (diff/generic), retry step
+            ├── chat.js        ← messages, optimistic UI, sélecteur modèle, suppression
+            ├── explorer.js    ← arborescence fichiers locaux, preview, collapse
+            ├── atelier.js     ← kanban prospects, vue pipeline atelier, zones saisie/checkpoint/export
+            └── settings.js    ← clés API (états visuels), test connexion, dropdowns modèles
 
-**Services actifs :** 8 / 20 maximum
-**Fichiers frontend :** 6 / illimité (pas de contrainte ici)
+**Services backend actifs :** 6 / 20 maximum
+**Pages frontend :** 6 / illimité
 
 ---
 
 ## 4. FONCTIONNALITÉS
 
 **✅ Stables**
-- Gestion projets CRUD (enregistrement, liste, suppression)
-- Pipeline engine complet (6 workflows, state machine, persistance SQLite)
+- Gestion projets CRUD (enregistrement, liste, suppression, instructions, local_path)
+- Pipeline engine complet (6 workflows Module Code, state machine, persistance SQLite)
 - Routing modèles par type de tâche (routing/structuring/code/analysis)
-- Suite de tests 162/162 (unitaires + intégration) + 4 tests live (OpenRouter, chat, pipeline, dossier local)
-- Configuration modèles équilibrée (routing=Gemini Flash, code=Haiku, analysis=Sonnet)
-- Roadmap OpenRouter validée (6 slugs testés live)
-- Tous les workflows testés live (session_start, session_end, bug_simple, mission_complexe, nouveau_projet, projet_existant)
-- Fermeture de boucle complète : apply_files connecté, parsing diff robuste (3 fallbacks), flux validation amélioré
-- Cloture automatique : PROJET_CONTEXTE.md section 8 et CHANGELOG.md mis à jour automatiquement
-- Sécurité : config.json et jarvis.db gitignorés
-- Auto-avance sur étapes sans validation
-- Checkpoints de validation fonctionnels
-- Clés API masquées dans l'interface
-- Frontend V1 complet (4 pages : index, pipeline, project, settings)
-- Erreurs API lisibles utilisateur (401, 429, 404, timeout → messages FR)
-- Logs applicatifs : backend/data/jarvis.log + endpoint GET /pipelines/logs
-- Rollback atomique apply_files : 3 phases (vérif / tmp / rename+backup)
-- Architecture respectée : context_manager seul lecteur/écrivain de PROJET_CONTEXTE.md
-- Prompts (25) : format corrigé, JSON pur, chemin inside bloc code
-- **Module code complet** : 6 workflows, 142 tests, rollback atomique, clôture automatique
-- **Module chat enrichi complet** : lecture dossier local (folder_path nullable, héritage projet, GRAPH_REPORT prioritaire, UI sidebar + bandeau info) + accès internet (web search Brave API, détection auto, indicateur 🔍, icône 🌐, désactivation gracieuse). 159/159 tests.
-- **Module projet complet** : conteneur unifié regroupant missions code (pipelines) + conversations chat + contexte partagé (PROJET_CONTEXTE.md) + lien dossier local (local_path). UI project.html avec 3 onglets (Contexte, Missions, Chat). Navigation depuis index.html et chat.html. 162/162 tests.
+- Suite de tests : 162/162 backend + 41 E2E Playwright V2 + tests UX Refactoring (test_front_ux.py)
+- Configuration modèles : routing=Gemini Flash, code=Claude Haiku 4.5, analysis=Claude Sonnet 4.5
+- Clés API dans SQLite (table app_config), migration auto depuis config.json au démarrage
+- Tous les workflows testés live
+- Rollback atomique apply_files (3 phases), parsing diff 3 fallbacks
+- Clôture auto PROJET_CONTEXTE.md section 8 + CHANGELOG.md
+- Logs applicatifs : jarvis.log + GET /pipelines/logs
+- **Frontend V2 complet** : layout 3 panneaux (sidebar collapsible, main, explorer), 6 pages, 11 modules JS
+- **Module Code** : polling 2s, steps visuels, zone validation diff/generic, retry step, breadcrumb projet
+- **Module Chat** : lecture dossier local (GRAPH_REPORT prioritaire), web search Brave API, sélecteur modèle
+- **Module Projet** : hub conteneur (instructions, local_path, liste unifiée sessions+chats)
+- **Atelier Connecté** : kanban 6 colonnes, pipeline 9 steps pour prospects restauration, export ZIP démo HTML
+- **Atelier pipeline** : 3 moments humains (form saisie terrain → checkpoint validation → export ZIP)
+- **Build portable** : JARVIS.exe via PyInstaller (launcher tkinter)
+- **UX Refactoring (FRONT-01 à 06)** : CTA post-session, badges kanban, sidebar counter, dashboard waiting, lancement inline
 
 **🚧 En cours**
-- Aucun
+- Tests E2E UX Refactoring : écriture tests/test_front_ux.py (TEST-02) + run complet (TEST-03)
 
 **❌ Bugs connus**
 - Aucun
@@ -192,6 +204,11 @@ JARVIS/
 | 2026-04-16 | project_id nullable sur conversations | Toute conversation chat aura un project_id nullable dès maintenant — évite migration future |
 | 2026-04-16 | Architecture module projet | Un projet est un conteneur : il regroupe missions code + conversations chat + contexte partagé + lien dossier local |
 | 2026-04-16 | start.bat : corrigé | python -m uvicorn + start /min + pause — lancement double-clic fonctionnel |
+| 2026-04-17 | Frontend V2 : architecture JS modulaire | 11 fichiers JS séparés (api.js, shared.js, sidebar.js, ui.js, dashboard.js, project.js, module-code.js, chat.js, explorer.js, atelier.js, settings.js) — pas de bundler, pas de framework |
+| 2026-04-17 | Clés API migrées dans SQLite | config.json ne contient plus que model_preferences — clés API dans table app_config (migration auto au démarrage) |
+| 2026-04-17 | Atelier Connecté : un pipeline par prospect | Un prospect = une seule session atelier. startAtelierPipeline bloqué si session existante. Recycle n'est pas prévu : démo générée → prospect marqué contacté → fin de cycle |
+| 2026-04-17 | Atelier vs Module Code : paradigmes différents | Module Code = session-centré (session visible dans sidebar sous le projet). Atelier = prospect-centré (kanban, prospect est l'entité principale). Les deux utilisent le même pipeline_engine |
+| 2026-04-18 | UX Refactoring : 6 missions frontend | Décision : corriger les trous UX identifiés par audit (pages mortes, compteurs trompeurs, friction lancement). Aucun changement backend sauf FRONT-03 (ajout session_status dans GET /atelier/prospects) |
 
 ---
 
@@ -208,14 +225,39 @@ JARVIS/
 
 ## 8. SESSION EN COURS
 
-**Graphify :** ☑ Mis à jour
-**Objectif :** Boutons suppression projets + conversations livré
-**Contexte :** Ajout bouton supprimer (icône 🗑️) sur cartes projet (index.html) avec confirmation. Bouton supprimer conversations déjà présent (chat.html). Message d'erreur amélioré pour chemin projet existant. 162/162 tests passent.
-**Blocage :** Aucun
-**Résultat attendu :** Suppression projets et conversations fonctionnelle.
+**Graphify :** ☑ Mis à jour — 904 nodes, 1044 edges, 81 communities (2026-04-18)
+**Objectif :** ✅ TERMINÉ — INFRA-04 : Couche contexte globale dans le Module Code. Injection des règles méthode (REGLES_GLOBALES.md + PROFIL_UTILISATEUR.md) dans les pipelines Module Code via flag inject_global_rules. Nouvelle fonction build_global_rules_context() dans context_manager.py charge les règles depuis METHODO. Flag ajouté aux steps clés : orientation, cloture_docs, cadrage, document_mission, analyse_besoin, draft_projet_contexte, scan_projet, audit_code, analyse_bug (9 steps). Templates prompts enrichis avec {{global_rules}}. Les pipelines connaissent maintenant les règles de la méthode (3 couches max, 20 services max, zéro abstraction non demandée).
+**Résultat :** 
+  - backend/services/context_manager.py : fonction build_global_rules_context() + gestion inject_global_rules + substitution {{global_rules}}
+  - backend/data/pipelines.json : inject_global_rules: true sur 9 steps concernés
+  - backend/data/prompts.json : {{global_rules}} ajouté en début des templates
+  - CHANGELOG.md mis à jour
+  - PROJET_CONTEXTE.md section 8 mis à jour
+**Prochaine session :** Graphify update recommandé
 
 ---
 
 ## 9. BACKLOG
 
-1. **Phase 4 UI avancée** — éditeur diff interactif (sélection chunks, annotations), historique replay (rejouer une session passée)
+### Améliorations UX Refactoring (priorité haute)
+
+1. **FRONT-01 : Bouton "Retour au projet" en secondaire** — Inverser avec "Nouvelle session" pour mettre l'accent sur le retour (effort : 5 min)
+2. **FRONT-05 : Banner encombrant si 10+ sessions** — Ajouter limite affichage (ex: "⏸️ 12 sessions attendent ta validation" + collapse "Voir tout") (effort : 30 min)
+
+### Améliorations UX Refactoring (priorité moyenne)
+
+3. **Atelier : Relancer pipeline FAILED** — Ajouter bouton "Relancer ce pipeline" sur zone CTA Atelier (effort : 1h)
+4. **Dashboard : Optimiser appels API** — Cache partagé entre sidebar et dashboard pour éviter doublons (effort : 2h)
+5. **FRONT-04 : Animation pulse plus prononcée** — Réduire opacity min de 0.4 à 0.2 pour ⚙️ RUNNING (effort : 2 min)
+
+### Améliorations UX Refactoring (priorité basse)
+
+6. **Notifications push** — Browser notification API quand session passe en WAITING_VALIDATION (effort : 3h)
+7. **Dashboard : Sessions Atelier RUNNING** — Afficher dans section "En cours" avec lien vers kanban (effort : 1h)
+8. **Atelier : Duplication prospect** — Bouton "Dupliquer" sur card kanban pour relancer cycle (effort : 2h)
+
+### Fonctionnalités futures
+
+9. **Phase 4 UI avancée** — éditeur diff interactif (sélection chunks, annotations), historique replay (rejouer une session passée)
+10. **Atelier V2** — multi-catégories (pas uniquement restauration), relance cycle sur même prospect
+11. **Dashboard — analytics avancés** — coût cumulatif par projet, courbe d'activité semaine/mois

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{NOM_ETABLISSEMENT}} — Restaurant {{VILLE}}</title>
+  <meta name="description" content="{{NOM_ETABLISSEMENT}} — {{SOUS_TITRE_HERO}}">
+  <link rel="icon" href="{{URL_LOGO}}" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="{{GOOGLE_FONTS_URL}}" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <nav>
+    <a href="#top" class="nav-logo">
+      <img src="{{URL_LOGO}}" alt="Logo {{NOM_ETABLISSEMENT}}" height="50">
+    </a>
+    <a href="admin.html" class="btn-admin">🔒 Espace Gérant</a>
+  </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="top">
+  <div class="hero-content">
+    <div class="hero-badge">{{BADGE_HERO}}</div>
+    <h1>{{NOM_ETABLISSEMENT}}</h1>
+    <p class="hero-subtitle">{{SOUS_TITRE_HERO}}</p>
+    <a href="#reservation" class="btn-primary">Réserver une table</a>
+  </div>
+</section>
+
+<!-- ===== PRÉSENTATION ===== -->
+<section id="presentation">
+  <div class="section-inner fade-in">
+    <div class="presentation-grid">
+      <div class="presentation-text">
+        <h2 style="text-align:left;">Bienvenue chez<br>{{NOM_ETABLISSEMENT}}</h2>
+        <p>{{TEXTE_PRESENTATION_1}}</p>
+        <p>{{TEXTE_PRESENTATION_2}}</p>
+      </div>
+      <div class="presentation-image">
+        <img src="{{URL_PRESENTATION}}" alt="{{NOM_ETABLISSEMENT}}" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NOTRE CARTE ===== -->
+<section id="menu">
+  <div class="section-inner fade-in">
+    <h2>Notre carte</h2>
+    <!-- Le menu est rendu dynamiquement par script.js -->
+    <div id="menu-container"></div>
+  </div>
+</section>
+
+<!-- ===== ARDOISE DU JOUR — Effet tableau ===== -->
+<section class="ardoise-public" id="ardoise-section">
+  <div class="section-inner fade-in" style="text-align:center;">
+    <div class="ardoise-public-badge">Aujourd'hui</div>
+    <h2>L'Ardoise du Jour</h2>
+    <p class="section-subtitle">Nos suggestions du moment, renouvelées chaque jour</p>
+    <!-- Rendu dynamiquement par script.js -->
+    <div id="ardoise-container" style="display:none;">
+      <div class="ardoise-cards" id="ardoise-cards"></div>
+      <div class="ardoise-formule" id="ardoise-formule" style="display:none;">
+        <span class="ardoise-formule-label" id="ardoise-formule-label"></span>
+        <span class="ardoise-formule-prix" id="ardoise-formule-prix"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RÉSERVATION ===== -->
+<section id="reservation">
+  <div class="section-inner fade-in">
+    <h2>Réserver une table</h2>
+    <p class="section-subtitle">Votre demande est transmise à notre équipe, qui vous confirmera rapidement.</p>
+
+    <div class="reservation-wrapper">
+      <form id="reservation-form">
+
+        <!-- Service -->
+        <div class="form-group">
+          <label>Service *</label>
+          <div class="services-container">
+            <label class="service-card active" data-service="dejeuner">
+              <input type="radio" name="service" value="dejeuner" hidden required>
+              <div style="pointer-events:none;">
+                <h3 style="margin:0 0 0.5rem 0; font-size:1.3rem;">☀️ Déjeuner</h3>
+                <p style="margin:0; font-size:0.9rem; color:var(--text-secondary);">{{HORAIRES_DEJEUNER}}</p>
+              </div>
+            </label>
+            <label class="service-card" data-service="diner">
+              <input type="radio" name="service" value="diner" hidden required>
+              <div style="pointer-events:none;">
+                <h3 style="margin:0 0 0.5rem 0; font-size:1.3rem;">🌙 Dîner</h3>
+                <p style="margin:0; font-size:0.9rem; color:var(--text-secondary);">{{HORAIRES_DINER}}</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Prénom -->
+        <div class="form-group">
+          <label for="prenom">Prénom *</label>
+          <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required minlength="2">
+        </div>
+
+        <!-- Téléphone -->
+        <div class="form-group">
+          <label for="telephone">Téléphone *</label>
+          <input type="tel" id="telephone" name="telephone" placeholder="06 12 34 56 78" required>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group">
+          <label for="date">Date souhaitée *</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+
+        <!-- Couverts -->
+        <div class="form-group">
+          <label>Nombre de couverts *</label>
+          <div class="stepper-container">
+            <span class="stepper-label">Couverts :</span>
+            <div class="stepper-group">
+              <button type="button" class="stepper-btn" id="stepper-minus">−</button>
+              <span class="stepper-value" id="stepper-value">2</span>
+              <button type="button" class="stepper-btn" id="stepper-plus">+</button>
+            </div>
+          </div>
+          <input type="hidden" id="couverts" name="couverts" value="2">
+        </div>
+
+        <!-- Message -->
+        <div class="form-group">
+          <label for="message">Message (allergie, occasion spéciale...)</label>
+          <textarea id="message" name="message" placeholder="Partagez vos contraintes alimentaires ou l'occasion de votre visite..." maxlength="300"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Réserver ma table</button>
+
+      </form>
+
+      <!-- Confirmation inline sous le bouton -->
+      <div id="confirmation-inline" class="confirmation-inline">
+        ✓ Votre demande a bien été reçue — nous vous confirmons rapidement par téléphone.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== AVIS CLIENTS ===== -->
+<section id="avis">
+  <div class="section-inner fade-in">
+    <h2>Ce que nos clients disent</h2>
+
+    <!-- Score Google (masqué si NOTE_GOOGLE vide) -->
+    <div class="reviews-google-score" id="google-score-block" style="display:{{AFFICHER_SCORE_GOOGLE}}">
+      <div class="google-score-number">{{NOTE_GOOGLE}}</div>
+      <div class="google-score-stars">★★★★★</div>
+      <div class="google-score-count">{{NOMBRE_AVIS_GOOGLE}} avis Google</div>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-card-header">
+          <div class="reviewer-avatar color-1">{{AVIS_1_INITIALE}}</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">{{AVIS_1_AUTEUR}}</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <span class="review-source">Google</span>
+        </div>
+        <p class="review-text">"{{AVIS_1_TEXTE}}"</p>
+        <span class="review-date">{{AVIS_1_DATE}}</span>
+      </div>
+
+      <div class="review-card">
+        <div class="review-card-header">
+          <div class="reviewer-avatar color-2">{{AVIS_2_INITIALE}}</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">{{AVIS_2_AUTEUR}}</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <span class="review-source">Google</span>
+        </div>
+        <p class="review-text">"{{AVIS_2_TEXTE}}"</p>
+        <span class="review-date">{{AVIS_2_DATE}}</span>
+      </div>
+
+      <div class="review-card">
+        <div class="review-card-header">
+          <div class="reviewer-avatar color-3">{{AVIS_3_INITIALE}}</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">{{AVIS_3_AUTEUR}}</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <span class="review-source">Google</span>
+        </div>
+        <p class="review-text">"{{AVIS_3_TEXTE}}"</p>
+        <span class="review-date">{{AVIS_3_DATE}}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INFOS PRATIQUES ===== -->
+<section id="infos">
+  <div class="section-inner fade-in">
+    <h2>Infos pratiques</h2>
+    <div class="infos-grid">
+      <div class="info-card">
+        <span class="info-card-icon">📍</span>
+        <h3>Adresse</h3>
+        <p>{{ADRESSE}}</p>
+        <a href="{{URL_GOOGLE_MAPS}}" target="_blank" rel="noopener">Voir sur Google Maps →</a>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">📞</span>
+        <h3>Contact</h3>
+        <p><a href="tel:{{TELEPHONE_RAW}}">{{TELEPHONE}}</a></p>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">⏰</span>
+        <h3>Horaires</h3>
+        <p>{{HORAIRES_TEXTE_FOOTER}}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>{{NOM_ETABLISSEMENT}}</h3>
+      <p>{{SOUS_TITRE_HERO}}</p>
+      <p style="margin-top:0.75rem;">{{ADRESSE}}</p>
+    </div>
+    <div class="footer-section">
+      <h3>Navigation</h3>
+      <a href="#menu">Notre carte</a>
+      <a href="#ardoise-section">Ardoise du jour</a>
+      <a href="#reservation">Réserver</a>
+      <a href="#avis">Avis</a>
+    </div>
+    <div class="footer-section">
+      <h3>Horaires</h3>
+      <p>{{HORAIRES_TEXTE_FOOTER}}</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 {{NOM_ETABLISSEMENT}} — Tous droits réservés &nbsp;·&nbsp;
+      <a href="admin.html" class="footer-admin-link">Espace gérant</a>
+    </p>
+  </div>
+</footer>
+
+<!-- Toast de confirmation (réservation) -->
+<div id="confirmation-toast" class="confirmation-toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -33,7 +33,7 @@ class TestListProjects:
         project_dir = tmp_path / "mon_projet"
         project_dir.mkdir()
         client_with_temp_db.post("/api/projects", json={
-            "name": "Mon Projet", "path": str(project_dir), "type": "web"
+            "name": "Mon Projet", "path": str(project_dir), "type": "web", "module_type": "dossier"
         })
         data = client_with_temp_db.get("/api/projects").json()
         assert len(data) == 1
@@ -46,7 +46,7 @@ class TestCreateProject:
         project_dir = tmp_path / "nouveau"
         project_dir.mkdir()
         response = client_with_temp_db.post("/api/projects", json={
-            "name": "Nouveau Projet", "path": str(project_dir), "type": "web"
+            "name": "Nouveau Projet", "path": str(project_dir), "type": "web", "module_type": "dossier"
         })
         assert response.status_code == 200
         data = response.json()
@@ -55,7 +55,7 @@ class TestCreateProject:
 
     def test_erreur_si_dossier_inexistant(self, client_with_temp_db):
         response = client_with_temp_db.post("/api/projects", json={
-            "name": "Ghost", "path": "/chemin/inexistant/12345", "type": "web"
+            "name": "Ghost", "path": "/chemin/inexistant/12345", "type": "web", "module_type": "dossier"
         })
         assert response.status_code == 400
 
@@ -63,7 +63,7 @@ class TestCreateProject:
         project_dir = tmp_path / "sans_contexte"
         project_dir.mkdir()
         response = client_with_temp_db.post("/api/projects", json={
-            "name": "Sans contexte", "path": str(project_dir), "type": "web"
+            "name": "Sans contexte", "path": str(project_dir), "type": "web", "module_type": "dossier"
         })
         assert response.json()["has_projet_contexte"] is False
 
@@ -72,7 +72,7 @@ class TestCreateProject:
         project_dir.mkdir()
         (project_dir / "PROJET_CONTEXTE.md").write_text("# Mon projet")
         response = client_with_temp_db.post("/api/projects", json={
-            "name": "Avec contexte", "path": str(project_dir), "type": "web"
+            "name": "Avec contexte", "path": str(project_dir), "type": "web", "module_type": "dossier"
         })
         assert response.json()["has_projet_contexte"] is True
 
@@ -83,7 +83,7 @@ class TestGetProject:
         project_dir = tmp_path / "projet_get"
         project_dir.mkdir()
         created = client_with_temp_db.post("/api/projects", json={
-            "name": "Get Test", "path": str(project_dir), "type": "web"
+            "name": "Get Test", "path": str(project_dir), "type": "web", "module_type": "dossier"
         }).json()
 
         response = client_with_temp_db.get(f"/api/projects/{created['id']}")
@@ -98,7 +98,7 @@ class TestGetProject:
         project_dir = tmp_path / "projet_no_session"
         project_dir.mkdir()
         created = client_with_temp_db.post("/api/projects", json={
-            "name": "No session", "path": str(project_dir), "type": "web"
+            "name": "No session", "path": str(project_dir), "type": "web", "module_type": "dossier"
         }).json()
 
         data = client_with_temp_db.get(f"/api/projects/{created['id']}").json()
@@ -111,7 +111,7 @@ class TestDeleteProject:
         project_dir = tmp_path / "projet_delete"
         project_dir.mkdir()
         created = client_with_temp_db.post("/api/projects", json={
-            "name": "À supprimer", "path": str(project_dir), "type": "web"
+            "name": "À supprimer", "path": str(project_dir), "type": "web", "module_type": "dossier"
         }).json()
 
         response = client_with_temp_db.delete(f"/api/projects/{created['id']}")
@@ -136,6 +136,7 @@ class TestProjectLocalPath:
             "name": "Projet Local",
             "path": str(project_dir),
             "type": "web",
+            "module_type": "dossier",
             "local_path": str(local_dir)
         })
         
@@ -151,14 +152,16 @@ class TestProjectLocalPath:
         created = client_with_temp_db.post("/api/projects", json={
             "name": "Patch Test",
             "path": str(project_dir),
-            "type": "web"
+            "type": "web",
+            "module_type": "dossier"
         }).json()
         
         local_dir = tmp_path / "new_local"
         local_dir.mkdir()
         
         response = client_with_temp_db.patch(
-            f"/api/projects/{created['id']}?local_path={str(local_dir)}"
+            f"/api/projects/{created['id']}",
+            json={"local_path": str(local_dir)}
         )
         
         assert response.status_code == 200
@@ -180,6 +183,7 @@ class TestProjectLocalPath:
             "name": "Projet Conv",
             "path": str(project_dir),
             "type": "web",
+            "module_type": "dossier",
             "local_path": str(local_dir)
         }).json()
         
@@ -193,3 +197,41 @@ class TestProjectLocalPath:
         conv_data = conv_response.json()
         # La conversation doit hériter du local_path du projet
         assert conv_data["folder_path"] == str(local_dir)
+
+
+class TestRouteMission:
+
+    def test_route_mission_projet_inexistant(self, client_with_temp_db):
+        """404 pour un projet code inexistant."""
+        response = client_with_temp_db.post("/api/projects/999/route-mission", json={"mission": "Corriger un bug"})
+        assert response.status_code == 404
+
+    def test_route_mission_sans_mission(self, client_with_temp_db, tmp_path):
+        """400 si le champ mission est absent."""
+        import uuid
+        unique_id = str(uuid.uuid4())[:8]
+        project_dir = tmp_path / f"projet_route_sans_mission_{unique_id}"
+        # Ne PAS créer le dossier - le backend le crée pour les projets code
+        response_create = client_with_temp_db.post("/api/projects", json={
+            "name": f"Projet Route Sans Mission {unique_id}", "path": str(project_dir), "type": "web", "module_type": "code"
+        })
+        assert response_create.status_code == 200, f"Création projet échouée: {response_create.text}"
+        created = response_create.json()
+        
+        response = client_with_temp_db.post(f"/api/projects/{created['id']}/route-mission", json={})
+        assert response.status_code == 400
+
+    def test_route_mission_projet_non_code(self, client_with_temp_db, tmp_path):
+        """404 car le projet de test est de type 'dossier', pas 'code'."""
+        import uuid
+        unique_id = str(uuid.uuid4())[:8]
+        project_dir = tmp_path / f"projet_dossier_route_{unique_id}"
+        project_dir.mkdir()  # Pour les projets dossier, on crée le dossier
+        response_create = client_with_temp_db.post("/api/projects", json={
+            "name": f"Projet Dossier Route {unique_id}", "path": str(project_dir), "type": "web", "module_type": "dossier"
+        })
+        assert response_create.status_code == 200, f"Création projet échouée: {response_create.text}"
+        created = response_create.json()
+        
+        response = client_with_temp_db.post(f"/api/projects/{created['id']}/route-mission", json={"mission": "Test"})
+        assert response.status_code == 404

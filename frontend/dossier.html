@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS — Dossier</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content">
+      <div id="page-project">
+
+        <!-- Header dossier -->
+        <div class="project-header">
+          <div class="project-header-main">
+            <h1 class="project-title" id="project-name">Chargement...</h1>
+            <div class="project-path" id="project-path"></div>
+          </div>
+          <button id="btn-delete-project" class="btn-icon btn-danger-icon" title="Supprimer le dossier">🗑️</button>
+        </div>
+
+        <!-- Instructions du dossier -->
+        <div class="project-instructions card" id="instructions-section">
+          <div class="card-header">
+            <span class="card-label">Instructions du dossier</span>
+            <button id="btn-edit-instructions" class="btn-icon">✏️</button>
+          </div>
+          <div id="instructions-display" class="instructions-text"></div>
+          <div id="instructions-edit" style="display:none">
+            <textarea id="instructions-input" class="instructions-textarea"
+              placeholder="Décris ce dossier, son contexte, ses règles... Cette instruction sera disponible dans tes chats et modules code."></textarea>
+            <div class="instructions-edit-actions">
+              <button id="btn-save-instructions" class="btn-primary">💾 Sauvegarder</button>
+              <button id="btn-cancel-instructions" class="btn-secondary">Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dossier local lié -->
+        <div class="project-local-path card">
+          <div class="card-header">
+            <span class="card-label">📂 Dossier local lié</span>
+            <button id="btn-edit-local-path" class="btn-icon">✏️</button>
+          </div>
+          <div id="local-path-display"></div>
+          <div id="local-path-edit" style="display:none">
+            <input type="text" id="local-path-input" class="input-field"
+              placeholder="C:\Chemin\vers\le\dossier">
+            <div class="local-path-actions">
+              <button id="btn-save-local-path" class="btn-primary">💾 Sauvegarder</button>
+              <button id="btn-cancel-local-path" class="btn-secondary">Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="project-actions">
+          <button id="btn-project-new-chat" class="btn-primary">✏️ Nouveau Chat</button>
+          <button id="btn-project-new-module" class="btn-secondary">⚡ Nouveau Module Code</button>
+        </div>
+
+        <!-- Activité du dossier (liste unifiée) -->
+        <div class="project-conversations">
+          <h2 class="section-title">Activité du dossier</h2>
+          
+          <!-- Onglets -->
+          <div class="activity-tabs">
+            <button class="activity-tab activity-tab--active" data-activity="chats">💬 Chats</button>
+            <button class="activity-tab" data-activity="projets-code">⚙️ Projets Code</button>
+          </div>
+          
+          <!-- Panneau Chats -->
+          <div id="activity-chats">
+            <div id="conversations-list"></div>
+          </div>
+          
+          <!-- Panneau Projets Code -->
+          <div id="activity-projets-code" style="display:none">
+            <div id="code-projects-list"></div>
+            <button id="btn-associate-code-project" class="btn-secondary" style="margin-top:1rem">
+              + Associer un Projet Code
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+    <aside id="explorer" class="explorer--hidden"></aside>
+  </div>
+  <div id="toast-container"></div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/explorer.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/project.js"></script>
+</body>
+</html>
