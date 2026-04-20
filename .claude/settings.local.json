@@ -33,7 +33,14 @@
       "Bash(grep -E \"\\\\.\\(py|md\\)$\")",
       "Bash(grep -B5 -A5 \"masquer\\\\|mask\\\\|\\\\\\\\.\\\\\\\\.\\\\\\\\.\" /c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/routers/models.py)",
       "Read(//c/DEV/PROJETS/Clients/**)",
-      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'--- {k} ---'\\); [print\\(f'  step: {s[\\\\\"name\\\\\"]} | context: {list\\(s.get\\(\\\\\"context_envelope\\\\\",{}\\).keys\\(\\)\\)}'\\) for s in d[k].get\\('steps',[]\\)] for k in d]\")"
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f'--- {k} ---'\\); [print\\(f'  step: {s[\\\\\"name\\\\\"]} | context: {list\\(s.get\\(\\\\\"context_envelope\\\\\",{}\\).keys\\(\\)\\)}'\\) for s in d[k].get\\('steps',[]\\)] for k in d]\")",
+      "Bash(grep -o '\"inject_global_rules\": true' \"C:\\\\\\\\DEV\\\\\\\\PROJETS\\\\\\\\intelligence_artificielle\\\\\\\\Jarvis-2.0\\\\\\\\backend\\\\\\\\data\\\\\\\\pipelines.json\")",
+      "Bash(grep '\"prompt_key\"' \"C:\\\\\\\\DEV\\\\\\\\PROJETS\\\\\\\\intelligence_artificielle\\\\\\\\Jarvis-2.0\\\\\\\\backend\\\\\\\\data\\\\\\\\pipelines.json\")",
+      "Bash(grep -n \"build_global_rules_context\" \"C:\\\\\\\\DEV\\\\\\\\PROJETS\\\\\\\\intelligence_artificielle\\\\\\\\Jarvis-2.0\\\\\\\\backend\\\\\\\\services\\\\\\\\context_manager.py\")",
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" show 3207a9d --stat)",
+      "Bash(python3 -c \" import json with open\\('/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json'\\) as f: data = json.load\\(f\\) for w in data['workflows']: print\\(f'{w[\\\\\"id\\\\\"]}: {len\\(w[\\\\\"steps\\\\\"]\\)} steps'\\) \")",
+      "Bash(python -c \" import json with open\\('C:/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json'\\) as f: data = json.load\\(f\\) for w in data['workflows']: print\\(f'{w[\\\\\"id\\\\\"]}: {len\\(w[\\\\\"steps\\\\\"]\\)} steps'\\) \")",
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" status --short)"
     ]
   }
 }

@@ -85,61 +85,61 @@ class TestBuildContextEnvelope:
         base["context_envelope"].update(overrides)
         return base
 
-    def test_user_input_included_when_configured(self, tmp_path):
+    async def test_user_input_included_when_configured(self, tmp_path):
         config = self._step_config(user_input=True)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "ma demande")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "ma demande")
         assert envelope["user_input"] == "ma demande"
 
-    def test_user_input_excluded_when_not_configured(self, tmp_path):
+    async def test_user_input_excluded_when_not_configured(self, tmp_path):
         config = self._step_config(user_input=False)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "ne doit pas apparaître")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "ne doit pas apparaître")
         assert envelope["user_input"] == ""
 
-    def test_previous_output_included_when_listed(self, tmp_path):
+    async def test_previous_output_included_when_listed(self, tmp_path):
         config = self._step_config(previous_steps_output=["routing"])
         previous = {"routing": "bug_simple", "autre_step": "ignoré"}
-        envelope = build_context_envelope(config, str(tmp_path), previous, "")
+        envelope = await build_context_envelope(config, str(tmp_path), previous, "")
         assert envelope["previous_outputs"]["routing"] == "bug_simple"
         assert "autre_step" not in envelope["previous_outputs"]
 
-    def test_previous_output_empty_when_not_listed(self, tmp_path):
+    async def test_previous_output_empty_when_not_listed(self, tmp_path):
         config = self._step_config(previous_steps_output=[])
         previous = {"routing": "bug_simple"}
-        envelope = build_context_envelope(config, str(tmp_path), previous, "")
+        envelope = await build_context_envelope(config, str(tmp_path), previous, "")
         assert envelope["previous_outputs"] == {}
 
-    def test_stack_standard_loaded_when_file_exists(self, tmp_path):
+    async def test_stack_standard_loaded_when_file_exists(self, tmp_path):
         stack_file = tmp_path / "STACK_STANDARD.md"
         stack_file.write_text("FastAPI + SQLite + HTML vanilla")
         config = self._step_config(stack_standard=True)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "")
         assert envelope["stack_standard"] == "FastAPI + SQLite + HTML vanilla"
 
-    def test_stack_standard_empty_when_file_missing(self, tmp_path):
+    async def test_stack_standard_empty_when_file_missing(self, tmp_path):
         config = self._step_config(stack_standard=True)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "")
         assert envelope["stack_standard"] == ""
 
-    def test_stack_standard_empty_when_not_configured(self, tmp_path):
+    async def test_stack_standard_empty_when_not_configured(self, tmp_path):
         config = self._step_config(stack_standard=False)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "")
         assert envelope["stack_standard"] == ""
 
-    def test_file_list_included_when_configured(self, tmp_path):
+    async def test_file_list_included_when_configured(self, tmp_path):
         (tmp_path / "main.py").write_text("# main")
         (tmp_path / "utils.py").write_text("# utils")
         config = self._step_config(include_file_list=True)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "")
         assert envelope["file_list"] != ""
 
-    def test_file_list_empty_when_not_configured(self, tmp_path):
+    async def test_file_list_empty_when_not_configured(self, tmp_path):
         config = self._step_config(include_file_list=False)
-        envelope = build_context_envelope(config, str(tmp_path), {}, "")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "")
         assert envelope["file_list"] == ""
 
-    def test_envelope_has_all_required_keys(self, tmp_path):
+    async def test_envelope_has_all_required_keys(self, tmp_path):
         config = self._step_config()
-        envelope = build_context_envelope(config, str(tmp_path), {}, "")
+        envelope = await build_context_envelope(config, str(tmp_path), {}, "")
         assert "projet_contexte" in envelope
         assert "stack_standard" in envelope
         assert "user_input" in envelope

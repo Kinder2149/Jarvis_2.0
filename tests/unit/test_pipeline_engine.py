@@ -24,7 +24,7 @@ class TestLoadPipelineDefinition:
     def test_bug_simple_existe(self):
         p = load_pipeline_definition("bug_simple")
         assert p["workflow_type"] == "bug_simple"
-        assert len(p["steps"]) == 5
+        assert len(p["steps"]) == 7
 
     def test_session_start_existe(self):
         p = load_pipeline_definition("session_start")
@@ -47,15 +47,15 @@ class TestLoadPipelineDefinition:
                           "prompt_key", "requires_validation", "output_type"]:
                 assert field in step, f"Champ '{field}' manquant dans step {step.get('index')}"
 
-    def test_bug_simple_step2_requires_validation(self):
+    def test_bug_simple_step1_requires_validation(self):
         steps = load_pipeline_definition("bug_simple")["steps"]
-        step2 = next(s for s in steps if s["index"] == 2)
-        assert step2["requires_validation"] is True
+        step1 = next(s for s in steps if s["index"] == 1)
+        assert step1["requires_validation"] is True
 
-    def test_bug_simple_step3_is_diff(self):
+    def test_bug_simple_step4_is_code_blocks(self):
         steps = load_pipeline_definition("bug_simple")["steps"]
-        step3 = next(s for s in steps if s["name"] == "correction")
-        assert step3["output_type"] == "diff"
+        step4 = next(s for s in steps if s["name"] == "correction")
+        assert step4["output_type"] == "code_blocks"
 
     def test_step_indices_continus(self):
         steps = load_pipeline_definition("bug_simple")["steps"]
@@ -65,8 +65,8 @@ class TestLoadPipelineDefinition:
 
 class TestLoadPromptTemplate:
 
-    def test_bug_routing_contient_user_input(self):
-        t = load_prompt_template("bug_routing")
+    def test_analyse_bug_contient_user_input(self):
+        t = load_prompt_template("analyse_bug")
         assert "{{user_input}}" in t
 
     def test_bug_diagnostic_contient_projet_contexte(self):
@@ -92,6 +92,9 @@ class TestLoadPromptTemplate:
         for wf_name, wf in pipelines.items():
             for step in wf.get("steps", []):
                 key = step["prompt_key"]
+                # Ignorer les steps sans prompt_key (model_type=none)
+                if key is None:
+                    continue
                 template = load_prompt_template(key)
                 if not template:
                     missing.append(f"{wf_name}/{step['name']} → '{key}'")
@@ -113,7 +116,7 @@ class TestCreateSession:
         create_session(project_in_db["id"], "bug_simple", "test", db)
         cursor = db.cursor()
         cursor.execute("SELECT COUNT(*) as n FROM pipeline_steps")
-        assert cursor.fetchone()["n"] == 5
+        assert cursor.fetchone()["n"] == 7
 
     def test_step0_a_linput_initial(self, db, project_in_db):
         create_session(project_in_db["id"], "bug_simple", "ma description de bug", db)
@@ -138,13 +141,13 @@ class TestCreateSession:
     def test_output_type_correctement_stocke(self, db, project_in_db):
         create_session(project_in_db["id"], "bug_simple", "test", db)
         cursor = db.cursor()
-        cursor.execute("SELECT output_type FROM pipeline_steps WHERE step_index = 3")
-        assert cursor.fetchone()["output_type"] == "diff"
+        cursor.execute("SELECT output_type FROM pipeline_steps WHERE step_index = 4")
+        assert cursor.fetchone()["output_type"] == "code_blocks"
 
     def test_requires_validation_correctement_stocke(self, db, project_in_db):
         create_session(project_in_db["id"], "bug_simple", "test", db)
         cursor = db.cursor()
-        cursor.execute("SELECT requires_validation FROM pipeline_steps WHERE step_index = 2")
+        cursor.execute("SELECT requires_validation FROM pipeline_steps WHERE step_index = 1")
         assert cursor.fetchone()["requires_validation"] == 1
 
 
@@ -159,10 +162,10 @@ class TestGetSessionWithSteps:
         for field in ["id", "project_id", "workflow_type", "status", "steps"]:
             assert field in session
 
-    def test_retourne_5_steps_pour_bug_simple(self, db, project_in_db):
+    def test_retourne_7_steps_pour_bug_simple(self, db, project_in_db):
         created = create_session(project_in_db["id"], "bug_simple", "test", db)
         session = get_session_with_steps(created["id"], db)
-        assert len(session["steps"]) == 5
+        assert len(session["steps"]) == 7
 
     def test_retourne_none_pour_session_inconnue(self, db):
         assert get_session_with_steps(99999, db) is None
@@ -173,12 +176,12 @@ class TestGetSessionWithSteps:
         for step in session["steps"]:
             assert "output_type" in step
 
-    def test_correction_step_est_diff(self, db, project_in_db):
+    def test_correction_step_est_code_blocks(self, db, project_in_db):
         """Régression : dict(step_row).get() doit fonctionner (pas sqlite3.Row.get)."""
         created = create_session(project_in_db["id"], "bug_simple", "test", db)
         session = get_session_with_steps(created["id"], db)
         correction = next(s for s in session["steps"] if s["step_name"] == "correction")
-        assert correction["output_type"] == "diff"
+        assert correction["output_type"] == "code_blocks"
 
     def test_requires_validation_est_bool(self, db, project_in_db):
         created = create_session(project_in_db["id"], "bug_simple", "test", db)
@@ -332,26 +335,25 @@ class TestExecuteStep:
 
     @pytest.mark.asyncio
     async def test_step_avec_validation_passe_a_waiting(self, db, project_in_db, sample_config):
-        """Step 2 de bug_simple (diagnostic) : requires_validation → waiting_validation."""
+        """Step 1 de bug_simple (collecte_infos) : requires_validation → waiting_validation."""
         created = create_session(project_in_db["id"], "bug_simple", "bug login", db)
         session_id = created["id"]
         cursor = db.cursor()
 
-        # Compléter steps 0 et 1 manuellement
-        for i in range(2):
-            cursor.execute(
-                "UPDATE pipeline_steps SET status='COMPLETED', output_data=? WHERE session_id=? AND step_index=?",
-                (f"output_{i}", session_id, i)
-            )
+        # Compléter step 0 manuellement
         cursor.execute(
-            "UPDATE sessions SET current_step_index=2 WHERE id=?", (session_id,)
+            "UPDATE pipeline_steps SET status='COMPLETED', output_data=? WHERE session_id=? AND step_index=?",
+            ("output_0", session_id, 0)
+        )
+        cursor.execute(
+            "UPDATE sessions SET current_step_index=1 WHERE id=?", (session_id,)
         )
         db.commit()
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock_call:
-            mock_call.return_value = "Diagnostic : la cause est X dans fichier Y"
+            mock_call.return_value = "Questions : 1. Quel est le message d'erreur ? 2. Quel fichier ?"
 
-            result = await execute_step(session_id, 2, project_in_db["path"], db, sample_config)
+            result = await execute_step(session_id, 1, project_in_db["path"], db, sample_config)
 
         assert result["status"] == "waiting_validation"
         assert "output" in result

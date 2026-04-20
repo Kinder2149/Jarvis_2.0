@@ -401,6 +401,15 @@
     if (systemPrompt) {
       systemPrompt.value = chatConfig.system_prompt_preset || '';
     }
+    
+    // Charger le contenu du profil utilisateur
+    fetch('/api/config/profil_utilisateur')
+      .then(r => r.json())
+      .then(data => {
+        const ta = document.getElementById('chat-profil-utilisateur');
+        if (ta) ta.value = data.content || '';
+      })
+      .catch(() => {});
   }
 
   async function saveChatConfig() {
@@ -436,6 +445,19 @@
 
       if (!currentConfig.chat) currentConfig.chat = {};
       currentConfig.chat = chatConfig;
+      
+      // Sauvegarder le profil utilisateur
+      const profilContent = document.getElementById('chat-profil-utilisateur')?.value || '';
+      fetch('/api/config/profil_utilisateur', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({value: profilContent})
+      })
+      .then(r => r.json())
+      .then(() => {
+        // Silencieux — la confirmation globale de sauvegarde suffit
+      })
+      .catch(err => console.warn('Erreur sauvegarde profil:', err));
 
       if (window.showToast) window.showToast('Config chat sauvegardée', 'success');
 

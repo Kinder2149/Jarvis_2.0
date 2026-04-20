@@ -226,14 +226,16 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour — 904 nodes, 1044 edges, 81 communities (2026-04-18)
-**Objectif :** ✅ TERMINÉ — INFRA-04 : Couche contexte globale dans le Module Code. Injection des règles méthode (REGLES_GLOBALES.md + PROFIL_UTILISATEUR.md) dans les pipelines Module Code via flag inject_global_rules. Nouvelle fonction build_global_rules_context() dans context_manager.py charge les règles depuis METHODO. Flag ajouté aux steps clés : orientation, cloture_docs, cadrage, document_mission, analyse_besoin, draft_projet_contexte, scan_projet, audit_code, analyse_bug (9 steps). Templates prompts enrichis avec {{global_rules}}. Les pipelines connaissent maintenant les règles de la méthode (3 couches max, 20 services max, zéro abstraction non demandée).
+**Objectif :** ✅ TERMINÉ — NETTOYAGE-01 : Nettoyage racine du projet + commit global consolidant tout le travail accumulé (FIX-01/02/03 + TEST-01/02/03/04 + nettoyage).
 **Résultat :** 
-  - backend/services/context_manager.py : fonction build_global_rules_context() + gestion inject_global_rules + substitution {{global_rules}}
-  - backend/data/pipelines.json : inject_global_rules: true sur 9 steps concernés
-  - backend/data/prompts.json : {{global_rules}} ajouté en début des templates
-  - CHANGELOG.md mis à jour
+  - temp/rapports_sessions/ créé avec 12 fichiers de rapports déplacés
+  - 12 fichiers obsolètes supprimés de la racine (tests manuels, scripts temporaires)
+  - Racine propre : seuls PROJET_CONTEXTE.md, CHANGELOG.md, README.md, STACK_STANDARD.md + fichiers nécessaires (start.bat, requirements, pytest.ini, JARVIS.spec, .gitignore, .env)
+  - 1 commit Git créé incluant toutes les modifications (FIX-01/02/03, TEST-01/02/03/04, nettoyage)
+  - CHANGELOG.md mis à jour avec ligne NETTOYAGE-01
   - PROJET_CONTEXTE.md section 8 mis à jour
-**Prochaine session :** Graphify update recommandé
+**Décompte tests total :** 189 tests backend + 41 E2E V2 + 7 tests live + 10 E2E modules = **247 tests**
+**Prochaine session :** Finaliser les 7 tests E2E modules restants ou passer au backlog UX
 
 ---
 

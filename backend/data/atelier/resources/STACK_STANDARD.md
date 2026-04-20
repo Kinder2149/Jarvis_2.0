@@ -108,6 +108,18 @@ Toujours associer le libellé métier + le nom de l'établissement.
 
 **Mot de passe admin :** `admin` — codé en dur dans admin.js (pas de vrai backend)
 
+Code de validation obligatoire dans admin.js — reproduire exactement, ne pas modifier le mot de passe :
+
+```javascript
+const MOT_DE_PASSE_ADMIN = 'admin';
+
+function verifierMotDePasse(saisie) {
+  return saisie === MOT_DE_PASSE_ADMIN;
+}
+```
+
+> ⚠️ INTERDIT : `admin123`, `password`, tout autre valeur. Le mot de passe est toujours `admin`, sans exception.
+
 ### 3 compteurs KPI (adapter le vocabulaire au secteur)
 
 | Restauration | Services/Artisan | Commerce |
@@ -153,6 +165,42 @@ Toujours associer le libellé métier + le nom de l'établissement.
 - **H1** : police titres du client (Google Font), blanc, `font-size` min `2.5rem` desktop, `2rem` mobile
 - **Sous-titre** : accroche réelle du client, blanc, `font-size` `1.1rem`, opacité `0.9`
 - **CTA principal** : fond `--accent`, texte blanc, centré sous le H1, visible sans scroll sur 1280px
+
+CSS obligatoire pour le hero — reproduire exactement, ne pas modifier les valeurs de position ni z-index :
+
+```css
+/* === HERO — STRUCTURE OBLIGATOIRE === */
+.hero {
+  position: relative;        /* JAMAIS fixed, JAMAIS sticky, JAMAIS absolute */
+  z-index: 1;                /* JAMAIS supérieur à 10 */
+  min-height: 90vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;                  /* équivalent top:0 right:0 bottom:0 left:0 */
+  background: rgba(0, 0, 0, 0.40);
+  z-index: 1;                /* derrière le contenu hero, devant l'image */
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;                /* devant l'overlay, mais pas plus */
+}
+
+/* Sections APRÈS le hero — toujours visibles, jamais cachées */
+section:not(.hero) {
+  position: relative;
+  z-index: 0;                /* en dessous du hero — c'est NORMAL et VOULU */
+}
+```
+
+> ⚠️ INTERDIT sur .hero : `position: fixed`, `position: sticky`, `z-index > 10`, `overflow: visible` avec contenu absolu.
+> ⚠️ INTERDIT : image dans le hero via `<img>` — uniquement `background-image` CSS.
 
 ### Sections du corps (alternance obligatoire)
 

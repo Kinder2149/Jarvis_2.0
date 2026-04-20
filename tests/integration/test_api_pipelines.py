@@ -86,7 +86,7 @@ class TestStartPipeline:
         assert "session" in data
         assert "execution_result" in data
 
-    def test_session_creee_avec_5_steps(self, client_and_project):
+    def test_session_creee_avec_7_steps(self, client_and_project):
         c, project_id, _ = client_and_project
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
@@ -98,7 +98,7 @@ class TestStartPipeline:
                 "initial_input": "Bug test"
             }).json()
 
-        assert len(data["session"]["steps"]) == 5
+        assert len(data["session"]["steps"]) == 7
 
     def test_session_start_a_un_seul_step_completed(self, client_and_project):
         """session_start n'a qu'un step, pas de validation → doit être COMPLETED."""
@@ -126,7 +126,7 @@ class TestStartPipeline:
         assert response.status_code == 404
 
     def test_auto_advance_steps_sans_validation(self, client_and_project):
-        """Steps 0 et 1 de bug_simple sont sans validation → avancement auto jusqu'à step 2."""
+        """Step 0 de bug_simple est sans validation → avancement auto jusqu'à step 1 qui requiert validation."""
         c, project_id, _ = client_and_project
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
@@ -141,11 +141,10 @@ class TestStartPipeline:
         session = data["session"]
         steps = {s["step_name"]: s for s in session["steps"]}
 
-        # Steps 0 (routing) et 1 (collecte_info) auto-complétés
-        assert steps["routing"]["status"] == "COMPLETED"
-        assert steps["collecte_info"]["status"] == "COMPLETED"
-        # Step 2 (diagnostic) en attente de validation
-        assert steps["diagnostic"]["status"] == "WAITING_VALIDATION"
+        # Step 0 (analyse_bug) auto-complété
+        assert steps["analyse_bug"]["status"] == "COMPLETED"
+        # Step 1 (collecte_infos) en attente de validation
+        assert steps["collecte_infos"]["status"] == "WAITING_VALIDATION"
         assert session["status"] == "WAITING_VALIDATION"
 
 

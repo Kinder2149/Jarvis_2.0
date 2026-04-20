@@ -1931,3 +1931,368 @@ Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'logger' where it is not associated with a value
 
 2026-04-19 20:24:35 | INFO | 📊 [VALIDATE] exec_result status: failed
+2026-04-20 17:52:31 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 17:52:31 | INFO | Frontend path exists: True
+2026-04-20 17:52:31 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:05:06 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:05:06 | INFO | Frontend path exists: True
+2026-04-20 19:05:06 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:05:06 | INFO | JARVIS démarré
+2026-04-20 19:05:47 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 18
+2026-04-20 19:05:47 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:05:48 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2026-04-20 19:06:10 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:06:10 | INFO | Frontend path exists: True
+2026-04-20 19:06:10 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:06:10 | INFO | JARVIS démarré
+2026-04-20 19:06:31 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:06:31 | INFO | Frontend path exists: True
+2026-04-20 19:06:31 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:06:31 | INFO | JARVIS démarré
+2026-04-20 19:06:48 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:06:48 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:06:50 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:06:58 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:06:58 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:07:01 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:07:03 | INFO | HTTP Request: GET https://api.search.brave.com/res/v1/web/search?q=cherche%20m%C3%A9t%C3%A9o%20Paris%20aujourd%27hui&count=5 "HTTP/1.1 200 OK"
+2026-04-20 19:07:03 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:07:03 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:07:05 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:07:09 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:07:09 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:07:11 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:07:21 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:07:23 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:07:27 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:07:35 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:07:35 | ERROR | [PIPELINE] Session 20 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:07:41 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:07:41 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:07:43 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:07:54 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:07:54 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:07:57 | INFO | 📋 [VALIDATE] Result status: validated, next_step: 1, project_path: __atelier__
+2026-04-20 19:07:57 | INFO | ✅ [VALIDATE] Validation OK, lancement step 1
+2026-04-20 19:07:57 | INFO | 🚀 [VALIDATE] Lancement auto-complétion (atelier=True)...
+2026-04-20 19:07:59 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:08:02 | INFO | 📊 [VALIDATE] exec_result status: auto_completed
+2026-04-20 19:08:02 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 2
+2026-04-20 19:08:03 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:08:04 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:08:04 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 3
+2026-04-20 19:08:06 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:08:18 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:08:18 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 4
+2026-04-20 19:08:18 | INFO | 🔧 [PIPELINE] Step 4 (checkpoint) - model_type=none, requires_validation=True
+2026-04-20 19:08:18 | INFO | ⏸️ [PIPELINE] Step 4 en attente de validation
+2026-04-20 19:08:18 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: waiting_validation
+2026-04-20 19:08:44 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:08:44 | INFO | Frontend path exists: True
+2026-04-20 19:08:44 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:08:44 | INFO | JARVIS démarré
+2026-04-20 19:08:54 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:08:54 | INFO | Frontend path exists: True
+2026-04-20 19:08:54 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:08:54 | INFO | JARVIS démarré
+2026-04-20 19:09:01 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:09:01 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:09:04 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:09:06 | INFO | HTTP Request: GET https://api.search.brave.com/res/v1/web/search?q=cherche%20m%C3%A9t%C3%A9o%20Paris%20aujourd%27hui&count=5 "HTTP/1.1 200 OK"
+2026-04-20 19:09:06 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:09:06 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:09:09 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:09:14 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:09:14 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:09:17 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:09:26 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:09:35 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:09:35 | ERROR | [PIPELINE] Session 23 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:09:41 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:09:41 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:09:43 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:10:12 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:10:12 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:10:15 | INFO | 📋 [VALIDATE] Result status: validated, next_step: 1, project_path: __atelier__
+2026-04-20 19:10:15 | INFO | ✅ [VALIDATE] Validation OK, lancement step 1
+2026-04-20 19:10:15 | INFO | 🚀 [VALIDATE] Lancement auto-complétion (atelier=True)...
+2026-04-20 19:10:18 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:10:21 | INFO | 📊 [VALIDATE] exec_result status: auto_completed
+2026-04-20 19:10:21 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 2
+2026-04-20 19:10:27 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:10:28 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:10:28 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 3
+2026-04-20 19:10:30 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:10:44 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:10:44 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 4
+2026-04-20 19:10:44 | INFO | 🔧 [PIPELINE] Step 4 (checkpoint) - model_type=none, requires_validation=True
+2026-04-20 19:10:44 | INFO | ⏸️ [PIPELINE] Step 4 en attente de validation
+2026-04-20 19:10:44 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: waiting_validation
+2026-04-20 19:11:07 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:11:07 | INFO | Frontend path exists: True
+2026-04-20 19:11:07 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:11:07 | INFO | JARVIS démarré
+2026-04-20 19:11:14 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:11:14 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:11:16 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:11:55 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:11:55 | INFO | Frontend path exists: True
+2026-04-20 19:11:55 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:11:55 | INFO | JARVIS démarré
+2026-04-20 19:12:02 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:12:02 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:12:04 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:12:06 | INFO | HTTP Request: GET https://api.search.brave.com/res/v1/web/search?q=cherche%20m%C3%A9t%C3%A9o%20Paris%20aujourd%27hui&count=5 "HTTP/1.1 200 OK"
+2026-04-20 19:12:06 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:12:06 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:12:08 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:12:14 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:12:14 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:12:16 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:12:20 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:12:29 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:12:29 | ERROR | [PIPELINE] Session 26 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:12:35 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:12:35 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:12:37 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:13:36 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:13:36 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:13:39 | INFO | 📋 [VALIDATE] Result status: validated, next_step: 1, project_path: __atelier__
+2026-04-20 19:13:39 | INFO | ✅ [VALIDATE] Validation OK, lancement step 1
+2026-04-20 19:13:39 | INFO | 🚀 [VALIDATE] Lancement auto-complétion (atelier=True)...
+2026-04-20 19:13:42 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:13:45 | INFO | 📊 [VALIDATE] exec_result status: auto_completed
+2026-04-20 19:13:45 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 2
+2026-04-20 19:13:52 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:13:53 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:13:53 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 3
+2026-04-20 19:13:56 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:14:09 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:14:09 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 4
+2026-04-20 19:14:09 | INFO | 🔧 [PIPELINE] Step 4 (checkpoint) - model_type=none, requires_validation=True
+2026-04-20 19:14:09 | INFO | ⏸️ [PIPELINE] Step 4 en attente de validation
+2026-04-20 19:14:09 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: waiting_validation
+2026-04-20 19:14:36 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:14:36 | INFO | Frontend path exists: True
+2026-04-20 19:14:36 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:14:36 | INFO | JARVIS démarré
+2026-04-20 19:14:43 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:14:43 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:14:46 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:14:55 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:14:55 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:14:57 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:14:59 | INFO | HTTP Request: GET https://api.search.brave.com/res/v1/web/search?q=cherche%20m%C3%A9t%C3%A9o%20Paris%20aujourd%27hui&count=5 "HTTP/1.1 200 OK"
+2026-04-20 19:14:59 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:14:59 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:15:02 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:15:06 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:15:06 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:15:08 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:15:17 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:15:17 | ERROR | [PIPELINE] Session 28 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:16:24 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:16:24 | ERROR | [PIPELINE] Session 29 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:16:30 | INFO | 🔑 [CHAT_SERVICE] openrouter_key présente: True, longueur: 73
+2026-04-20 19:16:30 | INFO | 🤖 [CHAT_SERVICE] Modèle: anthropic/claude-sonnet-4.5
+2026-04-20 19:16:31 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:16:33 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:16:33 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:16:36 | INFO | 📋 [VALIDATE] Result status: validated, next_step: 1, project_path: __atelier__
+2026-04-20 19:16:36 | INFO | ✅ [VALIDATE] Validation OK, lancement step 1
+2026-04-20 19:16:36 | INFO | 🚀 [VALIDATE] Lancement auto-complétion (atelier=True)...
+2026-04-20 19:16:40 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:16:44 | INFO | 📊 [VALIDATE] exec_result status: auto_completed
+2026-04-20 19:16:44 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 2
+2026-04-20 19:16:46 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:16:47 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:16:47 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 3
+2026-04-20 19:16:49 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:17:00 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: auto_completed
+2026-04-20 19:17:00 | INFO | 🔄 [VALIDATE] Auto-completion, step suivant: 4
+2026-04-20 19:17:00 | INFO | 🔧 [PIPELINE] Step 4 (checkpoint) - model_type=none, requires_validation=True
+2026-04-20 19:17:00 | INFO | ⏸️ [PIPELINE] Step 4 en attente de validation
+2026-04-20 19:17:00 | INFO | 📊 [VALIDATE] exec_result status après auto-completion: waiting_validation
+2026-04-20 19:17:21 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:17:21 | INFO | Frontend path exists: True
+2026-04-20 19:17:21 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:17:21 | INFO | JARVIS démarré
+2026-04-20 19:17:27 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:17:27 | INFO | Frontend path exists: True
+2026-04-20 19:17:27 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:17:27 | INFO | JARVIS démarré
+2026-04-20 19:19:54 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:19:54 | INFO | Frontend path exists: True
+2026-04-20 19:19:54 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:19:54 | INFO | JARVIS démarré
+2026-04-20 19:20:07 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_FAILED_Display, type=code, local_path=None
+2026-04-20 19:20:07 | ERROR | Chemin inexistant: C:\Temp\Test_FAILED_Display
+2026-04-20 19:20:10 | INFO | Création projet - Données reçues: name=Test FAILED Retry, path=C:\Temp\Test_FAILED_Retry, type=code, local_path=None
+2026-04-20 19:20:10 | ERROR | Chemin inexistant: C:\Temp\Test_FAILED_Retry
+2026-04-20 19:20:12 | INFO | Création projet - Données reçues: name=Test Polling, path=C:\Temp\Test_Polling, type=code, local_path=None
+2026-04-20 19:20:12 | ERROR | Chemin inexistant: C:\Temp\Test_Polling
+2026-04-20 19:20:15 | INFO | Création projet - Données reçues: name=Test Completed CTA, path=C:\Temp\Test_Completed_CTA, type=code, local_path=None
+2026-04-20 19:20:15 | ERROR | Chemin inexistant: C:\Temp\Test_Completed_CTA
+2026-04-20 19:20:17 | INFO | Création projet - Données reçues: name=Test Project 1, path=C:\Temp\Test_Project_1, type=code, local_path=None
+2026-04-20 19:20:17 | ERROR | Chemin inexistant: C:\Temp\Test_Project_1
+2026-04-20 19:20:20 | INFO | Création projet - Données reçues: name=Test Project Detail, path=C:\Temp\Test_Project_Detail, type=code, local_path=None
+2026-04-20 19:20:20 | ERROR | Chemin inexistant: C:\Temp\Test_Project_Detail
+2026-04-20 19:20:25 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:20:25 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:20:30 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:20:30 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:20:32 | INFO | Création projet - Données reçues: name=Test Dashboard Banner, path=C:\Temp\Test_Dashboard_Banner, type=code, local_path=None
+2026-04-20 19:20:32 | ERROR | Chemin inexistant: C:\Temp\Test_Dashboard_Banner
+2026-04-20 19:21:21 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:21:21 | INFO | Frontend path exists: True
+2026-04-20 19:21:21 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:21:21 | INFO | JARVIS démarré
+2026-04-20 19:21:43 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:21:43 | INFO | Frontend path exists: True
+2026-04-20 19:21:43 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:21:43 | INFO | JARVIS démarré
+2026-04-20 19:22:15 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:22:15 | INFO | Frontend path exists: True
+2026-04-20 19:22:15 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:22:15 | INFO | JARVIS démarré
+2026-04-20 19:22:46 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_FAILED_Display, type=web, local_path=None
+2026-04-20 19:22:46 | INFO | Dossier créé: C:\Temp\Test_FAILED_Display
+2026-04-20 19:22:46 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_FAILED_Display\PROJET_CONTEXTE.md
+2026-04-20 19:22:54 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:22:56 | INFO | Création projet - Données reçues: name=Test FAILED Retry, path=C:\Temp\Test_FAILED_Retry, type=web, local_path=None
+2026-04-20 19:22:56 | INFO | Dossier créé: C:\Temp\Test_FAILED_Retry
+2026-04-20 19:22:56 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_FAILED_Retry\PROJET_CONTEXTE.md
+2026-04-20 19:22:59 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:22:59 | ERROR | [PIPELINE] Session 33 step 0 FAILED: Quota dépassé sur ce modèle. Réessayer dans quelques minutes.
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 73, in call_model
+    raise Exception("Quota dépassé sur ce modèle. Réessayer dans quelques minutes.")
+Exception: Quota dépassé sur ce modèle. Réessayer dans quelques minutes.
+
+2026-04-20 19:23:02 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:23:06 | INFO | Création projet - Données reçues: name=Test Polling, path=C:\Temp\Test_Polling, type=web, local_path=None
+2026-04-20 19:23:06 | INFO | Dossier créé: C:\Temp\Test_Polling
+2026-04-20 19:23:06 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_Polling\PROJET_CONTEXTE.md
+2026-04-20 19:23:07 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:23:07 | ERROR | [PIPELINE] Session 34 step 0 FAILED: Quota dépassé sur ce modèle. Réessayer dans quelques minutes.
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 73, in call_model
+    raise Exception("Quota dépassé sur ce modèle. Réessayer dans quelques minutes.")
+Exception: Quota dépassé sur ce modèle. Réessayer dans quelques minutes.
+
+2026-04-20 19:23:09 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:23:11 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:23:18 | INFO | Création projet - Données reçues: name=Test Completed CTA, path=C:\Temp\Test_Completed_CTA, type=web, local_path=None
+2026-04-20 19:23:18 | INFO | Dossier créé: C:\Temp\Test_Completed_CTA
+2026-04-20 19:23:18 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_Completed_CTA\PROJET_CONTEXTE.md
+2026-04-20 19:23:21 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:23:23 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:23:29 | INFO | Création projet - Données reçues: name=Test Project 1, path=C:\Temp\Test_Project_1, type=web, local_path=None
+2026-04-20 19:23:29 | INFO | Dossier créé: C:\Temp\Test_Project_1
+2026-04-20 19:23:29 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_Project_1\PROJET_CONTEXTE.md
+2026-04-20 19:23:31 | INFO | Création projet - Données reçues: name=Test Project 2, path=C:\Temp\Test_Project_2, type=web, local_path=None
+2026-04-20 19:23:31 | INFO | Dossier créé: C:\Temp\Test_Project_2
+2026-04-20 19:23:31 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_Project_2\PROJET_CONTEXTE.md
+2026-04-20 19:23:36 | INFO | Création projet - Données reçues: name=Test Project Detail, path=C:\Temp\Test_Project_Detail, type=web, local_path=None
+2026-04-20 19:23:36 | INFO | Dossier créé: C:\Temp\Test_Project_Detail
+2026-04-20 19:23:36 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_Project_Detail\PROJET_CONTEXTE.md
+2026-04-20 19:23:43 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:23:43 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:23:51 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:23:51 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:23:56 | INFO | Création projet - Données reçues: name=Test Dashboard Banner, path=C:\Temp\Test_Dashboard_Banner, type=web, local_path=None
+2026-04-20 19:23:56 | INFO | Dossier créé: C:\Temp\Test_Dashboard_Banner
+2026-04-20 19:23:56 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_Dashboard_Banner\PROJET_CONTEXTE.md
+2026-04-20 19:24:05 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:24:13 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:24:13 | ERROR | [PIPELINE] Session 39 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:24:22 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:24:22 | INFO | Frontend path exists: True
+2026-04-20 19:24:22 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:24:22 | INFO | JARVIS démarré
+2026-04-20 19:24:36 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:24:36 | INFO | Frontend path exists: True
+2026-04-20 19:24:36 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:24:36 | INFO | JARVIS démarré
+2026-04-20 19:25:07 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:25:07 | INFO | Frontend path exists: True
+2026-04-20 19:25:07 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:25:07 | INFO | JARVIS démarré

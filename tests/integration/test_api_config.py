@@ -11,13 +11,8 @@ from pathlib import Path
 
 @pytest.fixture
 def config_file(tmp_path):
-    """Crée un config.json temporaire avec des données de test."""
+    """Crée un config.json temporaire avec model_preferences uniquement."""
     config = {
-        "api_keys": {
-            "openrouter_key": "sk-or-test-key-abcd",
-            "anthropic_key": "",
-            "google_key": ""
-        },
         "model_preferences": {
             "routing": "google/gemini-2.0-flash-001",
             "structuring": "anthropic/claude-haiku-4.5",
@@ -31,12 +26,15 @@ def config_file(tmp_path):
 
 
 @pytest.fixture
-def client(config_file):
-    """TestClient avec config temporaire patchée."""
+def client(config_file, temp_db_path):
+    """TestClient avec config temporaire et DB temporaire."""
     with patch("backend.routers.models.CONFIG_PATH", config_file):
-        from backend.main import app
-        with TestClient(app) as c:
-            yield c, config_file
+        with patch("backend.database.DB_PATH", temp_db_path):
+            from backend.database import init_db
+            init_db()
+            from backend.main import app
+            with TestClient(app) as c:
+                yield c, config_file
 
 
 class TestGetConfig:
@@ -54,6 +52,17 @@ class TestGetConfig:
 
     def test_cle_openrouter_est_masquee(self, client):
         c, _ = client
+        # Insérer une clé dans SQLite pour tester le masquage
+        from backend.database import get_connection
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO app_config (key, value, category, updated_at)
+            VALUES ('openrouter_key', 'sk-or-test-key-abcd', 'api_keys', datetime('now'))
+        """)
+        conn.commit()
+        conn.close()
+        
         data = c.get("/api/config").json()
         key = data["api_keys"]["openrouter_key"]
         # Doit commencer par "..." et se terminer par les 4 derniers chars
@@ -98,7 +107,8 @@ class TestSaveConfig:
         }
         c.post("/api/config", json=new_config)
         saved = json.loads(config_file.read_text())
-        assert saved["api_keys"]["openrouter_key"] == "sk-or-nouvelle-cle"
+        # config.json ne contient plus api_keys, seulement model_preferences
+        assert "api_keys" not in saved
         assert saved["model_preferences"]["routing"] == "google/gemini-2.5-flash"
 
 

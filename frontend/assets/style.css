@@ -1454,6 +1454,26 @@ pre code {
   margin-bottom: 4px;
 }
 
+.mc-error-detail {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(166, 72, 72, 0.12);
+  border-left: 3px solid var(--danger);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.mc-error-detail code {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: var(--danger);
+  white-space: pre-wrap;
+}
+
 /* Action card running */
 .action-card {
   padding: 1.5rem;

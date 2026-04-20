@@ -142,9 +142,20 @@ class TestSendMessage:
         """Envoi message avec mock httpx → 200, 2 messages créés."""
         c = client_and_db
         
+        # Insérer une clé API dans SQLite pour le test
+        from backend.database import get_connection
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO app_config (key, value, category, updated_at)
+            VALUES ('openrouter_key', 'sk-test-key', 'api_keys', datetime('now'))
+        """)
+        conn.commit()
+        conn.close()
+        
         conv = c.post("/api/chat/conversations", json={"title": "Test"}).json()
         
-        # Mock httpx response
+        # Mock httpx response au format OpenRouter
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -152,8 +163,10 @@ class TestSendMessage:
             "usage": {"prompt_tokens": 100, "completion_tokens": 50}
         }
         
-        with patch("httpx.AsyncClient") as mock_client:
-            mock_client.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_response)
+        with patch("backend.services.chat_service.httpx.AsyncClient") as mock_client:
+            mock_instance = MagicMock()
+            mock_instance.post = AsyncMock(return_value=mock_response)
+            mock_client.return_value.__aenter__.return_value = mock_instance
             
             response = c.post(f"/api/chat/conversations/{conv['id']}/messages", json={
                 "content": "Bonjour"
@@ -466,14 +479,16 @@ class TestConversationModelBehavior:
 class TestConversationDossierAssociation:
     """Vérifie qu'une conversation s'associe correctement à un dossier."""
 
-    def test_create_conversation_avec_project_id(self, client_and_db):
+    def test_create_conversation_avec_project_id(self, client_and_db, tmp_path):
         """Créer une conversation liée à un dossier → project_id retourné en GET."""
         c = client_and_db
 
-        # Créer un dossier
+        # Créer un dossier avec un chemin temporaire valide
+        dossier_path = tmp_path / "mon-dossier-test"
+        dossier_path.mkdir()
         resp = c.post("/api/projects/", json={
             "name": "Mon Dossier Test",
-            "path": "mon-dossier-test",
+            "path": str(dossier_path),
             "type": "general",
             "module_type": "dossier"
         })
@@ -494,13 +509,15 @@ class TestConversationDossierAssociation:
         data = resp.json()
         assert data["project_id"] == dossier_id
 
-    def test_conversations_filtrees_par_project_id(self, client_and_db):
+    def test_conversations_filtrees_par_project_id(self, client_and_db, tmp_path):
         """GET /conversations?project_id=X ne retourne que les convs de ce dossier."""
         c = client_and_db
 
+        dossier_path = tmp_path / "dossier-filtre"
+        dossier_path.mkdir()
         resp = c.post("/api/projects/", json={
             "name": "Dossier Filtre",
-            "path": "dossier-filtre",
+            "path": str(dossier_path),
             "type": "general",
             "module_type": "dossier"
         })
@@ -523,9 +540,11 @@ class TestConversationDossierAssociation:
 
         # Créer dossier avec local_path
         local_path = str(tmp_path)
+        dossier_path = tmp_path / "dossier-path"
+        dossier_path.mkdir()
         resp = c.post("/api/projects/", json={
             "name": "Dossier Path",
-            "path": "dossier-path",
+            "path": str(dossier_path),
             "type": "general",
             "module_type": "dossier"
         })

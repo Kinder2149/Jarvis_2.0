@@ -30,7 +30,7 @@
       const ACTIVE_STATUSES = ['CREATED', 'RUNNING', 'WAITING', 'PENDING', 'WAITING_VALIDATION'];
       if (ACTIVE_STATUSES.includes(session.status)) {
         startPolling();
-      } else if (['COMPLETED', 'ABORTED', 'ERROR'].includes(session.status)) {
+      } else if (['COMPLETED', 'ABORTED', 'ERROR', 'FAILED'].includes(session.status)) {
         stopPolling();
       }
     } catch (error) {
@@ -48,7 +48,7 @@
         currentSession = session;
         renderSession(session);
         
-        if (['COMPLETED', 'ABORTED', 'ERROR'].includes(session.status)) {
+        if (['COMPLETED', 'ABORTED', 'ERROR', 'FAILED'].includes(session.status)) {
           stopPolling();
         }
       } catch (e) {
@@ -109,7 +109,7 @@
       }
     }
 
-    if (['COMPLETED', 'ABORTED', 'ERROR'].includes(session.status)) {
+    if (['COMPLETED', 'ABORTED', 'ERROR', 'FAILED'].includes(session.status)) {
       try {
         const costs = await window.API.getPipelineCosts(sessionId);
         const totalCost = costs.total_cost_usd || 0;
@@ -121,7 +121,7 @@
     }
 
     const btnAbort = document.getElementById('btn-abort');
-    if (['COMPLETED', 'ABORTED', 'ERROR'].includes(session.status)) {
+    if (['COMPLETED', 'ABORTED', 'ERROR', 'FAILED'].includes(session.status)) {
       btnAbort.style.display = 'none';
     } else {
       btnAbort.style.display = 'block';
@@ -159,12 +159,12 @@
     }
 
     let errorHTML = '';
-    if (step.status === 'ERROR' && step.error_message) {
+    if ((step.status === 'ERROR' || step.status === 'FAILED') && step.error_message) {
       errorHTML = `<div class="step-error">❌ ${step.error_message}</div>`;
     }
 
     let buttonsHTML = '';
-    if (step.status === 'ERROR') {
+    if (step.status === 'ERROR' || step.status === 'FAILED') {
       buttonsHTML = `<button class="btn-icon" onclick="window.retryStep(${step.id})" title="Relancer">🔄</button>`;
     }
 
@@ -193,6 +193,7 @@
       'RUNNING': 'step-card--running',
       'COMPLETED': 'step-card--completed',
       'ERROR': 'step-card--error',
+      'FAILED': 'step-card--error',
       'WAITING_VALIDATION': 'step-card--waiting'
     };
     return map[status] || '';
@@ -203,7 +204,8 @@
       'PENDING': '<span style="color:var(--text-muted)">○</span>',
       'RUNNING': '<div class="spinner"></div>',
       'COMPLETED': '✅',
-      'ERROR': '❌',
+      'ERROR': '<span style="color:var(--danger)">✕</span>',
+      'FAILED': '<span style="color:var(--danger)">✕</span>',
       'WAITING_VALIDATION': '⏸️'
     };
     return map[status] || '○';
@@ -240,9 +242,19 @@
       const deleteBtn = `<button class="btn-danger" onclick="window._deleterSession()" 
                     style="margin-left:auto">🗑 Supprimer cette session</button>`;
 
+      // Chercher l'étape en échec pour afficher son message d'erreur
+      const failedStep = session.steps?.find(s => s.status === 'FAILED' || s.status === 'ERROR');
+      const errorDetail = failedStep?.error_message
+        ? `<div class="mc-error-detail">
+             <strong>Étape échouée :</strong> ${failedStep.step_display_name || failedStep.step_type}<br>
+             <code>${failedStep.error_message}</code>
+           </div>`
+        : '';
+
       actionZone.innerHTML = `
         <div class="mc-action-header">
           <h3>${emoji} ${label}</h3>
+          ${errorDetail}
         </div>
         <div class="mc-validation-actions">
           ${backBtn}
