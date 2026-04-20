@@ -2312,3 +2312,158 @@ Exception: Erreur modèle (504) : The operation was aborted
 2026-04-20 19:35:45 | INFO | Frontend path exists: True
 2026-04-20 19:35:45 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
 2026-04-20 19:35:45 | INFO | JARVIS démarré
+2026-04-20 19:41:30 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:41:30 | INFO | Frontend path exists: True
+2026-04-20 19:41:30 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:41:30 | INFO | JARVIS démarré
+2026-04-20 19:41:48 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_FAILED_Display, type=web, local_path=None
+2026-04-20 19:41:48 | ERROR | Le projet existe déjà: C:\Temp\Test_FAILED_Display
+2026-04-20 19:41:51 | INFO | Création projet - Données reçues: name=Test FAILED Retry, path=C:\Temp\Test_FAILED_Retry, type=web, local_path=None
+2026-04-20 19:41:51 | ERROR | Le projet existe déjà: C:\Temp\Test_FAILED_Retry
+2026-04-20 19:41:53 | INFO | Création projet - Données reçues: name=Test Polling, path=C:\Temp\Test_Polling, type=web, local_path=None
+2026-04-20 19:41:53 | ERROR | Le projet existe déjà: C:\Temp\Test_Polling
+2026-04-20 19:41:56 | INFO | Création projet - Données reçues: name=Test Completed CTA, path=C:\Temp\Test_Completed_CTA, type=web, local_path=None
+2026-04-20 19:41:56 | ERROR | Le projet existe déjà: C:\Temp\Test_Completed_CTA
+2026-04-20 19:41:58 | INFO | Création projet - Données reçues: name=Test Project 1, path=C:\Temp\Test_Project_1, type=web, local_path=None
+2026-04-20 19:41:58 | ERROR | Le projet existe déjà: C:\Temp\Test_Project_1
+2026-04-20 19:42:01 | INFO | Création projet - Données reçues: name=Test Project Detail, path=C:\Temp\Test_Project_Detail, type=web, local_path=None
+2026-04-20 19:42:01 | ERROR | Le projet existe déjà: C:\Temp\Test_Project_Detail
+2026-04-20 19:42:06 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:42:06 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:42:13 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:42:13 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:42:18 | INFO | Création projet - Données reçues: name=Test Dashboard Banner, path=C:\Temp\Test_Dashboard_Banner, type=web, local_path=None
+2026-04-20 19:42:18 | ERROR | Le projet existe déjà: C:\Temp\Test_Dashboard_Banner
+2026-04-20 19:43:30 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:43:30 | INFO | Frontend path exists: True
+2026-04-20 19:43:30 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:43:30 | INFO | JARVIS démarré
+2026-04-20 19:43:40 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_FAILED_Display, type=web, local_path=None
+2026-04-20 19:43:40 | ERROR | Le projet existe déjà: C:\Temp\Test_FAILED_Display
+2026-04-20 19:43:42 | INFO | Création projet - Données reçues: name=Test FAILED Retry, path=C:\Temp\Test_FAILED_Retry, type=web, local_path=None
+2026-04-20 19:43:42 | ERROR | Le projet existe déjà: C:\Temp\Test_FAILED_Retry
+2026-04-20 19:43:45 | INFO | Création projet - Données reçues: name=Test Polling, path=C:\Temp\Test_Polling, type=web, local_path=None
+2026-04-20 19:43:45 | ERROR | Le projet existe déjà: C:\Temp\Test_Polling
+2026-04-20 19:43:47 | INFO | Création projet - Données reçues: name=Test Completed CTA, path=C:\Temp\Test_Completed_CTA, type=web, local_path=None
+2026-04-20 19:43:47 | ERROR | Le projet existe déjà: C:\Temp\Test_Completed_CTA
+2026-04-20 19:43:50 | INFO | Création projet - Données reçues: name=Test Project 1, path=C:\Temp\Test_Project_1, type=web, local_path=None
+2026-04-20 19:43:50 | ERROR | Le projet existe déjà: C:\Temp\Test_Project_1
+2026-04-20 19:43:52 | INFO | Création projet - Données reçues: name=Test Project Detail, path=C:\Temp\Test_Project_Detail, type=web, local_path=None
+2026-04-20 19:43:52 | ERROR | Le projet existe déjà: C:\Temp\Test_Project_Detail
+2026-04-20 19:43:57 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:43:57 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:44:05 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:44:05 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:44:09 | INFO | Création projet - Données reçues: name=Test Dashboard Banner, path=C:\Temp\Test_Dashboard_Banner, type=web, local_path=None
+2026-04-20 19:44:09 | ERROR | Le projet existe déjà: C:\Temp\Test_Dashboard_Banner
+2026-04-20 19:44:26 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:44:26 | INFO | Frontend path exists: True
+2026-04-20 19:44:26 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:44:26 | INFO | JARVIS démarré
+2026-04-20 19:44:36 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_E2E_1776707074_4069, type=web, local_path=None
+2026-04-20 19:44:36 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707074_4069
+2026-04-20 19:44:36 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707074_4069\PROJET_CONTEXTE.md
+2026-04-20 19:44:40 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:44:46 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:44:46 | ERROR | [PIPELINE] Session 44 step 1 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:45:01 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:45:01 | INFO | Frontend path exists: True
+2026-04-20 19:45:01 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:45:01 | INFO | JARVIS démarré
+2026-04-20 19:45:12 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:45:12 | INFO | Frontend path exists: True
+2026-04-20 19:45:12 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:45:12 | INFO | JARVIS démarré
+2026-04-20 19:45:21 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_E2E_1776707119_8290, type=web, local_path=None
+2026-04-20 19:45:21 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707119_8290
+2026-04-20 19:45:21 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707119_8290\PROJET_CONTEXTE.md
+2026-04-20 19:45:30 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:45:30 | ERROR | [PIPELINE] Session 45 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:45:33 | INFO | Création projet - Données reçues: name=Test FAILED Retry, path=C:\Temp\Test_E2E_1776707130_9261, type=web, local_path=None
+2026-04-20 19:45:33 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707130_9261
+2026-04-20 19:45:33 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707130_9261\PROJET_CONTEXTE.md
+2026-04-20 19:45:36 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:45:42 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:45:42 | ERROR | [PIPELINE] Session 46 step 1 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:45:45 | INFO | Création projet - Données reçues: name=Test Polling, path=C:\Temp\Test_E2E_1776707143_1643, type=web, local_path=None
+2026-04-20 19:45:45 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707143_1643
+2026-04-20 19:45:45 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707143_1643\PROJET_CONTEXTE.md
+2026-04-20 19:45:49 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:45:55 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:45:55 | ERROR | [PIPELINE] Session 47 step 1 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:46:01 | INFO | Création projet - Données reçues: name=Test Completed CTA, path=C:\Temp\Test_E2E_1776707158_3920, type=web, local_path=None
+2026-04-20 19:46:01 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707158_3920
+2026-04-20 19:46:01 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707158_3920\PROJET_CONTEXTE.md
+2026-04-20 19:46:07 | INFO | Création projet - Données reçues: name=Test Project 1, path=C:\Temp\Test_E2E_1776707164_2840, type=web, local_path=None
+2026-04-20 19:46:07 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707164_2840
+2026-04-20 19:46:07 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707164_2840\PROJET_CONTEXTE.md
+2026-04-20 19:46:09 | INFO | Création projet - Données reçues: name=Test Project 2, path=C:\Temp\Test_E2E_1776707167_8600, type=web, local_path=None
+2026-04-20 19:46:09 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707167_8600
+2026-04-20 19:46:09 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707167_8600\PROJET_CONTEXTE.md
+2026-04-20 19:46:14 | INFO | Création projet - Données reçues: name=Test Project Detail, path=C:\Temp\Test_E2E_1776707172_9419, type=web, local_path=None
+2026-04-20 19:46:14 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707172_9419
+2026-04-20 19:46:14 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707172_9419\PROJET_CONTEXTE.md
+2026-04-20 19:46:21 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:46:21 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:46:29 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:46:29 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:46:34 | INFO | Création projet - Données reçues: name=Test Dashboard Banner, path=C:\Temp\Test_E2E_1776707191_3869, type=web, local_path=None
+2026-04-20 19:46:34 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707191_3869
+2026-04-20 19:46:34 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707191_3869\PROJET_CONTEXTE.md
+2026-04-20 19:46:42 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:46:42 | ERROR | [PIPELINE] Session 51 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
