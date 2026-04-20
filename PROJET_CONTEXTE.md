@@ -83,7 +83,8 @@ JARVIS/
 │   │   ├── models.py          ← config clés API (SQLite), test connexion, modèles disponibles
 │   │   ├── files.py           ← read, write, diff, apply, archive docs, local-list
 │   │   ├── chat.py            ← conversations, messages, titrage auto
-│   │   └── atelier.py         ← CRUD prospects, start pipeline atelier, export ZIP
+│   │   ├── atelier.py         ← CRUD prospects, start pipeline atelier, export ZIP
+│   │   └── config.py          ← routes clés API génériques + profil utilisateur (FIX-01)
 │   ├── services/
 │   │   ├── pipeline_engine.py ← state machine, orchestration, persistance
 │   │   ├── model_router.py    ← sélection modèle, appel API, log décisions
@@ -102,7 +103,9 @@ JARVIS/
 │       └── prompts.json       ← templates prompts par step
 └── frontend/
     ├── index.html             ← dashboard (timeline activité, sessions actives/bloquées, stats)
-    ├── project.html           ← hub projet (instructions, local_path, sessions+conversations unifiées)
+    ├── dossier.html           ← hub projet/dossier (remplace project.html)
+    ├── code-projects.html     ← liste projets Module Code
+    ├── code-project-detail.html ← détail projet code
     ├── module-code.html       ← suivi temps réel workflow IA (steps, validation, diff, polling 2s)
     ├── chat.html              ← conversation IA (markdown, folder_path, web search, sélecteur modèle)
     ├── atelier.html           ← Atelier Connecté (kanban 6 colonnes + vue pipeline prospect)
@@ -116,14 +119,16 @@ JARVIS/
             ├── ui.js          ← showModal, closeModal, showToast
             ├── dashboard.js   ← timeline, sessions actives/bloquées, stats semaine
             ├── project.js     ← hub projet, instructions éditables, liste unifiée sessions+chats
+            ├── code-projects.js  ← liste projets Module Code
+            ├── code-project-detail.js ← détail projet + lancement mission
             ├── module-code.js ← polling pipeline, steps, zone validation (diff/generic), retry step
             ├── chat.js        ← messages, optimistic UI, sélecteur modèle, suppression
             ├── explorer.js    ← arborescence fichiers locaux, preview, collapse
             ├── atelier.js     ← kanban prospects, vue pipeline atelier, zones saisie/checkpoint/export
             └── settings.js    ← clés API (états visuels), test connexion, dropdowns modèles
 
-**Services backend actifs :** 6 / 20 maximum
-**Pages frontend :** 6 / illimité
+**Services backend actifs :** 7 / 20 maximum
+**Pages frontend :** 8 / illimité
 
 ---
 
@@ -133,24 +138,25 @@ JARVIS/
 - Gestion projets CRUD (enregistrement, liste, suppression, instructions, local_path)
 - Pipeline engine complet (6 workflows Module Code, state machine, persistance SQLite)
 - Routing modèles par type de tâche (routing/structuring/code/analysis)
-- Suite de tests : 162/162 backend + 41 E2E Playwright V2 + tests UX Refactoring (test_front_ux.py)
+- Suite de tests : 189/189 backend + 38 intégration modules + 41 E2E V2 + 10 E2E modules + 7 live = 285 tests
 - Configuration modèles : routing=Gemini Flash, code=Claude Haiku 4.5, analysis=Claude Sonnet 4.5
 - Clés API dans SQLite (table app_config), migration auto depuis config.json au démarrage
 - Tous les workflows testés live
 - Rollback atomique apply_files (3 phases), parsing diff 3 fallbacks
 - Clôture auto PROJET_CONTEXTE.md section 8 + CHANGELOG.md
 - Logs applicatifs : jarvis.log + GET /pipelines/logs
-- **Frontend V2 complet** : layout 3 panneaux (sidebar collapsible, main, explorer), 6 pages, 11 modules JS
+- **Frontend V2 complet** : layout 3 panneaux (sidebar collapsible, main, explorer), 8 pages, 13 modules JS
 - **Module Code** : polling 2s, steps visuels, zone validation diff/generic, retry step, breadcrumb projet
 - **Module Chat** : lecture dossier local (GRAPH_REPORT prioritaire), web search Brave API, sélecteur modèle
 - **Module Projet** : hub conteneur (instructions, local_path, liste unifiée sessions+chats)
-- **Atelier Connecté** : kanban 6 colonnes, pipeline 9 steps pour prospects restauration, export ZIP démo HTML
+- **Atelier Connecté** : kanban 6 colonnes, pipeline 10 steps pour prospects restauration, export ZIP démo HTML
 - **Atelier pipeline** : 3 moments humains (form saisie terrain → checkpoint validation → export ZIP)
 - **Build portable** : JARVIS.exe via PyInstaller (launcher tkinter)
 - **UX Refactoring (FRONT-01 à 06)** : CTA post-session, badges kanban, sidebar counter, dashboard waiting, lancement inline
+- Seed automatique clés API : .env → SQLite au démarrage (remplace saisie manuelle)
 
 **🚧 En cours**
-- Tests E2E UX Refactoring : écriture tests/test_front_ux.py (TEST-02) + run complet (TEST-03)
+- Tests E2E modules : stabilisation des 7 tests Playwright restants (test_frontend_modules_e2e.py)
 
 **❌ Bugs connus**
 - Aucun
@@ -204,7 +210,7 @@ JARVIS/
 | 2026-04-16 | project_id nullable sur conversations | Toute conversation chat aura un project_id nullable dès maintenant — évite migration future |
 | 2026-04-16 | Architecture module projet | Un projet est un conteneur : il regroupe missions code + conversations chat + contexte partagé + lien dossier local |
 | 2026-04-16 | start.bat : corrigé | python -m uvicorn + start /min + pause — lancement double-clic fonctionnel |
-| 2026-04-17 | Frontend V2 : architecture JS modulaire | 11 fichiers JS séparés (api.js, shared.js, sidebar.js, ui.js, dashboard.js, project.js, module-code.js, chat.js, explorer.js, atelier.js, settings.js) — pas de bundler, pas de framework |
+| 2026-04-17 | Frontend V2 : architecture JS modulaire | 13 fichiers JS séparés (api.js, shared.js, sidebar.js, ui.js, dashboard.js, project.js, code-projects.js, code-project-detail.js, module-code.js, chat.js, explorer.js, atelier.js, settings.js) — pas de bundler, pas de framework |
 | 2026-04-17 | Clés API migrées dans SQLite | config.json ne contient plus que model_preferences — clés API dans table app_config (migration auto au démarrage) |
 | 2026-04-17 | Atelier Connecté : un pipeline par prospect | Un prospect = une seule session atelier. startAtelierPipeline bloqué si session existante. Recycle n'est pas prévu : démo générée → prospect marqué contacté → fin de cycle |
 | 2026-04-17 | Atelier vs Module Code : paradigmes différents | Module Code = session-centré (session visible dans sidebar sous le projet). Atelier = prospect-centré (kanban, prospect est l'entité principale). Les deux utilisent le même pipeline_engine |

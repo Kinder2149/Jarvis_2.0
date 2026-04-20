@@ -2308,3 +2308,7 @@ Exception: Erreur modèle (504) : The operation was aborted
 2026-04-20 19:35:33 | INFO | Frontend path exists: True
 2026-04-20 19:35:33 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
 2026-04-20 19:35:33 | INFO | JARVIS démarré
+2026-04-20 19:35:45 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:35:45 | INFO | Frontend path exists: True
+2026-04-20 19:35:45 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:35:45 | INFO | JARVIS démarré
