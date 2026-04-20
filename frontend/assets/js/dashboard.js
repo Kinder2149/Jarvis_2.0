@@ -90,33 +90,53 @@
         </div>
       `;
 
-      waitingModuleSessions.forEach(s => {
-        const project = allProjects.find(p => p.id === s.project_id);
-        const projectName = project ? project.name : 'Sans projet';
-        html += `
-          <div class="active-pipeline-card card card--waiting">
-            <div class="active-pipeline-info">
-              <span style="color:#f59e0b">⏸️</span>
-              <strong>${s.workflow_type}</strong>
-              <span class="text-muted">· ${projectName} · Step ${s.current_step_index + 1}</span>
+      // Limiter à 5 sessions si > 5
+      const LIMIT = 5;
+      const allWaiting = [
+        ...waitingModuleSessions.map(s => ({ type: 'module', data: s })),
+        ...waitingAtelierProspects.map(p => ({ type: 'atelier', data: p }))
+      ];
+      const displayedWaiting = totalWaiting > LIMIT ? allWaiting.slice(0, LIMIT) : allWaiting;
+      const hiddenCount = totalWaiting > LIMIT ? totalWaiting - LIMIT : 0;
+
+      displayedWaiting.forEach(item => {
+        if (item.type === 'module') {
+          const s = item.data;
+          const project = allProjects.find(p => p.id === s.project_id);
+          const projectName = project ? project.name : 'Sans projet';
+          html += `
+            <div class="active-pipeline-card card card--waiting">
+              <div class="active-pipeline-info">
+                <span style="color:#f59e0b">⏸️</span>
+                <strong>${s.workflow_type}</strong>
+                <span class="text-muted">· ${projectName} · Step ${s.current_step_index + 1}</span>
+              </div>
+              <a href="module-code.html?session=${s.id}&project_id=${s.project_id}" class="btn-primary btn-sm">→ Valider</a>
             </div>
-            <a href="module-code.html?session=${s.id}&project_id=${s.project_id}" class="btn-primary btn-sm">→ Valider</a>
-          </div>
-        `;
+          `;
+        } else {
+          const p = item.data;
+          html += `
+            <div class="active-pipeline-card card card--waiting">
+              <div class="active-pipeline-info">
+                <span style="color:#f59e0b">⏸️</span>
+                <strong>Atelier</strong>
+                <span class="text-muted">· ${p.nom}</span>
+              </div>
+              <a href="atelier.html?prospect_id=${p.id}" class="btn-primary btn-sm">→ Valider</a>
+            </div>
+          `;
+        }
       });
 
-      waitingAtelierProspects.forEach(p => {
+      // Afficher lien "voir tout" si > 5
+      if (hiddenCount > 0) {
         html += `
-          <div class="active-pipeline-card card card--waiting">
-            <div class="active-pipeline-info">
-              <span style="color:#f59e0b">⏸️</span>
-              <strong>Atelier</strong>
-              <span class="text-muted">· ${p.nom}</span>
-            </div>
-            <a href="atelier.html?prospect_id=${p.id}" class="btn-primary btn-sm">→ Valider</a>
+          <div class="text-muted" style="font-size:0.85rem;padding:0.5rem 0;text-align:center">
+            ... et ${hiddenCount} autre${hiddenCount > 1 ? 's' : ''} en attente
           </div>
         `;
-      });
+      }
     }
 
     // ── Partie 2 : En cours (RUNNING) ─────────────────────────────

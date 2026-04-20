@@ -2467,3 +2467,90 @@ Traceback (most recent call last):
     raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
 Exception: Erreur modèle (504) : The operation was aborted
 
+2026-04-20 19:47:28 | INFO | Frontend path: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:47:28 | INFO | Frontend path exists: True
+2026-04-20 19:47:28 | INFO | Mounting static files from: C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\frontend
+2026-04-20 19:47:28 | INFO | JARVIS démarré
+2026-04-20 19:47:39 | INFO | Création projet - Données reçues: name=Test FAILED Display, path=C:\Temp\Test_E2E_1776707256_3078, type=web, local_path=None
+2026-04-20 19:47:39 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707256_3078
+2026-04-20 19:47:39 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707256_3078\PROJET_CONTEXTE.md
+2026-04-20 19:47:48 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:47:55 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:47:55 | ERROR | [PIPELINE] Session 52 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:47:58 | INFO | Création projet - Données reçues: name=Test FAILED Retry, path=C:\Temp\Test_E2E_1776707276_4440, type=web, local_path=None
+2026-04-20 19:47:58 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707276_4440
+2026-04-20 19:47:58 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707276_4440\PROJET_CONTEXTE.md
+2026-04-20 19:48:01 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-20 19:48:08 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:48:08 | ERROR | [PIPELINE] Session 53 step 1 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:48:11 | INFO | Création projet - Données reçues: name=Test Polling, path=C:\Temp\Test_E2E_1776707288_7501, type=web, local_path=None
+2026-04-20 19:48:11 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707288_7501
+2026-04-20 19:48:11 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707288_7501\PROJET_CONTEXTE.md
+2026-04-20 19:48:19 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-04-20 19:48:27 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:48:27 | ERROR | [PIPELINE] Session 54 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+
+2026-04-20 19:48:33 | INFO | Création projet - Données reçues: name=Test Completed CTA, path=C:\Temp\Test_E2E_1776707310_7502, type=web, local_path=None
+2026-04-20 19:48:33 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707310_7502
+2026-04-20 19:48:33 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707310_7502\PROJET_CONTEXTE.md
+2026-04-20 19:48:39 | INFO | Création projet - Données reçues: name=Test Project 1, path=C:\Temp\Test_E2E_1776707316_3852, type=web, local_path=None
+2026-04-20 19:48:39 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707316_3852
+2026-04-20 19:48:39 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707316_3852\PROJET_CONTEXTE.md
+2026-04-20 19:48:41 | INFO | Création projet - Données reçues: name=Test Project 2, path=C:\Temp\Test_E2E_1776707319_9817, type=web, local_path=None
+2026-04-20 19:48:41 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707319_9817
+2026-04-20 19:48:41 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707319_9817\PROJET_CONTEXTE.md
+2026-04-20 19:48:46 | INFO | Création projet - Données reçues: name=Test Project Detail, path=C:\Temp\Test_E2E_1776707324_1222, type=web, local_path=None
+2026-04-20 19:48:46 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707324_1222
+2026-04-20 19:48:46 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707324_1222\PROJET_CONTEXTE.md
+2026-04-20 19:48:53 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:48:53 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:49:01 | INFO | 🔧 [PIPELINE] Step 0 (saisie) - model_type=none, requires_validation=True
+2026-04-20 19:49:01 | INFO | ⏸️ [PIPELINE] Step 0 en attente de validation
+2026-04-20 19:49:06 | INFO | Création projet - Données reçues: name=Test Dashboard Banner, path=C:\Temp\Test_E2E_1776707343_2478, type=web, local_path=None
+2026-04-20 19:49:06 | INFO | Dossier créé: C:\Temp\Test_E2E_1776707343_2478
+2026-04-20 19:49:06 | INFO | PROJET_CONTEXTE.md créé: C:\Temp\Test_E2E_1776707343_2478\PROJET_CONTEXTE.md
+2026-04-20 19:49:14 | INFO | HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 504 Gateway Timeout"
+2026-04-20 19:49:14 | ERROR | [PIPELINE] Session 58 step 0 FAILED: Erreur modèle (504) : The operation was aborted
+Traceback (most recent call last):
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\pipeline_engine.py", line 348, in execute_step
+    output = await call_model(
+             ^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "C:\DEV\PROJETS\intelligence_artificielle\Jarvis-2.0\backend\services\model_router.py", line 82, in call_model
+    raise Exception(f"Erreur modèle ({response.status_code}) : {error_msg}")
+Exception: Erreur modèle (504) : The operation was aborted
+

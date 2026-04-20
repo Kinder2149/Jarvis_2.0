@@ -232,25 +232,20 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour — 904 nodes, 1044 edges, 81 communities (2026-04-18)
-**Objectif :** ✅ TERMINÉ — TEST-05 : Stabilisation 10 tests E2E Playwright modules
+**Objectif :** ✅ TERMINÉ — UX-01 : Améliorations UX priorité haute (FRONT-01 + FRONT-05)
 **Résultat :** 
-  - 10/10 tests E2E Playwright passent (100%) en 104s
-  - Corrections : cleanup amélioré (cascade DELETE, paths uniques timestamp+random), DB_PATH importé depuis backend/database.py, timeouts httpx 60s, assertions assouplies (accepter ✕ seul pour FAILED, boutons génériques zone action), INSERT direct session COMPLETED, skip navigation si 0 projets, accepter prospect sans badge visible
-  - Pattern robuste : cleanup systématique au début de chaque test, assertions flexibles, timeouts généreux
-  - Tests validés : step FAILED rouge + retry, polling actif, zone action COMPLETED, code-projects liste/navigation, badges atelier WAITING/RUNNING, dashboard banner, settings profil
-  - CHANGELOG.md mis à jour avec ligne TEST-05
-  - PROJET_CONTEXTE.md section 8 mis à jour
+  - FRONT-01 : Ordre boutons post-session Module Code vérifié — déjà correct ([Retour dossier] btn-secondary en premier, [Nouvelle session] btn-primary après), pas de modification nécessaire
+  - FRONT-05 : Limitation affichage banner dashboard implémentée — si > 5 sessions en attente, afficher seulement les 5 premières + message "... et X autres en attente" (LIMIT=5, fusion allWaiting[], slice + hiddenCount)
+  - Tests E2E inchangés (assertions déjà flexibles, pas de sélecteurs cassés)
+  - Backlog priorité haute vidé, UX améliorée pour dashboards chargés (10+ sessions)
+  - CHANGELOG.md mis à jour avec ligne UX-01
+  - PROJET_CONTEXTE.md section 8 et 9 mis à jour
 **Décompte tests total :** 189 backend + 38 intégration + 41 E2E V2 + 10 E2E modules + 7 live = **285 tests** (100%)
-**Prochaine session :** Backlog UX (FRONT-01, FRONT-05) ou fonctionnalités Phase 4
+**Prochaine session :** Backlog UX priorité moyenne (items 3-5) ou fonctionnalités Phase 4
 
 ---
 
 ## 9. BACKLOG
-
-### Améliorations UX Refactoring (priorité haute)
-
-1. **FRONT-01 : Bouton "Retour au projet" en secondaire** — Inverser avec "Nouvelle session" pour mettre l'accent sur le retour (effort : 5 min)
-2. **FRONT-05 : Banner encombrant si 10+ sessions** — Ajouter limite affichage (ex: "⏸️ 12 sessions attendent ta validation" + collapse "Voir tout") (effort : 30 min)
 
 ### Améliorations UX Refactoring (priorité moyenne)
 
