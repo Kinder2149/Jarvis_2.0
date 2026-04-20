@@ -226,13 +226,13 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour — 904 nodes, 1044 edges, 81 communities (2026-04-18)
-**Objectif :** ✅ TERMINÉ — NETTOYAGE-01 : Nettoyage racine du projet + commit global consolidant tout le travail accumulé (FIX-01/02/03 + TEST-01/02/03/04 + nettoyage).
+**Objectif :** ✅ TERMINÉ — FIX-04 : Correction bugs chargement clés API depuis .env
 **Résultat :** 
-  - temp/rapports_sessions/ créé avec 12 fichiers de rapports déplacés
-  - 12 fichiers obsolètes supprimés de la racine (tests manuels, scripts temporaires)
-  - Racine propre : seuls PROJET_CONTEXTE.md, CHANGELOG.md, README.md, STACK_STANDARD.md + fichiers nécessaires (start.bat, requirements, pytest.ini, JARVIS.spec, .gitignore, .env)
-  - 1 commit Git créé incluant toutes les modifications (FIX-01/02/03, TEST-01/02/03/04, nettoyage)
-  - CHANGELOG.md mis à jour avec ligne NETTOYAGE-01
+  - BUG 1 corrigé : chemin .env (backend/.env → racine/.env via parent.parent)
+  - BUG 2 corrigé : condition de remplacement (remplace maintenant les clés < 20 chars)
+  - Tests validés : openrouter_key 73 chars, web_search_key 31 chars chargées correctement
+  - Conséquence : utilisateurs avec mauvaise clé en DB sont auto-corrigés au prochain démarrage
+  - CHANGELOG.md mis à jour avec ligne FIX-04
   - PROJET_CONTEXTE.md section 8 mis à jour
 **Décompte tests total :** 189 tests backend + 41 E2E V2 + 7 tests live + 10 E2E modules = **247 tests**
 **Prochaine session :** Finaliser les 7 tests E2E modules restants ou passer au backlog UX

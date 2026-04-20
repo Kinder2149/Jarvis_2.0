@@ -23,7 +23,7 @@ def _seed_api_keys_from_env(conn):
     # Lire les valeurs candidates : .env d'abord, puis variables OS
     candidates = {}
 
-    env_file = _Path(__file__).parent / ".env"
+    env_file = _Path(__file__).parent.parent / ".env"
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
             line = line.strip()
@@ -48,7 +48,7 @@ def _seed_api_keys_from_env(conn):
         cursor.execute("SELECT value FROM app_config WHERE key = ?", (db_key,))
         row = cursor.fetchone()
         current_value = row["value"] if row else None
-        if not current_value:
+        if not current_value or len(current_value.strip()) < 20:
             cursor.execute(
                 "INSERT OR REPLACE INTO app_config (key, value, category) VALUES (?, ?, 'api_keys')",
                 (db_key, candidates[env_key])
