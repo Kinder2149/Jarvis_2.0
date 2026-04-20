@@ -232,17 +232,18 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour — 904 nodes, 1044 edges, 81 communities (2026-04-18)
-**Objectif :** ✅ TERMINÉ — TEST-FRONT-02 : Tests d'interaction et flux complets
+**Objectif :** ✅ TERMINÉ — TOOL-01 : Script de vérification quotidien
 **Résultat :** 
-  - 10 tests Playwright créés dans tests/test_frontend_flux.py
-  - Pattern : page.route() pour mocker certaines routes, handle_post() avec time.sleep() pour simuler latence, locator().first pour éviter strict mode, try/except + pytest.skip() pour éléments non trouvés
-  - Couverture : 3 tests Sidebar (collapse/expand, modals), 2 tests Chat (optimistic UI, raccourci Ctrl+Entrée), 2 tests Module Code (abort confirmation, retry step), 1 test Atelier (création prospect), 2 tests smoke (flux complets avec serveur)
-  - Tests non-smoke : 6/8 passent (2 skips normaux car modals ne s'ouvrent pas avec routes mockées)
-  - Tests smoke : 2 tests marqués @pytest.mark.smoke (création projet + navigation, création conversation + sidebar), nécessitent serveur démarré
-  - Marqueur smoke ajouté dans pytest.ini
-  - CHANGELOG.md mis à jour avec ligne TEST-FRONT-02
+  - health_check.py créé à la racine du projet
+  - Vérifications : serveur répond, clés API configurées (> 20 chars), Module Chat (projet + conversation + message IA), Module Code (projet + session session_start + abort), Module Atelier (prospect + liste + nettoyage)
+  - Format sortie : header ASCII art, résultat par module avec ✅/❌ en couleur ANSI, temps d'exécution affiché, exit code 0 si OK / 1 si erreur
+  - Nettoyage automatique : DELETE dans finally block même si test échoue
+  - Usage : python health_check.py (nécessite serveur démarré avec start.bat)
+  - Timeout 30s par module, httpx synchrone, catch exceptions par module
+  - Outil de vérification manuelle rapide avant/après chaque session de développement
+  - CHANGELOG.md mis à jour avec ligne TOOL-01
   - PROJET_CONTEXTE.md section 8 mis à jour
-**Décompte tests total :** 189 backend + 38 intégration + 41 E2E V2 + 10 E2E modules + 15 rendu + 10 flux + 7 live = **310 tests** (100%)
+**Décompte tests total :** 189 backend + 38 intégration + 41 E2E V2 + 10 E2E modules + 15 rendu + 10 flux + 7 live = **310 tests** + 1 script health check
 **Prochaine session :** Backlog UX priorité moyenne (items 3-5) ou fonctionnalités Phase 4
 
 ---
