@@ -272,8 +272,8 @@ def _parse_file_delimiters(text: str) -> dict:
         return files
     
     # Format actuel : # FILENAME\n\n```lang\ncontent\n```
-    # Chercher les patterns "# FILENAME" suivis d'un bloc markdown
-    pattern = r'#\s+([A-Z_]+\.[a-z]+)\s*\n\s*```[a-zA-Z]*\s*\n(.*?)```'
+    # Chercher les patterns "# FILENAME" (éventuellement suivi de texte) avant un bloc markdown
+    pattern = r'#\s+([A-Za-z_][A-Za-z0-9_.-]*)[^\n]*\n\s*```[a-zA-Z]*\s*\n(.*?)```'
     matches = _re.findall(pattern, text, _re.DOTALL | _re.IGNORECASE)
     
     if matches:

@@ -311,7 +311,7 @@ async def search_web(query: str, api_key: str | None = None) -> dict:
         return {"results": [], "error": str(e)}
 
 
-def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None, folder_context: str | None = None, global_context: str = "", context_summary: str = "", graphify_context: str = "") -> str:
+def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None, folder_context: str | None = None, global_context: str = "", context_summary: str = "", graphify_context: str = "", internet_access: bool = False) -> str:
     """Construit le system prompt complet pour le chat.
     
     Args:
@@ -361,6 +361,16 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
     if folder_context is not None:
         parts.append("---")
         parts.append(f"DOSSIER LOCAL :\n{folder_context}")
+    
+    if internet_access:
+        parts.append("---")
+        parts.append(
+            "🌐 ACCÈS INTERNET ACTIVÉ : Tu as accès à des résultats de recherche web via Brave Search. "
+            "Quand l'utilisateur pose des questions sur l'actualité, la météo, les événements récents "
+            "ou toute information en temps réel, les résultats apparaissent dans la section "
+            "\"Résultats recherche web\" du message. Utilise ces résultats directement. "
+            "Ne dis jamais que tu ne peux pas accéder à internet."
+        )
     
     return "\n\n".join(parts)
 
@@ -460,20 +470,29 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
         web_search_patterns = [
             r'(?:cherche|recherche|trouve|search)',
             r'(?:internet|web|en ligne)',
-            r'(?:dernière version|version actuelle|aujourd\'hui|actuellement)'
+            r'(?:dernière version|version actuelle|aujourd\'hui|actuellement|récemment)',
+            r'(?:actualités?|actu|nouvelles?|news)',
+            r'(?:météo|temps qu\'il fait|température|climat)',
+            r'(?:hier|demain|cette semaine|ce mois|en \d{4})',
         ]
         
         should_search = any(re.search(pattern, user_content, re.IGNORECASE) for pattern in web_search_patterns)
         
+        logger.info(f"🌐 [CHAT_SERVICE] internet_access={internet_access}, should_search={should_search}")
+        
         if should_search:
             web_search_key = config.get("api_keys", {}).get("web_search_key")
+            logger.info(f"🔑 [CHAT_SERVICE] web_search_key présente: {bool(web_search_key)}, longueur: {len(web_search_key) if web_search_key else 0}")
             if web_search_key:
                 search_result = await search_web(user_content, web_search_key)
+                logger.info(f"🔍 [CHAT_SERVICE] Résultat recherche: error={search_result.get('error')}, nb_results={len(search_result.get('results', []))}")
                 if not search_result["error"] and search_result["results"]:
                     web_search_used = True
                     web_results_text = "\n\n=== Résultats recherche web ===\n"
                     for i, result in enumerate(search_result["results"], 1):
                         web_results_text += f"{i}. {result['title']}\n   {result['url']}\n   {result['description']}\n\n"
+            else:
+                logger.warning(f"⚠️ [CHAT_SERVICE] Recherche web demandée mais clé absente")
     
     # Récupérer global_context depuis app_config
     try:
@@ -486,7 +505,7 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     # Construire le system prompt
     preset = config.get("chat", {}).get("system_prompt_preset", "")
     session_note = config.get("chat", {}).get("session_note", "")
-    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context, folder_context, global_context, context_summary, graphify_context)
+    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context, folder_context, global_context, context_summary, graphify_context, internet_access)
     
     # Récupérer les 20 derniers messages
     cursor.execute(

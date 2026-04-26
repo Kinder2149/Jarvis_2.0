@@ -220,6 +220,9 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
     db.commit()
     
     try:
+        import logging
+        logger = logging.getLogger("jarvis")
+
         pipeline_def = load_pipeline_definition(session_row["workflow_type"])
         steps_config = pipeline_def.get("steps", [])
         step_config = next((s for s in steps_config if s["index"] == step_index), None)
@@ -502,7 +505,10 @@ def validate_step(session_id: int, step_id: int, validation: dict, db, project_p
     total_steps = len(pipeline_def.get("steps", []))
     
     if step_row["step_name"] == "cloture" and project_path:
-        _write_cloture_docs(edited_output or step_row["output_data"], project_path)
+        raw_cloture = edited_output or step_row["output_data"]
+        cloture_json = _extract_json_safe(raw_cloture)
+        if cloture_json:
+            write_cloture_docs(cloture_json, project_path)
     
     if step_row["step_index"] == total_steps - 1:
         cursor.execute(

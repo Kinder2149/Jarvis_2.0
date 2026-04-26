@@ -232,19 +232,14 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour — 904 nodes, 1044 edges, 81 communities (2026-04-18)
-**Objectif :** ✅ TERMINÉ — TOOL-01 : Script de vérification quotidien
-**Résultat :** 
-  - health_check.py créé à la racine du projet
-  - Vérifications : serveur répond, clés API configurées (> 20 chars), Module Chat (projet + conversation + message IA), Module Code (projet + session session_start + abort), Module Atelier (prospect + liste + nettoyage)
-  - Format sortie : header ASCII art, résultat par module avec ✅/❌ en couleur ANSI, temps d'exécution affiché, exit code 0 si OK / 1 si erreur
-  - Nettoyage automatique : DELETE dans finally block même si test échoue
-  - Usage : python health_check.py (nécessite serveur démarré avec start.bat)
-  - Timeout 30s par module, httpx synchrone, catch exceptions par module
-  - Outil de vérification manuelle rapide avant/après chaque session de développement
-  - CHANGELOG.md mis à jour avec ligne TOOL-01
-  - PROJET_CONTEXTE.md section 8 mis à jour
-**Décompte tests total :** 189 backend + 38 intégration + 41 E2E V2 + 10 E2E modules + 15 rendu + 10 flux + 7 live = **310 tests** + 1 script health check
-**Prochaine session :** Backlog UX priorité moyenne (items 3-5) ou fonctionnalités Phase 4
+**Objectif :** ✅ TERMINÉ — Correction 5 bugs critiques modules Chat / Code / Atelier
+**Résultat :**
+  - Bug 5 (pipeline_engine.py) : `logger` non défini dans `execute_step` pour steps non-"none" → NameError sur cloture → step marqué FAILED. Fix : logger défini au début du try.
+  - Bug 4 (pipeline_engine.py) : `_write_cloture_docs` (inexistant) dans `validate_step` → remplacé par `write_cloture_docs` + parsing JSON préalable.
+  - Bug 3 (atelier_service.py) : regex `_parse_file_delimiters` Format 2 trop stricte → `# INDEX.HTML — NOM` non parsé → export FAILED. Fix : `[^\n]*` au lieu de `\s*` après le nom de fichier.
+  - Bug 2 (prompts.json) : prompt `execution` bloquait sur projet vide → ajout clause "Si fichiers absents : créer depuis zéro". Prompt `atelier_generation_index` : ajout FORMAT DE SORTIE OBLIGATOIRE.
+  - Bug 1 (chat_service.py) : patterns web search trop étroits (actualités, météo, etc. non couverts) + system prompt muet sur internet_access → ajout patterns + note "ACCÈS INTERNET ACTIVÉ" dans build_system_prompt.
+**Prochaine session :** Tests manuels des 3 modules (chat avec internet, code nouveau projet, atelier export)
 
 ---
 

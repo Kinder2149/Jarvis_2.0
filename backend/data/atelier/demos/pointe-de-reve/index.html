@@ -4,543 +4,397 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Pointe de Rêve - Restaurant traditionnel à Villeurbanne. Réservez votre table en ligne.">
-  <title>Pointe de Rêve — Restauration Traditionnelle</title>
+  <meta name="theme-color" content="#53875e">
   
-  <!-- Favicon -->
+  <title>Pointe de Rêve - Restaurant Traditionnel</title>
+  
   <link rel="icon" type="image/png" href="https://www.pointedereve.com/assets/img/logo_pdr.png">
-  
-  <!-- Google Fonts -->
+  <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Satisfy&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Styles -->
-  <link rel="stylesheet" href="styles.css">
-  
-  <style>
-    /* ========== HERO BACKGROUND OVERRIDE ========== */
-    .hero {
-      background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&h=900&fit=crop&q=80');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: scroll;
-    }
-
-    /* ========== MENU TABS ========== */
-    .menu-tabs {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-      border-bottom: 2px solid var(--border-soft);
-      overflow-x: auto;
-      padding-bottom: 1rem;
-    }
-
-    .menu-tab {
-      font-family: var(--font-body);
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 0.75rem 1.5rem;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: var(--text-secondary);
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-    }
-
-    .menu-tab.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-
-    .menu-tab:hover {
-      color: var(--text-main);
-    }
-
-    /* ========== MENU ITEMS ========== */
-    .menu-items {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .menu-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .menu-item:last-child {
-      border-bottom: none;
-    }
-
-    .menu-item-content h4 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 0.25rem;
-    }
-
-    .menu-item-description {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .menu-item-price {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent);
-      white-space: nowrap;
-      min-width: 80px;
-      text-align: right;
-    }
-
-    .menu-item.unavailable {
-      opacity: 0.6;
-    }
-
-    .menu-item.unavailable h4 {
-      text-decoration: line-through;
-    }
-
-    /* ========== SERVICE SELECTION ========== */
-    .service-selector {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .service-card {
-      background-color: var(--bg-main);
-      border: 2px solid var(--border-soft);
-      border-radius: 8px;
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-    }
-
-    .service-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(83, 135, 94, 0.15);
-    }
-
-    .service-card.selected {
-      background-color: rgba(83, 135, 94, 0.08);
-      border-color: var(--accent);
-    }
-
-    .service-card h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      color: var(--text-main);
-    }
-
-    .service-card p {
-      margin: 0.5rem 0 0;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    /* ========== STEPPER ========== */
-    .stepper {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      max-width: 150px;
-    }
-
-    .stepper button {
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      font-size: 1.2rem;
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-soft);
-      color: var(--text-main);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .stepper button:hover {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .stepper input {
-      width: 60px;
-      text-align: center;
-      font-weight: 600;
-      border: 1px solid var(--border-soft);
-      padding: 0.5rem;
-      pointer-events: none;
-    }
-
-    /* ========== CONFIRMATION MESSAGE ========== */
-    .confirmation-message {
-      background-color: rgba(61, 155, 95, 0.1);
-      border: 1px solid var(--success);
-      color: var(--success);
-      padding: 1rem;
-      border-radius: 4px;
-      margin-top: 1.5rem;
-      font-weight: 500;
-      text-align: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .confirmation-message.show {
-      opacity: 1;
-    }
-
-    /* ========== REVIEWS SECTION ========== */
-    .reviews-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .review-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    .review-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .review-author {
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .review-rating {
-      display: flex;
-      gap: 0.25rem;
-      color: #ffc107;
-    }
-
-    .review-text {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      font-style: italic;
-    }
-
-    @media (min-width: 768px) {
-      .reviews-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .service-selector {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    /* ========== HIDDEN ARDOISE ========== */
-    #ardoise.hidden {
-      display: none !important;
-    }
-
-    /* ========== MOBILE MENU ========== */
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--text-main);
-    }
-
-    @media (max-width: 767px) {
-      .menu-toggle {
-        display: block;
-      }
-    }
-  </style>
 </head>
-
 <body>
-  <!-- ========== HEADER ========== -->
-  <header id="header">
-    <nav>
-      <a href="#top" class="nav-logo">
-        <img src="https://www.pointedereve.com/assets/img/logo_pdr.png" alt="Logo Pointe de Rêve" height="50">
-      </a>
-      <a href="admin.html" class="btn-admin">🔒 Espace Gérant</a>
-    </nav>
 
-    <!-- ========== HERO ========== -->
-    <section class="hero" id="top">
-      <div class="hero::before"></div>
-      <div class="hero-content">
-        <h1>Pointe de Rêve</h1>
-        <p class="hero-subtitle">Cuisine traditionnelle généreuse dans une ambiance chaleureuse</p>
-        <a href="#reservation" class="btn-primary">Réserver une table</a>
+<!-- ============================================================================
+     HEADER & NAVIGATION
+     ============================================================================ -->
+<header>
+  <nav>
+    <a href="#top" class="nav-logo">
+      <img src="https://www.pointedereve.com/assets/img/logo_pdr.png" alt="Logo Pointe de Rêve" height="50">
+    </a>
+    <a href="admin.html" class="btn-admin">🔒 Espace Gérant</a>
+  </nav>
+</header>
+
+<!-- ============================================================================
+     HERO SECTION
+     ============================================================================ -->
+<section class="hero" id="top">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Pointe de Rêve</h1>
+    <p class="subtitle">Saveurs traditionnelles, accueil chaleureux</p>
+    <a href="#reservation" class="btn-primary">Réserver une table</a>
+  </div>
+</section>
+
+<!-- ============================================================================
+     SECTION PRÉSENTATION
+     ============================================================================ -->
+<section class="presentation" id="presentation">
+  <div class="container">
+    <h2 class="section-title">Bienvenue à Pointe de Rêve</h2>
+    <div class="grid grid-2">
+      <div class="presentation-text">
+        <p>
+          Installé au cœur de Villeurbanne, Pointe de Rêve est bien plus qu'un simple restaurant. C'est un lieu de vie où la convivialité rhônalpine rencontre la gastronomie de terroir.
+        </p>
+        <p>
+          Depuis plus de vingt ans, nous accueillons nos clients comme des amis. Notre cuisine traditionnelle, réalisée avec des produits frais et locaux, célèbre les saveurs authentiques de la région. De la quenelle lyonnaise au gratin dauphinois, chaque plat raconte une histoire.
+        </p>
+        <p>
+          Notre équipe passionnée vous propose une expérience gustative inoubliable, dans une ambiance chaleureuse et décontractée. Que ce soit pour un déjeuner d'affaires, un dîner en amoureux ou un repas en famille, Pointe de Rêve est votre destination idéale.
+        </p>
       </div>
-    </section>
-  </header>
-
-  <!-- ========== MAIN CONTENT ========== -->
-  <main>
-    <!-- ========== PRÉSENTATION ========== -->
-    <section id="presentation">
-      <div class="section-container">
-        <h2 class="section-title">Bienvenue à Pointe de Rêve</h2>
-        <div class="grid grid-2">
-          <div>
-            <h3>Notre restaurant</h3>
-            <p>Pointe de Rêve vous accueille à Villeurbanne dans une atmosphère conviviale et chaleureuse. Depuis plusieurs années, nous vous proposons une cuisine traditionnelle généreuse, élaborée à partir de produits frais et de qualité.</p>
-            <p>Notre équipe met un point d'honneur à vous offrir un service attentif et courtois, pour que chaque moment passé à notre table soit un vrai plaisir.</p>
-          </div>
-          <div>
-            <h3>Nos valeurs</h3>
-            <ul style="list-style: none; padding: 0;">
-              <li style="margin-bottom: 1rem;">
-                <span style="color: var(--accent); font-weight: 600;">✓ Qualité</span> — Produits frais sélectionnés avec soin
-              </li>
-              <li style="margin-bottom: 1rem;">
-                <span style="color: var(--accent); font-weight: 600;">✓ Convivialité</span> — Une ambiance chaleureuse et accueillante
-              </li>
-              <li style="margin-bottom: 1rem;">
-                <span style="color: var(--accent); font-weight: 600;">✓ Partage</span> — Des moments inoubliables en famille ou entre amis
-              </li>
-              <li>
-                <span style="color: var(--accent); font-weight: 600;">✓ Tradition</span> — Des recettes généreuses et authentiques
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== NOTRE CARTE ========== -->
-    <section id="menu">
-      <div class="section-container">
-        <h2 class="section-title">Notre carte</h2>
-        
-        <div class="menu-tabs" id="menuTabs">
-          <!-- Onglets générés dynamiquement par script.js -->
-        </div>
-
-        <div id="menuContent">
-          <!-- Contenu menu généré dynamiquement par script.js -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== ARDOISE DU JOUR ========== -->
-    <section id="ardoise">
-      <div class="section-container">
-        <div class="ardoise-section">
-          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-            <span class="badge" style="background-color: var(--accent); color: white;">Aujourd'hui</span>
-            <h2 style="margin: 0; font-family: var(--font-titles); color: var(--accent);">Notre ardoise du jour</h2>
-          </div>
-
-          <div id="ardoiseContent">
-            <!-- Contenu ardoise généré dynamiquement par script.js -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== RÉSERVATION ========== -->
-    <section id="reservation">
-      <div class="section-container">
-        <h2 class="section-title">Réserver une table</h2>
-        
-        <form id="reservationForm" style="max-width: 700px; margin: 0 auto;">
-          <!-- Service Selection -->
-          <div class="form-group">
-            <label style="margin-bottom: 1rem; display: block;">Service souhaité *</label>
-            <div class="service-selector">
-              <div class="service-card" data-service="dejeuner">
-                <h3>🌤️ Déjeuner</h3>
-                <p>11h30 - 14h00</p>
-              </div>
-              <div class="service-card" data-service="diner">
-                <h3>🌙 Dîner</h3>
-                <p>19h00 - 22h30</p>
-              </div>
-            </div>
-            <input type="hidden" id="service" name="service" required>
-          </div>
-
-          <!-- Prénom -->
-          <div class="form-group">
-            <label for="prenom">Prénom *</label>
-            <input type="text" id="prenom" name="prenom" required minlength="2" placeholder="Ex. : Marie">
-          </div>
-
-          <!-- Téléphone -->
-          <div class="form-group">
-            <label for="telephone">Téléphone *</label>
-            <input type="tel" id="telephone" name="telephone" required placeholder="06 12 34 56 78" pattern="^[0-9\s\-\.\+\(\)]+$">
-          </div>
-
-          <!-- Date souhaitée -->
-          <div class="form-group">
-            <label for="date">Date souhaitée *</label>
-            <input type="date" id="date" name="date" required>
-          </div>
-
-          <!-- Nombre de couverts -->
-          <div class="form-group">
-            <label>Nombre de couverts *</label>
-            <div class="stepper">
-              <button type="button" class="stepper-minus" aria-label="Diminuer le nombre de couverts">−</button>
-              <input type="number" id="couverts" name="couverts" value="2" min="1" max="12" readonly>
-              <button type="button" class="stepper-plus" aria-label="Augmenter le nombre de couverts">+</button>
-            </div>
-          </div>
-
-          <!-- Message / Allergie -->
-          <div class="form-group">
-            <label for="message">Allergie, occasion spéciale...</label>
-            <textarea id="message" name="message" maxlength="300" placeholder="Allergie, occasion spéciale, régime alimentaire..."></textarea>
-            <small style="color: var(--text-secondary); font-size: 0.85rem;">300 caractères max</small>
-          </div>
-
-          <!-- Submit Button -->
-          <button type="submit" class="btn-primary btn-full-width">Réserver ma table</button>
-
-          <!-- Confirmation Message -->
-          <div class="confirmation-message" id="confirmationMessage">
-            ✓ Votre réservation a été bien reçue ! Nous vous contacterons rapidement pour confirmer.
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- ========== AVIS CLIENTS ========== -->
-    <section id="reviews">
-      <div class="section-container">
-        <h2 class="section-title">Vos avis</h2>
-        
-        <div class="reviews-grid">
-          <div class="review-card">
-            <div class="review-header">
-              <span class="review-author">Stéphane P.</span>
-              <div class="review-rating">
-                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-              </div>
-            </div>
-            <p class="review-text">"Un vrai moment de détente ! Les plats sont savoureux et généreusement servis. L'équipe est chaleureuse et à l'écoute. Nous reviendrons sans hésiter."</p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <span class="review-author">Juliette M.</span>
-              <div class="review-rating">
-                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-              </div>
-            </div>
-            <p class="review-text">"L'ambiance est très agréable et les recettes authentiques de la maison sont excellentes. Qualité et service impeccables. Je recommande vivement !"</p>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <span class="review-author">Philippe D.</span>
-              <div class="review-rating">
-                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-              </div>
-            </div>
-            <p class="review-text">"Cuisine généreuse et plats savoureux. L'endroit est confortable et l'accueil très sympathique. On oublie la routine du quotidien le temps d'un repas."</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== INFORMATIONS PRATIQUES ========== -->
-    <section id="infos">
-      <div class="section-container">
-        <h2 class="section-title">Nous trouver</h2>
-        
-        <div class="grid grid-2">
-          <div>
-            <h3>Coordonnées</h3>
-            <p>
-              <strong>Pointe de Rêve</strong><br>
-              Villeurbanne (Rhône)<br>
-              <strong>Téléphone :</strong> <a href="tel:+33469000000">04 69 00 00 00</a><br>
-              <strong>Email :</strong> <a href="mailto:contact@pointedereve.com">contact@pointedereve.com</a>
-            </p>
-          </div>
-          <div>
-            <h3>Horaires</h3>
-            <p>
-              <strong>Mardi au jeudi :</strong> 11h30-14h00 | 19h00-22h30<br>
-              <strong>Vendredi & samedi :</strong> 11h30-14h00 | 19h00-23h00<br>
-              <strong>Dimanche :</strong> 11h30-14h00 | 19h00-22h00<br>
-              <strong>Lundi :</strong> Fermé
-            </p>
-          </div>
-        </div>
-
-        <div style="margin-top: 2rem; text-align: center;">
-          <a href="https://maps.google.com/?q=Villeurbanne+Rhone" target="_blank" class="btn-secondary">
-            📍 Nous localiser sur Google Maps
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ========== FOOTER ========== -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h4>Pointe de Rêve</h4>
-          <p>Restaurant traditionnel proposant une cuisine généreuse dans une ambiance chaleureuse à Villeurbanne.</p>
-        </div>
-        <div class="footer-section">
-          <h4>Horaires</h4>
-          <p>
-            Mardi-Jeudi : 11h30-14h00 • 19h00-22h30<br>
-            Vendredi-Samedi : 11h30-14h00 • 19h00-23h00<br>
-            Dimanche : 11h30-14h00 • 19h00-22h00<br>
-            <strong>Lundi : Fermé</strong>
-          </p>
-        </div>
-        <div class="footer-section">
-          <h4>Contact</h4>
-          <ul>
-            <li><a href="tel:+33469000000">📞 04 69 00 00 00</a></li>
-            <li><a href="mailto:contact@pointedereve.com">📧 contact@pointedereve.com</a></li>
-            <li><a href="https://maps.google.com/?q=Villeurbanne+Rhone" target="_blank">📍 Localisation</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>&copy; 2026 Pointe de Rêve — Tous droits réservés</p>
-        <a href="admin.html" class="footer-link-admin">🔒 Espace gérant</a>
+      <div class="presentation-image">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&h=400&fit=crop&q=80" alt="Équipe du restaurant Pointe de Rêve" class="img-responsive">
       </div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <!-- Scripts -->
-  <script src="script.js"></script>
+<!-- ============================================================================
+     SECTION NOTRE CARTE
+     ============================================================================ -->
+<section class="menu-section" id="menu">
+  <div class="container">
+    <h2 class="section-title">Notre Carte</h2>
+    
+    <div class="tabs-nav" role="tablist">
+      <button class="tab-button active" role="tab" aria-selected="true" data-tab="entrees">Entrées</button>
+      <button class="tab-button" role="tab" aria-selected="false" data-tab="plats">Plats</button>
+      <button class="tab-button" role="tab" aria-selected="false" data-tab="desserts">Desserts</button>
+    </div>
+
+    <!-- ENTRÉES -->
+    <div id="entrees" class="tab-content active">
+      <div class="grid grid-2">
+        <div class="menu-item">
+          <h4>Terrine de foie gras maison</h4>
+          <p class="menu-price">14,00 €</p>
+          <p class="menu-description">Chutney de figues, brioche toastée</p>
+        </div>
+        <div class="menu-item">
+          <h4>Carpaccio de saint-jacques</h4>
+          <p class="menu-price">16,50 €</p>
+          <p class="menu-description">Citron, huile d'olive vierge extra, fleur de sel</p>
+        </div>
+        <div class="menu-item">
+          <h4>Quenelle lyonnaise gratinée</h4>
+          <p class="menu-price">12,50 €</p>
+          <p class="menu-description">Sauce Nantua, gruyère râpé</p>
+        </div>
+        <div class="menu-item">
+          <h4>Salade de chèvre chaud</h4>
+          <p class="menu-price">11,00 €</p>
+          <p class="menu-description">Roquette, noix, croûtons à l'ail</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLATS -->
+    <div id="plats" class="tab-content">
+      <div class="grid grid-2">
+        <div class="menu-item">
+          <h4>Filet de bœuf sauce béarnaise</h4>
+          <p class="menu-price">24,00 €</p>
+          <p class="menu-description">Accompanied by gratin dauphinois and seasonal vegetables</p>
+        </div>
+        <div class="menu-item">
+          <h4>Magret de canard, jus de cerise</h4>
+          <p class="menu-price">21,00 €</p>
+          <p class="menu-description">Cuisson selon votre goût, frites maison</p>
+        </div>
+        <div class="menu-item">
+          <h4>Brochette de lotte et crevettes</h4>
+          <p class="menu-price">19,50 €</p>
+          <p class="menu-description">Sauce safranée, riz pilaf</p>
+        </div>
+        <div class="menu-item">
+          <h4>Blanquette de veau tradition</h4>
+          <p class="menu-price">18,00 €</p>
+          <p class="menu-description">Champignons de Paris, oignons perlés, riz blanc</p>
+        </div>
+        <div class="menu-item">
+          <h4>Côte d'agneau grillée</h4>
+          <p class="menu-price">25,50 €</p>
+          <p class="menu-description">Herbes de Provence, légumes rôtis</p>
+        </div>
+        <div class="menu-item">
+          <h4>Morue à la lyonnaise</h4>
+          <p class="menu-price">17,50 €</p>
+          <p class="menu-description">Oignons, persil, sauce beurre blanc</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESSERTS -->
+    <div id="desserts" class="tab-content">
+      <div class="grid grid-2">
+        <div class="menu-item">
+          <h4>Fondant au chocolat</h4>
+          <p class="menu-price">7,50 €</p>
+          <p class="menu-description">Glace vanille, coulis de framboise</p>
+        </div>
+        <div class="menu-item">
+          <h4>Tarte Tatin maison</h4>
+          <p class="menu-price">7,00 €</p>
+          <p class="menu-description">Glace crème fraîche</p>
+        </div>
+        <div class="menu-item">
+          <h4>Panna cotta aux fruits rouges</h4>
+          <p class="menu-price">6,50 €</p>
+          <p class="menu-description">Coulis de cassis</p>
+        </div>
+        <div class="menu-item">
+          <h4>Profiteroles maison</h4>
+          <p class="menu-price">7,50 €</p>
+          <p class="menu-description">Sauce au chocolat chaud</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================================
+     SECTION ARDOISE DU JOUR
+     ============================================================================ -->
+<section class="ardoise-section-full" id="ardoise">
+  <div class="container">
+    <div id="ardoise-content" class="ardoise-display">
+      <div class="ardoise-badge">Aujourd'hui</div>
+      
+      <div class="ardoise-item">
+        <p class="ardoise-label">Plat du jour</p>
+        <h3 class="ardoise-plat" id="ardoise-plat-nom">Filet de bœuf, sauce au poivre</h3>
+        <p class="ardoise-note" id="ardoise-plat-note">Cuisson selon votre goût</p>
+        <p class="ardoise-prix" id="ardoise-plat-prix">22,00 €</p>
+      </div>
+
+      <div class="ardoise-extras">
+        <div class="ardoise-item-small" id="ardoise-entree-wrap" style="display:none;">
+          <p class="ardoise-label">Entrée du jour</p>
+          <p class="ardoise-plat" id="ardoise-entree-nom"></p>
+          <p class="ardoise-prix" id="ardoise-entree-prix"></p>
+        </div>
+
+        <div class="ardoise-item-small" id="ardoise-dessert-wrap" style="display:none;">
+          <p class="ardoise-label">Dessert du jour</p>
+          <p class="ardoise-plat" id="ardoise-dessert-nom"></p>
+          <p class="ardoise-prix" id="ardoise-dessert-prix"></p>
+        </div>
+      </div>
+
+      <div id="ardoise-formule-wrap" class="ardoise-formule" style="display:none;">
+        <p class="ardoise-label">Formule du jour</p>
+        <p class="ardoise-plat" id="ardoise-formule-label">Entrée + Plat + Dessert</p>
+        <p class="ardoise-prix" id="ardoise-formule-prix">31,00 €</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================================
+     SECTION RÉSERVATION
+     ============================================================================ -->
+<section class="reservation-section" id="reservation">
+  <div class="container">
+    <h2 class="section-title">Réserver une Table</h2>
+    
+    <form id="reservation-form" class="reservation-form">
+      <div class="form-group">
+        <label for="res-prenom">Votre prénom *</label>
+        <input 
+          type="text" 
+          id="res-prenom" 
+          name="prenom" 
+          required 
+          minlength="2"
+          placeholder="Marie"
+          aria-required="true"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="res-telephone">Téléphone *</label>
+        <input 
+          type="tel" 
+          id="res-telephone" 
+          name="telephone" 
+          required 
+          placeholder="06 12 34 56 78"
+          aria-required="true"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="res-date">Date souhaitée *</label>
+        <input 
+          type="date" 
+          id="res-date" 
+          name="date" 
+          required 
+          aria-required="true"
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Service *</label>
+        <div class="service-options">
+          <label class="service-card">
+            <input type="radio" name="service" value="dejeuner" required>
+            <span class="service-label">
+              <span class="service-emoji">☀️</span>
+              <span class="service-text">Déjeuner</span>
+            </span>
+          </label>
+          <label class="service-card">
+            <input type="radio" name="service" value="diner" required>
+            <span class="service-label">
+              <span class="service-emoji">🌙</span>
+              <span class="service-text">Dîner</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="res-couverts">Nombre de couverts *</label>
+        <div class="stepper-group">
+          <button type="button" class="stepper-btn stepper-minus" aria-label="Diminuer le nombre de couverts">−</button>
+          <input 
+            type="number" 
+            id="res-couverts" 
+            name="couverts" 
+            value="2" 
+            min="1" 
+            max="12" 
+            readonly
+            aria-label="Nombre de couverts"
+          >
+          <button type="button" class="stepper-btn stepper-plus" aria-label="Augmenter le nombre de couverts">+</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="res-message">Allergies / Occasion spéciale</label>
+        <textarea 
+          id="res-message" 
+          name="message" 
+          placeholder="Dites-nous si vous avez une allergie ou si vous célébrez quelque chose..."
+          maxlength="300"
+        ></textarea>
+        <small id="char-count">0/300</small>
+      </div>
+
+      <div id="reservation-feedback" class="feedback-message"></div>
+
+      <button type="submit" class="btn-primary btn-submit">Réserver ma table</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================================
+     SECTION AVIS CLIENTS
+     ============================================================================ -->
+<section class="reviews-section" id="reviews">
+  <div class="container">
+    <h2 class="section-title">Avis de nos Clients</h2>
+    <div class="grid grid-3">
+      <div class="review-card">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">
+          "Un vrai moment de détente ! Les plats sont délicieux et savoureux. Le service est impeccable et le personnel très agréable. Je recommande vivement !"
+        </p>
+        <p class="review-author">— Sophie M.</p>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">
+          "Nous venons régulièrement avec la famille. L'ambiance est chaleureuse, les portions généreuses et la qualité toujours au rendez-vous. C'est devenu notre restaurant préféré !"
+        </p>
+        <p class="review-author">— Thomas B.</p>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">
+          "Excellent pour une soirée en tête-à-tête. La carte est variée, les vins bien choisis et le rapport qualité-prix imbattable. À refaire sans hésiter !"
+        </p>
+        <p class="review-author">— Laurent D.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================================
+     SECTION INFOS PRATIQUES
+     ============================================================================ -->
+<section class="infos-section" id="infos">
+  <div class="container">
+    <h2 class="section-title">Infos Pratiques</h2>
+    <div class="grid grid-2">
+      <div class="info-card">
+        <h3>📍 Localisation</h3>
+        <p>Villeurbanne, Rhône</p>
+        <p><a href="https://maps.google.com/?q=Villeurbanne+restaurant" target="_blank" rel="noopener noreferrer" class="btn-secondary">Voir sur Google Maps</a></p>
+      </div>
+      <div class="info-card">
+        <h3>⏰ Horaires</h3>
+        <p>Mardi - Jeudi : 12h-14h / 19h-22h</p>
+        <p>Vendredi - Samedi : 12h-14h / 19h-23h</p>
+        <p>Dimanche : 12h-15h</p>
+        <p>Lundi : Fermé</p>
+      </div>
+      <div class="info-card">
+        <h3>📞 Nous contacter</h3>
+        <p>Appelez-nous pour des questions</p>
+        <p><a href="tel:+33412345678">+33 4 12 34 56 78</a></p>
+      </div>
+      <div class="info-card">
+        <h3>✉️ Email</h3>
+        <p>Pour nous écrire</p>
+        <p><a href="mailto:contact@pointedereve.com">contact@pointedereve.com</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================================
+     FOOTER
+     ============================================================================ -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="#presentation">Accueil</a>
+      <a href="#menu">Carte</a>
+      <a href="#ardoise">Ardoise du jour</a>
+      <a href="#reservation">Réserver</a>
+      <a href="admin.html">Espace Gérant</a>
+    </div>
+    <p>&copy; 2026 Pointe de Rêve. Tous droits réservés.</p>
+    <p style="font-size: 0.85rem; margin-top: 1rem;">
+      Restaurant traditionnel · Villeurbanne, Rhône · <a href="tel:+33412345678">+33 4 12 34 56 78</a>
+    </p>
+  </div>
+</footer>
+
+<!-- ============================================================================
+     SCRIPTS
+     ============================================================================ -->
+<script src="script.js"></script>
+
 </body>
 </html>

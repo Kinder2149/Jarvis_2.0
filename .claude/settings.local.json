@@ -40,7 +40,8 @@
       "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" show 3207a9d --stat)",
       "Bash(python3 -c \" import json with open\\('/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json'\\) as f: data = json.load\\(f\\) for w in data['workflows']: print\\(f'{w[\\\\\"id\\\\\"]}: {len\\(w[\\\\\"steps\\\\\"]\\)} steps'\\) \")",
       "Bash(python -c \" import json with open\\('C:/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json'\\) as f: data = json.load\\(f\\) for w in data['workflows']: print\\(f'{w[\\\\\"id\\\\\"]}: {len\\(w[\\\\\"steps\\\\\"]\\)} steps'\\) \")",
-      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" status --short)"
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" status --short)",
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" log --oneline -10)"
     ]
   }
 }

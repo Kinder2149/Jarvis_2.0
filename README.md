@@ -4,12 +4,27 @@ Interface locale d'orchestration de workflows IA multi-modèles.
 
 ## Démarrage
 
+### Installation des dépendances (première fois uniquement)
+
 ```bash
 pip install -r requirements.txt
-start.bat
 ```
 
-L'application s'ouvre automatiquement sur `http://localhost:8000/app/index.html`
+### Méthode 1 : Double-clic sur `start.bat` (recommandé)
+
+Double-cliquer sur `start.bat` à la racine du projet.
+
+- Le serveur démarre automatiquement en mode `--reload`
+- Le navigateur s'ouvre sur `http://localhost:8000/app/index.html`
+- Appuyer sur une touche dans la fenêtre CMD pour arrêter le serveur
+
+### Méthode 2 : Commande terminal manuelle
+
+```bash
+python -m uvicorn backend.main:app --reload --port 8000
+```
+
+Puis ouvrir manuellement `http://localhost:8000/app/index.html` dans le navigateur.
 
 ## Documentation
 
