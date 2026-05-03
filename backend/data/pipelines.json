@@ -1,705 +1,71 @@
 {
-  "session_start": {
-    "workflow_type": "session_start",
-    "display_name": "Début de session",
+  "code_mission": {
+    "workflow_type": "code_mission",
+    "display_name": "Mission Code",
     "phases": [
-      "Orientation"
-    ],
-    "steps": [
-      {
-        "index": 0,
-        "name": "orientation",
-        "display_name": "Orientation du projet",
-        "model_type": "routing",
-        "prompt_key": "orientation",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Orientation",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            1,
-            8,
-            9
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": true,
-          "inject_global_rules": true
-        }
-      }
-    ]
-  },
-  "session_end": {
-    "workflow_type": "session_end",
-    "display_name": "Fin de session",
-    "phases": [
+      "Préparation",
+      "Exécution",
+      "Validation",
       "Clôture"
     ],
     "steps": [
       {
         "index": 0,
-        "name": "cloture_docs",
-        "display_name": "Mise à jour documentation",
-        "model_type": "structuring",
-        "prompt_key": "cloture",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Clôture",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            1,
-            4,
-            6,
-            8,
-            9
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": true,
-          "inject_global_rules": true
-        }
-      }
-    ]
-  },
-  "bug_simple": {
-    "workflow_type": "bug_simple",
-    "display_name": "Correction de bug",
-    "phases": [
-      "Analyse",
-      "Diagnostic",
-      "Correction"
-    ],
-    "steps": [
-      {
-        "index": 0,
-        "name": "analyse_bug",
-        "display_name": "Analyse du bug",
-        "model_type": "routing",
-        "prompt_key": "analyse_bug",
+        "name": "sante_cadrage",
+        "display_name": "Santé du cadrage",
+        "model_type": "none",
+        "prompt_key": null,
         "requires_validation": false,
-        "output_type": "json",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false,
-          "inject_global_rules": true
-        }
+        "output_type": "cadrage_report",
+        "phase": "Préparation",
+        "context_envelope": {}
       },
       {
         "index": 1,
-        "name": "collecte_infos",
-        "display_name": "Collecte d'informations",
-        "model_type": "routing",
-        "prompt_key": "collecte_infos",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            2
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "analyse_bug"
-          ],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 2,
-        "name": "selection_fichiers",
-        "display_name": "Sélection des fichiers",
-        "model_type": "routing",
-        "prompt_key": "selection_fichiers",
-        "requires_validation": false,
-        "output_type": "json",
-        "phase": "Diagnostic",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "collecte_infos"
-          ],
-          "user_input": false,
-          "include_file_list": true,
-          "graphify_report": true
-        }
-      },
-      {
-        "index": 3,
-        "name": "diagnostic",
-        "display_name": "Diagnostic technique",
-        "model_type": "analysis",
-        "prompt_key": "bug_diagnostic",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Diagnostic",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            2,
-            4
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "analyse_bug",
-            "collecte_infos",
-            "selection_fichiers"
-          ],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": true,
-          "read_selected_files": true
-        }
-      },
-      {
-        "index": 4,
-        "name": "correction",
-        "display_name": "Correction du code",
-        "model_type": "code_smart",
-        "prompt_key": "bug_correction",
-        "requires_validation": false,
-        "output_type": "code_blocks",
-        "phase": "Correction",
-        "complexity_source": "diagnostic",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            2
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "diagnostic"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false,
-          "read_selected_files": true
-        }
-      },
-      {
-        "index": 5,
-        "name": "verification_correction",
-        "display_name": "Vérification — validation requise",
-        "model_type": "analysis",
-        "prompt_key": "verification_correction",
-        "requires_validation": true,
-        "output_type": "verification",
-        "phase": "Correction",
-        "write_files_from_step": "correction",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            2
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "diagnostic",
-            "correction"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 6,
-        "name": "cloture",
-        "display_name": "Clôture et documentation",
-        "model_type": "structuring",
-        "prompt_key": "cloture",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Correction",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            4,
-            8
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "diagnostic",
-            "correction",
-            "verification_correction"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      }
-    ]
-  },
-  "mission_complexe": {
-    "workflow_type": "mission_complexe",
-    "display_name": "Mission complexe",
-    "phases": [
-      "Analyse",
-      "Plan",
-      "Exécution"
-    ],
-    "steps": [
-      {
-        "index": 0,
-        "name": "cadrage",
-        "display_name": "Cadrage de la mission",
-        "model_type": "analysis",
-        "prompt_key": "cadrage",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            1,
-            4,
-            5,
-            6
-          ],
-          "stack_standard": true,
-          "previous_steps_output": [],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": true,
-          "inject_global_rules": true
-        }
-      },
-      {
-        "index": 1,
-        "name": "document_mission",
-        "display_name": "Document de mission",
-        "model_type": "analysis",
-        "prompt_key": "document_mission",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            1,
-            4,
-            5,
-            6
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "cadrage"
-          ],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false,
-          "inject_global_rules": true
-        }
-      },
-      {
-        "index": 2,
-        "name": "selection_fichiers",
-        "display_name": "Sélection des fichiers",
-        "model_type": "routing",
-        "prompt_key": "selection_fichiers",
-        "requires_validation": false,
-        "output_type": "json",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "document_mission"
-          ],
-          "user_input": false,
-          "include_file_list": true,
-          "graphify_report": true
-        }
-      },
-      {
-        "index": 3,
         "name": "execution",
-        "display_name": "Exécution du code",
-        "model_type": "code_smart",
+        "display_name": "Génération du code",
+        "model_type": "code",
         "prompt_key": "execution",
         "requires_validation": false,
         "output_type": "code_blocks",
         "phase": "Exécution",
-        "complexity_source": "cadrage",
+        "supports_chunking": true,
         "context_envelope": {
-          "projet_contexte_sections": [
-            2
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "document_mission"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false,
-          "read_selected_files": true
+          "user_input": true,
+          "read_targeted_files": true
         }
       },
       {
-        "index": 4,
-        "name": "verification_execution",
+        "index": 2,
+        "name": "verification",
         "display_name": "Vérification — validation requise",
         "model_type": "analysis",
-        "prompt_key": "verification_execution",
+        "prompt_key": "verification",
         "requires_validation": true,
         "output_type": "verification",
-        "phase": "Exécution",
         "write_files_from_step": "execution",
+        "phase": "Validation",
         "context_envelope": {
-          "projet_contexte_sections": [
-            2
-          ],
-          "stack_standard": false,
+          "user_input": true,
           "previous_steps_output": [
-            "document_mission",
             "execution"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
+          ]
         }
       },
       {
-        "index": 5,
+        "index": 3,
         "name": "cloture",
-        "display_name": "Clôture et documentation",
+        "display_name": "Clôture",
         "model_type": "structuring",
         "prompt_key": "cloture",
         "requires_validation": false,
         "output_type": "text",
-        "phase": "Exécution",
+        "phase": "Clôture",
         "context_envelope": {
-          "projet_contexte_sections": [
-            4,
-            6,
-            8,
-            9
-          ],
-          "stack_standard": false,
           "previous_steps_output": [
-            "document_mission",
             "execution",
-            "verification_execution"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      }
-    ]
-  },
-  "nouveau_projet": {
-    "workflow_type": "nouveau_projet",
-    "display_name": "Nouveau projet",
-    "phases": [
-      "Analyse",
-      "Plan",
-      "Création"
-    ],
-    "steps": [
-      {
-        "index": 0,
-        "name": "analyse_besoin",
-        "display_name": "Analyse du besoin",
-        "model_type": "routing",
-        "prompt_key": "analyse_besoin",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false,
-          "inject_global_rules": true
-        }
-      },
-      {
-        "index": 1,
-        "name": "questionnaire",
-        "display_name": "Questions projet",
-        "model_type": "routing",
-        "prompt_key": "questionnaire",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": true,
-          "previous_steps_output": [
-            "analyse_besoin"
-          ],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 2,
-        "name": "draft_projet_contexte",
-        "display_name": "PROJET_CONTEXTE.md",
-        "model_type": "analysis",
-        "prompt_key": "draft_projet_contexte",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": true,
-          "previous_steps_output": [
-            "questionnaire"
-          ],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false,
-          "inject_global_rules": true
-        }
-      },
-      {
-        "index": 3,
-        "name": "validation_stack",
-        "display_name": "Validation stack",
-        "model_type": "routing",
-        "prompt_key": "validation_stack",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": true,
-          "previous_steps_output": [
-            "draft_projet_contexte"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 4,
-        "name": "plan_structure",
-        "display_name": "Plan de structure",
-        "model_type": "code",
-        "prompt_key": "plan_structure",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "draft_projet_contexte"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 5,
-        "name": "creation_fichiers",
-        "display_name": "Création des fichiers",
-        "model_type": "code",
-        "prompt_key": "creation_fichiers",
-        "requires_validation": false,
-        "output_type": "code_blocks",
-        "phase": "Création",
-        "write_files_on_complete": true,
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "plan_structure"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 6,
-        "name": "cloture",
-        "display_name": "Clôture initiale",
-        "model_type": "structuring",
-        "prompt_key": "cloture_nouveau_projet",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Création",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            1
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "draft_projet_contexte",
-            "creation_fichiers"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      }
-    ]
-  },
-  "projet_existant": {
-    "workflow_type": "projet_existant",
-    "display_name": "Audit projet existant",
-    "phases": [
-      "Analyse",
-      "Documentation",
-      "Plan"
-    ],
-    "steps": [
-      {
-        "index": 0,
-        "name": "scan_projet",
-        "display_name": "Scan du projet",
-        "model_type": "routing",
-        "prompt_key": "scan_projet",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [],
-          "user_input": false,
-          "include_file_list": true,
-          "graphify_report": false,
-          "inject_global_rules": true
-        }
-      },
-      {
-        "index": 1,
-        "name": "audit_code",
-        "display_name": "Audit du code",
-        "model_type": "analysis",
-        "prompt_key": "audit_code",
-        "requires_validation": false,
-        "output_type": "json",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": true,
-          "previous_steps_output": [],
-          "user_input": false,
-          "include_file_list": true,
-          "graphify_report": true,
-          "inject_global_rules": true
-        }
-      },
-      {
-        "index": 2,
-        "name": "questions_grises",
-        "display_name": "Questions zones floues",
-        "model_type": "routing",
-        "prompt_key": "questions_grises",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Analyse",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "audit_code"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 3,
-        "name": "production_projet_contexte",
-        "display_name": "PROJET_CONTEXTE.md",
-        "model_type": "analysis",
-        "prompt_key": "production_projet_contexte",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Documentation",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": true,
-          "previous_steps_output": [
-            "audit_code",
-            "questions_grises"
-          ],
-          "user_input": true,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 4,
-        "name": "nettoyage_docs",
-        "display_name": "Nettoyage documentation",
-        "model_type": "structuring",
-        "prompt_key": "nettoyage_docs",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Documentation",
-        "context_envelope": {
-          "projet_contexte_sections": [],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "production_projet_contexte"
-          ],
-          "user_input": false,
-          "include_file_list": true,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 5,
-        "name": "plan_conformite",
-        "display_name": "Plan de conformité méthode",
-        "model_type": "analysis",
-        "prompt_key": "plan_conformite",
-        "requires_validation": true,
-        "output_type": "text",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            4,
-            9
-          ],
-          "stack_standard": true,
-          "previous_steps_output": [
-            "production_projet_contexte",
-            "audit_code"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
-        }
-      },
-      {
-        "index": 6,
-        "name": "cloture",
-        "display_name": "Clôture et documentation",
-        "model_type": "structuring",
-        "prompt_key": "cloture",
-        "requires_validation": false,
-        "output_type": "text",
-        "phase": "Plan",
-        "context_envelope": {
-          "projet_contexte_sections": [
-            1
-          ],
-          "stack_standard": false,
-          "previous_steps_output": [
-            "production_projet_contexte",
-            "plan_conformite"
-          ],
-          "user_input": false,
-          "include_file_list": false,
-          "graphify_report": false
+            "verification"
+          ]
         }
       }
     ]
@@ -826,6 +192,31 @@
       },
       {
         "index": 5,
+        "name": "brief_technique",
+        "display_name": "Brief technique",
+        "model_type": "analysis",
+        "prompt_key": "atelier_brief_technique",
+        "requires_validation": false,
+        "output_type": "text",
+        "phase": "Génération",
+        "context_envelope": {
+          "atelier_resources": [
+            "STACK_STANDARD",
+            "TOOL_SPECS"
+          ],
+          "fetch_url": false,
+          "inject_activated_tools": false,
+          "previous_steps_output": [
+            "saisie",
+            "analyse_site",
+            "proposition"
+          ],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 6,
         "name": "generation_css",
         "display_name": "Génération CSS",
         "model_type": "code",
@@ -838,36 +229,11 @@
             "STACK_STANDARD"
           ],
           "fetch_url": false,
-          "inject_activated_tools": true,
-          "previous_steps_output": [
-            "saisie",
-            "analyse_site"
-          ],
-          "user_input": false,
-          "include_file_list": false
-        }
-      },
-      {
-        "index": 6,
-        "name": "generation_index",
-        "display_name": "Génération site public",
-        "model_type": "code",
-        "prompt_key": "atelier_generation_index",
-        "requires_validation": false,
-        "output_type": "file",
-        "phase": "Génération",
-        "context_envelope": {
-          "atelier_resources": [
-            "STACK_STANDARD",
-            "CATEGORIES_CLIENT_RESTAURATION"
-          ],
-          "fetch_url": false,
-          "inject_activated_tools": true,
+          "inject_activated_tools": false,
           "previous_steps_output": [
             "saisie",
             "analyse_site",
-            "proposition",
-            "generation_css"
+            "brief_technique"
           ],
           "user_input": false,
           "include_file_list": false
@@ -875,16 +241,17 @@
       },
       {
         "index": 7,
-        "name": "generation_admin",
-        "display_name": "Génération espace gérant",
+        "name": "generation_html",
+        "display_name": "Génération index.html",
         "model_type": "code",
-        "prompt_key": "atelier_generation_admin",
+        "prompt_key": "atelier_generation_html",
         "requires_validation": false,
         "output_type": "file",
         "phase": "Génération",
         "context_envelope": {
           "atelier_resources": [
             "STACK_STANDARD",
+            "TOOL_SPECS",
             "CATEGORIES_CLIENT_RESTAURATION"
           ],
           "fetch_url": false,
@@ -893,6 +260,7 @@
             "saisie",
             "analyse_site",
             "proposition",
+            "brief_technique",
             "generation_css"
           ],
           "user_input": false,
@@ -901,9 +269,86 @@
       },
       {
         "index": 8,
+        "name": "generation_script",
+        "display_name": "Génération script.js",
+        "model_type": "code",
+        "prompt_key": "atelier_generation_script",
+        "requires_validation": false,
+        "output_type": "file",
+        "phase": "Génération",
+        "context_envelope": {
+          "atelier_resources": [
+            "STACK_STANDARD"
+          ],
+          "fetch_url": false,
+          "inject_activated_tools": true,
+          "previous_steps_output": [
+            "saisie",
+            "analyse_site",
+            "brief_technique",
+            "generation_html"
+          ],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 9,
+        "name": "generation_admin_html",
+        "display_name": "Génération admin.html",
+        "model_type": "code",
+        "prompt_key": "atelier_generation_admin_html",
+        "requires_validation": false,
+        "output_type": "file",
+        "phase": "Génération",
+        "context_envelope": {
+          "atelier_resources": [
+            "STACK_STANDARD",
+            "TOOL_SPECS"
+          ],
+          "fetch_url": false,
+          "inject_activated_tools": true,
+          "previous_steps_output": [
+            "saisie",
+            "analyse_site",
+            "brief_technique",
+            "generation_css"
+          ],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 10,
+        "name": "generation_admin_js",
+        "display_name": "Génération admin.js",
+        "model_type": "code",
+        "prompt_key": "atelier_generation_admin_js",
+        "requires_validation": false,
+        "output_type": "file",
+        "phase": "Génération",
+        "context_envelope": {
+          "atelier_resources": [
+            "STACK_STANDARD"
+          ],
+          "fetch_url": false,
+          "inject_activated_tools": true,
+          "previous_steps_output": [
+            "saisie",
+            "analyse_site",
+            "brief_technique",
+            "generation_admin_html",
+            "generation_script"
+          ],
+          "user_input": false,
+          "include_file_list": false
+        }
+      },
+      {
+        "index": 11,
         "name": "verification_qa",
         "display_name": "Vérification qualité avant export",
-        "model_type": "routing",
+        "model_type": "analysis",
         "prompt_key": "atelier_verification_qa",
         "requires_validation": false,
         "output_type": "qa_report",
@@ -917,16 +362,19 @@
           "previous_steps_output": [
             "saisie",
             "analyse_site",
+            "brief_technique",
             "generation_css",
-            "generation_index",
-            "generation_admin"
+            "generation_html",
+            "generation_script",
+            "generation_admin_html",
+            "generation_admin_js"
           ],
           "user_input": false,
           "include_file_list": false
         }
       },
       {
-        "index": 9,
+        "index": 12,
         "name": "export",
         "display_name": "Export fichiers démo",
         "model_type": "none",
@@ -940,8 +388,10 @@
           "inject_activated_tools": false,
           "previous_steps_output": [
             "generation_css",
-            "generation_index",
-            "generation_admin"
+            "generation_html",
+            "generation_script",
+            "generation_admin_html",
+            "generation_admin_js"
           ],
           "user_input": false,
           "include_file_list": false

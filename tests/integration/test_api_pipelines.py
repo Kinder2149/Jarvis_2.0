@@ -42,11 +42,10 @@ def client_and_project(temp_db_path, tmp_path):
 
 
 MOCK_RESPONSES = {
-    "routing": '{"classification": "bug_simple", "description": "login renvoie 500"}',
-    "collecte_info": "Questions : 1. Quel est le message d'erreur exact ? 2. Quel fichier ?",
-    "diagnostic": "Couche : Logique. Cause : mauvaise gestion exception. Fichier : backend/routes/auth.py",
-    "correction": "```python\n# backend/routes/auth.py\ntry:\n    ...\nexcept Exception as e:\n    raise HTTPException(500, str(e))\n```",
-    "cloture": "Session cloturee. Fichiers modifies : backend/routes/auth.py",
+    "sante_cadrage": "",
+    "execution": "```python\n# backend/main.py\nprint('hello')\n```",
+    "verification": "Checklist: 1. Tester le bouton → OK. 2. Pas de régression.",
+    "cloture": '{"section_8": "Mission terminée", "changelog_line": "Fix login"}',
 }
 
 
@@ -65,8 +64,8 @@ class TestStartPipeline:
 
             response = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "bug_simple",
-                "initial_input": "Le login renvoie une erreur 500"
+                "workflow_type": "code_mission",
+                "initial_input": "Implémenter l'authentification JWT"
             })
 
         assert response.status_code == 200
@@ -79,14 +78,14 @@ class TestStartPipeline:
 
             data = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "bug_simple",
-                "initial_input": "Bug: 500 sur login"
+                "workflow_type": "code_mission",
+                "initial_input": "Ajouter tests unitaires"
             }).json()
 
         assert "session" in data
         assert "execution_result" in data
 
-    def test_session_creee_avec_7_steps(self, client_and_project):
+    def test_session_creee_avec_4_steps(self, client_and_project):
         c, project_id, _ = client_and_project
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
@@ -94,39 +93,40 @@ class TestStartPipeline:
 
             data = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "bug_simple",
+                "workflow_type": "code_mission",
                 "initial_input": "Bug test"
             }).json()
 
-        assert len(data["session"]["steps"]) == 7
+        assert len(data["session"]["steps"]) == 4
 
-    def test_session_start_a_un_seul_step_completed(self, client_and_project):
-        """session_start n'a qu'un step, pas de validation → doit être COMPLETED."""
+    def test_sante_cadrage_auto_completed(self, client_and_project):
+        """code_mission step 0 (sante_cadrage) est model_type=none → auto puis passe à execution."""
         c, project_id, _ = client_and_project
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
-            mock.return_value = "Résumé orientation en 5 lignes."
+            mock.side_effect = _mock_call
 
             data = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "session_start",
-                "initial_input": ""
+                "workflow_type": "code_mission",
+                "initial_input": "test"
             }).json()
 
-        assert data["session"]["status"] == "COMPLETED"
-        assert data["execution_result"]["status"] == "completed"
+        session = data["session"]
+        steps = {s["step_name"]: s for s in session["steps"]}
+        assert steps["sante_cadrage"]["status"] == "COMPLETED"
 
     def test_404_si_projet_inconnu(self, client_and_project):
         c, _, _ = client_and_project
         response = c.post("/api/pipelines/start", json={
             "project_id": 99999,
-            "workflow_type": "bug_simple",
+            "workflow_type": "code_mission",
             "initial_input": "test"
         })
         assert response.status_code == 404
 
-    def test_auto_advance_steps_sans_validation(self, client_and_project):
-        """Step 0 de bug_simple est sans validation → avancement auto jusqu'à step 1 qui requiert validation."""
+    def test_auto_advance_vers_waiting_validation(self, client_and_project):
+        """code_mission : step 0 (none) et step 1 (execution) auto-complétés, step 2 (verification) → WAITING_VALIDATION."""
         c, project_id, _ = client_and_project
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
@@ -134,18 +134,33 @@ class TestStartPipeline:
 
             data = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "bug_simple",
-                "initial_input": "Bug: login 500"
+                "workflow_type": "code_mission",
+                "initial_input": "Ma mission de test"
             }).json()
 
         session = data["session"]
         steps = {s["step_name"]: s for s in session["steps"]}
 
-        # Step 0 (analyse_bug) auto-complété
-        assert steps["analyse_bug"]["status"] == "COMPLETED"
-        # Step 1 (collecte_infos) en attente de validation
-        assert steps["collecte_infos"]["status"] == "WAITING_VALIDATION"
+        assert steps["sante_cadrage"]["status"] == "COMPLETED"
+        assert steps["execution"]["status"] == "COMPLETED"
+        assert steps["verification"]["status"] == "WAITING_VALIDATION"
         assert session["status"] == "WAITING_VALIDATION"
+
+    def test_start_avec_modele_override(self, client_and_project):
+        """modele_override passé → doit être persisté dans la session."""
+        c, project_id, _ = client_and_project
+
+        with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
+            mock.side_effect = _mock_call
+
+            data = c.post("/api/pipelines/start", json={
+                "project_id": project_id,
+                "workflow_type": "code_mission",
+                "initial_input": "test",
+                "modele_override": "anthropic/claude-sonnet-4.5"
+            }).json()
+
+        assert "session" in data
 
 
 class TestGetPipeline:
@@ -154,13 +169,12 @@ class TestGetPipeline:
         c, project_id, _ = client_and_project
 
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
-            mock.side_effect = lambda model_id, messages, api_keys, session_id, step_name, model_type, db: \
-                _async_return("mock output")
+            mock.side_effect = _mock_call
 
             session_data = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "session_start",
-                "initial_input": ""
+                "workflow_type": "code_mission",
+                "initial_input": "test"
             }).json()["session"]
 
         response = c.get(f"/api/pipelines/{session_data['id']}")
@@ -175,22 +189,22 @@ class TestGetPipeline:
 
 class TestValidatePipeline:
 
-    def _start_bug_simple(self, c, project_id):
+    def _start_code_mission(self, c, project_id):
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
             mock.side_effect = _mock_call
             data = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "bug_simple",
-                "initial_input": "Bug: login 500"
+                "workflow_type": "code_mission",
+                "initial_input": "Mission: implémenter JWT"
             }).json()
         return data["session"]
 
     def test_validation_approbation_avance(self, client_and_project):
         c, project_id, _ = client_and_project
-        session = self._start_bug_simple(c, project_id)
+        session = self._start_code_mission(c, project_id)
         session_id = session["id"]
 
-        # Trouver le step en WAITING_VALIDATION
+        # Trouver le step en WAITING_VALIDATION (verification, index 2)
         waiting_step = next(s for s in session["steps"] if s["status"] == "WAITING_VALIDATION")
         step_id = waiting_step["id"]
 
@@ -209,7 +223,7 @@ class TestValidatePipeline:
 
     def test_validation_rejet_abandonne_session(self, client_and_project):
         c, project_id, _ = client_and_project
-        session = self._start_bug_simple(c, project_id)
+        session = self._start_code_mission(c, project_id)
         session_id = session["id"]
         waiting_step = next(s for s in session["steps"] if s["status"] == "WAITING_VALIDATION")
 
@@ -232,7 +246,7 @@ class TestAbortPipeline:
             mock.side_effect = _mock_call
             session = c.post("/api/pipelines/start", json={
                 "project_id": project_id,
-                "workflow_type": "bug_simple",
+                "workflow_type": "code_mission",
                 "initial_input": "test"
             }).json()["session"]
 

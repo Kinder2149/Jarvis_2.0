@@ -3,6 +3,7 @@
   let allConversations = [];
   let allSessions = [];
   let allAtelierProspects = [];
+  let allReflexions = [];
   let currentPeriod = 'today';
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -29,6 +30,12 @@
       const sessionsArrays = await Promise.all(sessionPromises);
       allSessions = sessionsArrays.flat();
 
+      const reflexionPromises = projects.map(p => 
+        window.API.getReflexions(p.id).catch(() => [])
+      );
+      const reflexionsArrays = await Promise.all(reflexionPromises);
+      allReflexions = reflexionsArrays.flat();
+
     } catch (error) {
       console.error('Erreur chargement dashboard:', error);
       window.showToast('Erreur de chargement', 'error');
@@ -36,9 +43,9 @@
   }
 
   function renderDashboard() {
+    renderStats();
     renderActivePipelines();
     renderTimeline();
-    renderStats();
     updateSubtitle();
   }
 
@@ -46,24 +53,33 @@
     const now = new Date();
     const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
-    // WAITING_VALIDATION : Module Code
-    const waitingModuleSessions = allSessions.filter(s => s.status === 'WAITING_VALIDATION');
+    // Filtrer les sessions actives (exclure COMPLETED, ABORTED et sessions Atelier)
+    const activeSessions = allSessions.filter(s => {
+      // Exclure les sessions terminées
+      if (['COMPLETED', 'ABORTED'].includes(s.status)) return false;
+      // Exclure les sessions Atelier (gérées via prospects)
+      if (s.workflow_type && s.workflow_type.startsWith('atelier_')) return false;
+      return true;
+    });
+
+    // WAITING_VALIDATION : Module Code uniquement (pas Atelier)
+    const waitingModuleSessions = activeSessions.filter(s => s.status === 'WAITING_VALIDATION');
 
     // WAITING_VALIDATION : Atelier
     const waitingAtelierProspects = allAtelierProspects.filter(p => p.session_status === 'WAITING_VALIDATION');
 
     // RUNNING : Module Code uniquement
-    const runningSessions = allSessions.filter(s => s.status === 'RUNNING');
+    const runningSessions = activeSessions.filter(s => s.status === 'RUNNING');
 
     // Créées récemment (< 1h) mais pas encore RUNNING (en démarrage)
-    const startingSessions = allSessions.filter(s => {
+    const startingSessions = activeSessions.filter(s => {
       if (s.status !== 'CREATED') return false;
       return new Date(s.created_at) > oneHourAgo;
     });
 
     // Bloquées (CREATED > 1h)
-    const stuckSessions = allSessions.filter(s => {
-      if (['COMPLETED', 'ABORTED', 'ERROR', 'FAILED', 'RUNNING', 'WAITING_VALIDATION'].includes(s.status)) return false;
+    const stuckSessions = activeSessions.filter(s => {
+      if (['ERROR', 'FAILED', 'RUNNING', 'WAITING_VALIDATION'].includes(s.status)) return false;
       return new Date(s.created_at) <= oneHourAgo;
     });
 
@@ -90,50 +106,34 @@
         </div>
       `;
 
-      // Limiter à 5 sessions si > 5
-      const LIMIT = 5;
-      const allWaiting = [
-        ...waitingModuleSessions.map(s => ({ type: 'module', data: s })),
-        ...waitingAtelierProspects.map(p => ({ type: 'atelier', data: p }))
-      ];
-      const displayedWaiting = totalWaiting > LIMIT ? allWaiting.slice(0, LIMIT) : allWaiting;
-      const hiddenCount = totalWaiting > LIMIT ? totalWaiting - LIMIT : 0;
-
-      displayedWaiting.forEach(item => {
-        if (item.type === 'module') {
-          const s = item.data;
-          const project = allProjects.find(p => p.id === s.project_id);
-          const projectName = project ? project.name : 'Sans projet';
-          html += `
-            <div class="active-pipeline-card card card--waiting">
-              <div class="active-pipeline-info">
-                <span style="color:#f59e0b">⏸️</span>
-                <strong>${s.workflow_type}</strong>
-                <span class="text-muted">· ${projectName} · Step ${s.current_step_index + 1}</span>
-              </div>
-              <a href="module-code.html?session=${s.id}&project_id=${s.project_id}" class="btn-primary btn-sm">→ Valider</a>
+      // Afficher les sessions Module Code individuellement
+      waitingModuleSessions.forEach(s => {
+        const project = allProjects.find(p => p.id === s.project_id);
+        const projectName = project ? project.name : 'Sans projet';
+        html += `
+          <div class="active-pipeline-card card card--waiting">
+            <div class="active-pipeline-info">
+              <span style="color:#f59e0b">⏸️</span>
+              <strong>${s.workflow_type}</strong>
+              <span class="text-muted">· ${projectName} · Step ${s.current_step_index + 1}</span>
             </div>
-          `;
-        } else {
-          const p = item.data;
-          html += `
-            <div class="active-pipeline-card card card--waiting">
-              <div class="active-pipeline-info">
-                <span style="color:#f59e0b">⏸️</span>
-                <strong>Atelier</strong>
-                <span class="text-muted">· ${p.nom}</span>
-              </div>
-              <a href="atelier.html?prospect_id=${p.id}" class="btn-primary btn-sm">→ Valider</a>
-            </div>
-          `;
-        }
+            <a href="mission.html?pipeline_session=${s.id}&project_id=${s.project_id}" class="btn-primary btn-sm">→ Valider</a>
+          </div>
+        `;
       });
 
-      // Afficher lien "voir tout" si > 5
-      if (hiddenCount > 0) {
+      // Afficher UNE carte condensée pour tous les prospects Atelier
+      if (waitingAtelierProspects.length > 0) {
         html += `
-          <div class="text-muted" style="font-size:0.85rem;padding:0.5rem 0;text-align:center">
-            ... et ${hiddenCount} autre${hiddenCount > 1 ? 's' : ''} en attente
+          <div class="active-pipeline-card card card--waiting" style="opacity:0.85">
+            <div class="active-pipeline-info">
+              <span style="color:#f59e0b">🏭</span>
+              <strong>${waitingAtelierProspects.length} prospect${waitingAtelierProspects.length > 1 ? 's' : ''} Atelier en attente</strong>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <a href="atelier.html" class="btn-secondary btn-sm">→ Atelier</a>
+              <button class="btn-danger btn-sm" id="btn-purge-atelier">Tout supprimer</button>
+            </div>
           </div>
         `;
       }
@@ -155,7 +155,7 @@
               <span class="text-muted">· ${projectName} · Step ${s.current_step_index + 1}</span>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
-              <a href="module-code.html?session=${s.id}&project_id=${s.project_id}" class="btn-secondary btn-sm">→ Voir</a>
+              <a href="mission.html?pipeline_session=${s.id}&project_id=${s.project_id}" class="btn-secondary btn-sm">→ Voir</a>
               <button class="btn-danger btn-sm" onclick="abandonSession(${s.id})">Abandonner</button>
             </div>
           </div>
@@ -167,8 +167,9 @@
     if (stuckSessions.length > 0) {
       html += `
         <div class="stuck-sessions">
-          <div class="stuck-sessions-header" onclick="toggleStuckSessions()">
+          <div class="stuck-sessions-header" onclick="toggleStuckSessions()" style="display:flex;align-items:center;gap:0.5rem">
             <span class="text-muted" style="font-size:0.85rem">⚠️ ${stuckSessions.length} session(s) bloquée(s)</span>
+            <button class="btn-danger btn-sm" id="btn-abandon-all-stuck" style="margin-left:auto">Tout abandonner</button>
             <span id="stuck-sessions-toggle" style="color:var(--text-muted)">▼</span>
           </div>
           <div id="stuck-sessions-list" style="display:none">
@@ -191,6 +192,38 @@
     }
 
     list.innerHTML = html;
+
+    const btnAbandonAll = document.getElementById('btn-abandon-all-stuck');
+    if (btnAbandonAll) {
+      btnAbandonAll.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Abandonner les ${stuckSessions.length} sessions bloquées ?\n\nCette action est irréversible.`)) return;
+        try {
+          await Promise.all(stuckSessions.map(s => window.API.abortPipeline(s.id)));
+          window.showToast && window.showToast('Sessions abandonnées', 'success');
+          await loadDashboardData();
+          renderDashboard();
+        } catch(err) {
+          window.showToast && window.showToast('Erreur : ' + err.message, 'error');
+        }
+      });
+    }
+
+    const btnPurgeAtelier = document.getElementById('btn-purge-atelier');
+    if (btnPurgeAtelier) {
+      btnPurgeAtelier.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Supprimer les ${waitingAtelierProspects.length} prospects Atelier en attente ?\n\nCette action est irréversible.`)) return;
+        try {
+          await Promise.all(waitingAtelierProspects.map(p => window.API.deleteProspect(p.id)));
+          window.showToast && window.showToast('Prospects supprimés', 'success');
+          await loadDashboardData();
+          renderDashboard();
+        } catch(err) {
+          window.showToast && window.showToast('Erreur : ' + err.message, 'error');
+        }
+      });
+    }
   }
 
   function renderTimeline() {
@@ -235,7 +268,21 @@
         date: session.updated_at || session.created_at,
         status: session.status,
         cost: session.total_cost_usd || 0,
-        href: `module-code.html?session=${session.id}&project_id=${session.project_id}`
+        href: `mission.html?pipeline_session=${session.id}&project_id=${session.project_id}`
+      });
+    });
+
+    allReflexions.forEach(r => {
+      const project = allProjects.find(p => p.id === r.project_id);
+      items.push({
+        type: 'reflexion',
+        id: r.id,
+        title: r.titre || 'Réflexion #' + r.id,
+        project_id: r.project_id,
+        project_name: project ? project.name : null,
+        date: r.updated_at || r.created_at,
+        status: r.statut,
+        href: `mission.html?session=${r.id}&project_id=${r.project_id}`
       });
     });
 
@@ -266,7 +313,10 @@
   }
 
   function renderTimelineItem(item) {
-    const icon = item.type === 'chat' ? '💬' : '⚙️';
+    let icon = '💬';
+    if (item.type === 'module') icon = '⚙️';
+    if (item.type === 'reflexion') icon = '🧠';
+    
     const projectLabel = item.project_name || 'Sans projet';
     const dateStr = window.formatDate ? window.formatDate(item.date) : new Date(item.date).toLocaleString('fr-FR');
     
@@ -280,6 +330,17 @@
       if (item.cost > 0) {
         metaHTML += window.costBadge ? window.costBadge(item.cost) : `<span class="badge badge--cost">$${item.cost.toFixed(4)}</span>`;
       }
+    }
+
+    if (item.type === 'reflexion') {
+      const statusLabels = {
+        'OUVERTE': '● Ouverte',
+        'EN_FIGEMENT': '⏳ En figement',
+        'FIGEE': '🔒 Figée',
+        'ABANDONNEE': '✕ Abandonnée'
+      };
+      const statusLabel = statusLabels[item.status] || item.status;
+      metaHTML += `<span class="badge badge--${item.status.toLowerCase()}">${statusLabel}</span>`;
     }
 
     let previewHTML = '';
@@ -304,7 +365,7 @@
     const timeline = buildTimeline();
     const weekItems = filterByPeriod(timeline, 'week');
     
-    const sessionsCount = weekItems.filter(i => i.type === 'module').length;
+    const sessionsCount = weekItems.filter(i => i.type === 'module' || i.type === 'reflexion').length;
     const chatsCount = weekItems.filter(i => i.type === 'chat').length;
     const totalCost = weekItems
       .filter(i => i.type === 'module')
@@ -331,7 +392,7 @@
     const timeline = buildTimeline();
     const filtered = filterByPeriod(timeline, currentPeriod);
     
-    const sessionsCount = filtered.filter(i => i.type === 'module').length;
+    const sessionsCount = filtered.filter(i => i.type === 'module' || i.type === 'reflexion').length;
     const chatsCount = filtered.filter(i => i.type === 'chat').length;
     const totalCost = filtered
       .filter(i => i.type === 'module')
@@ -346,7 +407,11 @@
       return;
     }
 
-    subtitle.textContent = `${sessionsCount} session${sessionsCount > 1 ? 's' : ''} · ${chatsCount} chat${chatsCount > 1 ? 's' : ''} · Coût total : $${totalCost.toFixed(3)}`;
+    const parts = [];
+    if (sessionsCount > 0) parts.push(`${sessionsCount} session${sessionsCount > 1 ? 's' : ''}`);
+    if (chatsCount > 0) parts.push(`${chatsCount} chat${chatsCount > 1 ? 's' : ''}`);
+    if (totalCost > 0) parts.push(`$${totalCost.toFixed(3)}`);
+    subtitle.textContent = parts.length > 0 ? parts.join(' · ') : (currentPeriod === 'today' ? 'Aucune activité aujourd\'hui' : 'Aucune activité pour cette période');
   }
 
   function attachEventListeners() {

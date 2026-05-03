@@ -460,10 +460,10 @@ class TestConversationModelBehavior:
         resp = c.post("/api/chat/conversations", json={"title": "Test patch model"})
         conv_id = resp.json()["id"]
 
-        c.patch(f"/api/chat/conversations/{conv_id}", json={"model": "google/gemini-2.0-flash-001"})
+        c.patch(f"/api/chat/conversations/{conv_id}", json={"model": "google/gemini-2.5-flash"})
 
         resp = c.get(f"/api/chat/conversations/{conv_id}")
-        assert resp.json()["model"] == "google/gemini-2.0-flash-001"
+        assert resp.json()["model"] == "google/gemini-2.5-flash"
 
     def test_model_present_dans_liste_conversations(self, client_and_db):
         """GET /conversations liste inclut le champ model pour chaque conversation."""

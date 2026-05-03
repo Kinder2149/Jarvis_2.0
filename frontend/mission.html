@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS — Mission</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content" class="mission-main">
+
+      <div id="page-mission" class="mission-page">
+
+        <!-- En-tête session -->
+        <div class="mission-header">
+          <div class="mission-header-left">
+            <h1 id="mission-title">🎯 Mission</h1>
+            <div class="mission-meta">
+              <span id="mission-project-name" class="text-muted"></span>
+              <span id="mission-livrable-badge" class="badge" style="display:none"></span>
+              <span id="mission-status-badge" style="display:none"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- État vide (aucun paramètre URL) -->
+        <div id="mission-empty-state" class="empty-state" style="display:none">
+          <h2>🎯 Missions</h2>
+          <p>Sélectionnez un projet depuis <a href="code-projects.html" style="color:var(--accent)">la liste des projets</a> pour démarrer une nouvelle mission.</p>
+        </div>
+
+        <!-- Formulaire création (mode new=true) -->
+        <div id="mission-create-form" style="display:none;max-width:480px;margin:2rem auto">
+          <div class="card" style="padding:1.5rem">
+            <h2 style="margin-bottom:1.25rem">🎯 Nouvelle Mission</h2>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="field-label">Type de livrable</label>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem">
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                  <input type="radio" name="create_livrable_type" value="mission_code" checked>
+                  <span>🎯 Mission Code — génère un prompt pour exécution pipeline</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                  <input type="radio" name="create_livrable_type" value="decision_figee">
+                  <span>📌 Décision figée — documente une décision dans PROJET_CONTEXTE</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                  <input type="radio" name="create_livrable_type" value="plan_multi_missions">
+                  <span>📋 Plan multi-missions — décompose en plusieurs missions code</span>
+                </label>
+              </div>
+            </div>
+            <button id="btn-create-session" class="btn-primary" style="width:100%">Créer la session</button>
+          </div>
+        </div>
+
+        <!-- Flow vertical 4 étapes -->
+        <div class="mission-flow" id="mission-flow" style="display:none">
+
+          <!-- ① RÉFLEXION -->
+          <section class="mission-step step-active" id="step-1">
+            <div class="step-header">
+              <span class="step-number">①</span>
+              <h2>Réflexion</h2>
+              <span class="step-status" id="step-1-status">● En cours</span>
+            </div>
+            <div class="step-body">
+              <div id="zone-cadrage" class="cadrage-banner" style="display:none">
+                <div class="cadrage-header" id="cadrage-header">
+                  <span id="cadrage-verdict">⏳ Analyse du cadrage…</span>
+                  <button id="btn-toggle-cadrage" class="btn-icon" style="margin-left:auto" title="Détails">▾</button>
+                </div>
+                <div id="cadrage-details" class="cadrage-details" style="display:none"></div>
+                <div style="margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border)">
+                  <span class="field-label">Type de livrable :</span>
+                  <span id="livrable-type-display" class="livrable-type-info"></span>
+                </div>
+              </div>
+              <div id="reflexion-messages" class="reflexion-messages"></div>
+              <div id="token-warning" class="token-warning" style="display:none"></div>
+            </div>
+            <div class="step-footer">
+              <div id="reflexion-input-area" class="reflexion-input-area">
+                <textarea id="reflexion-input" rows="3" maxlength="10000"
+                          placeholder="Votre message…"></textarea>
+                <div class="reflexion-actions">
+                  <button id="btn-send-message" class="btn-primary">Envoyer</button>
+                  <button id="btn-figer" class="btn-secondary">🔒 Figer la mission</button>
+                  <button id="btn-abandonner" class="btn-danger">✕ Abandonner</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ② VALIDATION -->
+          <section class="mission-step step-future" id="step-2">
+            <div class="step-header">
+              <span class="step-number">②</span>
+              <h2>Livrable et lancement</h2>
+              <span class="step-status" id="step-2-status">En attente</span>
+            </div>
+            <div class="step-body">
+              <div id="step-2-placeholder" class="step-placeholder">
+                Figez la réflexion pour générer le livrable.
+              </div>
+              <div id="step-2-content" style="display:none">
+                <div id="recap-fichiers-figement" class="recap-fichiers" style="display:none"></div>
+                <h3 style="margin-bottom:0.75rem">📌 Livrable</h3>
+                <div id="figee-content" class="figee-content"></div>
+                <div id="mission-preview" style="display:none;margin-top:0.75rem">
+                  <div id="mission-preview-inner" style="padding:0.6rem 0.75rem;border-radius:6px;background:var(--bg-input);font-size:0.85rem;border:1px solid var(--border)"></div>
+                </div>
+                <div id="mission-warning" style="display:none;margin-top:0.5rem;padding:0.6rem 0.75rem;border-radius:6px;background:#f59e0b18;border:1px solid #f59e0b40;color:#f59e0b;font-size:0.85rem"></div>
+              </div>
+            </div>
+            <div class="step-footer">
+              <div id="zone-execution-launch" style="display:none">
+                <label class="field-label">Modèle d'exécution</label>
+                <select id="model-override-select" class="input-field" style="width:100%;margin:0.4rem 0 0.75rem">
+                  <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5 — rapide</option>
+                  <option value="anthropic/claude-sonnet-4.5">Claude Sonnet 4.5 — qualité</option>
+                  <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                  <option value="google/gemini-2.5-pro">Gemini 2.5 Pro — gros volume</option>
+                </select>
+                <button id="btn-execute-mission" class="btn-primary btn-xl">
+                  ▶ EXÉCUTER LA MISSION
+                </button>
+                <button id="btn-copy-livrable" class="btn-secondary btn-sm" style="width:100%;margin-top:0.5rem">
+                  ✂️ Ou copier le prompt pour usage manuel
+                </button>
+              </div>
+              <div id="zone-apply-decision" style="display:none">
+                <button id="btn-apply-decision" class="btn-secondary" style="width:100%">
+                  📝 Appliquer dans PROJET_CONTEXTE
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ③ EXÉCUTION -->
+          <section class="mission-step step-future" id="step-3">
+            <div class="step-header">
+              <span class="step-number">③</span>
+              <h2>Exécution du pipeline</h2>
+              <span class="step-status" id="step-3-status">En attente</span>
+            </div>
+            <div class="step-body">
+              <div id="step-3-placeholder" class="step-placeholder">
+                Cliquez « Exécuter la mission » pour démarrer le pipeline.
+              </div>
+              <div id="step-3-content" style="display:none">
+                <div class="pipeline-meta" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+                  <span id="mc-workflow-type" style="font-weight:600"></span>
+                  <span id="mc-status-badge-pipeline"></span>
+                  <span id="mc-start-time" style="color:var(--text-muted);font-size:0.8rem"></span>
+                  <span id="mc-total-cost"></span>
+                </div>
+                <div class="mc-steps" id="mc-steps-list"></div>
+                <div id="mc-action-zone" style="display:none" class="mc-action-zone card"></div>
+              </div>
+            </div>
+            <div class="step-footer">
+              <button id="btn-abort-pipeline" class="btn-danger btn-sm" style="display:none">
+                ⛔ Abandonner
+              </button>
+            </div>
+          </section>
+
+          <!-- ④ SUIVI -->
+          <section class="mission-step step-future" id="step-4">
+            <div class="step-header">
+              <span class="step-number">④</span>
+              <h2>Suivi et clôture</h2>
+              <span class="step-status" id="step-4-status">En attente</span>
+            </div>
+            <div class="step-body">
+              <div id="step-4-placeholder" class="step-placeholder">
+                Le récapitulatif final apparaîtra une fois le pipeline terminé.
+              </div>
+              <div id="step-4-content" style="display:none">
+                <div id="recap-final"></div>
+                <div id="recap-fichiers-cloture" class="recap-fichiers" style="display:none"></div>
+              </div>
+            </div>
+            <div class="step-footer" id="step-4-footer" style="display:none">
+              <a id="btn-back-project" class="btn-secondary" href="#">📁 Retour au dossier projet</a>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal confirmation figement -->
+  <div id="modal-figer" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>🔒 Figer cette réflexion ?</h2>
+        <button class="modal-close" id="modal-figer-close">×</button>
+      </div>
+      <div class="modal-body">
+        <p>Cette action est <strong>irréversible</strong>. La session sera figée et un livrable final sera généré.</p>
+        <p>Voulez-vous continuer ?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-figer-cancel" class="btn-secondary">Annuler</button>
+        <button id="modal-figer-confirm" class="btn-primary">Confirmer le figement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal diff (pour decision_figee : appliquer PROJET_CONTEXTE) -->
+  <div id="modal-diff" class="modal-overlay" style="display:none">
+    <div class="modal" style="max-width:900px;width:100%">
+      <div class="modal-header">
+        <h2>📝 Édition proposée : <span id="diff-file-name"></span></h2>
+        <button class="modal-close" id="modal-diff-close">×</button>
+      </div>
+      <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+        <pre id="diff-content" class="diff-viewer"></pre>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-diff-reject" class="btn-secondary">Rejeter</button>
+        <button id="modal-diff-apply" class="btn-primary">Appliquer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/mission.js"></script>
+</body>
+</html>

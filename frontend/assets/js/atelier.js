@@ -698,31 +698,22 @@
   }
 
   // ── Polling ──────────────────────────────────────────────────
-  let currentPollingInterval = 3000;
-  
   function startPolling() {
     if (pollInterval) return;
     
-    const poll = async () => {
+    pollInterval = setInterval(async () => {
       try {
         const { session } = await window.API.getProspect(currentProspectId);
         if (!session) { stopPolling(); return; }
         
-        // Adapter l'intervalle selon le statut
-        const newInterval = session.status === 'RUNNING' ? 3000 : 5000;
-        if (newInterval !== currentPollingInterval) {
-          currentPollingInterval = newInterval;
-          stopPolling();
-          startPolling();
-          return;
-        }
-        
         renderPipeline(session);
-        if (['COMPLETED', 'ABORTED', 'FAILED'].includes(session.status)) stopPolling();
-      } catch (e) { console.error('Polling error:', e); }
-    };
-    
-    pollInterval = setInterval(poll, currentPollingInterval);
+        if (['COMPLETED', 'ABORTED', 'FAILED'].includes(session.status)) {
+          stopPolling();
+        }
+      } catch (e) {
+        console.error('Polling error:', e);
+      }
+    }, 5000);
   }
 
   function stopPolling() {

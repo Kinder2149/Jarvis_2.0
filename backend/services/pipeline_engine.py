@@ -26,20 +26,19 @@ def apply_code_blocks_to_project(code_output: str, project_path: str) -> list:
     for idx, block in enumerate(blocks, 1):
         lines = block.strip().split('\n')
         if not lines:
-            logger.warning(f"⚠️ [FILE_WRITE] Bloc {idx}: vide, ignoré")
             continue
         
         first = lines[0].strip()
-        logger.info(f"🔍 [FILE_WRITE] Bloc {idx}: première ligne = '{first[:80]}'")
         
         file_path = None
-        for prefix in ('#', '//'):
+        for prefix in ('#', '//', '<!--', '/*'):
             if first.startswith(prefix):
                 candidate = first[len(prefix):].strip()
+                # Nettoyer les suffixes de commentaires HTML/CSS
+                candidate = candidate.rstrip('->').rstrip('*/').strip()
                 parts = candidate.replace('\\', '/').split('/')
                 if parts and '.' in parts[-1]:
                     file_path = candidate
-                    logger.info(f"✅ [FILE_WRITE] Bloc {idx}: chemin détecté = '{file_path}'")
                     break
         
         if not file_path:
@@ -92,12 +91,14 @@ def load_prompt_template(prompt_key: str) -> str:
     
     return prompts.get(prompt_key, "")
 
-def create_session(project_id: int, workflow_type: str, initial_input: str, db) -> dict:
+def create_session(project_id: int, workflow_type: str, initial_input: str, db,
+                   modele_override: str | None = None,
+                   source_mission_prompt_id: int | None = None) -> dict:
     cursor = db.cursor()
     
     cursor.execute(
-        "INSERT INTO sessions (project_id, workflow_type, status, current_step_index) VALUES (?, ?, ?, ?)",
-        (project_id, workflow_type, "CREATED", 0)
+        "INSERT INTO sessions (project_id, workflow_type, status, current_step_index, modele_override, source_mission_prompt_id) VALUES (?, ?, ?, ?, ?, ?)",
+        (project_id, workflow_type, "CREATED", 0, modele_override, source_mission_prompt_id)
     )
     session_id = cursor.lastrowid
     
@@ -172,7 +173,8 @@ def get_session_with_steps(session_id: int, db) -> dict:
             "requires_validation": bool(step_row["requires_validation"]),
             "validated_at": step_row["validated_at"],
             "created_at": step_row["created_at"],
-            "output_type": dict(step_row).get("output_type", "text")
+            "output_type": dict(step_row).get("output_type", "text"),
+            "sub_step_index": dict(step_row).get("sub_step_index", None),
         })
     
     return session
@@ -231,7 +233,7 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
             raise Exception("Step configuration not found")
         
         cursor.execute(
-            "SELECT step_name, output_data FROM pipeline_steps WHERE session_id = ? AND step_index < ? AND status = 'COMPLETED'",
+            "SELECT step_name, output_data FROM pipeline_steps WHERE session_id = ? AND step_index < ? AND status = 'COMPLETED' AND (sub_step_index IS NULL OR sub_step_index = -1)",
             (session_id, step_index)
         )
         previous_rows = cursor.fetchall()
@@ -275,11 +277,37 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
             else:
                 # Step export : assembler et écrire les fichiers démo
                 if step_config.get("name") == "export":
-                    print(f"DEBUG [PIPELINE] Détection step export, appel _handle_atelier_export...")
+                    logger.debug(f"DEBUG [PIPELINE] Détection step export, appel _handle_atelier_export...")
                     logger.info(f"📦 [PIPELINE] Détection step export, appel _handle_atelier_export...")
                     _handle_atelier_export(session_id, step_row["id"], db)
-                    print(f"DEBUG [PIPELINE] _handle_atelier_export terminé")
+                    logger.debug(f"DEBUG [PIPELINE] _handle_atelier_export terminé")
                     logger.info(f"✅ [PIPELINE] _handle_atelier_export terminé")
+                # Step sante_cadrage : vérifier la santé du cadrage et stocker le rapport
+                elif step_config.get("name") == "sante_cadrage":
+                    from backend.services.cadrage import check_cadrage_health
+                    logger.info(f"🏥 [PIPELINE] Exécution check_cadrage_health pour session {session_id}")
+                    
+                    # Récupérer le project_id depuis la session
+                    cursor.execute("SELECT project_id FROM sessions WHERE id = ?", (session_id,))
+                    sess_row = cursor.fetchone()
+                    if sess_row:
+                        health_report = check_cadrage_health(sess_row["project_id"], db)
+                        # Stocker le rapport en JSON dans output_data
+                        import json
+                        output_json = json.dumps(health_report, ensure_ascii=False, indent=2)
+                        cursor.execute(
+                            "UPDATE pipeline_steps SET status='COMPLETED', output_data=? WHERE id=?",
+                            (output_json, step_row["id"])
+                        )
+                        db.commit()
+                        logger.info(f"✅ [PIPELINE] Santé cadrage: {health_report['verdict_global']} ({len(health_report['checks'])} checks)")
+                    else:
+                        logger.error(f"❌ [PIPELINE] Session {session_id} introuvable pour sante_cadrage")
+                        cursor.execute(
+                            "UPDATE pipeline_steps SET status='COMPLETED' WHERE id=?",
+                            (step_row["id"],)
+                        )
+                        db.commit()
                 else:
                     logger.info(f"✅ [PIPELINE] Step {step_index} ({step_config.get('name')}) marqué COMPLETED")
                     cursor.execute(
@@ -313,13 +341,10 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
                     db.commit()
                     return {"status": "auto_completed", "next_step": step_index + 1}
         
-        # Récupérer global_context depuis la DB
-        try:
-            cursor.execute("SELECT value FROM app_config WHERE key = 'global_context'")
-            row = cursor.fetchone()
-            global_context = row["value"] if row else ""
-        except Exception:
-            global_context = ""
+        # Récupérer global_context depuis le fichier
+        from pathlib import Path as _Path
+        _ctx_file = _Path(__file__).parent.parent / "data" / "contexts" / "global_context.md"
+        global_context = _ctx_file.read_text(encoding="utf-8") if _ctx_file.exists() else ""
         
         try:
             cursor.execute("SELECT instructions FROM projects WHERE path = ?", (project_path,))
@@ -336,27 +361,114 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
         prompt_template = load_prompt_template(step_config["prompt_key"])
         prompt = inject_into_template(prompt_template, envelope)
         
+        # Lire modele_override depuis la session
+        modele_override = dict(session_row).get("modele_override", None)
+
         actual_model_type = step_config.get("model_type", "routing")
-        if actual_model_type == "code_smart":
-            complexity_source = step_config.get("complexity_source", "")
-            source_output = previous_outputs.get(complexity_source, "") if complexity_source else ""
-            if "COMPLEXITÉ: simple" in source_output:
-                actual_model_type = "code"
-            else:
-                actual_model_type = "analysis"
-        model_id = get_model_id(actual_model_type, config)
+        model_id = get_model_id(actual_model_type, config, override=modele_override)
         
         messages = [{"role": "user", "content": prompt}]
-        
-        output = await call_model(
-            model_id,
-            messages,
-            config.get("api_keys", {}),
-            session_id,
-            step_config["name"],
-            step_config["model_type"],
-            db
-        )
+
+        # === CHUNKING — découpage automatique si supports_chunking=True ===
+        output = None
+        if step_config.get("supports_chunking", False):
+            import time as _time
+            from backend.services import chunking as _chunking
+            from backend.services.mission_parser import parse_mission_prompt as _parse_mission
+
+            targeted_files_content = {}
+            mission_data_for_chunking = {
+                "objectif": user_input or "",
+                "contexte": "",
+                "contraintes": [],
+                "criteres_reussite": [],
+            }
+            try:
+                parsed_mission = _parse_mission(user_input or "")
+                mission_data_for_chunking = parsed_mission
+                for fi in parsed_mission.get("fichiers_concernes", []):
+                    fp = fi.get("path", "")
+                    if not fp:
+                        continue
+                    full_fp = Path(project_path) / fp.lstrip("/").lstrip("\\")
+                    content = ""
+                    if full_fp.exists():
+                        try:
+                            content = full_fp.read_text(encoding="utf-8", errors="ignore")
+                        except Exception:
+                            content = ""
+                    targeted_files_content[fp] = content
+            except Exception:
+                targeted_files_content = {}
+
+            budget = _chunking.estimate_tokens_budget(prompt, targeted_files_content, model_id)
+            strategy = budget["recommended_strategy"]
+            logger.info(
+                f"[CHUNKING] strategy={strategy} files={len(targeted_files_content)} "
+                f"model={model_id} total_tokens={budget['total_input_estimated']}"
+            )
+
+            if strategy == "chunk_by_file" and len(targeted_files_content) > 0:
+                try:
+                    sub_tasks = _chunking.split_mission_by_files(
+                        mission_data_for_chunking, targeted_files_content, model_id
+                    )
+                    sub_outputs = []
+                    for sub_task in sub_tasks:
+                        t_start = _time.time()
+                        sub_output = await call_model(
+                            model_id,
+                            [{"role": "user", "content": sub_task["prompt"]}],
+                            config.get("api_keys", {}),
+                            session_id,
+                            step_config["name"],
+                            step_config["model_type"],
+                            db,
+                        )
+                        t_elapsed = _time.time() - t_start
+                        cursor.execute(
+                            """INSERT INTO pipeline_steps
+                            (session_id, step_index, step_name, step_display_name, model_type,
+                             status, requires_validation, output_data, output_type, model_used, sub_step_index)
+                            VALUES (?, ?, ?, ?, ?, 'COMPLETED', 0, ?, ?, ?, ?)""",
+                            (
+                                session_id,
+                                step_index,
+                                step_config["name"],
+                                f"{step_config['display_name']} ({sub_task['sub_step_index'] + 1}/{len(sub_tasks)})",
+                                step_config["model_type"],
+                                sub_output,
+                                step_config.get("output_type", "text"),
+                                model_id,
+                                sub_task["sub_step_index"],
+                            ),
+                        )
+                        db.commit()
+                        logger.info(
+                            f"[CHUNKING] sub_step_index={sub_task['sub_step_index']} "
+                            f"file={sub_task['file_path']} "
+                            f"input_tokens={sub_task['tokens_estimated']} "
+                            f"output_tokens={_chunking.estimate_tokens(sub_output)} "
+                            f"duration={t_elapsed:.1f}s"
+                        )
+                        sub_outputs.append(sub_output)
+                    output = _chunking.merge_code_outputs(sub_outputs)
+                except ValueError:
+                    raise
+                except Exception as _chunk_err:
+                    logger.exception(f"[CHUNKING] Erreur découpage, fallback single_call: {_chunk_err}")
+                    output = None
+
+        if output is None:
+            output = await call_model(
+                model_id,
+                messages,
+                config.get("api_keys", {}),
+                session_id,
+                step_config["name"],
+                step_config["model_type"],
+                db,
+            )
         
         cursor.execute(
             "UPDATE pipeline_steps SET output_data = ?, model_used = ? WHERE id = ?",
@@ -463,12 +575,19 @@ def validate_step(session_id: int, step_id: int, validation: dict, db, project_p
         return {"status": "error", "error": "Step not found"}
     
     if not validation.get("approved", False):
+        # Rejet : marquer l'étape FAILED avec le feedback utilisateur
+        feedback = validation.get("feedback", "Rejeté par l'utilisateur")
+        cursor.execute(
+            "UPDATE pipeline_steps SET status = ?, error_message = ? WHERE id = ?",
+            ("FAILED", feedback, step_id)
+        )
+        # Laisser la session en WAITING_VALIDATION pour permettre le retry
         cursor.execute(
             "UPDATE sessions SET status = ? WHERE id = ?",
-            ("ABORTED", session_id)
+            ("WAITING_VALIDATION", session_id)
         )
         db.commit()
-        return {"status": "aborted"}
+        return {"status": "rejected", "step_id": step_id, "feedback": feedback}
     
     edited_output = validation.get("edited_output")
     if edited_output:
@@ -490,14 +609,32 @@ def validate_step(session_id: int, step_id: int, validation: dict, db, project_p
     steps_config_v = pipeline_def_v.get("steps", [])
     current_step_cfg = next((s for s in steps_config_v if s["name"] == step_row["step_name"]), None)
 
+    logger.debug(f"\n[VALIDATE_DEBUG] step_name={step_row['step_name']}, workflow={session_row['workflow_type']}, project_path={project_path}")
+    logger.debug(f"[VALIDATE_DEBUG] current_step_cfg={current_step_cfg}")
+
     if current_step_cfg and current_step_cfg.get("write_files_from_step") and project_path:
         source_name = current_step_cfg["write_files_from_step"]
         source_row = cursor.execute(
-            "SELECT output_data FROM pipeline_steps WHERE session_id = ? AND step_name = ? AND status = 'COMPLETED'",
+            "SELECT output_data FROM pipeline_steps WHERE session_id = ? AND step_name = ? AND status = 'COMPLETED' AND (sub_step_index IS NULL OR sub_step_index = -1)",
             (session_id, source_name)
         ).fetchone()
+        if not source_row:
+            source_row = cursor.execute(
+                "SELECT output_data FROM pipeline_steps WHERE session_id = ? AND step_name = ? AND status = 'COMPLETED' ORDER BY id ASC",
+                (session_id, source_name)
+            ).fetchone()
+        # Fallback : si output_data vide sur la row principale, merger les sub-steps
+        if source_row and not source_row["output_data"]:
+            sub_rows = cursor.execute(
+                "SELECT output_data FROM pipeline_steps WHERE session_id = ? AND step_name = ? AND status = 'COMPLETED' AND sub_step_index IS NOT NULL ORDER BY sub_step_index ASC",
+                (session_id, source_name)
+            ).fetchall()
+            if sub_rows:
+                merged = "\n\n".join(r["output_data"] for r in sub_rows if r["output_data"])
+                source_row = {"output_data": merged}
         if source_row and source_row["output_data"]:
-            written_files = apply_code_blocks_to_project(source_row["output_data"], project_path)
+            od = source_row["output_data"]
+            written_files = apply_code_blocks_to_project(od, project_path)
             if written_files:
                 _trigger_graphify_update(project_path)
     
@@ -549,24 +686,24 @@ def retry_step(session_id: int, step_id: int, db) -> dict:
 
 def _handle_atelier_export(session_id: int, step_id: int, db):
     """Écrit les 5 fichiers démo depuis les outputs des steps génération."""
-    print(f"\n{'='*80}")
-    print(f"DEBUG [ATELIER_EXPORT] ENTRÉE FONCTION - session_id={session_id}, step_id={step_id}")
-    print(f"{'='*80}\n")
-    
     import logging
     logger = logging.getLogger("jarvis")
     
+    logger.debug(f"\n{'='*80}")
+    logger.debug(f"DEBUG [ATELIER_EXPORT] ENTRÉE FONCTION - session_id={session_id}, step_id={step_id}")
+    logger.debug(f"{'='*80}\n")
+    
     try:
-        print("DEBUG [ATELIER_EXPORT] Import save_demo_files...")
+        logger.debug("DEBUG [ATELIER_EXPORT] Import save_demo_files...")
         from backend.services.atelier_service import save_demo_files
         cursor = db.cursor()
         
-        print(f"DEBUG [ATELIER_EXPORT] Démarrage export pour session {session_id}")
+        logger.debug(f"DEBUG [ATELIER_EXPORT] Démarrage export pour session {session_id}")
         logger.info(f"🚀 [ATELIER_EXPORT] Démarrage export pour session {session_id}")
 
-        # Récupérer les outputs des 3 steps génération
+        # Récupérer les outputs des 5 steps génération
         raw_outputs = {}
-        for step_name in ["generation_css", "generation_index", "generation_admin"]:
+        for step_name in ["generation_css", "generation_html", "generation_script", "generation_admin_html", "generation_admin_js"]:
             row = cursor.execute(
                 """SELECT output_data FROM pipeline_steps
                    WHERE session_id=? AND step_name=? AND status='COMPLETED'""",
@@ -579,7 +716,7 @@ def _handle_atelier_export(session_id: int, step_id: int, db):
                 logger.error(f"❌ [ATELIER_EXPORT] {step_name}: MANQUANT ou VIDE")
 
         # Vérifier que tous les outputs sont présents
-        required_steps = ["generation_css", "generation_index", "generation_admin"]
+        required_steps = ["generation_css", "generation_html", "generation_script", "generation_admin_html", "generation_admin_js"]
         missing = [s for s in required_steps if s not in raw_outputs]
         if missing:
             error_msg = f"Outputs manquants pour l'export: {', '.join(missing)}"
@@ -631,9 +768,9 @@ def _handle_atelier_export(session_id: int, step_id: int, db):
         logger.info(f"🎉 [ATELIER_EXPORT] Export terminé avec succès")
         
     except Exception as e:
-        print(f"\n{'='*80}")
-        print(f"DEBUG [ATELIER_EXPORT] EXCEPTION CAPTURÉE: {type(e).__name__}: {str(e)}")
-        print(f"{'='*80}\n")
+        logger.debug(f"\n{'='*80}")
+        logger.debug(f"DEBUG [ATELIER_EXPORT] EXCEPTION CAPTURÉE: {type(e).__name__}: {str(e)}")
+        logger.debug(f"{'='*80}\n")
         logger.error(f"💥 [ATELIER_EXPORT] ERREUR CRITIQUE: {str(e)}")
         import traceback
         logger.error(f"💥 [ATELIER_EXPORT] Traceback:\n{traceback.format_exc()}")

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
 from pathlib import Path
 import json
+import logging
+from pydantic import BaseModel
 from backend.schemas.pipeline import StartPipeline, StepValidation
 from backend.database import get_connection
 from backend.services.pipeline_engine import (
@@ -10,6 +12,13 @@ from backend.services.pipeline_engine import (
     validate_step as validate_step_service,
     retry_step as retry_step_service
 )
+from backend.services.mission_parser import parse_mission_prompt
+
+logger = logging.getLogger("jarvis")
+
+
+class MissionPromptRequest(BaseModel):
+    text: str
 
 router = APIRouter(prefix="/pipelines", tags=["pipelines"])
 
@@ -76,8 +85,8 @@ def load_config():
     
     # Lire model_preferences depuis config.json
     model_preferences = {
-        "routing": "google/gemini-2.0-flash-001",
-        "structuring": "google/gemini-2.0-flash-001",
+        "routing": "google/gemini-2.5-flash",
+        "structuring": "google/gemini-2.5-flash",
         "code": "anthropic/claude-haiku-4.5",
         "analysis": "anthropic/claude-sonnet-4.5"
     }
@@ -90,6 +99,18 @@ def load_config():
     
     logger.info(f"✅ [PIPELINES] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles")
     return {"api_keys": api_keys, "model_preferences": model_preferences}
+
+@router.post("/parse-mission")
+def parse_mission(request: MissionPromptRequest):
+    try:
+        result = parse_mission_prompt(request.text)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.exception(f"Erreur inattendue lors du parsing mission : {e}")
+        raise HTTPException(status_code=500, detail="Erreur interne lors du parsing")
+
 
 @router.post("/start")
 async def start_pipeline(request: StartPipeline):
@@ -109,7 +130,9 @@ async def start_pipeline(request: StartPipeline):
         request.project_id,
         request.workflow_type,
         request.initial_input or "",
-        db
+        db,
+        modele_override=request.modele_override,
+        source_mission_prompt_id=request.source_mission_prompt_id
     )
     
     config = load_config()
@@ -138,43 +161,6 @@ def get_pipeline(session_id: int):
     
     return session
 
-@router.post("/{session_id}/next")
-async def execute_next_step(session_id: int):
-    db = get_connection()
-    cursor = db.cursor()
-    
-    cursor.execute("SELECT * FROM sessions WHERE id = ?", (session_id,))
-    session_row = cursor.fetchone()
-    
-    if not session_row:
-        db.close()
-        raise HTTPException(status_code=404, detail="Session not found")
-    
-    cursor.execute("SELECT path FROM projects WHERE id = ?", (session_row["project_id"],))
-    project_row = cursor.fetchone()
-    
-    if not project_row:
-        db.close()
-        raise HTTPException(status_code=404, detail="Project not found")
-    
-    project_path = project_row["path"]
-    next_step_index = session_row["current_step_index"]
-    
-    config = load_config()
-    
-    result = await execute_step(session_id, next_step_index, project_path, db, config)
-    
-    while result.get("status") == "auto_completed":
-        result = await execute_step(session_id, result["next_step"], project_path, db, config)
-    
-    session_with_steps = get_session_with_steps(session_id, db)
-    db.close()
-    
-    return {
-        "session": session_with_steps,
-        "execution_result": result
-    }
-
 @router.post("/{session_id}/validate/{step_id}")
 async def validate_pipeline_step(session_id: int, step_id: int, validation: StepValidation):
     db = get_connection()
@@ -187,13 +173,12 @@ async def validate_pipeline_step(session_id: int, step_id: int, validation: Step
     result = validate_step_service(session_id, step_id, validation.model_dump(), db, project_path)
     
     import logging
-    logger = logging.getLogger("jarvis")
+    logger = logging.getLogger("uvicorn")
     
-    # DEBUG FORCÉ
-    print(f"\n{'='*80}")
-    print(f"DEBUG [VALIDATE] session_id={session_id}, step_id={step_id}")
-    print(f"DEBUG [VALIDATE] Result status: {result.get('status')}, next_step: {result.get('next_step')}, project_path: {project_path}")
-    print(f"{'='*80}\n")
+    logger.debug(f"\n{'='*80}")
+    logger.debug(f"DEBUG [VALIDATE] session_id={session_id}, step_id={step_id}")
+    logger.debug(f"DEBUG [VALIDATE] Result status: {result.get('status')}, next_step: {result.get('next_step')}, project_path: {project_path}")
+    logger.debug(f"{'='*80}\n")
     
     logger.info(f"📋 [VALIDATE] Result status: {result.get('status')}, next_step: {result.get('next_step')}, project_path: {project_path}")
     
@@ -205,23 +190,58 @@ async def validate_pipeline_step(session_id: int, step_id: int, validation: Step
         is_atelier = project_path == "__atelier__"
         
         if project_path and (project_path != "__atelier__" or is_atelier):
-            print(f"DEBUG [VALIDATE] Lancement auto-complétion (atelier={is_atelier})...")
+            logger.debug(f"DEBUG [VALIDATE] Lancement auto-complétion (atelier={is_atelier})...")
             logger.info(f"🚀 [VALIDATE] Lancement auto-complétion (atelier={is_atelier})...")
             config = load_config()
             exec_result = await execute_step(session_id, result["next_step"], project_path, db, config)
-            print(f"DEBUG [VALIDATE] exec_result status: {exec_result.get('status')}")
+            logger.debug(f"DEBUG [VALIDATE] exec_result status: {exec_result.get('status')}")
             logger.info(f"📊 [VALIDATE] exec_result status: {exec_result.get('status')}")
             
             while exec_result.get("status") == "auto_completed":
-                print(f"DEBUG [VALIDATE] Auto-completion, step suivant: {exec_result.get('next_step')}")
+                logger.debug(f"DEBUG [VALIDATE] Auto-completion, step suivant: {exec_result.get('next_step')}")
                 logger.info(f"🔄 [VALIDATE] Auto-completion, step suivant: {exec_result.get('next_step')}")
                 exec_result = await execute_step(session_id, exec_result["next_step"], project_path, db, config)
-                print(f"DEBUG [VALIDATE] exec_result status après auto-completion: {exec_result.get('status')}")
+                logger.debug(f"DEBUG [VALIDATE] exec_result status après auto-completion: {exec_result.get('status')}")
                 logger.info(f"📊 [VALIDATE] exec_result status après auto-completion: {exec_result.get('status')}")
         else:
             logger.warning(f"⚠️ [VALIDATE] project_path est vide, pas d'auto-exécution")
     
     session_with_steps = get_session_with_steps(session_id, db)
+    
+    # Déclenchement automatique de graphify après validation d'une étape verification
+    if result.get("status") == "validated":
+        cursor = db.cursor()
+        cursor.execute("SELECT step_name FROM pipeline_steps WHERE id = ?", (step_id,))
+        step_row = cursor.fetchone()
+        
+        if step_row and step_row["step_name"] == "verification":
+            # Récupérer le local_path du projet
+            cursor.execute("""
+                SELECT p.local_path 
+                FROM sessions s 
+                JOIN projects p ON s.project_id = p.id 
+                WHERE s.id = ?
+            """, (session_id,))
+            proj_row = cursor.fetchone()
+            
+            if proj_row and proj_row["local_path"]:
+                local_path = proj_row["local_path"]
+                from pathlib import Path
+                if Path(local_path).exists():
+                    try:
+                        import subprocess
+                        subprocess.Popen(
+                            ["graphify", "."],
+                            cwd=local_path,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL
+                        )
+                        logger.info(f"🔍 Graphify lancé automatiquement après validation verification pour {local_path}")
+                    except FileNotFoundError:
+                        logger.warning(f"⚠️ graphify non installé, mise à jour ignorée pour {local_path}")
+                    except Exception as e:
+                        logger.error(f"❌ Erreur lancement graphify pour {local_path}: {str(e)}")
+    
     db.close()
     
     return {
@@ -305,7 +325,7 @@ def get_pipeline_costs(session_id: int):
     db.close()
     
     model_prices = {
-        "google/gemini-2.0-flash-001": 0.10,
+        "google/gemini-2.5-flash": 0.10,
         "google/gemini-flash-2.0": 0.10,
         "anthropic/claude-haiku-4.5": 1.00,
         "anthropic/claude-haiku-4-5": 1.00,

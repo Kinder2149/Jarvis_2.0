@@ -4,6 +4,7 @@ backend/data/jarvis.db
 backend/data/*.db
 backend/data/*.db-journal
 backend/data/jarvis.log
+backend/data/contexts/
 
 # Python
 __pycache__/

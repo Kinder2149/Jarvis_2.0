@@ -17,6 +17,11 @@
           <p class="text-muted">Configuration de JARVIS. Les clés API ne sont jamais transmises à l'extérieur.</p>
         </div>
 
+        <!-- Alerte OpenRouter -->
+        <div id="openrouter-alert" class="alert alert--warning" style="display: none; margin-bottom: 1.5rem;">
+          ⚠️ Clé OpenRouter inactive — les modules IA ne fonctionneront pas
+        </div>
+
         <!-- Onglets -->
         <div class="settings-tabs">
           <button class="settings-tab settings-tab--active" data-tab="api-keys">🔑 Clés API</button>
@@ -177,12 +182,22 @@
             </div>
 
             <div class="chat-config-row">
-              <label class="chat-config-label">Profil utilisateur (PROFIL_UTILISATEUR.md)</label>
+              <label class="chat-config-label">Profil utilisateur</label>
               <textarea id="chat-profil-utilisateur" class="input-field" rows="12"
                 placeholder="Chargement..."></textarea>
               <span class="text-muted chat-config-hint">
-                Injecté dans chaque conversation chat. Décrivez qui vous êtes, vos préférences,
-                vos règles de travail. Ce texte est sauvegardé directement dans le fichier PROFIL_UTILISATEUR.md.
+                Votre identité permanente : qui vous êtes, vos préférences.
+                Injecté dans Réflexion et Clôture pipeline.
+              </span>
+            </div>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">Règles de travail (regles_globales)</label>
+              <textarea id="chat-regles-globales" class="input-field" rows="12"
+                placeholder="Vos règles de travail, méthode, contraintes que l'IA doit respecter..."></textarea>
+              <span class="text-muted chat-config-hint">
+                Votre méthode de travail, vos contraintes, vos règles.
+                Injecté dans Réflexion et Clôture pipeline.
               </span>
             </div>
 
@@ -197,8 +212,9 @@
           <div class="settings-section card">
             <h2 class="settings-section-title">Contexte Global (Prompt Générique)</h2>
             <p class="text-muted settings-section-desc">
-              Ce texte est injecté en tête de TOUS les modules : Chat, Module Code et Atelier.
-              Décrivez qui vous êtes, vos préférences de travail, vos méthodes et vos attentes envers l'IA.
+              Contexte de session : informations temporaires ou transversales
+              à ajouter ponctuellement (projet en cours, contrainte du moment...).
+              Injecté en tête de TOUS les modules : Chat, Réflexion, Pipeline.
             </p>
             <textarea id="global-context-input" rows="15" class="textarea-full" 
               placeholder="Ex: Je suis entrepreneur, non-développeur. Je travaille avec une IA pour créer mes projets..."></textarea>
@@ -245,6 +261,35 @@
               <button id="btn-reset-config" class="btn-danger">🔄 Réinitialiser tout</button>
             </div>
             <input type="file" id="input-import-config" accept=".json" style="display:none">
+          </div>
+
+          <div class="settings-section card">
+            <h2 class="settings-section-title">Gestion des données</h2>
+            <p class="text-muted settings-section-desc">
+              Sauvegarde manuelle de la base de données. Les 5 sauvegardes les plus récentes sont conservées.
+            </p>
+
+            <div class="advanced-actions">
+              <button id="btn-backup-database" class="btn-primary">💾 Sauvegarder la base de données</button>
+            </div>
+          </div>
+
+          <div class="settings-section card">
+            <h2 class="settings-section-title">Chemins d'export</h2>
+            <p class="text-muted settings-section-desc">
+              Configuration des dossiers d'export pour les modules.
+            </p>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">📁 Dossier export clients (Atelier)</label>
+              <input type="text" id="clients-export-path" class="input-field" placeholder="C:/DEV/PROJETS/Clients">
+              <span class="text-muted chat-config-hint">Chemin où les démos Atelier sont exportées</span>
+            </div>
+
+            <div class="settings-actions">
+              <button id="btn-save-export-paths" class="btn-primary">💾 Sauvegarder</button>
+              <span id="export-paths-status" class="save-status"></span>
+            </div>
           </div>
         </div>
 

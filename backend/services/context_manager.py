@@ -2,38 +2,36 @@ from pathlib import Path
 import re
 from backend.services.file_service import get_sections, list_project_files, read_file, write_file
 
-def build_global_rules_context(methodo_path: str) -> str:
-    """Charge REGLES_GLOBALES.md et PROFIL_UTILISATEUR.md depuis le dossier METHODO.
+CONTEXTS_DIR = Path(__file__).parent.parent / "data" / "contexts"
+
+def build_global_rules_context() -> str:
+    """Charge profil_utilisateur et regles_globales depuis les fichiers .md.
     
     Returns:
-        String concaténé des deux fichiers avec séparateurs, ou "" si METHODO absent.
+        Contexte formaté ou "" si absent
     """
     import logging as _logging
     _logger = _logging.getLogger(__name__)
     
-    if not methodo_path:
-        return ""
-    
-    methodo = Path(methodo_path)
     parts = []
     
-    regles_path = methodo / "REGLES" / "REGLES_GLOBALES.md"
-    if regles_path.exists():
+    regles_file = CONTEXTS_DIR / "regles_globales.md"
+    if regles_file.exists():
         try:
-            parts.append("=== RÈGLES MÉTHODE ===\n" + regles_path.read_text(encoding="utf-8"))
+            regles_value = regles_file.read_text(encoding="utf-8")
+            if regles_value and regles_value.strip():
+                parts.append("=== RÈGLES MÉTHODE ===\n" + regles_value)
         except Exception as e:
-            _logger.warning(f"Erreur lecture REGLES_GLOBALES.md : {e}")
-    else:
-        _logger.warning(f"REGLES_GLOBALES.md absent : {regles_path}")
+            _logger.warning(f"Erreur lecture regles_globales.md : {e}")
     
-    profil_path = methodo / "informations utilisateur" / "PROFIL_UTILISATEUR.md"
-    if profil_path.exists():
+    profil_file = CONTEXTS_DIR / "profil_utilisateur.md"
+    if profil_file.exists():
         try:
-            parts.append("=== PROFIL UTILISATEUR ===\n" + profil_path.read_text(encoding="utf-8"))
+            profil_value = profil_file.read_text(encoding="utf-8")
+            if profil_value and profil_value.strip():
+                parts.append("=== PROFIL UTILISATEUR ===\n" + profil_value)
         except Exception as e:
-            _logger.warning(f"Erreur lecture PROFIL_UTILISATEUR.md : {e}")
-    else:
-        _logger.warning(f"PROFIL_UTILISATEUR.md absent : {profil_path}")
+            _logger.warning(f"Erreur lecture profil_utilisateur.md : {e}")
     
     return "\n\n".join(parts)
 
@@ -49,21 +47,18 @@ async def build_context_envelope(step_config: dict, project_path: str, previous_
     
     # Couche globale : règles méthode
     if context_config.get("inject_global_rules", False):
-        from backend.database import get_connection as _get_conn
-        import json as _json
-        # Lire methodo_path depuis la DB (table app_config, category='chat')
-        try:
-            _conn = _get_conn()
-            _cursor = _conn.cursor()
-            _cursor.execute("SELECT value FROM app_config WHERE key = 'methodo_path'")
-            _row = _cursor.fetchone()
-            _conn.close()
-            _methodo_path = _row["value"] if _row and _row["value"] else ""
-        except Exception:
-            _methodo_path = ""
-        envelope["global_rules"] = build_global_rules_context(_methodo_path)
+        envelope["global_rules"] = build_global_rules_context()
+        
+        # Ajouter aussi les clés séparées pour injection dans templates
+        profil_file = CONTEXTS_DIR / "profil_utilisateur.md"
+        envelope["profil_utilisateur"] = profil_file.read_text(encoding="utf-8") if profil_file.exists() else ""
+        
+        regles_file = CONTEXTS_DIR / "regles_globales.md"
+        envelope["regles_globales"] = regles_file.read_text(encoding="utf-8") if regles_file.exists() else ""
     else:
         envelope["global_rules"] = ""
+        envelope["profil_utilisateur"] = ""
+        envelope["regles_globales"] = ""
     
     projet_contexte_sections = context_config.get("projet_contexte_sections", [])
     if projet_contexte_sections:
@@ -73,7 +68,7 @@ async def build_context_envelope(step_config: dict, project_path: str, previous_
     
     stack_standard = context_config.get("stack_standard", False)
     if stack_standard:
-        stack_path = Path(project_path) / "STACK_STANDARD.md"
+        stack_path = Path(project_path) / "STACK_CODE.md"
         if stack_path.exists():
             envelope["stack_standard"] = read_file(str(stack_path))
         else:
@@ -109,7 +104,23 @@ async def build_context_envelope(step_config: dict, project_path: str, previous_
     else:
         envelope["graphify_report"] = ""
     
-    if context_config.get("read_selected_files", False) and "selection_fichiers" in previous_outputs:
+    if context_config.get("read_targeted_files", False) and user_input:
+        try:
+            from backend.services.mission_parser import parse_mission_prompt as _parse_mission
+            parsed = _parse_mission(user_input)
+            files_parts = []
+            for fi in parsed.get("fichiers_concernes", []):
+                fpath = fi.get("path", "")
+                if not fpath:
+                    continue
+                full = Path(project_path) / fpath.lstrip("/").lstrip("\\")
+                if full.exists():
+                    content = read_file(str(full))
+                    files_parts.append(f"=== {fpath} ===\n{content}")
+            envelope["selected_files_content"] = "\n\n".join(files_parts)
+        except Exception:
+            envelope["selected_files_content"] = ""
+    elif context_config.get("read_selected_files", False) and "selection_fichiers" in previous_outputs:
         try:
             import json as _json_sf
             sel = _json_sf.loads(previous_outputs["selection_fichiers"])
@@ -185,14 +196,29 @@ def write_cloture_docs(output_json: dict, project_path: str) -> None:
             content = read_file(projet_contexte_path)
             
             if content:
-                pattern = r'(## 8\. SESSION EN COURS\s*\n)(.*?)(\n## 9\.)'
-                replacement = r'\1\n' + output_json["section_8"] + r'\n\3'
-                updated_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+                # Supprimer toute section 8 existante (de ## 8. jusqu'à ## 9. ou fin de fichier)
+                content = re.sub(
+                    r'\n## 8\.[^\n]*\n.*?(?=\n## 9\.|\Z)',
+                    '',
+                    content,
+                    flags=re.DOTALL
+                ).rstrip()
                 
-                if updated_content == content:
-                    updated_content = content.rstrip() + "\n\n## 8. SESSION EN COURS\n\n" + output_json["section_8"] + "\n"
+                # Insérer la nouvelle section 8 avant ## 9. si elle existe, sinon en fin de fichier
+                section_9_match = re.search(r'\n## 9\.', content)
+                if section_9_match:
+                    insert_pos = section_9_match.start()
+                    content = (
+                        content[:insert_pos]
+                        + "\n\n## 8. SESSION EN COURS\n\n"
+                        + output_json["section_8"]
+                        + "\n"
+                        + content[insert_pos:]
+                    )
+                else:
+                    content = content + "\n\n## 8. SESSION EN COURS\n\n" + output_json["section_8"] + "\n"
                 
-                write_file(projet_contexte_path, updated_content)
+                write_file(projet_contexte_path, content)
         
         if "changelog_line" in output_json:
             _append_changelog(output_json["changelog_line"], project_path)

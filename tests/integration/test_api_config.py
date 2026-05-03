@@ -14,7 +14,7 @@ def config_file(tmp_path):
     """Crée un config.json temporaire avec model_preferences uniquement."""
     config = {
         "model_preferences": {
-            "routing": "google/gemini-2.0-flash-001",
+            "routing": "google/gemini-2.5-flash",
             "structuring": "anthropic/claude-haiku-4.5",
             "code": "anthropic/claude-sonnet-4.5",
             "analysis": "anthropic/claude-opus-4.5"
@@ -72,7 +72,7 @@ class TestGetConfig:
     def test_model_preferences_sont_corrects(self, client):
         c, _ = client
         prefs = c.get("/api/config").json()["model_preferences"]
-        assert prefs["routing"] == "google/gemini-2.0-flash-001"
+        assert prefs["routing"] == "google/gemini-2.5-flash"
         assert prefs["structuring"] == "anthropic/claude-haiku-4.5"
         assert prefs["code"] == "anthropic/claude-sonnet-4.5"
         assert prefs["analysis"] == "anthropic/claude-opus-4.5"
@@ -131,7 +131,7 @@ class TestAvailableModels:
         from backend.main import app
         with TestClient(app) as c:
             data = c.get("/api/config/models/available").json()
-        assert "google/gemini-2.0-flash-001" in data["routing"]
+        assert "google/gemini-2.5-flash" in data["routing"]
 
     def test_code_contient_claude_sonnet_4_5(self):
         from backend.main import app

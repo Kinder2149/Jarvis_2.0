@@ -154,6 +154,22 @@ def create_project(project: ProjectCreate):
         project_id = cursor.lastrowid
         conn.close()
         
+        # Déclenchement automatique de graphify si local_path défini et existant
+        if local_path and Path(local_path).exists():
+            try:
+                import subprocess
+                subprocess.Popen(
+                    ["graphify", "."],
+                    cwd=local_path,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                logger.info(f"🔍 Graphify lancé automatiquement pour {local_path}")
+            except FileNotFoundError:
+                logger.warning(f"⚠️ graphify non installé, initialisation ignorée pour {local_path}")
+            except Exception as e:
+                logger.error(f"❌ Erreur lancement graphify pour {local_path}: {str(e)}")
+        
         return {
             "id": project_id,
             "name": name,
@@ -270,7 +286,7 @@ def get_project_sessions(project_id: int):
     
     # Table de prix modèles ($/M tokens)
     model_prices = {
-        "google/gemini-2.0-flash-001": 0.10,
+        "google/gemini-2.5-flash": 0.10,
         "google/gemini-flash-2.0": 0.10,
         "anthropic/claude-haiku-4.5": 1.00,
         "anthropic/claude-haiku-4-5": 1.00,
@@ -326,18 +342,20 @@ def update_project(project_id: int, data: ProjectUpdate):
         raise HTTPException(status_code=404, detail="Projet non trouvé")
     
     # Récupérer valeurs actuelles si non fournies
+    name = data.name if data.name is not None else row["name"]
     local_path = data.local_path if data.local_path is not None else (row["local_path"] if "local_path" in row.keys() else None)
     instructions = data.instructions if data.instructions is not None else (row["instructions"] if "instructions" in row.keys() else "")
     parent_dossier_id = data.parent_dossier_id if hasattr(data, 'parent_dossier_id') and data.parent_dossier_id is not None else (row["parent_dossier_id"] if "parent_dossier_id" in row.keys() else None)
-    
+
+    # Mise à jour incluant le champ name (BUG-03 corrigé)
     cursor.execute(
-        "UPDATE projects SET local_path = ?, instructions = ?, parent_dossier_id = ? WHERE id = ?",
-        (local_path, instructions, parent_dossier_id, project_id)
+        "UPDATE projects SET name = ?, local_path = ?, instructions = ?, parent_dossier_id = ? WHERE id = ?",
+        (name, local_path, instructions, parent_dossier_id, project_id)
     )
     conn.commit()
     conn.close()
-    
-    return {"message": "Projet mis à jour", "local_path": local_path, "instructions": instructions, "parent_dossier_id": parent_dossier_id}
+
+    return {"message": "Projet mis à jour", "name": name, "local_path": local_path, "instructions": instructions, "parent_dossier_id": parent_dossier_id}
 
 @router.post("/{project_id}/route-mission")
 async def route_mission(project_id: int, body: dict):
@@ -362,12 +380,8 @@ async def route_mission(project_id: int, body: dict):
     project_path = row["path"]
     
     # Récupérer global_context
-    try:
-        cursor.execute("SELECT value FROM app_config WHERE key = 'global_context'")
-        gc_row = cursor.fetchone()
-        global_context = gc_row["value"] if gc_row else ""
-    except Exception:
-        global_context = ""
+    _ctx_file = Path(__file__).parent.parent / "data" / "contexts" / "global_context.md"
+    global_context = _ctx_file.read_text(encoding="utf-8") if _ctx_file.exists() else ""
     
     # Récupérer api_keys
     cursor.execute("SELECT key, value FROM app_config WHERE category = 'api_keys'")

@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 """
-JARVIS Health Check — Vérification quotidienne rapide
+JARVIS Health Check — Vérification rapide post-développement
 Vérifie que les 3 modules fonctionnent correctement en moins de 60 secondes.
-Usage: python health_check.py (nécessite serveur démarré)
+Usage: python health_check.py (nécessite serveur démarré via start.bat)
 """
 import httpx
 import sys
 import time
-from pathlib import Path
 import tempfile
 
 BASE_URL = "http://localhost:8000"
-TIMEOUT = 30
+TIMEOUT_MESSAGE = 30  # Timeout pour les messages chat
+TIMEOUT_DEFAULT = 10  # Timeout par défaut
 
 # ANSI color codes
 GREEN = "\033[32m"
 RED = "\033[31m"
+YELLOW = "\033[33m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
@@ -59,7 +60,7 @@ def check_api_keys():
         return False, f"Erreur vérification clés : {str(e)}"
 
 def check_module_chat():
-    """Vérifie le module Chat."""
+    """Vérifie le module Chat (3 checks)."""
     project_id = None
     conversation_id = None
     
@@ -71,7 +72,7 @@ def check_module_chat():
         response = httpx.post(
             f"{BASE_URL}/api/projects/",
             json={"name": "Health Check Test", "local_path": temp_path, "module_type": "dev"},
-            timeout=TIMEOUT
+            timeout=TIMEOUT_DEFAULT
         )
         if response.status_code != 200:
             return False, f"Création projet échouée (status {response.status_code})"
@@ -82,19 +83,22 @@ def check_module_chat():
         response = httpx.post(
             f"{BASE_URL}/api/chat/conversations",
             json={"title": "Health Check", "project_id": project_id},
-            timeout=TIMEOUT
+            timeout=TIMEOUT_DEFAULT
         )
         if response.status_code != 200:
             return False, f"Création conversation échouée (status {response.status_code})"
         
         conversation_id = response.json()["id"]
         
-        # 3. Envoyer message et attendre réponse
+        # 3. Envoyer message et attendre réponse (TIMEOUT 30s)
         response = httpx.post(
             f"{BASE_URL}/api/chat/conversations/{conversation_id}/messages",
             json={"content": "dis juste OK"},
-            timeout=TIMEOUT
+            timeout=TIMEOUT_MESSAGE
         )
+        
+        if response.status_code == 500:
+            return False, f"Erreur serveur 500 (vérifier clés API)"
         
         if response.status_code != 200:
             return False, f"Envoi message échoué (status {response.status_code})"
@@ -121,7 +125,7 @@ def check_module_chat():
             pass
 
 def check_module_code():
-    """Vérifie le module Code."""
+    """Vérifie le module Code (3 checks)."""
     project_id = None
     session_id = None
     
@@ -131,14 +135,14 @@ def check_module_code():
         response = httpx.post(
             f"{BASE_URL}/api/projects/",
             json={"name": "Health Check Code", "local_path": temp_path, "module_type": "dev"},
-            timeout=TIMEOUT
+            timeout=TIMEOUT_DEFAULT
         )
         if response.status_code != 200:
             return False, f"Création projet échouée (status {response.status_code})"
         
         project_id = response.json()["id"]
         
-        # 2. Démarrer session
+        # 2. Démarrer session session_start
         response = httpx.post(
             f"{BASE_URL}/api/pipelines/start",
             json={
@@ -146,30 +150,33 @@ def check_module_code():
                 "project_id": project_id,
                 "user_input": "Health check test"
             },
-            timeout=TIMEOUT
+            timeout=TIMEOUT_DEFAULT
         )
         if response.status_code != 200:
             return False, f"Démarrage session échoué (status {response.status_code})"
         
         session_id = response.json()["session_id"]
         
-        # 3. Vérifier status
-        response = httpx.get(f"{BASE_URL}/api/pipelines/{session_id}", timeout=10)
+        # 3. Vérifier status et steps
+        response = httpx.get(f"{BASE_URL}/api/pipelines/{session_id}", timeout=TIMEOUT_DEFAULT)
         if response.status_code != 200:
             return False, f"Status session échoué (status {response.status_code})"
         
         session_data = response.json()
         steps_count = len(session_data.get("steps", []))
         
+        if steps_count == 0:
+            return False, "Aucun step créé"
+        
         # 4. Abort session
-        response = httpx.post(f"{BASE_URL}/api/pipelines/{session_id}/abort", timeout=10)
+        response = httpx.post(f"{BASE_URL}/api/pipelines/{session_id}/abort", timeout=TIMEOUT_DEFAULT)
         if response.status_code != 200:
             return False, f"Abort échoué (status {response.status_code})"
         
         return True, f"Session créée ({steps_count} steps) · Abort OK"
         
     except httpx.TimeoutException:
-        return False, "Timeout (> 30s)"
+        return False, "Timeout (> 10s)"
     except Exception as e:
         return False, f"Erreur : {str(e)}"
     finally:
@@ -181,7 +188,7 @@ def check_module_code():
             pass
 
 def check_module_atelier():
-    """Vérifie le module Atelier."""
+    """Vérifie le module Atelier (2 checks)."""
     prospect_id = None
     
     try:
@@ -189,7 +196,7 @@ def check_module_atelier():
         response = httpx.post(
             f"{BASE_URL}/api/atelier/prospects",
             json={"nom": "Health Check Test", "email": "test@healthcheck.com"},
-            timeout=10
+            timeout=TIMEOUT_DEFAULT
         )
         if response.status_code != 200:
             return False, f"Création prospect échouée (status {response.status_code})"
@@ -197,13 +204,18 @@ def check_module_atelier():
         prospect_id = response.json()["id"]
         
         # 2. Vérifier liste
-        response = httpx.get(f"{BASE_URL}/api/atelier/prospects", timeout=10)
+        response = httpx.get(f"{BASE_URL}/api/atelier/prospects", timeout=TIMEOUT_DEFAULT)
         if response.status_code != 200:
             return False, f"Liste prospects échouée (status {response.status_code})"
         
         prospects = response.json()
         if len(prospects) == 0:
-            return False, "Liste vide"
+            return False, "Liste vide après création"
+        
+        # 3. DELETE prospect (nettoyage)
+        response = httpx.delete(f"{BASE_URL}/api/atelier/prospects/{prospect_id}", timeout=TIMEOUT_DEFAULT)
+        if response.status_code != 200:
+            return False, f"Suppression prospect échouée (status {response.status_code})"
         
         return True, "Prospect créé · Liste OK · Nettoyage OK"
         
@@ -212,7 +224,7 @@ def check_module_atelier():
     except Exception as e:
         return False, f"Erreur : {str(e)}"
     finally:
-        # Nettoyage
+        # Nettoyage de sécurité (au cas où le DELETE explicite échoue)
         try:
             if prospect_id:
                 httpx.delete(f"{BASE_URL}/api/atelier/prospects/{prospect_id}", timeout=5)

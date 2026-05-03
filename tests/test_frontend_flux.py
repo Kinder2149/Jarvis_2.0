@@ -69,61 +69,83 @@ def test_sidebar_collapse_expand(browser_page: Page):
 
 
 def test_modal_nouveau_chat_ouvre_et_ferme(browser_page: Page):
-    """Test que le modal nouveau chat s'ouvre et se ferme correctement."""
-    mock_route(browser_page, "**/api/projects/", [])
-    mock_route(browser_page, "**/api/chat/conversations*", [])
+    """Test que le bouton nouveau chat redirige vers chat.html (comportement actuel)."""
+    mock_route(browser_page, "**/api/projects**", [])
+    mock_route(browser_page, "**/api/chat/conversations**", [])
     mock_route(browser_page, "**/api/atelier/prospects", [])
+    mock_fallback_routes(browser_page)
     
     browser_page.goto(f"{BASE_URL}/app/index.html")
     browser_page.wait_for_load_state("networkidle")
-    
-    new_chat_btn = browser_page.locator("#btn-new-chat")
-    new_chat_btn.click()
     browser_page.wait_for_timeout(500)
     
-    modal_overlay = browser_page.locator("#modal-overlay")
-    try:
-        browser_page.wait_for_selector("#modal-overlay[style*='block']", timeout=2000)
-        assert modal_overlay.is_visible(), "Modal overlay devrait être visible"
-    except:
-        pytest.skip("Modal ne s'est pas ouvert")
+    # Cliquer le bouton "Nouveau Chat" dans la sidebar
+    btn = browser_page.locator("#btn-new-chat").first
+    assert btn.is_visible(), "Bouton Nouveau Chat non trouvé dans sidebar"
     
-    close_btn = browser_page.locator(".modal-close, button:has-text('Annuler')")
-    if close_btn.count() > 0:
-        close_btn.first.click()
-        browser_page.wait_for_timeout(300)
-        try:
-            assert not modal_overlay.is_visible(), "Modal devrait être fermé après clic sur fermer"
-        except:
-            pass
+    # Vérifier que le clic redirige vers chat.html
+    btn.click()
+    browser_page.wait_for_load_state("networkidle")
+    
+    assert "chat.html" in browser_page.url, "Devrait rediriger vers chat.html après clic"
 
 
 def test_modal_nouveau_projet_validation_champs_vides(browser_page: Page):
-    """Test que le modal nouveau projet valide les champs obligatoires."""
-    mock_route(browser_page, "**/api/projects/", [])
-    mock_route(browser_page, "**/api/chat/conversations*", [])
+    """Test que le modal nouvelle réflexion s'ouvre et affiche les champs."""
+    mock_route(browser_page, "**/api/projects**", [])
+    mock_route(browser_page, "**/api/chat/conversations**", [])
     mock_route(browser_page, "**/api/atelier/prospects", [])
+    mock_fallback_routes(browser_page)
     
     browser_page.goto(f"{BASE_URL}/app/index.html")
     browser_page.wait_for_load_state("networkidle")
+    browser_page.wait_for_timeout(500)
     
-    new_project_btn = browser_page.locator("#btn-new-project")
-    if new_project_btn.count() == 0:
-        pytest.skip("Bouton nouveau projet non trouvé dans la sidebar")
+    # Trouver le bouton nouvelle réflexion dans la sidebar
+    new_reflexion_btn = browser_page.locator("#btn-new-reflexion").first
+    assert new_reflexion_btn.is_visible(), "Bouton nouvelle réflexion non trouvé dans sidebar"
+    new_reflexion_btn.click()
+    browser_page.wait_for_timeout(500)
     
-    new_project_btn.click()
+    modal = browser_page.locator(".modal-overlay")
+    assert modal.is_visible(), "Modal Nouvelle Réflexion devrait s'ouvrir"
+    
+    # Vérifier les champs du modal réflexion
+    assert browser_page.locator("#modal-mission-project").count() >= 1, "Champ projet manquant"
+    
+    # Fermer le modal via le bouton ×
+    browser_page.locator(".modal-header .btn-icon").click()
+    browser_page.wait_for_timeout(300)
+    assert not modal.is_visible(), "Modal devrait se fermer après clic ×"
+
+
+def test_modal_fermeture_clic_overlay(browser_page: Page):
+    """Test que le modal se ferme quand on clique sur l'overlay (en dehors du modal)."""
+    mock_route(browser_page, "**/api/projects**", [])
+    mock_route(browser_page, "**/api/chat/conversations**", [])
+    mock_route(browser_page, "**/api/atelier/prospects", [])
+    mock_fallback_routes(browser_page)
+    
+    browser_page.goto(f"{BASE_URL}/app/index.html")
+    browser_page.wait_for_load_state("networkidle")
+    browser_page.wait_for_timeout(500)
+    
+    # Ouvrir le modal nouvelle réflexion (qui fonctionne réellement)
+    btn = browser_page.locator("#btn-new-reflexion").first
+    assert btn.is_visible(), "Bouton Nouvelle Réflexion non trouvé"
+    btn.click()
+    browser_page.wait_for_timeout(500)
+    
+    modal = browser_page.locator(".modal-overlay")
+    assert modal.is_visible(), "Modal devrait être ouvert"
+    
+    # Cliquer sur l'overlay (en dehors du .modal)
+    # Utiliser force=True pour cliquer sur l'overlay même si le .modal est au-dessus
+    modal.click(position={"x": 10, "y": 10}, force=True)
     browser_page.wait_for_timeout(300)
     
-    modal = browser_page.locator("#modal-new-project")
-    if not modal.is_visible():
-        pytest.skip("Modal nouveau projet ne s'est pas ouvert")
-    
-    create_btn = modal.locator("button:has-text('Créer'), button[type='submit']")
-    if create_btn.count() > 0:
-        create_btn.first.click()
-        browser_page.wait_for_timeout(300)
-        
-        assert modal.is_visible(), "Modal devrait rester ouvert si validation échoue"
+    # Le modal devrait se fermer
+    assert not modal.is_visible(), "Modal devrait se fermer après clic sur overlay"
 
 
 # =============================================================================
@@ -237,7 +259,7 @@ def test_module_code_abort_demande_confirmation(browser_page: Page):
         }
     )
     
-    browser_page.goto(f"{BASE_URL}/app/module-code.html?session=1&project_id=1")
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1&project_id=1")
     browser_page.wait_for_load_state("networkidle")
     browser_page.wait_for_timeout(1000)
     
@@ -276,7 +298,7 @@ def test_module_code_retry_step(browser_page: Page):
     
     browser_page.route("**/api/pipelines/1/retry/1", handle_retry)
     
-    browser_page.goto(f"{BASE_URL}/app/module-code.html?session=1&project_id=1")
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1&project_id=1")
     browser_page.wait_for_load_state("networkidle")
     browser_page.wait_for_timeout(1000)
     
@@ -339,85 +361,194 @@ def test_atelier_creation_prospect(browser_page: Page):
 
 @pytest.mark.smoke
 def test_flux_creation_et_navigation_projet(page: Page):
-    """Test flux complet : créer un projet et naviguer vers sa page."""
+    """Test flux complet : créer un projet via API et naviguer vers sa page."""
     import random
     import tempfile
+    import time
+    import httpx
+    from pathlib import Path
     
-    page.goto(f"{BASE_URL}/app/index.html")
-    page.wait_for_load_state("networkidle")
-    page.wait_for_timeout(500)
-    
-    new_project_btn = page.locator("#btn-new-project")
-    if new_project_btn.count() == 0:
-        pytest.skip("Bouton nouveau projet non trouvé")
-    
-    new_project_btn.click()
-    page.wait_for_timeout(300)
-    
-    modal = page.locator("#modal-new-project")
-    if not modal.is_visible():
-        pytest.skip("Modal nouveau projet ne s'est pas ouvert")
-    
-    project_name = f"Test Projet {random.randint(1000, 9999)}"
+    # Créer un projet via API (plus fiable que via UI)
+    project_name = f"Smoke Test Projet {int(time.time())}"
     temp_path = tempfile.mkdtemp()
     
-    name_input = modal.locator("input[name='name'], input[placeholder*='nom']")
-    path_input = modal.locator("input[name='local_path'], input[placeholder*='chemin']")
+    # Créer un PROJET_CONTEXTE.md minimal pour que le projet soit valide
+    project_dir = Path(temp_path)
+    (project_dir / "PROJET_CONTEXTE.md").write_text(
+        f"# {project_name}\n## 1. IDENTITE\n|Nom|{project_name}|",
+        encoding="utf-8"
+    )
     
-    if name_input.count() > 0:
-        name_input.fill(project_name)
-    if path_input.count() > 0:
-        path_input.fill(temp_path)
-    
-    create_btn = modal.locator("button:has-text('Créer'), button[type='submit']")
-    if create_btn.count() > 0:
-        create_btn.first.click()
-        page.wait_for_timeout(1000)
+    try:
+        # Créer le projet via API
+        resp = httpx.post(
+            f"{BASE_URL}/api/projects",
+            json={
+                "name": project_name,
+                "path": str(temp_path),
+                "type": "web",
+                "module_type": "dossier"
+            },
+            timeout=10.0
+        )
+        assert resp.status_code == 200, f"Échec création projet: {resp.status_code}"
+        project_id = resp.json()["id"]
+        
+        # Naviguer vers index et vérifier que le projet apparaît dans la sidebar
+        page.goto(f"{BASE_URL}/app/index.html")
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(1500)
         
         sidebar_content = page.locator("#sidebar").text_content()
         assert project_name in sidebar_content, f"Projet '{project_name}' devrait apparaître dans la sidebar"
         
-        project_link = page.locator(f"a:has-text('{project_name}'), .project-item:has-text('{project_name}')")
-        if project_link.count() > 0:
-            project_link.first.click()
-            page.wait_for_timeout(500)
-            
-            assert "dossier.html" in page.url, "Devrait naviguer vers dossier.html"
+        # Cliquer sur le projet pour naviguer vers dossier.html
+        project_link = page.locator(f".nav-project-name:has-text('{project_name}')").first
+        assert project_link.is_visible(), f"Lien projet '{project_name}' non visible"
+        project_link.click()
+        page.wait_for_timeout(1000)
+        
+        assert "dossier.html" in page.url, "Devrait naviguer vers dossier.html"
+        assert f"id={project_id}" in page.url, "URL devrait contenir l'ID du projet"
+        
+    finally:
+        # Nettoyage
+        try:
+            httpx.delete(f"{BASE_URL}/api/projects/{project_id}", timeout=5.0)
+        except:
+            pass
+        import shutil
+        shutil.rmtree(str(temp_path), ignore_errors=True)
 
 
 @pytest.mark.smoke
 def test_flux_creer_conversation_et_voir_dans_sidebar(page: Page):
-    """Test flux complet : créer une conversation et la voir dans la sidebar."""
-    import random
+    """Test flux complet : créer une conversation via API et la voir dans la sidebar."""
+    import time
+    import httpx
     
-    page.goto(f"{BASE_URL}/app/index.html")
-    page.wait_for_load_state("networkidle")
-    page.wait_for_timeout(500)
+    conv_title = f"Smoke Test Conv {int(time.time())}"
     
-    new_chat_btn = page.locator("#btn-new-chat")
-    new_chat_btn.click()
-    page.wait_for_timeout(300)
-    
-    modal = page.locator("#modal-new-chat")
-    if not modal.is_visible():
-        pytest.skip("Modal nouveau chat ne s'est pas ouvert")
-    
-    conv_title = f"Test Conv {random.randint(1000, 9999)}"
-    
-    title_input = modal.locator("input[name='title'], input[placeholder*='titre']")
-    if title_input.count() > 0:
-        title_input.fill(conv_title)
-    
-    create_btn = modal.locator("button:has-text('Créer'), button[type='submit']")
-    if create_btn.count() > 0:
-        create_btn.first.click()
-        page.wait_for_timeout(1000)
+    try:
+        # Créer la conversation via API
+        resp = httpx.post(
+            f"{BASE_URL}/api/chat/conversations",
+            json={
+                "title": conv_title,
+                "project_id": None
+            },
+            timeout=10.0
+        )
+        assert resp.status_code == 200, f"Échec création conversation: {resp.status_code}"
+        conv_id = resp.json()["id"]
         
-        assert "chat.html" in page.url, "Devrait naviguer vers chat.html après création"
-        
+        # Naviguer vers index et vérifier que la conversation apparaît dans la sidebar
         page.goto(f"{BASE_URL}/app/index.html")
         page.wait_for_load_state("networkidle")
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(1500)
+        
+        # Cliquer sur l'onglet Chats dans la sidebar
+        chat_tab = page.locator(".sidebar-tab[data-tab='conversations']")
+        if chat_tab.is_visible():
+            chat_tab.click()
+            page.wait_for_timeout(500)
         
         sidebar_content = page.locator("#sidebar").text_content()
         assert conv_title in sidebar_content, f"Conversation '{conv_title}' devrait apparaître dans la sidebar"
+        
+        # Cliquer sur la conversation pour naviguer vers chat.html
+        conv_link = page.locator(f".nav-conversation-title:has-text('{conv_title}')").first
+        if conv_link.count() == 0:
+            conv_link = page.locator(f"a:has-text('{conv_title}')").first
+        
+        assert conv_link.is_visible(), f"Lien conversation '{conv_title}' non visible"
+        conv_link.click()
+        page.wait_for_timeout(1000)
+        
+        assert "chat.html" in page.url, "Devrait naviguer vers chat.html"
+        assert f"id={conv_id}" in page.url, "URL devrait contenir l'ID de la conversation"
+        
+    finally:
+        # Nettoyage
+        try:
+            httpx.delete(f"{BASE_URL}/api/chat/conversations/{conv_id}", timeout=5.0)
+        except:
+            pass
+
+
+@pytest.mark.smoke
+def test_smoke_flux_module_code_session(page: Page):
+    """Test flux complet : créer un projet code et démarrer une session pipeline."""
+    import time
+    import tempfile
+    import httpx
+    from pathlib import Path
+    
+    # Créer un projet avec un dossier tmp valide
+    project_dir = Path(tempfile.mkdtemp())
+    project_name = f"Smoke Test Code {int(time.time())}"
+    
+    (project_dir / "PROJET_CONTEXTE.md").write_text(
+        f"# {project_name}\n## 1. IDENTITE\n|Nom|{project_name}|\n## 2. STACK TECHNIQUE\nPython + FastAPI",
+        encoding="utf-8"
+    )
+    (project_dir / "main.py").write_text("# Test file\nprint('hello')", encoding="utf-8")
+    
+    try:
+        # Créer le projet via API
+        proj_resp = httpx.post(
+            f"{BASE_URL}/api/projects",
+            json={
+                "name": project_name,
+                "path": str(project_dir),
+                "type": "web",
+                "module_type": "code"
+            },
+            timeout=10.0
+        )
+        assert proj_resp.status_code == 200, f"Échec création projet: {proj_resp.status_code}"
+        project_id = proj_resp.json()["id"]
+        
+        # Naviguer vers la liste des projets code
+        page.goto(f"{BASE_URL}/app/code-projects.html")
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(2000)
+        
+        # Vérifier que le projet apparaît
+        content = page.content()
+        assert project_name in content, f"Projet '{project_name}' non visible dans code-projects"
+        
+        # Démarrer une session via API (pas via UI pour éviter l'IA)
+        session_resp = httpx.post(
+            f"{BASE_URL}/api/pipelines/start",
+            json={
+                "project_id": project_id,
+                "workflow_type": "code_mission",
+                "user_input": "Test smoke: corriger un bug simple dans main.py"
+            },
+            timeout=10.0
+        )
+        assert session_resp.status_code == 200, f"Échec démarrage session: {session_resp.status_code}"
+        session_id = session_resp.json()["id"]
+        
+        # Naviguer vers la session (mission.html remplace module-code.html)
+        page.goto(f"{BASE_URL}/app/mission.html?pipeline_session={session_id}&project_id={project_id}")
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(3000)
+        
+        # Vérifier que les steps s'affichent
+        content = page.content()
+        assert "step" in content.lower() or "étape" in content.lower(), \
+            "Steps non visibles sur la page mission"
+        
+        # Aborter proprement
+        httpx.post(f"{BASE_URL}/api/pipelines/{session_id}/abort", timeout=5.0)
+        
+    finally:
+        # Nettoyage
+        try:
+            httpx.delete(f"{BASE_URL}/api/projects/{project_id}", timeout=5.0)
+        except:
+            pass
+        import shutil
+        shutil.rmtree(str(project_dir), ignore_errors=True)

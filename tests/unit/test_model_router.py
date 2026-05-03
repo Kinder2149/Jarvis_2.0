@@ -12,7 +12,7 @@ class TestGetModelId:
     """get_model_id() : retourne le bon identifiant selon le type."""
 
     def test_routing_model(self, sample_config):
-        assert get_model_id("routing", sample_config) == "google/gemini-2.0-flash-001"
+        assert get_model_id("routing", sample_config) == "google/gemini-2.5-flash"
 
     def test_structuring_model(self, sample_config):
         assert get_model_id("structuring", sample_config) == "anthropic/claude-haiku-4.5"
@@ -63,7 +63,7 @@ class TestCallModelErrors:
             
             with pytest.raises(Exception) as exc_info:
                 await call_model(
-                    "google/gemini-2.0-flash-001",
+                    "google/gemini-2.5-flash",
                     [{"role": "user", "content": "test"}],
                     sample_config["api_keys"],
                     1, "test_step", "routing", db
@@ -83,7 +83,7 @@ class TestCallModelErrors:
             
             with pytest.raises(Exception) as exc_info:
                 await call_model(
-                    "google/gemini-2.0-flash-001",
+                    "google/gemini-2.5-flash",
                     [{"role": "user", "content": "test"}],
                     sample_config["api_keys"],
                     1, "test_step", "routing", db
@@ -122,7 +122,7 @@ class TestCallModelErrors:
             
             with pytest.raises(Exception) as exc_info:
                 await call_model(
-                    "google/gemini-2.0-flash-001",
+                    "google/gemini-2.5-flash",
                     [{"role": "user", "content": "test"}],
                     sample_config["api_keys"],
                     1, "test_step", "routing", db
@@ -140,7 +140,7 @@ class TestCallModelErrors:
             
             with pytest.raises(Exception) as exc_info:
                 await call_model(
-                    "google/gemini-2.0-flash-001",
+                    "google/gemini-2.5-flash",
                     [{"role": "user", "content": "test"}],
                     sample_config["api_keys"],
                     1, "test_step", "routing", db
@@ -161,7 +161,7 @@ class TestCallModelErrors:
             
             with pytest.raises(Exception) as exc_info:
                 await call_model(
-                    "google/gemini-2.0-flash-001",
+                    "google/gemini-2.5-flash",
                     [{"role": "user", "content": "test"}],
                     sample_config["api_keys"],
                     1, "test_step", "routing", db

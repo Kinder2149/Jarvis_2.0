@@ -30,6 +30,8 @@ def _create_schema(conn: sqlite3.Connection):
             workflow_type TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'CREATED',
             current_step_index INTEGER DEFAULT 0,
+            modele_override TEXT NULL,
+            source_mission_prompt_id INTEGER NULL,
             created_at TEXT DEFAULT (datetime('now')),
             updated_at TEXT DEFAULT (datetime('now'))
         );
@@ -49,6 +51,7 @@ def _create_schema(conn: sqlite3.Connection):
             validated_at TEXT,
             error_message TEXT,
             output_type TEXT DEFAULT 'text',
+            sub_step_index INTEGER NULL,
             created_at TEXT DEFAULT (datetime('now'))
         );
 
@@ -116,7 +119,7 @@ def sample_config():
             "google_key": ""
         },
         "model_preferences": {
-            "routing": "google/gemini-2.0-flash-001",
+            "routing": "google/gemini-2.5-flash",
             "structuring": "anthropic/claude-haiku-4.5",
             "code": "anthropic/claude-sonnet-4.5",
             "analysis": "anthropic/claude-opus-4.5"

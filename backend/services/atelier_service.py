@@ -9,7 +9,16 @@ import re as _re
 
 RESOURCES_PATH = Path(__file__).parent.parent / "data" / "atelier" / "resources"
 DEMOS_PATH = Path(__file__).parent.parent / "data" / "atelier" / "demos"
-CLIENTS_BASE_DIR = Path("C:/DEV/PROJETS/Clients")
+
+def get_clients_base_dir() -> Path:
+    """Récupère le chemin d'export clients depuis app_config."""
+    from backend.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT value FROM app_config WHERE key = 'clients_export_path'")
+    row = cursor.fetchone()
+    conn.close()
+    return Path(row["value"]) if row and row["value"] else Path("C:/DEV/PROJETS/Clients")
 
 
 def load_resource(filename: str) -> str:
@@ -147,14 +156,12 @@ def save_demo_files(prospect_slug: str, raw_outputs: dict, client_nom: str = Non
     Parse les outputs LLM des steps génération et écrit les 5 fichiers démo.
     raw_outputs = {
         "generation_css": "...",
-        "generation_index": "...",
-        "generation_admin": "..."
+        "generation_html": "...",
+        "generation_script": "...",
+        "generation_admin_html": "...",
+        "generation_admin_js": "..."
     }
-    Format attendu pour generation_index et generation_admin :
-    <<<FILE: index.html>>>
-    [contenu]
-    <<<FILE: script.js>>>
-    [contenu]
+    Format attendu : chaque step génère UN fichier dans un bloc markdown
     """
     import logging
     logger = logging.getLogger("jarvis")
@@ -168,8 +175,8 @@ def save_demo_files(prospect_slug: str, raw_outputs: dict, client_nom: str = Non
     
     logger.info(f"📁 [ATELIER_EXPORT] Création dossier démo : {safe_name}")
     
-    # Écrire dans C:\DEV\PROJETS\Clients\{nom_client}\
-    demo_dir = CLIENTS_BASE_DIR / safe_name
+    # Écrire dans le dossier clients configuré
+    demo_dir = get_clients_base_dir() / safe_name
     demo_dir.mkdir(parents=True, exist_ok=True)
     
     # Garder aussi une copie dans le dossier interne pour le ZIP et la DB
@@ -184,27 +191,45 @@ def save_demo_files(prospect_slug: str, raw_outputs: dict, client_nom: str = Non
     (demo_dir / "styles.css").write_text(css_content, encoding="utf-8")
     logger.info(f"✅ [ATELIER_EXPORT] styles.css écrit")
 
-    # index.html + script.js
-    index_raw = raw_outputs.get("generation_index", "")
-    logger.info(f"📄 [ATELIER_EXPORT] Index raw length: {len(index_raw)} chars")
-    index_files = _parse_file_delimiters(index_raw)
-    logger.info(f"📄 [ATELIER_EXPORT] Index files parsed: {list(index_files.keys())}")
-    for filename, content in index_files.items():
+    # index.html
+    html_raw = raw_outputs.get("generation_html", "")
+    logger.info(f"📄 [ATELIER_EXPORT] HTML raw length: {len(html_raw)} chars")
+    html_files = _parse_file_delimiters(html_raw)
+    logger.info(f"📄 [ATELIER_EXPORT] HTML files parsed: {list(html_files.keys())}")
+    for filename, content in html_files.items():
         (demo_dir / filename).write_text(content, encoding="utf-8")
         logger.info(f"✅ [ATELIER_EXPORT] {filename} écrit ({len(content)} chars)")
 
-    # admin.html + admin.js
-    admin_raw = raw_outputs.get("generation_admin", "")
-    logger.info(f"🔒 [ATELIER_EXPORT] Admin raw length: {len(admin_raw)} chars")
-    admin_files = _parse_file_delimiters(admin_raw)
-    logger.info(f"🔒 [ATELIER_EXPORT] Admin files parsed: {list(admin_files.keys())}")
-    for filename, content in admin_files.items():
+    # script.js
+    script_raw = raw_outputs.get("generation_script", "")
+    logger.info(f"� [ATELIER_EXPORT] Script raw length: {len(script_raw)} chars")
+    script_files = _parse_file_delimiters(script_raw)
+    logger.info(f"� [ATELIER_EXPORT] Script files parsed: {list(script_files.keys())}")
+    for filename, content in script_files.items():
+        (demo_dir / filename).write_text(content, encoding="utf-8")
+        logger.info(f"✅ [ATELIER_EXPORT] {filename} écrit ({len(content)} chars)")
+
+    # admin.html
+    admin_html_raw = raw_outputs.get("generation_admin_html", "")
+    logger.info(f"🔒 [ATELIER_EXPORT] Admin HTML raw length: {len(admin_html_raw)} chars")
+    admin_html_files = _parse_file_delimiters(admin_html_raw)
+    logger.info(f"🔒 [ATELIER_EXPORT] Admin HTML files parsed: {list(admin_html_files.keys())}")
+    for filename, content in admin_html_files.items():
+        (demo_dir / filename).write_text(content, encoding="utf-8")
+        logger.info(f"✅ [ATELIER_EXPORT] {filename} écrit ({len(content)} chars)")
+
+    # admin.js
+    admin_js_raw = raw_outputs.get("generation_admin_js", "")
+    logger.info(f"🔒 [ATELIER_EXPORT] Admin JS raw length: {len(admin_js_raw)} chars")
+    admin_js_files = _parse_file_delimiters(admin_js_raw)
+    logger.info(f"🔒 [ATELIER_EXPORT] Admin JS files parsed: {list(admin_js_files.keys())}")
+    for filename, content in admin_js_files.items():
         (demo_dir / filename).write_text(content, encoding="utf-8")
         logger.info(f"✅ [ATELIER_EXPORT] {filename} écrit ({len(content)} chars)")
 
     # Validation : vérifier que tous les fichiers requis ont été générés
     required_files = {"index.html", "script.js", "admin.html", "admin.js"}
-    generated_files = set(index_files.keys()) | set(admin_files.keys())
+    generated_files = set(html_files.keys()) | set(script_files.keys()) | set(admin_html_files.keys()) | set(admin_js_files.keys())
     missing = required_files - generated_files
     if missing:
         raise ValueError(

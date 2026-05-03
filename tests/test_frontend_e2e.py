@@ -76,12 +76,12 @@ class TestServeur:
 
     def test_static_files_servis(self):
         """Les fichiers statiques frontend sont servis."""
-        for path in ["index.html", "chat.html", "dossier.html", "module-code.html", "settings.html"]:
+        for path in ["index.html", "chat.html", "dossier.html", "mission.html", "settings.html"]:
             r = requests.get(f"http://localhost:8000/app/{path}")
             assert r.status_code == 200, f"Page {path} non accessible (HTTP {r.status_code})"
 
     def test_pipeline_html_supprime(self):
-        """pipeline.html doit avoir été supprimé (remplacé par module-code.html)."""
+        """pipeline.html doit avoir été supprimé (remplacé par mission.html)."""
         r = requests.get("http://localhost:8000/app/pipeline.html")
         assert r.status_code == 404, "pipeline.html existe encore - doit être supprimé"
 
@@ -430,9 +430,9 @@ class TestModuleCode:
 
     def test_module_code_charge_sans_session(self, page: Page):
         """Module code sans session affiche un message d'erreur propre."""
-        page.goto(f"{BASE_URL}/module-code.html")
+        page.goto(f"{BASE_URL}/mission.html")
         page.wait_for_timeout(2000)
-        assert page.query_selector("#page-module-code") is not None
+        assert page.query_selector("#mission-empty-state") is not None or page.query_selector("#mission-flow") is not None
 
     def test_module_code_charge_avec_session(self, page: Page):
         """Module code charge une session existante."""
@@ -443,7 +443,7 @@ class TestModuleCode:
         js_errors = []
         page.on("console", lambda msg: js_errors.append(msg.text) if msg.type == "error" else None)
         
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
         
         assert page.query_selector("#mc-workflow-type") is not None
@@ -454,7 +454,7 @@ class TestModuleCode:
         assert len(wf_type.inner_text()) > 0, "Workflow type vide"
         
         critical = [e for e in js_errors if any(x in e.lower() for x in ["typeerror", "referenceerror", "cannot read"])]
-        assert len(critical) == 0, f"Erreurs JS module-code: {critical}"
+        assert len(critical) == 0, f"Erreurs JS mission: {critical}"
 
     def test_module_code_steps_rendus(self, page: Page):
         """Les steps sont rendus dans la liste."""
@@ -462,7 +462,7 @@ class TestModuleCode:
         if not session_id:
             pytest.skip("Aucune session disponible")
         
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
         
         steps = page.query_selector_all(".step-card")
@@ -487,10 +487,10 @@ class TestModuleCode:
         if not completed_session:
             pytest.skip("Aucune session COMPLETED disponible")
         
-        page.goto(f"{BASE_URL}/module-code.html?session={completed_session}&project_id={completed_project}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={completed_session}&project_id={completed_project}")
         page.wait_for_timeout(3000)
         
-        btn_abort = page.query_selector("#btn-abort")
+        btn_abort = page.query_selector("#btn-abort-pipeline")
         if btn_abort:
             assert btn_abort.evaluate("el => el.style.display === 'none'"), "Bouton Abandonner visible sur session COMPLETED"
 
@@ -500,11 +500,11 @@ class TestModuleCode:
         if not session_id:
             pytest.skip("Aucune session disponible")
         
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
         
         link = page.query_selector("#mc-project-link a")
-        assert link is not None, "Lien projet absent dans module-code"
+        assert link is not None, "Lien projet absent dans mission"
         href = link.get_attribute("href")
         assert f"dossier.html?id={project_id}" in href
 
@@ -670,7 +670,7 @@ class TestNavigation:
         if conv_id:
             pages_to_test.append(f"{BASE_URL}/chat.html?id={conv_id}")
         if session_id:
-            pages_to_test.append(f"{BASE_URL}/module-code.html?session={session_id}")
+            pages_to_test.append(f"{BASE_URL}/mission.html?pipeline_session={session_id}")
         
         for url in pages_to_test:
             js_errors = []

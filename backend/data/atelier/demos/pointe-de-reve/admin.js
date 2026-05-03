@@ -1,854 +1,627 @@
-/**
- * ============================================================================
- * ADMIN.JS — Espace Gérant Pointe de Rêve
- * ============================================================================
- * Gestion complète : Login | Dashboard | Réservations | Ardoise | Événements
- * ============================================================================
- */
-
-// ============================================================================
-// CONFIGURATION & CONSTANTES
-// ============================================================================
+// ===== CONSTANTES =====
 
 const MOT_DE_PASSE_ADMIN = 'admin';
 
-const DEMO_RESERVATIONS = [
+const HEURES_DEJEUNER = ['12h00', '12h30', '13h00', '13h30'];
+const HEURES_DINER = ['19h00', '19h30', '20h00', '20h30', '21h00'];
+
+// ===== UTILITY FUNCTIONS =====
+
+function safeParse(key, fallback) {
+  if (!key) return fallback;
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function offsetDate(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function formatDate(isoString) {
+  const date = new Date(isoString + 'T00:00:00');
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString('fr-FR', options);
+}
+
+function formatDateShort(isoString) {
+  const date = new Date(isoString + 'T00:00:00');
+  const options = { day: 'numeric', month: 'numeric', year: '2-digit' };
+  return date.toLocaleDateString('fr-FR', options);
+}
+
+function showNotification(elementId, duration = 4000) {
+  const notification = document.getElementById(elementId);
+  if (!notification) return;
+  notification.classList.remove('hidden');
+  setTimeout(() => {
+    notification.classList.add('hidden');
+  }, duration);
+}
+
+// ===== DONNÉES PAR DÉFAUT =====
+
+const DEMO_RESERVATIONS_DEFAULT = [
   {
     id: 'demo-1',
-    prenom: 'Marie D.',
-    telephone: '06 12 34 56 78',
-    date: offsetDate(1),
-    service: 'diner',
-    couverts: '2',
-    message: 'Anniversaire de mariage, si possible une table en retrait',
+    nom: 'Claire Dubois',
+    email: 'claire.dubois@exemple.com',
+    tel: '06 23 45 67 89',
+    date: 'offsetDate(1)',
+    heure: '12h30',
+    personnes: 2,
+    message: 'Table en terrasse si possible',
     statut: 'En attente',
-    source: 'demo'
+    source: 'demo',
+    createdAt: new Date(Date.now() - 2 * 3600000).toISOString()
   },
   {
     id: 'demo-2',
-    prenom: 'Thomas B.',
-    telephone: '07 65 43 21 09',
-    date: offsetDate(1),
-    service: 'dejeuner',
-    couverts: '4',
-    message: '',
+    nom: 'Philippe Martin',
+    email: 'p.martin@exemple.com',
+    tel: '07 82 34 56 78',
+    date: 'offsetDate(1)',
+    heure: '20h00',
+    personnes: 4,
+    message: 'Anniversaire de mariage, merci !',
     statut: 'Confirmée',
-    source: 'demo'
+    source: 'demo',
+    createdAt: new Date(Date.now() - 5 * 3600000).toISOString()
   },
   {
     id: 'demo-3',
-    prenom: 'Sophie M.',
-    telephone: '06 98 76 54 32',
-    date: offsetDate(2),
-    service: 'diner',
-    couverts: '6',
-    message: 'Une personne allergique aux crustacés',
+    nom: 'Nathalie Rousseau',
+    email: 'nathalie.r@exemple.com',
+    tel: '06 91 23 45 67',
+    date: 'offsetDate(2)',
+    heure: '19h30',
+    personnes: 3,
+    message: 'Une personne allergique aux fruits à coque',
     statut: 'En attente',
-    source: 'demo'
+    source: 'demo',
+    createdAt: new Date(Date.now() - 8 * 3600000).toISOString()
   },
   {
     id: 'demo-4',
-    prenom: 'Laurent F.',
-    telephone: '07 11 22 33 44',
-    date: offsetDate(3),
-    service: 'dejeuner',
-    couverts: '2',
-    message: 'Menu dégustation si disponible',
-    statut: 'Confirmée',
-    source: 'demo'
+    nom: 'Jean-Luc Bernard',
+    email: 'jl.bernard@exemple.com',
+    tel: '06 45 78 91 23',
+    date: 'offsetDate(3)',
+    heure: '13h00',
+    personnes: 5,
+    message: 'Repas de famille, chaise haute nécessaire',
+    statut: 'En attente',
+    source: 'demo',
+    createdAt: new Date(Date.now() - 12 * 3600000).toISOString()
   },
   {
     id: 'demo-5',
-    prenom: 'Isabelle R.',
-    telephone: '06 55 44 33 22',
-    date: offsetDate(4),
-    service: 'diner',
-    couverts: '8',
-    message: 'Repas d\'entreprise',
+    nom: 'Sandrine Moreau',
+    email: 'sandrine.moreau@exemple.com',
+    tel: '07 34 56 78 90',
+    date: 'offsetDate(4)',
+    heure: '20h30',
+    personnes: 6,
+    message: 'Réservation annulée suite changement de plans',
     statut: 'Annulée',
-    source: 'demo'
+    source: 'demo',
+    createdAt: new Date(Date.now() - 20 * 3600000).toISOString()
   }
 ];
 
-const DEMO_ARDOISE = {
+const DEMO_ARDOISE_DEFAULT = {
   disponible: true,
-  entree: {
-    nom: 'Velouté de butternut, crème fraîche',
-    prix: '8,00 €'
-  },
-  plat: {
-    nom: 'Magret de canard, jus de cerise',
-    prix: '21,00 €',
-    note: 'Cuisson selon votre goût'
-  },
-  dessert: {
-    nom: 'Fondant au chocolat, glace vanille',
-    prix: '7,00 €'
-  },
-  formule: {
-    active: true,
-    prix: '31,00 €',
-    label: 'Entrée + Plat + Dessert'
-  }
+  plat: 'Bœuf bourguignon mijoté',
+  plat_prix: '16,50 €',
+  plat_note: 'Viande fondante accompagnée de pommes de terre grenaille',
+  entree: 'Terrine maison et cornichons',
+  entree_prix: '9,00 €',
+  dessert: 'Tarte tatin aux pommes',
+  dessert_prix: '7,50 €'
 };
 
-const DEMO_EVENTS = [
-  {
-    id: 'event-1',
-    titre: 'Soirée Jazz',
-    date: offsetDate(7),
-    description: 'Ambiance jazz live avec le trio Laurent Delbecque. Réservation obligatoire.',
-    visible: true
-  },
-  {
-    id: 'event-2',
-    titre: 'Menu dégustation spécial',
-    date: offsetDate(14),
-    description: 'Menu 5 services avec vins d\'accompagnement. Sur réservation.',
-    visible: true
-  }
-];
+// ===== INITIALISATION DONNÉES =====
 
-const DEMO_MENU = {
-  categories: [
-    {
-      id: 'cat-1',
-      nom: 'Entrées',
-      ordre: 1,
-      plats: [
-        { id: 'plat-1', nom: 'Terrine de foie gras maison', prix: '14,00 €', description: 'Chutney de figues, brioche toastée', disponible: true },
-        { id: 'plat-2', nom: 'Carpaccio de saumon', prix: '13,00 €', description: 'Citron, câpres, pain toasté', disponible: true },
-        { id: 'plat-3', nom: 'Salade périgourdine', prix: '11,00 €', description: 'Gésiers, foie gras, noix', disponible: true }
-      ]
-    },
-    {
-      id: 'cat-2',
-      nom: 'Plats',
-      ordre: 2,
-      plats: [
-        { id: 'plat-4', nom: 'Filet de bœuf, sauce poivre', prix: '28,00 €', description: 'Avec frites maison', disponible: true },
-        { id: 'plat-5', nom: 'Sole meunière', prix: '26,00 €', description: 'Beurre noisette, citron', disponible: true },
-        { id: 'plat-6', nom: 'Coq au vin', prix: '24,00 €', description: 'Champignons, oignons, lardons', disponible: true },
-        { id: 'plat-7', nom: 'Magret de canard', prix: '25,00 €', description: 'Sauce aux cerises, légumes de saison', disponible: true }
-      ]
-    },
-    {
-      id: 'cat-3',
-      nom: 'Desserts',
-      ordre: 3,
-      plats: [
-        { id: 'plat-8', nom: 'Tarte tatin', prix: '7,00 €', description: 'Glace vanille', disponible: true },
-        { id: 'plat-9', nom: 'Fondant au chocolat', prix: '8,00 €', description: 'Glace vanille', disponible: true },
-        { id: 'plat-10', nom: 'Panna cotta', prix: '7,00 €', description: 'Coulis de fraise', disponible: true }
-      ]
-    }
-  ]
-};
-
-// ============================================================================
-// UTILITAIRES
-// ============================================================================
-
-/**
- * Calcule une date future/passée par rapport à aujourd'hui
- * @param {number} offset - Nombre de jours (0 = aujourd'hui, 1 = demain)
- * @returns {string} Date au format ISO (YYYY-MM-DD)
- */
-function offsetDate(offset) {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
-  return date.toISOString().split('T')[0];
-}
-
-/**
- * Formate une date ISO en français
- * @param {string} dateStr - Date ISO (YYYY-MM-DD)
- * @returns {string} Date formatée
- */
-function formatDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  return date.toLocaleDateString('fr-FR', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-}
-
-/**
- * Formate une date ISO en jour court + numéro
- * @param {string} dateStr - Date ISO
- * @returns {object} { day, date }
- */
-function getShortDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  const dayName = date.toLocaleDateString('fr-FR', { weekday: 'short' }).toUpperCase();
-  return {
-    day: dayName,
-    date: date.getDate()
-  };
-}
-
-/**
- * Parse JSON en toute sécurité
- * @param {string} rawValue - Valeur JSON
- * @param {*} fallbackValue - Valeur par défaut
- * @returns {*} Valeur parsée ou fallback
- */
-function safeParse(rawValue, fallbackValue) {
-  if (!rawValue) return fallbackValue;
-  try {
-    return JSON.parse(rawValue);
-  } catch (e) {
-    console.error('Parse error:', e);
-    return fallbackValue;
-  }
-}
-
-/**
- * Affiche une notification temporaire
- * @param {string} message - Message à afficher
- * @param {string} type - Type de notification (success, error, warning, info)
- * @param {HTMLElement} container - Conteneur cible
- * @param {number} duration - Durée en ms
- */
-function showNotification(message, type = 'success', container = document.body, duration = 4000) {
-  const notification = document.createElement('div');
-  notification.className = `feedback-message visible feedback-${type}`;
-  notification.textContent = message;
-  
-  if (container.classList && container.classList.contains('feedback-message')) {
-    container.className = `feedback-message visible feedback-${type}`;
-    container.textContent = message;
-  } else {
-    container.appendChild(notification);
-  }
-
-  if (duration > 0) {
-    setTimeout(() => {
-      notification.remove?.() || (container.innerHTML = '');
-    }, duration);
-  }
-}
-
-/**
- * Initialise les données démo si absent du localStorage
- */
 function ensureInitialData() {
-  const existing = localStorage.getItem('DEMO_reservations');
-  if (!existing) {
-    localStorage.setItem('DEMO_reservations', JSON.stringify(DEMO_RESERVATIONS));
-    localStorage.setItem('DEMO_ardoise', JSON.stringify(DEMO_ARDOISE));
-    localStorage.setItem('DEMO_events', JSON.stringify(DEMO_EVENTS));
-    localStorage.setItem('DEMO_menu', JSON.stringify(DEMO_MENU));
+  if (!localStorage.getItem('DEMO_INITIALIZED')) {
+    const reservationsWithDates = DEMO_RESERVATIONS_DEFAULT.map(r => ({
+      ...r,
+      date: r.date.startsWith('offsetDate') 
+        ? offsetDate(parseInt(r.date.match(/\d+/)[0])) 
+        : r.date
+    }));
+
+    localStorage.setItem('DEMO_RESERVATIONS', JSON.stringify(reservationsWithDates));
+    localStorage.setItem('DEMO_ARDOISE', JSON.stringify(DEMO_ARDOISE_DEFAULT));
+    localStorage.setItem('DEMO_ARDOISE_DISPONIBLE', 'true');
+    localStorage.setItem('DEMO_INITIALIZED', 'true');
   }
 }
 
-// ============================================================================
-// GESTION LOGIN
-// ============================================================================
+// ===== LOGIN =====
 
-function initLogin() {
-  const loginScreen = document.getElementById('loginScreen');
+function verifierMotDePasse(saisie) {
+  return saisie === MOT_DE_PASSE_ADMIN;
+}
+
+function handleLogin() {
   const passwordInput = document.getElementById('passwordInput');
-  const passwordToggle = document.getElementById('passwordToggle');
-  const loginBtn = document.getElementById('loginBtn');
   const loginError = document.getElementById('loginError');
 
-  // Toggle affichage mot de passe
-  passwordToggle.addEventListener('click', (e) => {
-    e.preventDefault();
-    const isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-    passwordToggle.textContent = isPassword ? '🙈' : '👁';
-  });
+  if (!passwordInput) return;
 
-  // Soumettre
-  loginBtn.addEventListener('click', () => {
-    const password = passwordInput.value.trim();
-    
-    if (password === MOT_DE_PASSE_ADMIN) {
-      // Succès
-      sessionStorage.setItem('admin_logged', 'true');
-      loginScreen.classList.remove('login-visible');
-      loginScreen.classList.add('dashboard-hidden');
-      document.getElementById('dashboard').classList.remove('dashboard-hidden');
-      passwordInput.value = '';
-      loginError.classList.remove('visible');
-      initDashboard();
-    } else {
-      // Erreur
-      loginError.textContent = '❌ Mot de passe incorrect';
-      loginError.classList.add('visible');
-      passwordInput.value = '';
-      passwordInput.focus();
+  const password = passwordInput.value;
+
+  if (!password) {
+    if (loginError) {
+      loginError.textContent = 'Veuillez entrer votre mot de passe';
+      loginError.classList.remove('hidden');
     }
-  });
-
-  // Entrée = soumettre
-  passwordInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') loginBtn.click();
-  });
-}
-
-// ============================================================================
-// GESTION LOGOUT
-// ============================================================================
-
-function initLogout() {
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('admin_logged');
-    document.getElementById('dashboard').classList.add('dashboard-hidden');
-    document.getElementById('loginScreen').classList.remove('dashboard-hidden');
-    document.getElementById('loginScreen').classList.add('login-visible');
-    document.getElementById('passwordInput').value = '';
-    document.getElementById('passwordInput').type = 'password';
-    document.getElementById('passwordToggle').textContent = '👁';
-    document.getElementById('loginError').classList.remove('visible');
-  });
-}
-
-// ============================================================================
-// DASHBOARD INITIALIZATION
-// ============================================================================
-
-function initDashboard() {
-  ensureInitialData();
-  updateTodaySection();
-  updateKPIs();
-  renderReservationsList();
-  renderArdoise();
-  renderMenu();
-  renderEvents();
-  initTabs();
-  initServiceFilters();
-  initStatusFilters();
-  initCalendar();
-  initArdoiseEditor();
-  initEventForm();
-}
-
-// ============================================================================
-// VUE AUJOURD'HUI — À TRAITER
-// ============================================================================
-
-function updateTodaySection() {
-  const today = offsetDate(0);
-  const todayDate = document.getElementById('todayDate');
-  const todayCount = document.getElementById('todayCount');
-  const todayList = document.getElementById('todayList');
-
-  todayDate.textContent = formatDate(today);
-
-  const reservations = safeParse(localStorage.getItem('DEMO_reservations'), []);
-  const todayReservations = reservations.filter(r => r.date === today && r.statut === 'En attente');
-
-  todayCount.textContent = `${todayReservations.length}`;
-
-  if (todayReservations.length === 0) {
-    todayList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✓</div><p>Aucune réservation en attente pour aujourd\'hui</p></div>';
     return;
   }
 
-  todayList.innerHTML = todayReservations.map(r => {
-    const serviceLabel = r.service === 'dejeuner' ? '🌅 Déjeuner' : '🌙 Dîner';
-    return `
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">${r.prenom}</div>
-            <div class="card-subtitle">${r.couverts} couverts • ${serviceLabel}</div>
-          </div>
-          <span class="badge badge-warning">En attente</span>
-        </div>
-        <div class="card-body">
-          <div style="display: grid; gap: 0.75rem; font-size: 0.9rem;">
-            <div>📞 <strong>${r.telephone}</strong></div>
-            ${r.message ? `<div>💬 ${r.message}</div>` : ''}
-          </div>
-        </div>
-        <div class="card-footer">
-          <button class="btn-primary" data-id="${r.id}" data-action="confirm">✓ Confirmer</button>
-          <button class="btn-secondary" data-id="${r.id}" data-action="cancel">✗ Annuler</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Attach event listeners
-  todayList.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', handleReservationAction);
-  });
-}
-
-function handleReservationAction(e) {
-  const action = e.currentTarget.dataset.action;
-  const id = e.currentTarget.dataset.id;
-  const reservations = safeParse(localStorage.getItem('DEMO_reservations'), []);
-  const index = reservations.findIndex(r => r.id === id);
-
-  if (index === -1) return;
-
-  if (action === 'confirm') {
-    reservations[index].statut = 'Confirmée';
-    showNotification('✓ Réservation confirmée', 'success', document.body, 3000);
-  } else if (action === 'cancel') {
-    reservations[index].statut = 'Annulée';
-    showNotification('✗ Réservation annulée', 'warning', document.body, 3000);
+  if (!verifierMotDePasse(password)) {
+    if (loginError) {
+      loginError.textContent = 'Mot de passe incorrect';
+      loginError.classList.remove('hidden');
+    }
+    return;
   }
 
-  localStorage.setItem('DEMO_reservations', JSON.stringify(reservations));
-  updateTodaySection();
-  updateKPIs();
-  renderReservationsList();
+  // Login réussi
+  if (loginError) {
+    loginError.classList.add('hidden');
+  }
+
+  sessionStorage.setItem('admin_session', '1');
+  showDashboard();
+  initDashboard();
 }
 
-// ============================================================================
-// KPIs
-// ============================================================================
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById('passwordInput');
+  const toggleButton = document.getElementById('togglePassword');
 
-function updateKPIs() {
-  const reservations = safeParse(localStorage.getItem('DEMO_reservations'), []);
-  const today = offsetDate(0);
-  
-  // KPI 1: Demandes aujourd'hui (toutes les réservations d'aujourd'hui)
-  const todayCount = reservations.filter(r => r.date === today).length;
-  document.getElementById('kpiDemandesToday').textContent = todayCount;
+  if (!passwordInput || !toggleButton) return;
 
-  // KPI 2: En attente de confirmation
+  const isPassword = passwordInput.type === 'password';
+  passwordInput.type = isPassword ? 'text' : 'password';
+  toggleButton.textContent = isPassword ? '🙈' : '👁️';
+}
+
+// ===== AFFICHAGE/MASQUAGE ÉCRANS =====
+
+function showDashboard() {
+  const loginScreen = document.getElementById('loginScreen');
+  const dashboard = document.getElementById('dashboard');
+
+  if (loginScreen) loginScreen.classList.add('hidden');
+  if (dashboard) dashboard.classList.remove('hidden');
+}
+
+function showLoginScreen() {
+  const loginScreen = document.getElementById('loginScreen');
+  const dashboard = document.getElementById('dashboard');
+
+  if (loginScreen) loginScreen.classList.remove('hidden');
+  if (dashboard) dashboard.classList.add('hidden');
+
+  const passwordInput = document.getElementById('passwordInput');
+  if (passwordInput) passwordInput.value = '';
+
+  const loginError = document.getElementById('loginError');
+  if (loginError) loginError.classList.add('hidden');
+}
+
+function handleLogout() {
+  sessionStorage.removeItem('admin_session');
+  showLoginScreen();
+}
+
+// ===== KPI CALCULATION =====
+
+function calculateKPIs() {
+  const reservations = safeParse('DEMO_RESERVATIONS', []);
+  const today = new Date().toISOString().split('T')[0];
+
+  const lunchCovers = reservations
+    .filter(r => r.date === today && HEURES_DEJEUNER.includes(r.heure) && r.statut !== 'Annulée')
+    .reduce((sum, r) => sum + (parseInt(r.personnes) || 0), 0);
+
+  const dinnerCovers = reservations
+    .filter(r => r.date === today && HEURES_DINER.includes(r.heure) && r.statut !== 'Annulée')
+    .reduce((sum, r) => sum + (parseInt(r.personnes) || 0), 0);
+
   const pendingCount = reservations.filter(r => r.statut === 'En attente').length;
-  document.getElementById('kpiPending').textContent = pendingCount;
 
-  // KPI 3: Confirmées cette semaine
-  const weekConfirmed = reservations.filter(r => {
-    const rDate = new Date(r.date);
-    const todayDate = new Date(today);
-    const daysUntilSunday = (7 - todayDate.getDay()) % 7 || 7;
-    const weekEnd = new Date(todayDate);
-    weekEnd.setDate(weekEnd.getDate() + daysUntilSunday);
-    return rDate >= todayDate && rDate <= weekEnd && r.statut === 'Confirmée';
-  }).length;
-  document.getElementById('kpiConfirmedWeek').textContent = weekConfirmed;
+  const kpiLunch = document.getElementById('kpiLunch');
+  const kpiDiner = document.getElementById('kpiDiner');
+  const kpiPending = document.getElementById('kpiPending');
+
+  if (kpiLunch) kpiLunch.textContent = lunchCovers;
+  if (kpiDiner) kpiDiner.textContent = dinnerCovers;
+  if (kpiPending) kpiPending.textContent = pendingCount;
 }
 
-// ============================================================================
-// RÉSERVATIONS — ONGLET
-// ============================================================================
+// ===== AFFICHAGE DATE DU JOUR =====
 
-function initCalendar() {
-  const calendar = document.getElementById('calendarWeek');
-  const today = offsetDate(0);
-  
-  calendar.innerHTML = '';
-
-  for (let i = 0; i < 7; i++) {
-    const date = offsetDate(i);
-    const { day, date: dateNum } = getShortDate(date);
-    const dayBtn = document.createElement('button');
-    dayBtn.className = 'calendar-day' + (i === 0 ? ' active' : '');
-    dayBtn.dataset.date = date;
-    
-    const reservations = safeParse(localStorage.getItem('DEMO_reservations'), []);
-    const count = reservations.filter(r => r.date === date).length;
-    
-    dayBtn.innerHTML = `
-      <div class="calendar-day-name">${day}</div>
-      <div class="calendar-day-date">${dateNum}</div>
-      <div class="calendar-day-indicator">${count > 0 ? '●' : ''}</div>
-    `;
-    
-    dayBtn.addEventListener('click', () => {
-      document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
-      dayBtn.classList.add('active');
-      renderReservationsList(date);
-    });
-    
-    calendar.appendChild(dayBtn);
+function displayTodayDate() {
+  const todayDate = document.getElementById('todayDate');
+  if (todayDate) {
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateStr = today.toLocaleDateString('fr-FR', options);
+    todayDate.textContent = `Aujourd'hui, ${dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}`;
   }
 }
 
-function initServiceFilters() {
-  document.querySelectorAll('[data-service]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      document.querySelectorAll('[data-service]').forEach(b => b.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      const selectedDate = document.querySelector('.calendar-day.active')?.dataset.date || offsetDate(0);
-      renderReservationsList(selectedDate);
-    });
-  });
-}
+// ===== RENDUS RÉSERVATIONS =====
 
-function initStatusFilters() {
-  document.querySelectorAll('.status-filter button').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      document.querySelectorAll('.status-filter button').forEach(b => b.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      const selectedDate = document.querySelector('.calendar-day.active')?.dataset.date || offsetDate(0);
-      renderReservationsList(selectedDate);
-    });
-  });
-}
+function renderPriorityReservations() {
+  const reservationsList = document.getElementById('reservationsList');
+  if (!reservationsList) return;
 
-function renderReservationsList(date = null) {
-  if (!date) date = offsetDate(0);
-  
-  const reservations = safeParse(localStorage.getItem('DEMO_reservations'), []);
-  const selectedService = document.querySelector('[data-service].active')?.dataset.service || 'all';
-  const selectedStatus = document.querySelector('.status-filter button.active')?.dataset.status || 'all';
+  const reservations = safeParse('DEMO_RESERVATIONS', []);
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-  let filtered = reservations.filter(r => r.date === date);
-  
-  if (selectedService !== 'all') {
-    filtered = filtered.filter(r => r.service === selectedService);
-  }
-  
-  if (selectedStatus !== 'all') {
-    filtered = filtered.filter(r => r.statut === selectedStatus);
-  }
+  // Filtrer : en attente des 2 derniers jours
+  const priorityReservations = reservations.filter(
+    r => r.statut === 'En attente' && 
+    (r.date === today || r.date === yesterday)
+  );
 
-  const container = document.getElementById('reservationsList');
-
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>Aucune réservation pour cette sélection.</p></div>';
+  if (priorityReservations.length === 0) {
+    reservationsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-lg);">Aucune réservation en attente</p>';
     return;
   }
 
-  container.innerHTML = filtered.map(r => {
-    const serviceLabel = r.service === 'dejeuner' ? '🌅 Déjeuner' : '🌙 Dîner';
-    const statusClass = `status-${r.statut.toLowerCase().replace(' ', '-')}`;
-    const statusBadgeClass = r.statut === 'En attente' ? 'badge-warning' : r.statut === 'Confirmée' ? 'badge-success' : 'badge-danger';
-    
-    return `
-      <div class="reservation-card">
-        <div class="reservation-header">
-          <div>
-            <div class="reservation-name">${r.prenom}</div>
-            <div class="reservation-meta" style="grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
-              <div class="reservation-detail">
-                <span class="reservation-detail-label">Service</span>
-                <span class="reservation-detail-value">${serviceLabel}</span>
-              </div>
-              <div class="reservation-detail">
-                <span class="reservation-detail-label">Couverts</span>
-                <span class="reservation-detail-value">${r.couverts}</span>
-              </div>
-              <div class="reservation-detail">
-                <span class="reservation-detail-label">Date</span>
-                <span class="reservation-detail-value">${formatDate(r.date)}</span>
-              </div>
-              <div class="reservation-detail">
-                <span class="reservation-detail-label">Téléphone</span>
-                <span class="reservation-detail-value">${r.telephone}</span>
-              </div>
-            </div>
-          </div>
-          <span class="badge ${statusBadgeClass}">${r.statut}</span>
+  reservationsList.innerHTML = priorityReservations.map(r => renderReservationCard(r)).join('');
+  attachReservationCardHandlers();
+}
+
+function renderAllReservations() {
+  const allReservationsList = document.getElementById('allReservationsList');
+  if (!allReservationsList) return;
+
+  const reservations = safeParse('DEMO_RESERVATIONS', []);
+
+  // Trier : les plus récentes en premier
+  const sortedReservations = [...reservations].sort((a, b) => {
+    const dateA = new Date(b.date);
+    const dateB = new Date(a.date);
+    return dateB - dateA;
+  });
+
+  if (sortedReservations.length === 0) {
+    allReservationsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-lg);">Aucune réservation</p>';
+    return;
+  }
+
+  allReservationsList.innerHTML = sortedReservations.map(r => renderReservationCard(r)).join('');
+  attachReservationCardHandlers();
+}
+
+function renderReservationCard(reservation) {
+  const statusClass = reservation.statut === 'En attente' 
+    ? 'badge-pending'
+    : reservation.statut === 'Confirmée'
+    ? 'badge-confirmed'
+    : 'badge-cancelled';
+
+  const messageHtml = reservation.message 
+    ? `<p style="margin-top: var(--spacing-md); font-size: 0.9rem; color: var(--text-secondary); font-style: italic;">💬 ${reservation.message}</p>`
+    : '';
+
+  const buttons = reservation.statut === 'En attente'
+    ? `
+      <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+        <button type="button" class="btn-confirm" data-id="${reservation.id}" style="flex: 1; padding: var(--spacing-md) var(--spacing-lg); background-color: var(--success); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.9rem;">✓ Confirmer</button>
+        <button type="button" class="btn-cancel" data-id="${reservation.id}" style="flex: 1; padding: var(--spacing-md) var(--spacing-lg); background-color: var(--danger); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.9rem;">✗ Annuler</button>
+      </div>
+    `
+    : '';
+
+  return `
+    <div class="reservation-card" style="padding: var(--spacing-lg); background-color: var(--card-bg); border-radius: var(--radius-md); border-left: 4px solid var(--accent); margin-bottom: var(--spacing-md);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-md);">
+        <div>
+          <h4 style="margin: 0 0 var(--spacing-sm) 0; color: var(--text-main);">${reservation.nom}</h4>
+          <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${formatDateShort(reservation.date)} à ${reservation.heure}</p>
         </div>
-        
-        ${r.message ? `<div class="card-body"><p style="margin: 0;"><strong>💬 Note :</strong> ${r.message}</p></div>` : ''}
-        
-        <div class="card-footer">
-          <button class="btn-primary" data-id="${r.id}" data-action="confirm" ${r.statut === 'Confirmée' ? 'disabled' : ''}>✓ Confirmer</button>
-          <button class="btn-secondary" data-id="${r.id}" data-action="cancel" ${r.statut === 'Annulée' ? 'disabled' : ''}>✗ Annuler</button>
+        <span class="badge ${statusClass}" style="padding: var(--spacing-xs) var(--spacing-md); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; white-space: nowrap;">
+          ${reservation.statut}
+        </span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-md); font-size: 0.9rem;">
+        <div>
+          <span style="color: var(--text-secondary);">Couverts</span>
+          <p style="margin: var(--spacing-xs) 0 0 0; color: var(--text-main); font-weight: 600;">${reservation.personnes} ${reservation.personnes === 1 ? 'couvert' : 'couverts'}</p>
+        </div>
+        <div>
+          <span style="color: var(--text-secondary);">Téléphone</span>
+          <p style="margin: var(--spacing-xs) 0 0 0; color: var(--accent);"><a href="tel:${reservation.tel.replace(/\s/g, '')}" style="color: var(--accent); text-decoration: none; font-weight: 600;">${reservation.tel}</a></p>
         </div>
       </div>
-    `;
-  }).join('');
 
-  container.querySelectorAll('button[data-action]').forEach(btn => {
-    btn.addEventListener('click', handleReservationAction);
+      ${messageHtml}
+
+      ${buttons}
+    </div>
+  `;
+}
+
+function attachReservationCardHandlers() {
+  const confirmButtons = document.querySelectorAll('.btn-confirm');
+  const cancelButtons = document.querySelectorAll('.btn-cancel');
+
+  confirmButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const reservationId = btn.getAttribute('data-id');
+      updateReservationStatus(reservationId, 'Confirmée');
+    });
+  });
+
+  cancelButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const reservationId = btn.getAttribute('data-id');
+      updateReservationStatus(reservationId, 'Annulée');
+    });
   });
 }
 
-// ============================================================================
-// ARDOISE — ONGLET
-// ============================================================================
-
-function initArdoiseEditor() {
-  const availableToggle = document.getElementById('ardoiseAvailable');
-  const formuleCheckbox = document.getElementById('ardoiseFormuleActive');
-  const formuleFields = document.getElementById('ardoiseFormuleFields');
-  const saveBtn = document.getElementById('saveArdoiseBtn');
-
-  // Charger données existantes
-  const ardoise = safeParse(localStorage.getItem('DEMO_ardoise'), DEMO_ARDOISE);
+function updateReservationStatus(reservationId, newStatus) {
+  const reservations = safeParse('DEMO_RESERVATIONS', []);
   
-  availableToggle.checked = ardoise.disponible;
-  document.getElementById('ardoisePlat').value = ardoise.plat?.nom || '';
-  document.getElementById('ardoisePrix').value = ardoise.plat?.prix || '';
-  document.getElementById('ardoiseNote').value = ardoise.plat?.note || '';
-  document.getElementById('ardoiseEntree').value = ardoise.entree?.nom || '';
-  document.getElementById('ardoiseEntreePrix').value = ardoise.entree?.prix || '';
-  document.getElementById('ardoiseDessert').value = ardoise.dessert?.nom || '';
-  document.getElementById('ardoiseDessertPrix').value = ardoise.dessert?.prix || '';
-  formuleCheckbox.checked = ardoise.formule?.active || false;
-  document.getElementById('ardoiseFormuleLabel').value = ardoise.formule?.label || '';
-  document.getElementById('ardoiseFormulePrix').value = ardoise.formule?.prix || '';
+  const reservation = reservations.find(r => r.id === reservationId);
+  if (!reservation) return;
 
-  if (formuleCheckbox.checked) {
-    formuleFields.style.display = 'block';
-  }
+  reservation.statut = newStatus;
 
-  formuleCheckbox.addEventListener('change', () => {
-    formuleFields.style.display = formuleCheckbox.checked ? 'block' : 'none';
-  });
+  localStorage.setItem('DEMO_RESERVATIONS', JSON.stringify(reservations));
 
-  availableToggle.addEventListener('change', updateArdoisePreview);
-  document.getElementById('ardoisePlat').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoisePrix').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseNote').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseEntree').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseEntreePrix').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseDessert').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseDessertPrix').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseFormuleLabel').addEventListener('input', updateArdoisePreview);
-  document.getElementById('ardoiseFormulePrix').addEventListener('input', updateArdoisePreview);
+  calculateKPIs();
+  renderPriorityReservations();
+  renderAllReservations();
 
-  saveBtn.addEventListener('click', saveArdoise);
-
-  updateArdoisePreview();
+  // Afficher notification de succès
+  const statusLabel = newStatus === 'Confirmée' ? 'confirmée' : 'annulée';
+  showTransientNotification(`Réservation ${statusLabel} avec succès`);
 }
 
-function updateArdoisePreview() {
-  const available = document.getElementById('ardoiseAvailable').checked;
-  const preview = document.getElementById('ardoisePreview');
+function showTransientNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    background-color: var(--success);
+    color: white;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  notification.textContent = `✓ ${message}`;
+  document.body.appendChild(notification);
 
-  if (!available) {
-    preview.innerHTML = '<p style="color: var(--text-secondary); font-style: italic;">Ardoise masquée sur le site</p>';
-    return;
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transition = 'opacity 0.3s';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// ===== FILTRES RÉSERVATIONS =====
+
+function initReservationFilters() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Désactiver tous les boutons
+      filterButtons.forEach(b => b.classList.remove('active'));
+      // Activer le bouton cliqué
+      btn.classList.add('active');
+
+      const filter = btn.getAttribute('data-filter');
+      applyReservationFilter(filter);
+    });
+  });
+}
+
+function applyReservationFilter(filter) {
+  const reservations = safeParse('DEMO_RESERVATIONS', []);
+  const allReservationsList = document.getElementById('allReservationsList');
+
+  let filtered = [...reservations];
+
+  if (filter === 'pending') {
+    filtered = filtered.filter(r => r.statut === 'En attente');
+  } else if (filter === 'confirmed') {
+    filtered = filtered.filter(r => r.statut === 'Confirmée');
+  } else if (filter === 'cancelled') {
+    filtered = filtered.filter(r => r.statut === 'Annulée');
   }
 
-  const plat = document.getElementById('ardoisePlat').value;
-  const prix = document.getElementById('ardoisePrix').value;
-  const note = document.getElementById('ardoiseNote').value;
-  const entree = document.getElementById('ardoiseEntree').value;
-  const entreePrix = document.getElementById('ardoiseEntreePrix').value;
-  const dessert = document.getElementById('ardoiseDessert').value;
-  const dessertPrix = document.getElementById('ardoiseDessertPrix').value;
-  const formuleActive = document.getElementById('ardoiseFormuleActive').checked;
-  const formuleLabel = document.getElementById('ardoiseFormuleLabel').value;
-  const formulePrix = document.getElementById('ardoiseFormulePrix').value;
+  // Trier par date
+  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  let html = '<div style="background-color: white; padding: var(--spacing-md); border-radius: 4px;">';
-
-  if (entree) {
-    html += `<div style="margin-bottom: var(--spacing-sm);"><strong style="color: var(--accent);">Entrée</strong> : ${entree} <span style="float: right; color: var(--accent); font-weight: 700;">${entreePrix}</span></div>`;
+  if (allReservationsList) {
+    if (filtered.length === 0) {
+      allReservationsList.innerHTML = `<p style="color: var(--text-secondary); text-align: center; padding: var(--spacing-lg);">Aucune réservation ${filter !== 'all' ? 'dans cette catégorie' : ''}</p>`;
+    } else {
+      allReservationsList.innerHTML = filtered.map(r => renderReservationCard(r)).join('');
+      attachReservationCardHandlers();
+    }
   }
+}
 
-  html += `<div style="margin-bottom: var(--spacing-sm);"><strong style="color: var(--accent); font-size: 1.1rem;">Plat du jour</strong> : ${plat} <span style="float: right; color: var(--accent); font-weight: 700; font-size: 1.1rem;">${prix}</span></div>`;
-  
-  if (note) {
-    html += `<div style="margin-bottom: var(--spacing-sm); color: var(--text-secondary); font-size: 0.9rem; font-style: italic;">💡 ${note}</div>`;
+// ===== ONGLETS ADMIN =====
+
+function initAdminTabs() {
+  const tabButtons = document.querySelectorAll('.admin-tabs .tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.getAttribute('data-tab');
+
+      // Désactiver tous les onglets
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Activer l'onglet cliqué
+      button.classList.add('active');
+      const targetContent = document.getElementById(targetTab);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+    });
+  });
+}
+
+// ===== ARDOISE =====
+
+function loadArdoiseForm() {
+  const ardoise = safeParse('DEMO_ARDOISE', {});
+  const disponible = localStorage.getItem('DEMO_ARDOISE_DISPONIBLE') === 'true';
+
+  document.getElementById('ardoise-toggle').checked = disponible;
+  document.getElementById('admin-plat').value = ardoise.plat || '';
+  document.getElementById('admin-plat-prix').value = ardoise.plat_prix || '';
+  document.getElementById('admin-plat-note').value = ardoise.plat_note || '';
+  document.getElementById('admin-entree').value = ardoise.entree || '';
+  document.getElementById('admin-entree-prix').value = ardoise.entree_prix || '';
+  document.getElementById('admin-dessert').value = ardoise.dessert || '';
+  document.getElementById('admin-dessert-prix').value = ardoise.dessert_prix || '';
+
+  updateArdoiseToggleVisual();
+}
+
+function updateArdoiseToggleVisual() {
+  const toggle = document.getElementById('ardoise-toggle');
+  const toggleVisual = document.getElementById('ardoise-toggle-visual');
+
+  if (!toggle || !toggleVisual) return;
+
+  if (toggle.checked) {
+    toggleVisual.style.backgroundColor = 'var(--success)';
+  } else {
+    toggleVisual.style.backgroundColor = 'var(--border-soft)';
   }
+}
 
-  if (dessert) {
-    html += `<div style="margin-bottom: var(--spacing-sm);"><strong style="color: var(--accent);">Dessert</strong> : ${dessert} <span style="float: right; color: var(--accent); font-weight: 700;">${dessertPrix}</span></div>`;
+function handleArdoiseToggle() {
+  const toggle = document.getElementById('ardoise-toggle');
+  if (toggle) {
+    toggle.addEventListener('change', updateArdoiseToggleVisual);
   }
-
-  if (formuleActive && formuleLabel && formulePrix) {
-    html += `<div style="margin-top: var(--spacing-lg); background-color: rgba(83, 135, 94, 0.1); padding: var(--spacing-md); border-radius: 4px; text-align: center; border: 2px solid var(--accent);"><strong style="color: var(--accent);">📦 Formule : ${formuleLabel}</strong><br><span style="font-size: 1.5rem; color: var(--accent); font-weight: 700;">${formulePrix}</span></div>`;
-  }
-
-  html += '</div>';
-  preview.innerHTML = html;
 }
 
 function saveArdoise() {
   const ardoise = {
-    disponible: document.getElementById('ardoiseAvailable').checked,
-    plat: {
-      nom: document.getElementById('ardoisePlat').value,
-      prix: document.getElementById('ardoisePrix').value,
-      note: document.getElementById('ardoiseNote').value
-    },
-    entree: {
-      nom: document.getElementById('ardoiseEntree').value,
-      prix: document.getElementById('ardoiseEntreePrix').value
-    },
-    dessert: {
-      nom: document.getElementById('ardoiseDessert').value,
-      prix: document.getElementById('ardoiseDessertPrix').value
-    },
-    formule: {
-      active: document.getElementById('ardoiseFormuleActive').checked,
-      label: document.getElementById('ardoiseFormuleLabel').value,
-      prix: document.getElementById('ardoiseFormulePrix').value
-    }
+    disponible: document.getElementById('ardoise-toggle').checked,
+    plat: document.getElementById('admin-plat').value,
+    plat_prix: document.getElementById('admin-plat-prix').value,
+    plat_note: document.getElementById('admin-plat-note').value,
+    entree: document.getElementById('admin-entree').value,
+    entree_prix: document.getElementById('admin-entree-prix').value,
+    dessert: document.getElementById('admin-dessert').value,
+    dessert_prix: document.getElementById('admin-dessert-prix').value
   };
 
-  localStorage.setItem('DEMO_ardoise', JSON.stringify(ardoise));
-  
-  const feedback = document.getElementById('ardoiseFeedback');
-  showNotification('✓ Ardoise mise à jour !', 'success', feedback, 4000);
+  localStorage.setItem('DEMO_ARDOISE', JSON.stringify(ardoise));
+  localStorage.setItem('DEMO_ARDOISE_DISPONIBLE', ardoise.disponible ? 'true' : 'false');
+
+  showNotification('ardoiseNotification', 4000);
 }
 
-function renderArdoise() {
-  // Affichage lecture seule si nécessaire
-  // Cette fonction peut afficher l'ardoise sur le dashboard
-}
-
-// ============================================================================
-// MENU — ONGLET
-// ============================================================================
-
-function renderMenu() {
-  const menu = safeParse(localStorage.getItem('DEMO_menu'), DEMO_MENU);
-  const container = document.getElementById('menuDisplay');
-
-  container.innerHTML = menu.categories.map(cat => `
-    <div style="margin-bottom: var(--spacing-lg);">
-      <h4 style="margin-bottom: var(--spacing-md); color: var(--accent);">${cat.nom}</h4>
-      <div style="display: grid; gap: var(--spacing-md);">
-        ${cat.plats.map(plat => `
-          <div style="padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-soft);">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--spacing-xs);">
-              <strong style="${!plat.disponible ? 'text-decoration: line-through;' : ''}">${plat.nom}</strong>
-              <span style="color: var(--accent); font-weight: 700;">${plat.prix}</span>
-            </div>
-            ${plat.description ? `<p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">${plat.description}</p>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-// ============================================================================
-// ÉVÉNEMENTS — ONGLET
-// ============================================================================
-
-function initEventForm() {
-  const addBtn = document.getElementById('addEventBtn');
-  const titleInput = document.getElementById('eventTitle');
-  const dateInput = document.getElementById('eventDate');
-  const descInput = document.getElementById('eventDescription');
-  const feedback = document.getElementById('eventFeedback');
-
-  // Set minimum date to today
-  dateInput.min = offsetDate(0);
-
-  addBtn.addEventListener('click', () => {
-    const title = titleInput.value.trim();
-    const date = dateInput.value;
-    const description = descInput.value.trim();
-
-    if (!title || !date) {
-      showNotification('⚠️ Titre et date obligatoires', 'warning', feedback, 3000);
-      return;
-    }
-
-    const events = safeParse(localStorage.getItem('DEMO_events'), []);
-    const newEvent = {
-      id: 'event-' + Date.now(),
-      titre: title,
-      date: date,
-      description: description,
-      visible: true
-    };
-
-    events.push(newEvent);
-    localStorage.setItem('DEMO_events', JSON.stringify(events));
-
-    titleInput.value = '';
-    dateInput.value = '';
-    descInput.value = '';
-
-    showNotification('✓ Événement créé !', 'success', feedback, 3000);
-    renderEvents();
-  });
-}
-
-function renderEvents() {
-  const events = safeParse(localStorage.getItem('DEMO_events'), []);
-  const container = document.getElementById('eventsList');
-
-  if (events.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>Aucun événement créé pour le moment.</p></div>';
-    return;
+function initArdoiseHandlers() {
+  const saveButton = document.getElementById('saveArdoiseBtn');
+  if (saveButton) {
+    saveButton.addEventListener('click', saveArdoise);
   }
 
-  container.innerHTML = events.map(evt => {
-    const isUpcoming = new Date(evt.date) >= new Date(offsetDate(0));
-    return `
-      <div class="event-card">
-        <div class="event-info">
-          <h4>${evt.titre}</h4>
-          <div class="event-date">📅 ${formatDate(evt.date)}</div>
-          <div class="event-description">${evt.description}</div>
-        </div>
-        <div class="event-actions">
-          <label class="toggle-switch">
-            <input type="checkbox" class="toggle-input" ${evt.visible ? 'checked' : ''} data-id="${evt.id}" data-action="toggle-visible">
-            <span style="font-size: 0.85rem;">Visible</span>
-          </label>
-          <button class="btn-secondary" style="padding: 0.5rem var(--spacing-md); font-size: 0.85rem;" data-id="${evt.id}" data-action="delete">🗑️ Supprimer</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+  handleArdoiseToggle();
+  loadArdoiseForm();
+}
 
-  container.querySelectorAll('[data-action="toggle-visible"]').forEach(input => {
-    input.addEventListener('change', (e) => {
-      const id = e.currentTarget.dataset.id;
-      const events = safeParse(localStorage.getItem('DEMO_events'), []);
-      const evt = events.find(e => e.id === id);
-      if (evt) {
-        evt.visible = e.currentTarget.checked;
-        localStorage.setItem('DEMO_events', JSON.stringify(events));
+// ===== INITIALISATION DASHBOARD =====
+
+function initDashboard() {
+  ensureInitialData();
+
+  displayTodayDate();
+  calculateKPIs();
+  renderPriorityReservations();
+  renderAllReservations();
+
+  initAdminTabs();
+  initReservationFilters();
+  initArdoiseHandlers();
+}
+
+// ===== EVENT LISTENERS =====
+
+function attachEventListeners() {
+  // Login
+  const loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', handleLogin);
+  }
+
+  const passwordInput = document.getElementById('passwordInput');
+  if (passwordInput) {
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleLogin();
       }
     });
-  });
-
-  container.querySelectorAll('[data-action="delete"]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.dataset.id;
-      const events = safeParse(localStorage.getItem('DEMO_events'), []);
-      const filtered = events.filter(e => e.id !== id);
-      localStorage.setItem('DEMO_events', JSON.stringify(filtered));
-      renderEvents();
-    });
-  });
-}
-
-// ============================================================================
-// GESTION DES ONGLETS
-// ============================================================================
-
-function initTabs() {
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tabName = btn.dataset.tab;
-
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-
-      btn.classList.add('active');
-      document.getElementById(`tab-${tabName}`).classList.add('active');
-    });
-  });
-}
-
-// ============================================================================
-// INITIALISATION AU CHARGEMENT
-// ============================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Vérifier si déjà connecté
-  const isLogged = sessionStorage.getItem('admin_logged');
-  
-  if (isLogged) {
-    document.getElementById('loginScreen').classList.add('dashboard-hidden');
-    document.getElementById('loginScreen').classList.remove('login-visible');
-    document.getElementById('dashboard').classList.remove('dashboard-hidden');
-    initDashboard();
-  } else {
-    document.getElementById('dashboard').classList.add('dashboard-hidden');
   }
 
-  // Init login/logout
-  initLogin();
-  initLogout();
+  const togglePassword = document.getElementById('togglePassword');
+  if (togglePassword) {
+    togglePassword.addEventListener('click', togglePasswordVisibility);
+  }
+
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+  }
+}
+
+// ===== DÉMARRAGE =====
+
+document.addEventListener('DOMContentLoaded', () => {
+  ensureInitialData();
+  attachEventListeners();
+
+  // Vérifier si session existe
+  if (sessionStorage.getItem('admin_session') === '1') {
+    showDashboard();
+    initDashboard();
+  } else {
+    showLoginScreen();
+  }
+});
+
+// ===== ÉCOUTE STORAGE (SYNC TEMPS RÉEL) =====
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'DEMO_RESERVATIONS' || e.key === 'DEMO_ARDOISE' || e.key === 'DEMO_ARDOISE_DISPONIBLE') {
+    if (sessionStorage.getItem('admin_session') === '1') {
+      calculateKPIs();
+      renderPriorityReservations();
+      renderAllReservations();
+    }
+  }
 });

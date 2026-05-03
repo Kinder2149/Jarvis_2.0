@@ -83,7 +83,7 @@
       : formatDate(project.created_at);
 
     return `
-      <div class="code-project-card card card--interactive" onclick="location.href='code-project-detail.html?id=${project.id}'">
+      <div class="code-project-card card" style="cursor:pointer" onclick="location.href='dossier.html?id=${project.id}'">
         <div class="code-project-card-header">
           <h3 class="code-project-card-title">${project.name}</h3>
           <span class="code-project-badge" style="background-color:${categoryColor}20;color:${categoryColor};border:1px solid ${categoryColor}40">
@@ -93,10 +93,13 @@
         <div class="code-project-card-path">
           <span style="color:var(--text-muted);font-size:0.875rem;font-family:monospace">${project.path}</span>
         </div>
-        <div class="code-project-card-stats">
-          <span class="code-project-stat">💬 ${project._conversations_count}</span>
-          <span class="code-project-stat">⚙️ ${project._sessions_count}</span>
-          <span class="code-project-stat" style="color:var(--text-muted);font-size:0.8rem">${lastActivity}</span>
+        <div class="code-project-card-stats" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+          <div style="display:flex;gap:1rem">
+            <span class="code-project-stat">💬 ${project._conversations_count}</span>
+            <span class="code-project-stat">⚙️ ${project._sessions_count}</span>
+            <span class="code-project-stat" style="color:var(--text-muted);font-size:0.8rem">${lastActivity}</span>
+          </div>
+          <button class="btn-primary btn-sm" onclick="event.stopPropagation(); location.href='mission.html?project_id=${project.id}&new=true'">🎯 Nouvelle Mission</button>
         </div>
       </div>
     `;
@@ -226,7 +229,7 @@
       const project = await window.API.createProject(payload);
       if (window.closeModal) window.closeModal();
       if (window.showToast) window.showToast(`Projet "${name}" créé`);
-      location.href = `code-project-detail.html?id=${project.id}`;
+      location.href = `mission.html?project_id=${project.id}&new=true`;
     } catch (error) {
       console.error('Erreur création projet:', error);
       if (window.showToast) window.showToast(error.message || 'Erreur création projet', 'error');

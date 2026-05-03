@@ -208,6 +208,24 @@ def init_db():
         INSERT OR IGNORE INTO app_config (key, value, category) 
         VALUES ('global_context', '', 'context')
     """)
+    
+    # Initialiser profil_utilisateur si absent
+    cursor.execute("""
+        INSERT OR IGNORE INTO app_config (key, value, category) 
+        VALUES ('profil_utilisateur', '', 'context')
+    """)
+    
+    # Initialiser regles_globales si absent
+    cursor.execute("""
+        INSERT OR IGNORE INTO app_config (key, value, category) 
+        VALUES ('regles_globales', '', 'context')
+    """)
+    
+    # Initialiser clients_export_path si absent
+    cursor.execute("""
+        INSERT OR IGNORE INTO app_config (key, value, category) 
+        VALUES ('clients_export_path', 'C:/DEV/PROJETS/Clients', 'paths')
+    """)
     conn.commit()
     
     # Cycle de vie prospects : identifié → en_analyse → proposition_ok → démo_générée → contacté → relancé → signé / perdu
@@ -232,5 +250,90 @@ def init_db():
     """)
     
     conn.commit()
+    _create_reflexion_tables(conn)
+    _migrate_v2(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
+
+
+def _create_reflexion_tables(conn):
+    """Crée les tables du Module Réflexion (idempotent)."""
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reflexion_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+            livrable_type TEXT NOT NULL CHECK(livrable_type IN ('mission_code','decision_figee','plan_multi_missions')),
+            titre TEXT,
+            statut TEXT NOT NULL DEFAULT 'OUVERTE' CHECK(statut IN ('OUVERTE','EN_FIGEMENT','FIGEE','ABANDONNEE')),
+            modele_utilise TEXT NOT NULL DEFAULT 'anthropic/claude-sonnet-4.5',
+            input_tokens_total INTEGER NOT NULL DEFAULT 0,
+            output_tokens_total INTEGER NOT NULL DEFAULT 0,
+            livrable_id INTEGER,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            frozen_at TEXT,
+            FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reflexion_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            role TEXT NOT NULL CHECK(role IN ('user','assistant','system','sante_cadrage')),
+            content TEXT NOT NULL,
+            attachments TEXT,
+            compacted INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (session_id) REFERENCES reflexion_sessions(id) ON DELETE CASCADE
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS mission_prompts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            reflexion_session_id INTEGER NOT NULL,
+            livrable_type TEXT NOT NULL,
+            content TEXT NOT NULL,
+            recommandation_modele TEXT,
+            files_targeted TEXT,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            consumed_at TEXT,
+            FOREIGN KEY (reflexion_session_id) REFERENCES reflexion_sessions(id) ON DELETE CASCADE
+        )
+    """)
+    
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_reflexion_sessions_project ON reflexion_sessions(project_id)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_reflexion_messages_session ON reflexion_messages(session_id)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_mission_prompts_session ON mission_prompts(reflexion_session_id)")
+    
+    conn.commit()
+
+
+def _migrate_v2(conn):
+    """Migration v2 : ajoute les colonnes pour le Module Code refactorisé (idempotent)."""
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("ALTER TABLE sessions ADD COLUMN modele_override TEXT NULL")
+    except Exception:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE sessions ADD COLUMN source_mission_prompt_id INTEGER NULL")
+    except Exception:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE pipeline_steps ADD COLUMN sub_step_index INTEGER NULL")
+    except Exception:
+        pass
+
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_pipeline_steps_session_sub "
+        "ON pipeline_steps(session_id, step_index, sub_step_index)"
+    )
+
+    conn.commit()

@@ -53,7 +53,11 @@
       renderModelSelects();
       renderChatConfig();
       await loadGlobalContext();
+      await loadExportPaths();
       attachEventListeners();
+      
+      // Initialiser les badges à "Non testé"
+      initializeTestBadges();
 
     } catch (error) {
       console.error('Erreur chargement paramètres:', error);
@@ -196,8 +200,8 @@
       apiKeys[`${provider}_key`] = keyValue;
 
       const defaultPrefs = {
-        routing: 'google/gemini-2.0-flash-001',
-        structuring: 'google/gemini-2.0-flash-001',
+        routing: 'google/gemini-2.5-flash',
+        structuring: 'google/gemini-2.5-flash',
         code: 'anthropic/claude-haiku-4.5',
         analysis: 'anthropic/claude-sonnet-4.5'
       };
@@ -267,6 +271,16 @@
     if (btnResetConfig) {
       btnResetConfig.addEventListener('click', resetConfig);
     }
+
+    const btnBackupDatabase = document.getElementById('btn-backup-database');
+    if (btnBackupDatabase) {
+      btnBackupDatabase.addEventListener('click', backupDatabase);
+    }
+
+    const btnSaveExportPaths = document.getElementById('btn-save-export-paths');
+    if (btnSaveExportPaths) {
+      btnSaveExportPaths.addEventListener('click', saveExportPaths);
+    }
   }
 
   async function testConnection(provider) {
@@ -278,10 +292,57 @@
     try {
       await window.API.testConnection({ provider });
       badge.innerHTML = '<span class="badge badge--success">✅ OK</span>';
+      return true;
     } catch (error) {
       console.error(`Erreur test ${provider}:`, error);
       badge.innerHTML = '<span class="badge badge--error">❌ Échec</span>';
       if (window.showToast) window.showToast(`Erreur test ${provider}: ${error.message}`, 'error');
+      return false;
+    }
+  }
+
+  function initializeTestBadges() {
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search'];
+    providers.forEach(provider => {
+      const badge = document.getElementById(`badge-${provider}`);
+      if (badge) {
+        const key = currentConfig.api_keys?.[`${provider}_key`];
+        if (!key || key.length < 10) {
+          badge.innerHTML = '<span class="badge badge--muted">— Non configuré</span>';
+        } else {
+          badge.innerHTML = '<span class="badge badge--muted">— Non testé</span>';
+        }
+      }
+    });
+  }
+
+  async function testAllProviders() {
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search'];
+    const alert = document.getElementById('openrouter-alert');
+    
+    // Tester chaque provider qui a une clé configurée
+    const results = {};
+    for (const provider of providers) {
+      const key = currentConfig.api_keys?.[`${provider}_key`];
+      const badge = document.getElementById(`badge-${provider}`);
+      
+      if (!key || key.length < 10) {
+        // Clé non configurée
+        if (badge) badge.innerHTML = '<span class="badge badge--muted">— Non configuré</span>';
+        results[provider] = null;
+      } else {
+        // Tester la clé
+        results[provider] = await testConnection(provider);
+      }
+    }
+    
+    // Afficher l'alerte si OpenRouter est KO
+    if (alert) {
+      if (results.openrouter === false) {
+        alert.style.display = 'block';
+      } else {
+        alert.style.display = 'none';
+      }
     }
   }
 
@@ -410,6 +471,14 @@
         if (ta) ta.value = data.content || '';
       })
       .catch(() => {});
+    
+    // Charger le contenu des règles globales
+    window.API.getReglesGlobales()
+      .then(data => {
+        const ta = document.getElementById('chat-regles-globales');
+        if (ta) ta.value = data.value || '';
+      })
+      .catch(() => {});
   }
 
   async function saveChatConfig() {
@@ -429,8 +498,8 @@
       };
 
       const defaultPrefs = {
-        routing: 'google/gemini-2.0-flash-001',
-        structuring: 'google/gemini-2.0-flash-001',
+        routing: 'google/gemini-2.5-flash',
+        structuring: 'google/gemini-2.5-flash',
         code: 'anthropic/claude-haiku-4.5',
         analysis: 'anthropic/claude-sonnet-4.5'
       };
@@ -458,6 +527,14 @@
         // Silencieux — la confirmation globale de sauvegarde suffit
       })
       .catch(err => console.warn('Erreur sauvegarde profil:', err));
+      
+      // Sauvegarder les règles globales
+      const reglesContent = document.getElementById('chat-regles-globales')?.value || '';
+      window.API.saveReglesGlobales(reglesContent)
+        .then(() => {
+          // Silencieux — la confirmation globale de sauvegarde suffit
+        })
+        .catch(err => console.warn('Erreur sauvegarde règles:', err));
 
       if (window.showToast) window.showToast('Config chat sauvegardée', 'success');
 
@@ -583,8 +660,8 @@
           web_search_key: ''
         },
         model_preferences: {
-          routing: 'google/gemini-2.0-flash-001',
-          structuring: 'google/gemini-2.0-flash-001',
+          routing: 'google/gemini-2.5-flash',
+          structuring: 'google/gemini-2.5-flash',
           code: 'anthropic/claude-haiku-4.5',
           analysis: 'anthropic/claude-sonnet-4.5'
         },
@@ -607,6 +684,79 @@
     } catch (error) {
       console.error('Erreur reset config:', error);
       if (window.showToast) window.showToast('Erreur de réinitialisation', 'error');
+    }
+  }
+
+  async function backupDatabase() {
+    const btn = document.getElementById('btn-backup-database');
+    if (!btn) return;
+
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ Sauvegarde en cours...';
+
+    try {
+      const response = await window.API.backupDatabase();
+      
+      if (response.success && response.filename) {
+        if (window.showToast) {
+          window.showToast(`✅ Base de données sauvegardée : ${response.filename}`, 'success');
+        }
+      } else {
+        throw new Error('Réponse invalide du serveur');
+      }
+
+    } catch (error) {
+      console.error('Erreur backup database:', error);
+      if (window.showToast) window.showToast('Erreur lors de la sauvegarde', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
+  async function loadExportPaths() {
+    try {
+      const response = await window.API.getClientsExportPath();
+      const input = document.getElementById('clients-export-path');
+      if (input && response && response.value !== undefined) {
+        input.value = response.value;
+      }
+    } catch (error) {
+      console.error('Erreur chargement clients_export_path:', error);
+    }
+  }
+
+  async function saveExportPaths() {
+    const input = document.getElementById('clients-export-path');
+    const statusSpan = document.getElementById('export-paths-status');
+    
+    if (!input) return;
+
+    const value = input.value.trim();
+
+    try {
+      await window.API.saveClientsExportPath(value);
+      
+      if (statusSpan) {
+        statusSpan.textContent = '✅ Sauvegardé';
+        statusSpan.style.color = '#4caf50';
+        setTimeout(() => {
+          statusSpan.textContent = '';
+        }, 3000);
+      }
+      
+      if (window.showToast) window.showToast('Chemin d\'export sauvegardé', 'success');
+
+    } catch (error) {
+      console.error('Erreur sauvegarde clients_export_path:', error);
+      
+      if (statusSpan) {
+        statusSpan.textContent = '❌ Erreur';
+        statusSpan.style.color = '#f44336';
+      }
+      
+      if (window.showToast) window.showToast('Erreur de sauvegarde', 'error');
     }
   }
 })();

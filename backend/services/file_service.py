@@ -169,7 +169,7 @@ def list_project_files(project_path: str, extensions: list = None) -> list[str]:
 
 def archive_docs(project_path: str) -> list[str]:
     path = Path(project_path)
-    allowed_docs = {"PROJET_CONTEXTE.md", "STACK_STANDARD.md", "CHANGELOG.md", "BUGS.md", "README.md"}
+    allowed_docs = {"PROJET_CONTEXTE.md", "STACK_CODE.md", "CHANGELOG.md", "BUGS.md", "README.md"}
     archive_dir = path / "_archives"
     
     archived = []

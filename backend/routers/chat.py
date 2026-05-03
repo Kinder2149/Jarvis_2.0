@@ -72,8 +72,8 @@ def load_config():
             api_keys[db_key] = os.environ[env_var]
     
     model_preferences = {
-        "routing": "google/gemini-2.0-flash-001",
-        "structuring": "google/gemini-2.0-flash-001",
+        "routing": "google/gemini-2.5-flash",
+        "structuring": "google/gemini-2.5-flash",
         "code": "anthropic/claude-haiku-4.5",
         "analysis": "anthropic/claude-sonnet-4.5"
     }
@@ -370,10 +370,31 @@ def update_conversation(conv_id: int, data: ConversationUpdate):
     }
 
 
+class FolderUpdate(BaseModel):
+    folder_path: str | None = None
+
 @router.patch("/conversations/{conv_id}/folder")
-def update_conversation_folder(conv_id: int, folder_path: str | None = None):
-    """Définit ou modifie le folder_path d'une conversation (rétrocompatibilité)."""
-    return update_conversation(conv_id, ConversationUpdate(folder_path=folder_path))
+def update_conversation_folder(conv_id: int, data: FolderUpdate):
+    """Définit ou modifie le folder_path d'une conversation."""
+    db = get_connection()
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT id FROM conversations WHERE id = ?", (conv_id,))
+    if not cursor.fetchone():
+        db.close()
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    cursor.execute(
+        "UPDATE conversations SET folder_path = ?, updated_at = ? WHERE id = ?",
+        (data.folder_path, datetime.now().isoformat(), conv_id)
+    )
+    db.commit()
+    
+    cursor.execute("SELECT * FROM conversations WHERE id = ?", (conv_id,))
+    updated = dict(cursor.fetchone())
+    db.close()
+    
+    return updated
 
 
 @router.post("/conversations/{conversation_id}/update-summary")
@@ -407,12 +428,8 @@ async def update_conversation_summary(conversation_id: int):
     previous_summary = conv_row["context_summary"] if "context_summary" in conv_row.keys() else ""
     
     # 4. Récupérer global_context
-    try:
-        cursor.execute("SELECT value FROM app_config WHERE key = 'global_context'")
-        global_context_row = cursor.fetchone()
-        global_context = global_context_row["value"] if global_context_row else ""
-    except Exception:
-        global_context = ""
+    _ctx_file = Path(__file__).parent.parent / "data" / "contexts" / "global_context.md"
+    global_context = _ctx_file.read_text(encoding="utf-8") if _ctx_file.exists() else ""
     
     # 5. Construire l'historique
     conversation_history = "\n".join([
@@ -445,14 +462,15 @@ Format : texte libre, structuré par thèmes si nécessaire. Pas de liste de mes
     from backend.services.model_router import call_model
     
     try:
-        result = await call_model(
-            model_id=model_id,
-            messages=[{"role": "user", "content": prompt}],
-            api_keys=config.get("api_keys", {}),
-            model_preferences=config.get("model_preferences", {})
+        new_summary = await call_model(
+            model_id,
+            [{"role": "user", "content": prompt}],
+            config.get("api_keys", {}),
+            None,
+            "summary",
+            "routing",
+            None
         )
-        
-        new_summary = result["content"]
         
         # 8. Sauvegarder le résumé
         cursor.execute(

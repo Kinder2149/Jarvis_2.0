@@ -98,7 +98,7 @@
         date: session.updated_at || session.created_at,
         status: session.status,
         cost: session.total_cost_usd || 0,
-        href: `module-code.html?session=${session.id}&project_id=${projectId}`
+        href: `mission.html?pipeline_session=${session.id}&project_id=${projectId}`
       });
     });
 
@@ -149,12 +149,9 @@
 
     document.getElementById('btn-project-new-chat').addEventListener('click', createNewChat);
     document.getElementById('btn-project-new-module').addEventListener('click', () => {
-      if (typeof window.handleNewModulePreset === 'function') {
-        window.handleNewModulePreset(parseInt(projectId), null);
-      } else if (typeof window.handleNewModule === 'function') {
-        window.handleNewModule();
-      }
+      window.location.href = `mission.html?project_id=${projectId}&new=true`;
     });
+    document.getElementById('btn-init-graphify').addEventListener('click', initGraphify);
     document.getElementById('btn-delete-project').addEventListener('click', deleteProject);
 
     // Onglets activité
@@ -314,33 +311,32 @@
     }
   }
 
+  async function initGraphify() {
+    const btn = document.getElementById('btn-init-graphify');
+    if (!btn) return;
+
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ Initialisation...';
+
+    try {
+      await window.API.initGraphify(projectId);
+      if (window.showToast) window.showToast('✅ Graphify initialisé avec succès');
+    } catch (error) {
+      console.error('Erreur init graphify:', error);
+      if (window.showToast) window.showToast(error.message || 'Erreur initialisation Graphify', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
   async function deleteProject() {
-    if (!window.showModal) {
-      if (!confirm(`Supprimer le dossier '${project.name}' ? Toutes les conversations et sessions seront perdues définitivement.`)) return;
-      await performDeleteProject();
+    if (!confirm(`Supprimer le dossier "${project.name}" ?\n\nCette action est irréversible.`)) {
       return;
     }
 
-    window.showModal(
-      `Supprimer le dossier '${project.name}' ?`,
-      'Toutes les conversations et sessions seront perdues définitivement.',
-      [
-        {
-          label: 'Supprimer',
-          type: 'danger',
-          onClick: async () => {
-            await performDeleteProject();
-          }
-        },
-        {
-          label: 'Annuler',
-          type: 'secondary',
-          onClick: () => {
-            if (window.closeModal) window.closeModal();
-          }
-        }
-      ]
-    );
+    await performDeleteProject();
   }
 
   async function performDeleteProject() {
@@ -378,7 +374,7 @@
       container.innerHTML = linkedProjects.map(p => {
         const categoryColor = categoryColors[p.category] || '#6b7280';
         return `
-          <div class="conversation-item card card--interactive" onclick="location.href='code-project-detail.html?id=${p.id}'">
+          <div class="conversation-item card card--interactive" onclick="location.href='mission.html?project_id=${p.id}&new=true'">
             <div class="conversation-item-icon">⚙️</div>
             <div class="conversation-item-content">
               <div class="conversation-item-title">${p.name}</div>

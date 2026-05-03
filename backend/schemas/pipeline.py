@@ -48,3 +48,5 @@ class StartPipeline(BaseModel):
     project_id: int
     workflow_type: str
     initial_input: str | None = None
+    modele_override: str | None = None
+    source_mission_prompt_id: int | None = None

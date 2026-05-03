@@ -9,7 +9,7 @@ import json
 import shutil
 
 from backend.database import init_db, get_connection
-from backend.routers import projects, pipelines, models, files, chat, atelier, config
+from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions
 
 LOG_PATH = Path(__file__).parent / "data" / "jarvis.log"
 LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -41,11 +41,11 @@ app.add_middleware(
 
 app.include_router(projects.router, prefix="/api")
 app.include_router(pipelines.router, prefix="/api")
-app.include_router(models.router, prefix="/api")
 app.include_router(files.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(atelier.router, prefix="/api")
 app.include_router(config.router, prefix="/api")
+app.include_router(reflexions.router, prefix="/api")
 
 frontend_path = Path(__file__).parent.parent / "frontend"
 logger.info(f"Frontend path: {frontend_path}")
@@ -107,6 +107,57 @@ def migrate_config_to_sqlite():
     
     logger.info("Migration config.json → SQLite terminée")
 
+def seed_context_from_methodo():
+    """Seed profil_utilisateur et regles_globales depuis fichiers METHODO si vides."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Lire le chemin METHODO depuis config (ou fallback)
+    try:
+        cursor.execute("SELECT value FROM app_config WHERE key = 'chat_methodo_path'")
+        row = cursor.fetchone()
+        methodo_path = Path(row["value"]) if row and row["value"] else Path("C:\\DEV\\METHODO")
+    except Exception:
+        methodo_path = Path("C:\\DEV\\METHODO")
+    
+    # Mapping clé SQLite → nom fichier
+    context_files = {
+        "profil_utilisateur": "PROFIL_UTILISATEUR.md",
+        "regles_globales": "REGLES_GLOBALES.md"
+    }
+    
+    for key, filename in context_files.items():
+        try:
+            # Lire valeur actuelle en SQLite
+            cursor.execute("SELECT value FROM app_config WHERE key = ?", (key,))
+            row = cursor.fetchone()
+            current_value = row["value"] if row else ""
+            
+            # Si déjà rempli, ne rien faire
+            if current_value and current_value.strip():
+                continue
+            
+            # Construire chemin fichier source
+            source_file = methodo_path / "COMMUN" / filename
+            
+            if not source_file.exists():
+                logger.warning(f"Seeding {key}: fichier source absent → {source_file}")
+                continue
+            
+            # Lire contenu et écrire en SQLite
+            content = source_file.read_text(encoding="utf-8")
+            cursor.execute(
+                "INSERT OR REPLACE INTO app_config (key, value, category, updated_at) VALUES (?, ?, 'context', datetime('now'))",
+                (key, content)
+            )
+            logger.info(f"✅ Seeded {key} depuis {source_file}")
+        
+        except Exception as e:
+            logger.warning(f"Erreur seeding {key}: {e}")
+    
+    conn.commit()
+    conn.close()
+
 @app.on_event("startup")
 def startup():
     init_db()
@@ -132,4 +183,5 @@ def startup():
         logger.warning(f"Startup recovery: {affected_sessions} sessions RUNNING → FAILED, {affected_steps} steps réinitialisés")
     
     migrate_config_to_sqlite()
+    seed_context_from_methodo()
     logger.info("JARVIS démarré")

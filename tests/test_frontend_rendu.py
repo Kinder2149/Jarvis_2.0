@@ -145,7 +145,7 @@ def test_module_code_steps_affiches(browser_page: Page):
         }
     )
     
-    browser_page.goto(f"{BASE_URL}/app/module-code.html?session=1")
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1")
     browser_page.wait_for_load_state("networkidle")
     browser_page.wait_for_timeout(500)
     
@@ -176,7 +176,7 @@ def test_module_code_step_FAILED_rouge(browser_page: Page):
         }
     )
     
-    browser_page.goto(f"{BASE_URL}/app/module-code.html?session=1")
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1")
     browser_page.wait_for_load_state("networkidle")
     browser_page.wait_for_timeout(500)
     
@@ -210,7 +210,7 @@ def test_module_code_zone_validation_affichee(browser_page: Page):
         }
     )
     
-    browser_page.goto(f"{BASE_URL}/app/module-code.html?session=1")
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1")
     browser_page.wait_for_load_state("networkidle")
     browser_page.wait_for_timeout(500)
     
@@ -239,13 +239,149 @@ def test_module_code_session_completed_cta(browser_page: Page):
         }
     )
     
-    browser_page.goto(f"{BASE_URL}/app/module-code.html?session=1&project_id=1")
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1&project_id=1")
     browser_page.wait_for_load_state("networkidle")
     browser_page.wait_for_timeout(500)
     
     content = browser_page.content().lower()
     assert "dossier" in content or "retour" in content
     assert "nouvelle" in content
+
+
+def test_diff_viewer_lignes_colorees(browser_page: Page):
+    """Test que le diff viewer affiche les lignes avec les bonnes classes CSS (add/remove)."""
+    mock_route(
+        browser_page,
+        "**/api/pipelines/1",
+        {
+            "id": 1,
+            "workflow_type": "code_mission",
+            "status": "WAITING_VALIDATION",
+            "project_id": 1,
+            "created_at": "2026-05-03T10:00:00",
+            "steps": [
+                {
+                    "id": 1,
+                    "step_index": 0,
+                    "step_display_name": "Correction proposée",
+                    "status": "WAITING_VALIDATION",
+                    "output_type": "diff",
+                    "output_data": "--- a/backend/routes/auth.py\n+++ b/backend/routes/auth.py\n@@ -1,5 +1,6 @@\n import fastapi\n-def login():\n-    return False\n+def login():\n+    # Fix: retourner True\n+    return True\n",
+                    "requires_validation": 1,
+                    "error_message": None,
+                    "model_used": "claude-haiku-4.5",
+                    "sub_step_index": None
+                }
+            ]
+        }
+    )
+    mock_route(browser_page, "**/api/projects", [])
+    mock_route(browser_page, "**/api/chat/conversations", [])
+    mock_route(browser_page, "**/api/atelier/prospects", [])
+    
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1")
+    browser_page.wait_for_load_state("networkidle")
+    browser_page.wait_for_selector(".step-card", timeout=5000)
+    
+    # Vérifier que le diff est rendu avec les classes CSS appropriées
+    add_lines = browser_page.locator(".diff-line-add")
+    remove_lines = browser_page.locator(".diff-line-remove")
+    
+    assert add_lines.count() >= 1, "Aucune ligne verte (diff-line-add) trouvée"
+    assert remove_lines.count() >= 1, "Aucune ligne rouge (diff-line-remove) trouvée"
+
+
+def test_diff_viewer_contenu_correct(browser_page: Page):
+    """Test que le diff viewer affiche le bon contenu dans les bonnes couleurs."""
+    mock_route(
+        browser_page,
+        "**/api/pipelines/1",
+        {
+            "id": 1,
+            "workflow_type": "code_mission",
+            "status": "WAITING_VALIDATION",
+            "project_id": 1,
+            "created_at": "2026-05-03T10:00:00",
+            "steps": [
+                {
+                    "id": 1,
+                    "step_index": 0,
+                    "step_display_name": "Correction proposée",
+                    "status": "WAITING_VALIDATION",
+                    "output_type": "diff",
+                    "output_data": "--- a/backend/routes/auth.py\n+++ b/backend/routes/auth.py\n@@ -1,5 +1,6 @@\n import fastapi\n-def login():\n-    return False\n+def login():\n+    # Fix: retourner True\n+    return True\n",
+                    "requires_validation": 1,
+                    "error_message": None,
+                    "model_used": "claude-haiku-4.5",
+                    "sub_step_index": None
+                }
+            ]
+        }
+    )
+    mock_route(browser_page, "**/api/projects", [])
+    mock_route(browser_page, "**/api/chat/conversations", [])
+    mock_route(browser_page, "**/api/atelier/prospects", [])
+    
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1")
+    browser_page.wait_for_load_state("networkidle")
+    browser_page.wait_for_selector(".step-card", timeout=5000)
+    
+    # Extraire le texte des lignes ajoutées (vertes)
+    add_lines = browser_page.locator(".diff-line-add")
+    add_texts = [add_lines.nth(i).text_content() for i in range(add_lines.count())]
+    add_text_combined = " ".join(add_texts)
+    
+    # Extraire le texte des lignes supprimées (rouges)
+    remove_lines = browser_page.locator(".diff-line-remove")
+    remove_texts = [remove_lines.nth(i).text_content() for i in range(remove_lines.count())]
+    remove_text_combined = " ".join(remove_texts)
+    
+    # Vérifier que le bon contenu est dans la bonne couleur
+    assert "return True" in add_text_combined, "return True devrait être dans une ligne verte"
+    assert "return False" in remove_text_combined, "return False devrait être dans une ligne rouge"
+
+
+def test_diff_viewer_boutons_validation_presents(browser_page: Page):
+    """Test que les boutons de validation (Approuver/Rejeter) sont présents pour un diff."""
+    mock_route(
+        browser_page,
+        "**/api/pipelines/1",
+        {
+            "id": 1,
+            "workflow_type": "code_mission",
+            "status": "WAITING_VALIDATION",
+            "project_id": 1,
+            "created_at": "2026-05-03T10:00:00",
+            "steps": [
+                {
+                    "id": 1,
+                    "step_index": 0,
+                    "step_display_name": "Correction proposée",
+                    "status": "WAITING_VALIDATION",
+                    "output_type": "diff",
+                    "output_data": "--- a/backend/routes/auth.py\n+++ b/backend/routes/auth.py\n@@ -1,5 +1,6 @@\n import fastapi\n-def login():\n-    return False\n+def login():\n+    # Fix: retourner True\n+    return True\n",
+                    "requires_validation": 1,
+                    "error_message": None,
+                    "model_used": "claude-haiku-4.5",
+                    "sub_step_index": None
+                }
+            ]
+        }
+    )
+    mock_route(browser_page, "**/api/projects", [])
+    mock_route(browser_page, "**/api/chat/conversations", [])
+    mock_route(browser_page, "**/api/atelier/prospects", [])
+    
+    browser_page.goto(f"{BASE_URL}/app/mission.html?pipeline_session=1")
+    browser_page.wait_for_load_state("networkidle")
+    browser_page.wait_for_selector(".step-card", timeout=5000)
+    
+    # Vérifier que les boutons de validation sont présents
+    approve_btn = browser_page.locator("button:has-text('Approuver')")
+    reject_btn = browser_page.locator("button:has-text('Rejeter')")
+    
+    assert approve_btn.count() >= 1, "Bouton Approuver absent"
+    assert reject_btn.count() >= 1, "Bouton Rejeter absent"
 
 
 # =============================================================================

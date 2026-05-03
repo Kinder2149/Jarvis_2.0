@@ -82,11 +82,11 @@ class TestFront01CTAModuleCode:
         js_errors = []
         page.on("console", lambda msg: js_errors.append(msg.text) if msg.type == "error" else None)
 
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
 
         action_zone = page.query_selector("#mc-action-zone")
-        assert action_zone is not None, "#mc-action-zone absent dans module-code.html"
+        assert action_zone is not None, "#mc-action-zone absent dans mission.html"
 
         is_visible = action_zone.evaluate("el => el.style.display !== 'none'")
         assert is_visible, "Zone CTA masquée pour une session COMPLETED (page morte)"
@@ -104,7 +104,7 @@ class TestFront01CTAModuleCode:
         if not session_id:
             pytest.skip("Aucune session ABORTED disponible")
 
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
 
         action_zone = page.query_selector("#mc-action-zone")
@@ -125,7 +125,7 @@ class TestFront01CTAModuleCode:
         if not session_id:
             pytest.skip("Aucune session terminée disponible")
 
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
 
         action_zone = page.query_selector("#mc-action-zone")
@@ -142,7 +142,7 @@ class TestFront01CTAModuleCode:
         if not session_id:
             pytest.skip("Aucune session WAITING_VALIDATION avec step humain disponible")
 
-        page.goto(f"{BASE_URL}/module-code.html?session={session_id}&project_id={project_id}")
+        page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}&project_id={project_id}")
         page.wait_for_timeout(3000)
 
         action_zone = page.query_selector("#mc-action-zone")

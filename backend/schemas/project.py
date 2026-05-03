@@ -35,6 +35,7 @@ class Project(BaseModel):
     created_at: str
 
 class ProjectUpdate(BaseModel):
+    name: str | None = None
     local_path: str | None = None
     instructions: str | None = None
     parent_dossier_id: Optional[int] = None

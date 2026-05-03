@@ -4,696 +4,191 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Espace Gérant — Pointe de Rêve</title>
-  <link rel="icon" href="https://www.pointedereve.com/assets/img/logo_pdr.png">
   <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Admin-specific overrides */
-    .dashboard-hidden {
-      display: none !important;
-    }
-
-    .login-visible {
-      display: flex !important;
-    }
-
-    .admin-main {
-      min-height: 100vh;
-      background-color: var(--bg-alt);
-    }
-
-    .calendar-week {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: var(--spacing-sm);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .calendar-day {
-      background-color: var(--card-bg);
-      border: 2px solid var(--border-soft);
-      border-radius: 8px;
-      padding: var(--spacing-md);
-      text-align: center;
-      cursor: pointer;
-      transition: all var(--transition-base);
-    }
-
-    .calendar-day:hover {
-      border-color: var(--accent);
-    }
-
-    .calendar-day.active {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .calendar-day-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .calendar-day-date {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .calendar-day-indicator {
-      font-size: 1.5rem;
-    }
-
-    .service-toggle {
-      display: flex;
-      gap: var(--spacing-sm);
-      margin-bottom: var(--spacing-lg);
-      flex-wrap: wrap;
-    }
-
-    .service-btn {
-      background-color: var(--card-bg);
-      border: 2px solid var(--border-soft);
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all var(--transition-base);
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .service-btn:hover {
-      border-color: var(--accent);
-    }
-
-    .service-btn.active {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .status-filter {
-      display: flex;
-      gap: var(--spacing-sm);
-      margin-bottom: var(--spacing-lg);
-      flex-wrap: wrap;
-    }
-
-    .status-filter button {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-soft);
-      padding: 0.5rem var(--spacing-md);
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all var(--transition-base);
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .status-filter button:hover {
-      border-color: var(--accent);
-    }
-
-    .status-filter button.active {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: var(--spacing-xxl);
-      color: var(--text-secondary);
-    }
-
-    .empty-state-icon {
-      font-size: 3rem;
-      margin-bottom: var(--spacing-md);
-    }
-
-    .event-form {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      padding: var(--spacing-lg);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .event-list {
-      display: grid;
-      gap: var(--spacing-lg);
-    }
-
-    .event-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      padding: var(--spacing-md);
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: var(--spacing-md);
-      align-items: start;
-    }
-
-    .event-info h4 {
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .event-date {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .event-description {
-      color: var(--text-main);
-      font-size: 0.95rem;
-    }
-
-    .event-actions {
-      display: flex;
-      gap: var(--spacing-sm);
-      flex-direction: column;
-      align-items: flex-end;
-    }
-
-    .event-actions button {
-      padding: 0.5rem var(--spacing-md);
-      font-size: 0.85rem;
-    }
-
-    .toggle-switch {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      cursor: pointer;
-    }
-
-    .toggle-input {
-      appearance: none;
-      width: 50px;
-      height: 28px;
-      background-color: #ccc;
-      border-radius: 14px;
-      outline: none;
-      cursor: pointer;
-      transition: background-color var(--transition-base);
-      position: relative;
-    }
-
-    .toggle-input::before {
-      content: '';
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background-color: white;
-      top: 2px;
-      left: 2px;
-      transition: left var(--transition-base);
-    }
-
-    .toggle-input:checked {
-      background-color: var(--accent);
-    }
-
-    .toggle-input:checked::before {
-      left: 24px;
-    }
-
-    .stepper {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      width: fit-content;
-    }
-
-    .stepper button {
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      font-size: 1.2rem;
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-soft);
-    }
-
-    .stepper-value {
-      min-width: 60px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .today-section {
-      background-color: var(--card-bg);
-      border: 2px solid var(--accent);
-      border-radius: 8px;
-      padding: var(--spacing-lg);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .today-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-md);
-      flex-wrap: wrap;
-      gap: var(--spacing-sm);
-    }
-
-    .today-header h3 {
-      margin: 0;
-      color: var(--accent);
-    }
-
-    .today-date {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.visible {
-      display: flex;
-    }
-
-    .modal-content {
-      background-color: white;
-      border-radius: 8px;
-      padding: var(--spacing-lg);
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-lg);
-      border-bottom: 1px solid var(--border-soft);
-      padding-bottom: var(--spacing-md);
-    }
-
-    .modal-header h3 {
-      margin: 0;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--text-secondary);
-      padding: 0;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-close:hover {
-      color: var(--text-main);
-    }
-
-    .service-cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .service-card {
-      background-color: var(--card-bg);
-      border: 2px solid var(--border-soft);
-      border-radius: 8px;
-      padding: var(--spacing-lg);
-      text-align: center;
-      cursor: pointer;
-      transition: all var(--transition-base);
-    }
-
-    .service-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-
-    .service-card.selected {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .service-card-icon {
-      font-size: 2rem;
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .service-card-label {
-      font-weight: 600;
-      font-size: 1.05rem;
-    }
-
-    @media (max-width: 768px) {
-      .calendar-week {
-        grid-template-columns: repeat(4, 1fr);
-        gap: var(--spacing-xs);
-      }
-
-      .calendar-day {
-        padding: var(--spacing-sm);
-      }
-
-      .calendar-day-date {
-        font-size: 1rem;
-      }
-
-      .service-cards {
-        grid-template-columns: 1fr;
-      }
-
-      .event-card {
-        grid-template-columns: 1fr;
-      }
-
-      .event-actions {
-        flex-direction: row;
-        align-items: center;
-      }
-    }
-  </style>
 </head>
 <body>
 
-<!-- ===== ÉCRAN LOGIN ===== -->
-<div class="login-container login-visible" id="loginScreen">
-  <div class="login-box">
-    <img src="https://www.pointedereve.com/assets/img/logo_pdr.png" alt="Logo Pointe de Rêve">
-    <h2>Espace Gérant — Pointe de Rêve</h2>
-    
-    <div class="form-group">
-      <label for="passwordInput">Mot de passe</label>
-      <div class="password-field">
-        <input 
-          type="password" 
-          id="passwordInput" 
-          placeholder="Entrez votre mot de passe"
-          aria-label="Mot de passe"
-        >
-        <button 
-          class="password-toggle" 
-          id="passwordToggle"
-          type="button"
-          aria-label="Afficher/masquer le mot de passe"
-        >👁</button>
+  <!-- ============================================================================
+       ÉCRAN LOGIN
+       ============================================================================ -->
+  <div id="loginScreen" class="">
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="https://www.pointedereve.com/assets/img/logo_pdr.png" alt="Logo Pointe de Rêve">
       </div>
+      <h2>Espace Gérant</h2>
+      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); font-size: 0.9rem;">Pointe de Rêve</p>
+      
+      <div class="form-group">
+        <label for="passwordInput">Mot de passe</label>
+        <div class="password-wrapper">
+          <input type="password" id="passwordInput" placeholder="Entrez votre mot de passe" autocomplete="off">
+          <button type="button" id="togglePassword" aria-label="Afficher/masquer le mot de passe">👁️</button>
+        </div>
+      </div>
+
+      <div id="loginError" class="notification-error hidden"></div>
+
+      <button type="button" id="loginBtn" class="btn-primary" style="width: 100%;">Accéder à mon espace</button>
     </div>
-
-    <div class="login-error" id="loginError" role="alert"></div>
-
-    <button 
-      class="btn-primary" 
-      id="loginBtn"
-      style="width: 100%;"
-    >Accéder à mon espace</button>
   </div>
-</div>
 
-<!-- ===== DASHBOARD ===== -->
-<div class="dashboard-hidden" id="dashboard">
-  
-  <!-- Header Admin -->
-  <header class="admin-header">
-    <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-      <img src="https://www.pointedereve.com/assets/img/logo_pdr.png" alt="Logo Pointe de Rêve" style="height: 40px;">
-      <h2>Espace Gérant — Pointe de Rêve</h2>
+  <!-- ============================================================================
+       DASHBOARD
+       ============================================================================ -->
+  <div id="dashboard" class="">
+    <!-- HEADER -->
+    <div class="admin-header">
+      <h2>
+        <img src="https://www.pointedereve.com/assets/img/logo_pdr.png" alt="Logo Pointe de Rêve" style="height: 35px;">
+        Espace Gérant — Pointe de Rêve
+      </h2>
+      <button type="button" id="logoutBtn">Se déconnecter</button>
     </div>
-    <div class="admin-header-actions">
-      <button class="btn-secondary" id="logoutBtn">Se déconnecter</button>
-    </div>
-  </header>
 
-  <!-- Contenu Admin -->
-  <div class="admin-main">
-    <div class="admin-content">
-
-      <!-- VUE AUJOURD'HUI - Section En Attente -->
-      <div class="today-section" id="todaySection">
-        <div class="today-header">
-          <div>
-            <h3>📋 À traiter aujourd'hui</h3>
-            <div class="today-date" id="todayDate"></div>
-          </div>
-          <div id="todayCount" style="font-size: 1.5rem; font-weight: 700; color: var(--accent);"></div>
-        </div>
-        <div id="todayList" style="display: grid; gap: var(--spacing-md);"></div>
+    <!-- CONTENU DASHBOARD -->
+    <div class="dashboard-content">
+      <!-- Date du jour -->
+      <div style="text-align: center; margin-bottom: var(--spacing-xl); color: var(--text-secondary); font-size: 0.95rem;">
+        <p id="todayDate" style="margin: 0;"></p>
       </div>
 
-      <!-- KPIs -->
-      <div class="kpi-container" style="margin-bottom: var(--spacing-xxl);">
-        <div class="kpi-card">
-          <div class="kpi-value" id="kpiDemandesToday">0</div>
-          <div class="kpi-label">Demandes aujourd'hui</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value" id="kpiPending">0</div>
-          <div class="kpi-label">En attente de confirmation</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value" id="kpiConfirmedWeek">0</div>
-          <div class="kpi-label">Confirmées cette semaine</div>
-        </div>
-      </div>
-
-      <!-- Onglets Réservations / Ardoise -->
-      <div style="background-color: white; border-radius: 8px; padding: var(--spacing-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <!-- SECTION KPI -->
+      <div class="kpi-section">
+        <h3 style="text-align: center; margin-bottom: var(--spacing-xl); color: var(--text-main);">Tableau de bord</h3>
         
-        <!-- Tabs Navigation -->
-        <div class="tabs-nav">
-          <button class="tab-button active" data-tab="reservations">📅 Réservations</button>
-          <button class="tab-button" data-tab="ardoise">🍽️ Ardoise du jour</button>
-          <button class="tab-button" data-tab="menu">📖 Carte</button>
-          <button class="tab-button" data-tab="events">🎉 Événements</button>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Couverts déjeuner</div>
+            <div class="kpi-value" id="kpiLunch">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Couverts dîner</div>
+            <div class="kpi-value" id="kpiDiner">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">En attente</div>
+            <div class="kpi-value" id="kpiPending">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION À TRAITER EN PRIORITÉ -->
+      <div class="reservations-section">
+        <h3 style="color: var(--text-main);">À traiter en priorité</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); font-size: 0.9rem;">Réservations en attente des 2 derniers jours</p>
+        <div id="reservationsList"></div>
+      </div>
+
+      <!-- ONGLETS -->
+      <div style="margin-top: var(--spacing-3xl);">
+        <div class="admin-tabs">
+          <button type="button" class="tab-btn active" data-tab="reservations">📅 Réservations</button>
+          <button type="button" class="tab-btn" data-tab="ardoise">🍽️ Ardoise du jour</button>
         </div>
 
-        <!-- TAB: Réservations -->
-        <div class="tab-content active" id="tab-reservations">
-          <h3>Gestion des réservations</h3>
-          
-          <!-- Filtres -->
-          <div style="margin-bottom: var(--spacing-lg);">
-            <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 500;">Filtrer par service :</label>
-            <div class="service-toggle">
-              <button class="service-btn active" data-service="all">Tous</button>
-              <button class="service-btn" data-service="dejeuner">🌅 Déjeuner</button>
-              <button class="service-btn" data-service="diner">🌙 Dîner</button>
+        <!-- TAB: RÉSERVATIONS -->
+        <div id="reservations" class="tab-content active">
+          <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- Filtres -->
+            <div style="margin-bottom: var(--spacing-xl); display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+              <button type="button" class="filter-btn active" data-filter="all" style="padding: var(--spacing-sm) var(--spacing-lg); border-radius: var(--radius-md); background-color: var(--accent); color: white; border: 2px solid var(--accent); font-weight: 600; cursor: pointer;">Toutes</button>
+              <button type="button" class="filter-btn" data-filter="pending" style="padding: var(--spacing-sm) var(--spacing-lg); border-radius: var(--radius-md); background-color: transparent; color: var(--text-main); border: 2px solid var(--border-soft); font-weight: 600; cursor: pointer;">En attente</button>
+              <button type="button" class="filter-btn" data-filter="confirmed" style="padding: var(--spacing-sm) var(--spacing-lg); border-radius: var(--radius-md); background-color: transparent; color: var(--text-main); border: 2px solid var(--border-soft); font-weight: 600; cursor: pointer;">Confirmées</button>
+              <button type="button" class="filter-btn" data-filter="cancelled" style="padding: var(--spacing-sm) var(--spacing-lg); border-radius: var(--radius-md); background-color: transparent; color: var(--text-main); border: 2px solid var(--border-soft); font-weight: 600; cursor: pointer;">Annulées</button>
             </div>
-          </div>
 
-          <div style="margin-bottom: var(--spacing-lg);">
-            <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 500;">Filtrer par statut :</label>
-            <div class="status-filter">
-              <button class="active" data-status="all">Tous</button>
-              <button data-status="En attente">En attente</button>
-              <button data-status="Confirmée">Confirmées</button>
-              <button data-status="Annulée">Annulées</button>
-            </div>
+            <!-- Liste réservations -->
+            <div id="allReservationsList"></div>
           </div>
-
-          <!-- Calendrier Semaine -->
-          <div style="margin-bottom: var(--spacing-lg);">
-            <label style="display: block; margin-bottom: var(--spacing-md); font-weight: 500;">Sélectionner une date :</label>
-            <div class="calendar-week" id="calendarWeek"></div>
-          </div>
-
-          <!-- Liste Réservations -->
-          <div id="reservationsList" class="reservations-list"></div>
         </div>
 
-        <!-- TAB: Ardoise -->
-        <div class="tab-content" id="tab-ardoise">
-          <h3>Ardoise du jour</h3>
-          
-          <div class="editor-section">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-lg);">
-              <h4 style="margin: 0;">Disponibilité</h4>
-              <label class="toggle-switch">
-                <input type="checkbox" class="toggle-input" id="ardoiseAvailable" checked>
-                <span id="ardoiseAvailableLabel">Disponible aujourd'hui</span>
-              </label>
-            </div>
-
-            <div class="form-group">
-              <label for="ardoisePlat">Plat du jour *</label>
-              <input 
-                type="text" 
-                id="ardoisePlat" 
-                placeholder="Ex: Magret de canard, jus de cerise"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="ardoisePrix">Prix *</label>
-              <input 
-                type="text" 
-                id="ardoisePrix" 
-                placeholder="Ex: 21,00 €"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="ardoiseNote">Note (cuisson, accompagnement)</label>
-              <textarea 
-                id="ardoiseNote" 
-                placeholder="Ex: Cuisson selon votre goût"
-                style="min-height: 80px;"
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="ardoiseEntree">Entrée du jour (optionnel)</label>
-              <input 
-                type="text" 
-                id="ardoiseEntree" 
-                placeholder="Ex: Velouté de butternut"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="ardoiseEntreePrix">Prix entrée</label>
-              <input 
-                type="text" 
-                id="ardoiseEntreePrix" 
-                placeholder="Ex: 8,00 €"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="ardoiseDessert">Dessert du jour (optionnel)</label>
-              <input 
-                type="text" 
-                id="ardoiseDessert" 
-                placeholder="Ex: Fondant au chocolat"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="ardoiseDessertPrix">Prix dessert</label>
-              <input 
-                type="text" 
-                id="ardoiseDessertPrix" 
-                placeholder="Ex: 7,00 €"
-              >
-            </div>
-
-            <div style="margin-bottom: var(--spacing-lg);">
-              <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
-                <input type="checkbox" id="ardoiseFormuleActive" style="width: 18px; height: 18px;">
-                <span>Activer une formule</span>
-              </label>
-            </div>
-
-            <div id="ardoiseFormuleFields" style="display: none; border-top: 1px solid var(--border-soft); padding-top: var(--spacing-lg);">
-              <div class="form-group">
-                <label for="ardoiseFormuleLabel">Libellé de la formule</label>
-                <input 
-                  type="text" 
-                  id="ardoiseFormuleLabel" 
-                  placeholder="Ex: Entrée + Plat + Dessert"
-                >
-              </div>
-
-              <div class="form-group">
-                <label for="ardoiseFormulePrix">Prix formule</label>
-                <input 
-                  type="text" 
-                  id="ardoiseFormulePrix" 
-                  placeholder="Ex: 31,00 €"
-                >
+        <!-- TAB: ARDOISE -->
+        <div id="ardoise" class="tab-content">
+          <div style="max-width: 800px; margin: 0 auto;">
+            
+            <!-- DISPONIBILITÉ -->
+            <div class="editor-section">
+              <h4 style="margin-bottom: var(--spacing-lg);">Ardoise disponible</h4>
+              <div class="toggle-switch">
+                <label for="ardoise-toggle" style="margin: 0; cursor: pointer; flex: 1;">L'ardoise du jour est disponible</label>
+                <div class="toggle-knob-wrapper" id="ardoise-toggle-visual">
+                  <div class="toggle-knob"></div>
+                </div>
+                <input type="checkbox" id="ardoise-toggle" style="display: none;">
               </div>
             </div>
 
-            <button class="btn-primary" id="saveArdoiseBtn" style="width: 100%; margin-top: var(--spacing-lg);">
-              Mettre à jour l'ardoise
-            </button>
+            <!-- FORMULAIRE ARDOISE -->
+            <div class="editor-section">
+              <h4>Modifier l'ardoise</h4>
 
-            <div id="ardoiseFeedback" class="feedback-message"></div>
-          </div>
+              <!-- PLAT -->
+              <div class="form-group">
+                <label for="admin-plat">Plat du jour *</label>
+                <input type="text" id="admin-plat" placeholder="ex: Bœuf bourguignon mijoté">
+              </div>
 
-          <!-- Prévisualisation -->
-          <div style="margin-top: var(--spacing-lg); background-color: rgba(83, 135, 94, 0.08); border-left: 4px solid var(--accent); padding: var(--spacing-lg); border-radius: 4px;">
-            <h4 style="margin-bottom: var(--spacing-md);">Prévisualisation</h4>
-            <div id="ardoisePreview"></div>
-          </div>
-        </div>
+              <div class="editor-row">
+                <div class="form-group">
+                  <label for="admin-plat-prix">Prix</label>
+                  <input type="text" id="admin-plat-prix" placeholder="ex: 18,00 €">
+                </div>
+              </div>
 
-        <!-- TAB: Menu -->
-        <div class="tab-content" id="tab-menu">
-          <h3>Carte du restaurant</h3>
-          <div style="background-color: var(--bg-alt); padding: var(--spacing-lg); border-radius: 8px; color: var(--text-secondary);">
-            <p>ℹ️ Vue lecture seule de votre carte. Pour modifier la carte, contactez l'équipe Pointe de Rêve.</p>
-          </div>
-          <div id="menuDisplay" style="margin-top: var(--spacing-lg);"></div>
-        </div>
+              <div class="form-group full">
+                <label for="admin-plat-note">Description / Cuisson</label>
+                <input type="text" id="admin-plat-note" placeholder="ex: Viande fondante accompagnée de pommes de terre grenaille">
+              </div>
 
-        <!-- TAB: Événements -->
-        <div class="tab-content" id="tab-events">
-          <h3>Événements & Soirées spéciales</h3>
+              <!-- ENTRÉE -->
+              <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-soft);">
+                <div class="editor-row">
+                  <div class="form-group">
+                    <label for="admin-entree">Entrée du jour (optionnel)</label>
+                    <input type="text" id="admin-entree" placeholder="ex: Terrine maison">
+                  </div>
+                  <div class="form-group">
+                    <label for="admin-entree-prix">Prix</label>
+                    <input type="text" id="admin-entree-prix" placeholder="ex: 9,00 €">
+                  </div>
+                </div>
+              </div>
 
-          <!-- Formulaire Ajout -->
-          <div class="event-form">
-            <h4 style="margin-bottom: var(--spacing-md);">Créer un événement</h4>
+              <!-- DESSERT -->
+              <div style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-soft);">
+                <div class="editor-row">
+                  <div class="form-group">
+                    <label for="admin-dessert">Dessert du jour (optionnel)</label>
+                    <input type="text" id="admin-dessert" placeholder="ex: Tarte tatin">
+                  </div>
+                  <div class="form-group">
+                    <label for="admin-dessert-prix">Prix</label>
+                    <input type="text" id="admin-dessert-prix" placeholder="ex: 7,50 €">
+                  </div>
+                </div>
+              </div>
 
-            <div class="form-group">
-              <label for="eventTitle">Titre de l'événement *</label>
-              <input 
-                type="text" 
-                id="eventTitle" 
-                placeholder="Ex: Soirée Jazz"
-              >
+              <!-- BOUTONS -->
+              <div class="editor-buttons">
+                <button type="button" id="saveArdoiseBtn" class="btn-primary">Sauvegarder l'ardoise</button>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="eventDate">Date *</label>
-              <input 
-                type="date" 
-                id="eventDate"
-              >
+            <!-- NOTIFICATION -->
+            <div id="ardoiseNotification" class="hidden" style="margin-top: var(--spacing-lg); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-md); background-color: rgba(61, 155, 95, 0.15); color: var(--success); border-left: 4px solid var(--success); font-weight: 500;">
+              ✓ Ardoise mise à jour avec succès
             </div>
 
-            <div class="form-group">
-              <label for="eventDescription">Description</label>
-              <textarea 
-                id="eventDescription" 
-                placeholder="Détails de l'événement..."
-                style="min-height: 100px;"
-              ></textarea>
+            <!-- APERÇU -->
+            <div class="editor-section" style="margin-top: var(--spacing-xl); background-color: rgba(83, 135, 94, 0.08);">
+              <h4 style="margin-bottom: var(--spacing-lg);">Aperçu sur le site</h4>
+              <div id="ardoisePreview" style="padding: var(--spacing-lg); background-color: var(--card-bg); border-radius: var(--radius-md);">
+                <p style="text-align: center; color: var(--text-secondary);">L'aperçu apparaîtra ici en temps réel</p>
+              </div>
             </div>
 
-            <button class="btn-primary" id="addEventBtn" style="width: 100%;">
-              + Ajouter l'événement
-            </button>
-
-            <div id="eventFeedback" class="feedback-message"></div>
           </div>
-
-          <!-- Liste Événements -->
-          <div id="eventsList" class="event-list"></div>
         </div>
 
       </div>
@@ -701,9 +196,8 @@
     </div>
   </div>
 
-</div>
-
-<script src="admin.js"></script>
+  <!-- SCRIPT ADMIN -->
+  <script src="admin.js"></script>
 
 </body>
 </html>

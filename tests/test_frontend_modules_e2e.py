@@ -154,7 +154,7 @@ class TestModuleCode:
         
         try:
             # Action
-            page.goto(f"{BASE_URL}/module-code.html?session={session_id}")
+            page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}")
             
             # Assert : step card avec classe error visible
             page.wait_for_selector(".step-card--error", timeout=5000)
@@ -188,7 +188,7 @@ class TestModuleCode:
         
         try:
             # Action
-            page.goto(f"{BASE_URL}/module-code.html?session={session_id}")
+            page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}")
             page.wait_for_selector(".step-card--error", timeout=5000)
             
             # Assert : bouton retry visible
@@ -221,7 +221,7 @@ class TestModuleCode:
         
         try:
             # Action
-            page.goto(f"{BASE_URL}/module-code.html?session={session_id}")
+            page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}")
             
             # Assert : spinner ou indicateur de chargement visible
             # Le polling devrait déclencher des requêtes réseau
@@ -261,7 +261,7 @@ class TestModuleCode:
         
         try:
             # Action
-            page.goto(f"{BASE_URL}/module-code.html?session={session_id}")
+            page.goto(f"{BASE_URL}/mission.html?pipeline_session={session_id}")
             page.wait_for_timeout(2000)
             
             # Assert : zone d'action visible

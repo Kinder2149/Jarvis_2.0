@@ -79,7 +79,8 @@ window.statusBadge = (status) => {
     'RUNNING': '<span class="badge badge--running">⏳ En cours</span>',
     'COMPLETED': '<span class="badge badge--success">✅ Terminé</span>',
     'ERROR': '<span class="badge badge--error">❌ Erreur</span>',
-    'ABORTED': '<span class="badge badge--pending">Abandonné</span>',
+    'FAILED': '<span class="badge badge--error">💀 Échoué</span>',
+    'ABORTED': '<span class="badge badge--aborted">⛔ Abandonné</span>',
     'WAITING_VALIDATION': '<span class="badge badge--waiting">⏸️ Validation</span>'
   };
   return badges[status] || `<span class="badge">${status}</span>`;
