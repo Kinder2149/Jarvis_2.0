@@ -1830,6 +1830,13 @@ pre code {
   margin-top: -0.5rem;
 }
 
+.settings-section-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: -0.25rem 0 0.75rem 0;
+  line-height: 1.5;
+}
+
 .info-banner {
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.3);

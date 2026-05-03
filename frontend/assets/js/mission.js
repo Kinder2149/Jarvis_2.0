@@ -9,6 +9,7 @@
   let sourceMissionPromptId = null;
   let currentPipelineSession = null;
   let currentLivrableContent = null;
+  let currentLivrableType = null;
   let currentStep = 1;
 
   // ── Bootstrap ─────────────────────────────────────────────────────
@@ -413,6 +414,7 @@
     try {
       const livrable = await window.API.getLivrable(sessionId);
       currentLivrableContent = livrable.content;
+      currentLivrableType = livrable.livrable_type;
       sourceMissionPromptId = livrable.id || null;
       // Révéler le contenu de l'étape 2
       document.getElementById('step-2-placeholder').style.display = 'none';
@@ -1086,6 +1088,30 @@
           window.showToast('Édition appliquée', 'success');
           document.getElementById('modal-diff').style.display = 'none';
           pendingEdit = null;
+
+          // Complétion visuelle pour decision_figee
+          if (currentLivrableType === 'decision_figee') {
+            setActiveStep(4);
+            document.getElementById('step-4-placeholder').style.display = 'none';
+            document.getElementById('step-4-content').style.display = 'block';
+
+            const step4Content = document.getElementById('step-4-content');
+            if (step4Content) {
+              step4Content.innerHTML = `
+                <div class="recap-fichiers">
+                  <p>✅ <strong>Décision appliquée</strong> — PROJET_CONTEXTE.md mis à jour.</p>
+                  <p style="color:var(--text-muted);margin-top:0.5rem">
+                    La décision figée a été intégrée dans la section 6 de votre document de référence.
+                  </p>
+                </div>
+              `;
+            }
+
+            const btnBack = document.getElementById('btn-back-project');
+            if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'index.html';
+            const footerEl = document.getElementById('step-4-footer');
+            if (footerEl) footerEl.style.display = 'block';
+          }
         } catch (error) {
           window.showToast('Erreur application : ' + error.message, 'error');
         }

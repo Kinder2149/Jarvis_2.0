@@ -183,6 +183,11 @@
 
             <div class="chat-config-row">
               <label class="chat-config-label">Profil utilisateur</label>
+              <p class="settings-section-hint">
+                Ce profil est injecté <strong>uniquement dans le module Chat</strong>.
+                Décrivez votre style de communication, vos préférences, votre contexte
+                personnel pour obtenir des réponses mieux adaptées.
+              </p>
               <textarea id="chat-profil-utilisateur" class="input-field" rows="12"
                 placeholder="Chargement..."></textarea>
               <span class="text-muted chat-config-hint">
@@ -215,6 +220,11 @@
               Contexte de session : informations temporaires ou transversales
               à ajouter ponctuellement (projet en cours, contrainte du moment...).
               Injecté en tête de TOUS les modules : Chat, Réflexion, Pipeline.
+            </p>
+            <p class="settings-section-hint">
+              Ce texte est injecté dans <strong>tous les modules</strong> à chaque appel IA
+              (Chat, Réflexion, Pipeline). Utilisez-le pour des règles permanentes qui
+              s'appliquent partout.
             </p>
             <textarea id="global-context-input" rows="15" class="textarea-full" 
               placeholder="Ex: Je suis entrepreneur, non-développeur. Je travaille avec une IA pour créer mes projets..."></textarea>
