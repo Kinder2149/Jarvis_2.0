@@ -4,7 +4,7 @@ import json
 import logging
 from pydantic import BaseModel
 from backend.schemas.pipeline import StartPipeline, StepValidation
-from backend.database import get_connection
+from backend.database import get_connection, load_config
 from backend.services.pipeline_engine import (
     create_session,
     get_session_with_steps,
@@ -22,83 +22,7 @@ class MissionPromptRequest(BaseModel):
 
 router = APIRouter(prefix="/pipelines", tags=["pipelines"])
 
-CONFIG_PATH = Path(__file__).parent.parent / "data" / "config.json"
 LOG_PATH = Path(__file__).parent.parent / "data" / "jarvis.log"
-
-def load_config():
-    import logging
-    logger = logging.getLogger("uvicorn")
-    
-    from backend.database import get_connection as _get_conn
-    
-    # Lire api_keys depuis SQLite
-    logger.info("🔑 [PIPELINES] Chargement des clés API depuis SQLite...")
-    conn = _get_conn()
-    cursor = conn.cursor()
-    cursor.execute("SELECT key, value FROM app_config WHERE category = 'api_keys'")
-    rows = cursor.fetchall()
-    conn.close()
-    
-    logger.info(f"🔍 [PIPELINES] Nombre de clés trouvées en DB: {len(rows)}")
-    for row in rows:
-        key_name = row["key"]
-        value = row["value"]
-        masked = "..." + value[-4:] if value and len(value) > 4 else "(vide)"
-        logger.info(f"   - {key_name}: {masked}")
-    
-    api_keys = {row["key"]: row["value"] or "" for row in rows}
-    if not api_keys:
-        logger.warning("⚠️ [PIPELINES] Aucune clé API en DB, utilisation des valeurs par défaut vides")
-        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": ""}
-    
-    # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
-    import os
-    from pathlib import Path as _Path
-    _env_file = _Path(__file__).parent.parent / ".env"
-    if _env_file.exists():
-        for line in _env_file.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            env_key, env_val = line.split("=", 1)
-            env_val = env_val.strip()
-            # Mapper les noms .env vers les clés DB
-            env_map = {
-                "OPENROUTER_KEY": "openrouter_key",
-                "ANTHROPIC_KEY": "anthropic_key",
-                "GOOGLE_KEY": "google_key",
-                "WEB_SEARCH_KEY": "web_search_key",
-            }
-            db_key = env_map.get(env_key.strip())
-            if db_key and not api_keys.get(db_key):
-                api_keys[db_key] = env_val
-    
-    # Lire les vraies variables d'environnement système (pour Docker/desktop)
-    for env_var, db_key in [
-        ("OPENROUTER_KEY", "openrouter_key"),
-        ("ANTHROPIC_KEY", "anthropic_key"),
-        ("GOOGLE_KEY", "google_key"),
-        ("WEB_SEARCH_KEY", "web_search_key"),
-    ]:
-        if not api_keys.get(db_key) and os.environ.get(env_var):
-            api_keys[db_key] = os.environ[env_var]
-    
-    # Lire model_preferences depuis config.json
-    model_preferences = {
-        "routing": "google/gemini-2.5-flash",
-        "structuring": "google/gemini-2.5-flash",
-        "code": "anthropic/claude-haiku-4.5",
-        "analysis": "anthropic/claude-sonnet-4.5"
-    }
-    if CONFIG_PATH.exists():
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            config_file = json.load(f)
-            if "model_preferences" in config_file:
-                model_preferences = config_file["model_preferences"]
-                logger.info(f"📋 [PIPELINES] model_preferences chargées depuis config.json")
-    
-    logger.info(f"✅ [PIPELINES] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles")
-    return {"api_keys": api_keys, "model_preferences": model_preferences}
 
 @router.post("/parse-mission")
 def parse_mission(request: MissionPromptRequest):

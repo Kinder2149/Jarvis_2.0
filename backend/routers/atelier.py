@@ -334,7 +334,7 @@ async def start_prospect_pipeline(prospect_id: int):
     conn.commit()
     
     # Charger config et exécuter le premier step
-    from backend.routers.pipelines import load_config
+    from backend.database import load_config
     from backend.services.pipeline_engine import execute_step
     
     config = load_config()

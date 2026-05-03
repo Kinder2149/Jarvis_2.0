@@ -1,12 +1,103 @@
 import sqlite3
 from pathlib import Path
+import json
+import logging
+import os
 
 DB_PATH = Path(__file__).parent / "data" / "jarvis.db"
+CONFIG_PATH = Path(__file__).parent / "data" / "config.json"
 
 def get_connection():
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
     return conn
+
+def load_config():
+    """
+    Charge la configuration complète depuis SQLite et config.json.
+    Retourne un dict avec api_keys, model_preferences et optionnellement chat.
+    """
+    logger = logging.getLogger("uvicorn")
+    
+    logger.info("🔑 [DB] Chargement des clés API depuis SQLite...")
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT key, value FROM app_config WHERE category = 'api_keys'")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    logger.info(f"🔍 [DB] Nombre de clés trouvées en DB: {len(rows)}")
+    for row in rows:
+        key_name = row["key"]
+        value = row["value"]
+        masked = "..." + value[-4:] if value and len(value) > 4 else "(vide)"
+        logger.info(f"   - {key_name}: {masked}")
+    
+    api_keys = {row["key"]: row["value"] or "" for row in rows}
+    if not api_keys:
+        logger.warning("⚠️ [DB] Aucune clé API en DB, utilisation des valeurs par défaut vides")
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": ""}
+    
+    # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
+    env_file = Path(__file__).parent / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            env_key, env_val = line.split("=", 1)
+            env_val = env_val.strip()
+            env_map = {
+                "OPENROUTER_KEY": "openrouter_key",
+                "ANTHROPIC_KEY": "anthropic_key",
+                "GOOGLE_KEY": "google_key",
+                "WEB_SEARCH_KEY": "web_search_key",
+            }
+            db_key = env_map.get(env_key.strip())
+            if db_key and not api_keys.get(db_key):
+                api_keys[db_key] = env_val
+    
+    # Lire les vraies variables d'environnement système (pour Docker/desktop)
+    for env_var, db_key in [
+        ("OPENROUTER_KEY", "openrouter_key"),
+        ("ANTHROPIC_KEY", "anthropic_key"),
+        ("GOOGLE_KEY", "google_key"),
+        ("WEB_SEARCH_KEY", "web_search_key"),
+    ]:
+        if not api_keys.get(db_key) and os.environ.get(env_var):
+            api_keys[db_key] = os.environ[env_var]
+    
+    # Lire model_preferences depuis config.json
+    model_preferences = {
+        "routing": "google/gemini-2.5-flash",
+        "structuring": "google/gemini-2.5-flash",
+        "code": "anthropic/claude-haiku-4.5",
+        "analysis": "anthropic/claude-sonnet-4.5"
+    }
+    
+    chat_config = {
+        "model": "anthropic/claude-sonnet-4.5",
+        "methodo_path": "C:\\DEV\\METHODO",
+        "session_note": "",
+        "system_prompt_preset": ""
+    }
+    
+    if CONFIG_PATH.exists():
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            config_file = json.load(f)
+            if "model_preferences" in config_file:
+                model_preferences = config_file["model_preferences"]
+                logger.info(f"📋 [DB] model_preferences chargées depuis config.json")
+            if "chat" in config_file:
+                chat_config.update(config_file["chat"])
+                logger.info(f"💬 [DB] chat config chargée depuis config.json")
+    
+    logger.info(f"✅ [DB] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles")
+    return {
+        "api_keys": api_keys,
+        "model_preferences": model_preferences,
+        "chat": chat_config
+    }
 
 def _seed_api_keys_from_env(conn):
     """Copie les clés API depuis .env vers SQLite si elles sont absentes en DB."""

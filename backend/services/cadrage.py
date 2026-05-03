@@ -2,6 +2,40 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime, timedelta
 import json
+import logging
+
+logger = logging.getLogger("jarvis")
+
+
+def _get_methodo_path(db: sqlite3.Connection) -> Path | None:
+    """Lit le chemin METHODO depuis config.json (chat.methodo_path).
+    Fallback : backend/data/methodo/ si non configuré.
+    Retourne None si aucun chemin valide."""
+    from backend.database import load_config
+    
+    try:
+        config = load_config()
+        methodo_path_str = config.get("chat", {}).get("methodo_path", "")
+        
+        # Chemin externe configuré
+        if methodo_path_str:
+            external_path = Path(methodo_path_str)
+            if external_path.exists():
+                logger.info(f"📂 [METHODO] Utilisation chemin externe: {external_path}")
+                return external_path
+            else:
+                logger.warning(f"⚠️ [METHODO] Chemin configuré inexistant: {external_path}")
+    except Exception as e:
+        logger.warning(f"⚠️ [METHODO] Erreur lecture config: {e}")
+    
+    # Fallback : copie interne
+    fallback = Path(__file__).parent.parent / "data" / "methodo"
+    if fallback.exists():
+        logger.warning(f"⚠️ [METHODO] Utilisation fallback interne: {fallback}")
+        return fallback
+    
+    logger.error("❌ [METHODO] Aucun chemin METHODO valide trouvé")
+    return None
 
 
 def check_cadrage_health(project_id: int, db_conn: sqlite3.Connection) -> dict:
@@ -147,16 +181,19 @@ def check_cadrage_health(project_id: int, db_conn: sqlite3.Connection) -> dict:
         })
     
     # Check 5: Fichiers .md méthode accessibles
-    methodo_path = Path(__file__).parent.parent / "data" / "methodo"
-    regles_path = methodo_path / "REGLES_GLOBALES.md"
-    profil_path = methodo_path / "PROFIL_UTILISATEUR.md"
+    methodo_path = _get_methodo_path(db_conn)
     
     methodo_ok = 0
     methodo_total = 2
-    if regles_path.exists():
-        methodo_ok += 1
-    if profil_path.exists():
-        methodo_ok += 1
+    
+    if methodo_path:
+        regles_path = methodo_path / "REGLES_GLOBALES.md"
+        profil_path = methodo_path / "PROFIL_UTILISATEUR.md"
+        
+        if regles_path.exists():
+            methodo_ok += 1
+        if profil_path.exists():
+            methodo_ok += 1
     
     if methodo_ok == methodo_total:
         checks.append({

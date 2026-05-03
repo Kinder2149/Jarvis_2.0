@@ -18,6 +18,52 @@ from backend.services import model_router
 from backend.services.context_manager import write_cloture_docs
 
 
+def _get_reflexion_model() -> str:
+    """Lit le modèle configuré pour la réflexion depuis config.json (analysis).
+    Fallback : anthropic/claude-sonnet-4.5"""
+    from backend.database import load_config
+    try:
+        config = load_config()
+        model_id = config.get("model_preferences", {}).get("analysis", "")
+        return model_id if model_id else "anthropic/claude-sonnet-4.5"
+    except Exception:
+        return "anthropic/claude-sonnet-4.5"
+
+
+def _get_methodo_path(db: sqlite3.Connection) -> Path | None:
+    """Lit le chemin METHODO depuis config.json (chat.methodo_path).
+    Fallback : backend/data/methodo/ si non configuré.
+    Retourne None si aucun chemin valide."""
+    import logging
+    logger = logging.getLogger("jarvis")
+    
+    from backend.database import load_config
+    
+    try:
+        config = load_config()
+        methodo_path_str = config.get("chat", {}).get("methodo_path", "")
+        
+        # Chemin externe configuré
+        if methodo_path_str:
+            external_path = Path(methodo_path_str)
+            if external_path.exists():
+                logger.info(f"📂 [METHODO] Utilisation chemin externe: {external_path}")
+                return external_path
+            else:
+                logger.warning(f"⚠️ [METHODO] Chemin configuré inexistant: {external_path}")
+    except Exception as e:
+        logger.warning(f"⚠️ [METHODO] Erreur lecture config: {e}")
+    
+    # Fallback : copie interne
+    fallback = Path(__file__).parent.parent / "data" / "methodo"
+    if fallback.exists():
+        logger.warning(f"⚠️ [METHODO] Utilisation fallback interne: {fallback}")
+        return fallback
+    
+    logger.error("❌ [METHODO] Aucun chemin METHODO valide trouvé")
+    return None
+
+
 # Whitelist fichiers .md éditables
 WRITABLE_MD_FILES = {
     "PROJET_CONTEXTE.md",
@@ -51,10 +97,8 @@ def create_session(
     if not cursor.fetchone():
         raise ValueError(f"Projet {project_id} introuvable")
     
-    # Lire le modèle depuis app_config
-    cursor.execute("SELECT value FROM app_config WHERE key = 'reflexion_model'")
-    model_row = cursor.fetchone()
-    modele_utilise = model_row["value"] if model_row and model_row["value"] else "anthropic/claude-sonnet-4.5"
+    # Lire le modèle depuis config.json (model_preferences.analysis)
+    modele_utilise = _get_reflexion_model()
     
     cursor.execute("""
         INSERT INTO reflexion_sessions (
@@ -220,17 +264,19 @@ def build_system_prompt(session: dict, project_path: Path, db_conn: sqlite3.Conn
     """
     cursor = db_conn.cursor()
     
-    # Lire profil utilisateur depuis backend/data/methodo/
+    # Lire profil utilisateur et règles globales depuis METHODO
     profil_utilisateur = ""
-    profil_path = Path(__file__).parent.parent / "data" / "methodo" / "PROFIL_UTILISATEUR.md"
-    if profil_path.exists():
-        profil_utilisateur = profil_path.read_text(encoding="utf-8")
-    
-    # Lire règles globales depuis backend/data/methodo/
     regles_globales = ""
-    regles_path = Path(__file__).parent.parent / "data" / "methodo" / "REGLES_GLOBALES.md"
-    if regles_path.exists():
-        regles_globales = regles_path.read_text(encoding="utf-8")
+    
+    methodo_path = _get_methodo_path(db_conn)
+    if methodo_path:
+        profil_path = methodo_path / "PROFIL_UTILISATEUR.md"
+        if profil_path.exists():
+            profil_utilisateur = profil_path.read_text(encoding="utf-8")
+        
+        regles_path = methodo_path / "REGLES_GLOBALES.md"
+        if regles_path.exists():
+            regles_globales = regles_path.read_text(encoding="utf-8")
     
     # Lire PROJET_CONTEXTE.md
     projet_contexte = ""
@@ -327,7 +373,7 @@ async def send_user_message(
     # Appeler le modèle
     try:
         response_content = await model_router.call_model(
-            model_id="anthropic/claude-sonnet-4.5",
+            model_id=_get_reflexion_model(),
             messages=[{"role": "system", "content": system_prompt}] + api_messages,
             api_keys=api_keys,
             session_id=session_id,
@@ -423,16 +469,19 @@ async def freeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
             raise ValueError(f"Projet {session['project_id']} introuvable")
         project_path = Path(project_row["path"])
         
-        # Lire profil utilisateur et règles globales depuis backend/data/methodo/
+        # Lire profil utilisateur et règles globales depuis METHODO
         profil_utilisateur = ""
-        profil_path = Path(__file__).parent.parent / "data" / "methodo" / "PROFIL_UTILISATEUR.md"
-        if profil_path.exists():
-            profil_utilisateur = profil_path.read_text(encoding="utf-8")
-        
         regles_globales = ""
-        regles_path = Path(__file__).parent.parent / "data" / "methodo" / "REGLES_GLOBALES.md"
-        if regles_path.exists():
-            regles_globales = regles_path.read_text(encoding="utf-8")
+        
+        methodo_path = _get_methodo_path(db_conn)
+        if methodo_path:
+            profil_path = methodo_path / "PROFIL_UTILISATEUR.md"
+            if profil_path.exists():
+                profil_utilisateur = profil_path.read_text(encoding="utf-8")
+            
+            regles_path = methodo_path / "REGLES_GLOBALES.md"
+            if regles_path.exists():
+                regles_globales = regles_path.read_text(encoding="utf-8")
         
         # Lire PROJET_CONTEXTE.md
         projet_contexte = ""
@@ -481,7 +530,7 @@ async def freeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
         
         # Appeler le modèle pour générer le livrable
         livrable_content = await model_router.call_model(
-            model_id="anthropic/claude-sonnet-4.5",
+            model_id=_get_reflexion_model(),
             messages=[{"role": "user", "content": figement_prompt}],
             api_keys=api_keys,
             session_id=session_id,
