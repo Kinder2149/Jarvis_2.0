@@ -6,6 +6,21 @@ backend/data/*.db-journal
 backend/data/jarvis.log
 backend/data/contexts/
 
+# Backups DB (générés automatiquement par les refontes)
+backend/data/jarvis.db.backup-*
+backend/data/jarvis_backup_*.db
+backend/data/config.json.backup
+
+# Copie interne METHODO (fallback local, non versionné)
+backend/data/methodo/
+
+# Build PyInstaller
+build/
+dist/
+*.spec
+JARVIS_ref
+launcher/
+
 # Python
 __pycache__/
 *.pyc
