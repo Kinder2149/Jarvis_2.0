@@ -234,7 +234,7 @@ class TestValidatePipeline:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["session"]["status"] == "ABORTED"
+        assert data["session"]["status"] == "WAITING_VALIDATION"
 
 
 class TestAbortPipeline:

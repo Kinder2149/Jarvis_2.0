@@ -73,7 +73,7 @@ def temp_db_with_project(temp_project_with_contexte):
     
     # Insérer methodo_path (vide pour ce test)
     cursor.execute("""
-        INSERT INTO app_config (key, value)
+        INSERT OR REPLACE INTO app_config (key, value)
         VALUES ('methodo_path', '')
     """)
     
@@ -128,7 +128,7 @@ def test_check_cadrage_health_contexte_absent(tmp_path):
     cursor.execute("CREATE TABLE projects (id INTEGER PRIMARY KEY, name TEXT, path TEXT)")
     cursor.execute("CREATE TABLE app_config (key TEXT PRIMARY KEY, value TEXT)")
     cursor.execute("INSERT INTO projects (id, name, path) VALUES (1, 'Test', ?)", (str(project_path),))
-    cursor.execute("INSERT INTO app_config (key, value) VALUES ('methodo_path', '')")
+    cursor.execute("INSERT OR REPLACE INTO app_config (key, value) VALUES ('methodo_path', '')")
     conn.commit()
     
     result = check_cadrage_health(1, conn)

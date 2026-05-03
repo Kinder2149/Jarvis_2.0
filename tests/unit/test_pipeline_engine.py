@@ -247,11 +247,11 @@ class TestValidateStep:
     def test_rejet_abandonne_la_session(self, db, project_in_db):
         session_id, step_id = self._setup_waiting_step(db, project_in_db)
         result = validate_step(session_id, step_id, {"approved": False}, db)
-        assert result["status"] == "aborted"
+        assert result["status"] == "rejected"
 
         cursor = db.cursor()
         cursor.execute("SELECT status FROM sessions WHERE id=?", (session_id,))
-        assert cursor.fetchone()["status"] == "ABORTED"
+        assert cursor.fetchone()["status"] == "WAITING_VALIDATION"
 
     def test_output_edite_est_sauvegarde(self, db, project_in_db):
         session_id, step_id = self._setup_waiting_step(db, project_in_db)

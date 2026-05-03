@@ -91,7 +91,7 @@ class TestProspectStatutInitial:
 class TestDemarragePipelineAtelier:
     
     def test_demarrage_pipeline_atelier_10_steps(self, client_and_db):
-        """Démarrer pipeline atelier → 10 steps présents."""
+        """Démarrer pipeline atelier → 13 steps présents."""
         c = client_and_db
         
         # Créer prospect
@@ -113,7 +113,7 @@ class TestDemarragePipelineAtelier:
         resp_status = c.get(f"/api/pipelines/{session_id}")
         assert resp_status.status_code == 200
         steps = resp_status.json()["steps"]
-        assert len(steps) == 10
+        assert len(steps) == 13
 
 
 class TestUnPipelineParProspect:

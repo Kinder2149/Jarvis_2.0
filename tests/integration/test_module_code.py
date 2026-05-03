@@ -202,7 +202,7 @@ class TestValidation:
         assert resp_v.status_code == 200
 
     def test_validation_rejeter_abort_session(self, client_and_project):
-        """Rejeter validation → session ABORTED."""
+        """Rejeter validation → session WAITING_VALIDATION (permet retry)."""
         c, project_id, _ = client_and_project
         with patch("backend.services.pipeline_engine.call_model", new_callable=AsyncMock) as mock:
             mock.side_effect = _mock_call
@@ -221,7 +221,7 @@ class TestValidation:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT status FROM sessions WHERE id=?", (session_id,))
-        assert cursor.fetchone()["status"] == "ABORTED"
+        assert cursor.fetchone()["status"] == "WAITING_VALIDATION"
         conn.close()
 
 

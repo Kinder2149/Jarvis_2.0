@@ -147,7 +147,7 @@ class TestSendMessage:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO app_config (key, value, category, updated_at)
+            INSERT OR REPLACE INTO app_config (key, value, category, updated_at)
             VALUES ('openrouter_key', 'sk-test-key', 'api_keys', datetime('now'))
         """)
         conn.commit()
@@ -268,7 +268,7 @@ class TestConversationFolderPath:
         
         conv = c.post("/api/chat/conversations", json={"title": "Test"}).json()
         
-        response = c.patch(f"/api/chat/conversations/{conv['id']}/folder?folder_path=C:\\New\\Path")
+        response = c.patch(f"/api/chat/conversations/{conv['id']}/folder", json={"folder_path": "C:\\New\\Path"})
         
         assert response.status_code == 200
         assert response.json()["folder_path"] == "C:\\New\\Path"

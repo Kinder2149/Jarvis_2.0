@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import logging
 from datetime import datetime
 from backend.database import get_connection
 from backend.services.context_manager import build_context_envelope, inject_into_template, write_cloture_docs
@@ -566,6 +567,7 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
         return {"status": "failed", "error": str(e)}
 
 def validate_step(session_id: int, step_id: int, validation: dict, db, project_path: str = None) -> dict:
+    logger = logging.getLogger("uvicorn")
     cursor = db.cursor()
     
     cursor.execute("SELECT * FROM pipeline_steps WHERE id = ?", (step_id,))

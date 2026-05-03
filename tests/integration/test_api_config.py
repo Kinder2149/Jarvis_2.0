@@ -28,13 +28,14 @@ def config_file(tmp_path):
 @pytest.fixture
 def client(config_file, temp_db_path):
     """TestClient avec config temporaire et DB temporaire."""
-    with patch("backend.routers.models.CONFIG_PATH", config_file):
+    with patch("backend.routers.config.CONFIG_PATH", config_file):
         with patch("backend.database.DB_PATH", temp_db_path):
-            from backend.database import init_db
-            init_db()
-            from backend.main import app
-            with TestClient(app) as c:
-                yield c, config_file
+            with patch("backend.database.CONFIG_PATH", config_file):
+                from backend.database import init_db
+                init_db()
+                from backend.main import app
+                with TestClient(app) as c:
+                    yield c, config_file
 
 
 class TestGetConfig:
@@ -57,7 +58,7 @@ class TestGetConfig:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO app_config (key, value, category, updated_at)
+            INSERT OR REPLACE INTO app_config (key, value, category, updated_at)
             VALUES ('openrouter_key', 'sk-or-test-key-abcd', 'api_keys', datetime('now'))
         """)
         conn.commit()

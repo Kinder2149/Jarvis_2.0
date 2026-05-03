@@ -67,7 +67,7 @@ class TestEnvoiMessage:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO app_config (key, value, category, updated_at)
+            INSERT OR REPLACE INTO app_config (key, value, category, updated_at)
             VALUES ('openrouter_key', 'sk-test-key', 'api_keys', datetime('now'))
         """)
         conn.commit()
@@ -149,7 +149,7 @@ class TestContextSummary:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO app_config (key, value, category, updated_at)
+            INSERT OR REPLACE INTO app_config (key, value, category, updated_at)
             VALUES ('openrouter_key', 'sk-test-key', 'api_keys', datetime('now'))
         """)
         conn.commit()
@@ -208,7 +208,7 @@ class TestTitrageAuto:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO app_config (key, value, category, updated_at)
+            INSERT OR REPLACE INTO app_config (key, value, category, updated_at)
             VALUES ('openrouter_key', 'sk-test-key', 'api_keys', datetime('now'))
         """)
         conn.commit()

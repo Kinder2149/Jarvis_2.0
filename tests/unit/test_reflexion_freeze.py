@@ -89,8 +89,8 @@ def db_conn(tmp_path):
     conn.commit()
     
     cursor.execute("INSERT INTO projects (id, name, path) VALUES (1, 'Test', ?)", (str(tmp_path),))
-    cursor.execute("INSERT INTO app_config (key, value) VALUES ('prompts_json_path', 'backend/data/prompts.json')")
-    cursor.execute("INSERT INTO app_config (key, value) VALUES ('openrouter_key', 'test_key')")
+    cursor.execute("INSERT OR REPLACE INTO app_config (key, value) VALUES ('prompts_json_path', 'backend/data/prompts.json')")
+    cursor.execute("INSERT OR REPLACE INTO app_config (key, value) VALUES ('openrouter_key', 'test_key')")
     conn.commit()
     
     yield conn
