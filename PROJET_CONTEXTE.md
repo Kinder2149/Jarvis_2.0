@@ -59,8 +59,8 @@
 **Appels modèles :** OpenRouter API via `httpx` (async) — endpoint : `https://openrouter.ai/api/v1/chat/completions`
 **Clés directes optionnelles :** Anthropic, Google (fallback si OpenRouter indisponible)
 **Config :** Table `app_config` dans `jarvis.db` (clés API) + `backend/data/config.json` (préférences modèles uniquement)
-**Workflows :** `backend/data/pipelines.json` (6 workflows définis comme données)
-**Prompts :** `backend/data/prompts.json` (44 templates par étape, variables `{{var}}`)
+**Workflows :** `backend/data/pipelines.json` (1 workflow code_mission + 1 workflow atelier_restauration)
+**Prompts :** `backend/data/prompts.json` (templates par étape, variables `{{var}}`)
 **Diff :** `difflib` Python stdlib (unified diff) — rendu CSS côté frontend
 **Démarrage :** `start.bat` à la racine (lance uvicorn + ouvre navigateur)
 
@@ -79,28 +79,33 @@ JARVIS/
 │   ├── database.py            ← get_connection, migrations tables
 │   ├── routers/
 │   │   ├── projects.py        ← CRUD projets (+ champ instructions, local_path)
-│   │   ├── pipelines.py       ← start, status, validate step, retry step, abort, logs
-│   │   ├── models.py          ← config clés API (SQLite), test connexion, modèles disponibles
+│   │   ├── pipelines.py       ← start, status, validate step, retry step, abort, logs, parse-mission
+│   │   ├── reflexions.py      ← CRUD réflexions, messages, figement, livrable, propose/apply edit
 │   │   ├── files.py           ← read, write, diff, apply, archive docs, local-list
-│   │   ├── chat.py            ← conversations, messages, titrage auto
+│   │   ├── chat.py            ← conversations, messages, titrage auto, résumé, folder_path
 │   │   ├── atelier.py         ← CRUD prospects, start pipeline atelier, export ZIP
-│   │   └── config.py          ← routes clés API génériques + profil utilisateur (FIX-01)
+│   │   └── config.py          ← clés API (SQLite), test connexion, modèles, profil utilisateur
 │   ├── services/
-│   │   ├── pipeline_engine.py ← state machine, orchestration, persistance
+│   │   ├── pipeline_engine.py ← state machine, orchestration, chunking, persistance
 │   │   ├── model_router.py    ← sélection modèle, appel API, log décisions
 │   │   ├── context_manager.py ← construction context envelopes par étape
 │   │   ├── file_service.py    ← pathlib, diff, rollback all-or-nothing
 │   │   ├── chat_service.py    ← historique messages, titrage auto, lecture dossier local, web search
-│   │   └── atelier_service.py ← logique pipeline atelier, export ZIP fichiers démo
+│   │   ├── atelier_service.py ← logique pipeline atelier, export ZIP fichiers démo
+│   │   ├── reflexion_service.py ← session réflexion, messages IA, figement, livrables, propose/apply edit
+│   │   ├── cadrage.py         ← 7 checks santé cadrage (PROJET_CONTEXTE, graphify, section 8…)
+│   │   ├── chunking.py        ← découpage automatique missions par fichier (single_call / chunk_by_file)
+│   │   └── mission_parser.py  ← parsing prompt mission → titre, fichiers, modèle recommandé
 │   ├── schemas/
 │   │   ├── project.py
 │   │   ├── pipeline.py
+│   │   ├── reflexion.py
 │   │   └── config.py
 │   └── data/
-│       ├── jarvis.db          ← SQLite (tables: projects, sessions, pipeline_steps, conversations, messages, app_config, prospects)
-│       ├── config.json        ← model_preferences uniquement (clés API dans jarvis.db)
-│       ├── pipelines.json     ← 6 workflows Module Code + workflow atelier_prospection
-│       └── prompts.json       ← templates prompts par step
+│       ├── jarvis.db          ← SQLite (tables: projects, sessions, pipeline_steps, conversations, messages, app_config, prospects, reflexion_sessions, reflexion_messages, mission_prompts)
+│       ├── config.json        ← model_preferences + methodo_path (clés API dans jarvis.db)
+│       ├── pipelines.json     ← workflow code_mission (4 steps) + atelier_restauration (13 steps)
+│       └── prompts.json       ← templates prompts par step (execution, verification, cloture, atelier_*, reflexion_*)
 └── frontend/
     ├── index.html             ← dashboard (timeline activité, sessions actives/bloquées, stats)
     ├── dossier.html           ← hub projet/dossier (remplace project.html)
@@ -125,8 +130,8 @@ JARVIS/
             ├── atelier.js     ← kanban prospects, vue pipeline atelier, zones saisie/checkpoint/export
             └── settings.js    ← clés API (états visuels), test connexion, dropdowns modèles
 
-**Services backend actifs :** 7 / 20 maximum
-**Pages frontend :** 8 / illimité
+**Services backend actifs :** 10 / 20 maximum
+**Pages frontend :** 7 / illimité (mission.html a remplacé reflexion.html + module-code.html + code-project-detail.html)
 
 ---
 
@@ -134,27 +139,32 @@ JARVIS/
 
 **✅ Stables**
 - Gestion projets CRUD (enregistrement, liste, suppression, instructions, local_path)
-- Pipeline engine complet (6 workflows Module Code, state machine, persistance SQLite)
-- Routing modèles par type de tâche (routing/structuring/code/analysis)
-- Configuration modèles : routing=Gemini Flash, code=Claude Haiku 4.5, analysis=Claude Sonnet 4.5
-- Clés API dans SQLite (table app_config), migration auto depuis config.json au démarrage
+- Pipeline engine complet (workflow code_mission + atelier_restauration, state machine, persistance SQLite)
+- Chunking automatique par fichier pour les missions code (single_call / chunk_by_file selon budget tokens)
+- Routing modèles par type de tâche (routing/structuring/code/analysis) — configurable depuis Paramètres
+- `load_config()` centralisé dans database.py — source unique pour tous les routers
+- Clés API dans SQLite (table app_config), seed auto depuis .env au démarrage
 - Rollback atomique apply_files (3 phases), parsing diff 3 fallbacks
-- Clôture auto PROJET_CONTEXTE.md section 8 + CHANGELOG.md
+- Clôture auto PROJET_CONTEXTE.md section 8 + CHANGELOG.md à chaque mission
 - Logs applicatifs : jarvis.log + GET /pipelines/logs
-- **Frontend V2 complet** : layout 3 panneaux (sidebar collapsible, main, explorer), 8 pages, 11 modules JS
-- **Page Mission unique** : zone conversation + livrable + pipeline dans une seule page, 3 zones progressives, polling 5s, validation diff/generic
-- **Module Code** : pipeline exécuté depuis mission.html Zone 3, retry step, breadcrumb projet
-- **Module Réflexion** : session conversationnelle → figement → livrable (mission_code / decision_figee / plan_multi_missions)
-- **Module Chat** : lecture dossier local (GRAPH_REPORT prioritaire), web search Brave API, sélecteur modèle
+- **Frontend V2 complet** : layout 3 panneaux (sidebar collapsible, main, explorer), 7 pages, 12 modules JS
+- **Page Mission unique** (mission.html) : flow 4 étapes progressives (Réflexion → Validation → Exécution → Suivi), polling 5s, validation diff/generic, complétion decision_figee avec retour projet
+- **Module Réflexion** : session conversationnelle Claude Sonnet 4.5 → figement → 3 types de livrables (mission_code / decision_figee / plan_multi_missions). Modèle configurable depuis app_config.
+- **Module Code** : pipeline code_mission depuis mission.html Zone 3, preview parsing, chunking auto, retry step
+- **Module Chat** : lecture dossier local (GRAPH_REPORT prioritaire), web search Brave API, sélecteur modèle, résumé contextuel
 - **Module Projet** : hub conteneur (instructions, local_path, liste unifiée sessions+chats)
 - **Atelier Connecté** : kanban 6 colonnes, pipeline 13 steps pour prospects restauration, export ZIP démo HTML
 - **Atelier pipeline** : 3 moments humains (form saisie terrain → checkpoint validation → export ZIP)
+- Cadrage health check : 7 points de contrôle (PROJET_CONTEXTE, graphify, section 8, décisions figées, fichiers méthode, backlog, fraîcheur)
+- Sources METHODO unifiées : reflexion_service et cadrage lisent depuis methodo_path (config.json), fallback interne avec warning
 - Startup recovery : sessions RUNNING → FAILED au démarrage (crash server)
-- Seed automatique clés API : .env → SQLite au démarrage
-- Toast system, modales confirmation, états vides, dashboard pipelines actifs/bloqués
+- Toast system, modales confirmation, états vides, dashboard timeline réflexions + pipelines
+- Badges statut complets : PENDING / RUNNING / WAITING_VALIDATION / COMPLETED / FAILED 💀 / ABORTED ⛔
+- Paramètres : distinction claire Contexte Global (tous modules) vs Profil utilisateur (Chat uniquement)
+- health_check.py : vérification rapide 3 modules en < 60s
 
 **🚧 En cours**
-- Audit complet (6 phases) terminé 2026-05-03 — corrections Sprint 1 à planifier
+- Aucun — audit 2026-05-03 soldé (Sprint 1 + 2 + 3 terminés). JARVIS prêt pour usage.
 
 **❌ Bugs connus — Audit 2026-05-03**
 
@@ -165,21 +175,21 @@ JARVIS/
 | BUG-03 | ✅ RÉSOLU | Dossier | Renommage dossier silencieusement ignoré : PATCH ne traite pas le champ `name` | `routers/projects.py:update_project()` | Corrigé 2026-05-03 : requête UPDATE ligne 350-352 incluait déjà name, commentaire ajouté |
 | BUG-04 | ✅ RÉSOLU | Sidebar | `btn-new-reflexion` redirige vers `code-projects.html` au lieu de créer une réflexion | `sidebar.js:~btn-new-reflexion` | Vérifié 2026-05-03 : redirige vers mission.html correctement |
 | BUG-05 | ✅ RÉSOLU | Chat | `update_conversation_summary` : kwarg `model_preferences` inexistant + `result["content"]` (string, pas dict) → TypeError | `routers/chat.py:update_conversation_summary()` | Corrigé 2026-05-03 : vrai bug était AttributeError sur db_conn.cursor(), condition ajoutée model_router.py ligne 63 |
-| BUG-06 | 🟠 | Dashboard | Sessions Réflexion absentes de la timeline et des stats | `dashboard.js:buildTimeline()` | À corriger |
-| BUG-07 | 🟠 | Chat | `PATCH /conversations/{id}/folder` : frontend envoie JSON, backend attend query param | `routers/chat.py` / `api.js` | À corriger |
+| BUG-06 | ✅ RÉSOLU | Dashboard | Sessions Réflexion absentes de la timeline et des stats | `dashboard.js:buildTimeline()` | Résolu lors de R01-R03 — dashboard.js charge et affiche les réflexions (timeline + stats semaine) |
+| BUG-07 | ✅ RÉSOLU | Chat | `PATCH /conversations/{id}/folder` : frontend envoie JSON, backend attend query param | `routers/chat.py` / `api.js` | Vérifié : api.js et backend utilisent tous deux un JSON body (Pydantic FolderUpdate) |
 | BUG-08 | ✅ RÉSOLU | Chat | Crash serveur TypeError au déclenchement de `update_conversation_summary` (même cause que BUG-05) | `routers/chat.py` | Corrigé 2026-05-03 : même correction que BUG-05 (db_conn optionnel) |
 
 **⚠️ Fragilités structurelles — Audit 2026-05-03**
 
 | ID | Module | Description | Risque |
 |---|---|---|---|
-| FRAG-01 | Backend | `load_config()` dupliquée verbatim dans `chat.py` et `pipelines.py` | Divergence silencieuse |
-| FRAG-02 | Backend | `print("DEBUG ...")` en production dans `pipelines.py` et `pipeline_engine.py` | Pollution logs |
-| FRAG-03 | Pipeline | Reject d'une étape → ABORTED définitif, aucune possibilité de relancer avec feedback | Perte de session |
-| FRAG-04 | Pipeline | Step `sante_cadrage` marquée COMPLETED avec `output_data=null` (rapport jamais peuplé) | Données incohérentes |
-| FRAG-05 | Contexte | 3 sources non synchronisées : SQLite / `contexts/*.md` / `backend/data/methodo/` | Injection silencieuse d'un mauvais contexte |
-| FRAG-06 | Réflexion | Modèle `claude-sonnet-4.5` hardcodé dans `reflexion_service.py` — non configurable | Impossible à changer depuis Paramètres |
-| FRAG-07 | Réflexion | `VALID_MODEL_SLUGS` utilise tirets (`claude-sonnet-4-5`) vs points ailleurs (`claude-sonnet-4.5`) | Validation bloque des slugs valides |
+| FRAG-01 | ✅ RÉSOLU | Backend | `load_config()` dupliquée verbatim dans `chat.py` et `pipelines.py` | Centralisée dans `database.py` — Sprint 3 2026-05-03 |
+| FRAG-02 | ✅ RÉSOLU | Backend | `print("DEBUG ...")` en production dans `pipelines.py` et `pipeline_engine.py` | Vérifié : aucun print() en production, tous remplacés par logger |
+| FRAG-03 | ✅ RÉSOLU | Pipeline | Reject d'une étape → ABORTED définitif, aucune possibilité de relancer avec feedback | `validate_step()` laisse la session en WAITING_VALIDATION — retry possible |
+| FRAG-04 | ✅ RÉSOLU | Pipeline | Step `sante_cadrage` marquée COMPLETED avec `output_data=null` (rapport jamais peuplé) | `check_cadrage_health()` appelé et résultat JSON stocké dans output_data |
+| FRAG-05 | ✅ RÉSOLU | Contexte | 3 sources non synchronisées : SQLite / `contexts/*.md` / `backend/data/methodo/` | `_get_methodo_path()` dans reflexion_service + cadrage — lit methodo_path config, fallback interne avec warning |
+| FRAG-06 | ✅ RÉSOLU | Réflexion | Modèle `claude-sonnet-4.5` hardcodé dans `reflexion_service.py` — non configurable | `_get_reflexion_model()` lit analysis_model depuis app_config (SQLite) — Sprint 3 2026-05-03 |
+| FRAG-07 | ✅ RÉSOLU | Réflexion | `VALID_MODEL_SLUGS` utilise tirets (`claude-sonnet-4-5`) vs points ailleurs (`claude-sonnet-4.5`) | VALID_MODEL_SLUGS utilise les points (4.5) — cohérent avec le reste |
 
 **🎨 Problèmes UX — Audit 2026-05-03**
 
@@ -187,12 +197,12 @@ JARVIS/
 |---|---|---|---|---|
 | UX-01 | 🔴 | Statut `FAILED` affiché en texte brut anglais sans badge | `ui.js:statusBadge()` | ✅ RÉSOLU 2026-05-03 : badge rouge ajouté dans sidebar.js |
 | UX-02 | 🟠 | `ABORTED` visuellement identique à `PENDING` (même couleur grise) | `ui.js:statusBadge()` | ✅ RÉSOLU 2026-05-03 : badge gris distinct ajouté dans sidebar.js |
-| UX-03 | 🟠 | Auto-test clés API au chargement Paramètres → spinners + toasts d'erreur spontanés | `settings.js:testAllProviders()` |
-| UX-04 | 🟠 | Aucun bouton retour visible après abandon en étape 1 ou 2 de mission.html | `mission.html:step-4-footer` |
-| UX-05 | 🟡 | Étapes 3-4 affichées "En attente" pour `decision_figee` (ne s'activent jamais) | `mission.html` |
-| UX-06 | 🟡 | Deux zones "contexte global" dans Paramètres sans distinction claire | `settings.html` |
-| UX-07 | 🟡 | Bouton "Réinitialiser" Atelier label trompeur (supprime tout) | `atelier.html` |
-| UX-08 | 🟡 | Emoji 📋 sur bouton "Sauvegarder le résumé" (devrait être 💾) | `chat.html:49` |
+| UX-03 | ✅ RÉSOLU | Auto-test clés API au chargement Paramètres → spinners + toasts d'erreur spontanés | `settings.js:testAllProviders()` | `initializeTestBadges()` au chargement (badges "Non testé"), test déclenché uniquement sur clic |
+| UX-04 | ✅ RÉSOLU | Aucun bouton retour visible après abandon en étape 1 ou 2 de mission.html | `mission.html:step-4-footer` | step-4-footer + btn-back-project affichés quand statut=ABANDONNEE |
+| UX-05 | ✅ RÉSOLU | Étapes 3-4 affichées "En attente" pour `decision_figee` (ne s'activent jamais) | `mission.html` | Sprint 2 : setActiveStep(4) + message "Décision appliquée ✅" après applyEdit() |
+| UX-06 | ✅ RÉSOLU | Deux zones "contexte global" dans Paramètres sans distinction claire | `settings.html` | Sprint 2 : textes explicatifs `.settings-section-hint` sur chaque zone |
+| UX-07 | ✅ RÉSOLU | Bouton "Réinitialiser" Atelier label trompeur (supprime tout) | `atelier.html` | Renommé "🗑️ Tout supprimer" |
+| UX-08 | ✅ RÉSOLU | Emoji 📋 sur bouton "Sauvegarder le résumé" (devrait être 💾) | `chat.html:49` | Bouton Save utilise 💾, 📋 reste sur le toggle d'affichage (logique) |
 
 **🔒 Hors scope MVP**
 - Authentification
@@ -247,6 +257,12 @@ JARVIS/
 | 2026-04-17 | Clés API migrées dans SQLite | config.json ne contient plus que model_preferences — clés API dans table app_config (migration auto au démarrage) |
 | 2026-04-17 | Atelier Connecté : un pipeline par prospect | Un prospect = une seule session atelier. startAtelierPipeline bloqué si session existante. Recycle n'est pas prévu : démo générée → prospect marqué contacté → fin de cycle |
 | 2026-04-17 | Atelier vs Module Code : paradigmes différents | Module Code = session-centré (session visible dans sidebar sous le projet). Atelier = prospect-centré (kanban, prospect est l'entité principale). Les deux utilisent le même pipeline_engine |
+| 2026-05-01 | Gemini 2.0 Flash → 2.5 Flash | Retrait Gemini 2.0 par OpenRouter (deadline 2026-06-01) — migration transparente |
+| 2026-05-01 | Workflow code_mission (4 steps) remplace 6 workflows obsolètes | session_start/end/bug_simple/mission_complexe/nouveau_projet/projet_existant supprimés — un seul workflow universel |
+| 2026-05-02 | mission.html : page unique Mission | Fusion reflexion.html + module-code.html + code-project-detail.html — 4 étapes progressives dans une seule page. Fichiers archivés dans temp/_archive/ |
+| 2026-05-02 | Module Réflexion : modèle configurable | Modèle lu depuis analysis_model dans app_config (SQLite) — pas hardcodé. Fallback : anthropic/claude-sonnet-4.5 |
+| 2026-05-03 | load_config() centralisé dans database.py | Source unique pour tous les routers — pas de duplication possible |
+| 2026-05-03 | Reject pipeline → WAITING_VALIDATION | Un reject laisse la session ouverte pour retry avec feedback — ABORTED réservé à l'abandon explicite |
 | 2026-04-18 | UX Refactoring : 6 missions frontend | Décision : corriger les trous UX identifiés par audit (pages mortes, compteurs trompeurs, friction lancement). Aucun changement backend sauf FRONT-03 (ajout session_status dans GET /atelier/prospects) |
 | 2026-05-01 | Pipeline scindé en deux modules : Réflexion + Code | Reproduire dans JARVIS le découpage mental qui fonctionne en méthode actuelle Claude+Cascade — penser puis faire, jamais les deux dans le même workflow |
 | 2026-05-01 | Module Chat ≠ Module Réflexion : deux modules distincts | Périmètres et livrables différents (Chat = libre / Réflexion = produit livrables structurés) — pages, services et tables séparés, aucun partage de code au-delà du rendu markdown |

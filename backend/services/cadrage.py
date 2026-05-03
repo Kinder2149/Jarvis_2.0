@@ -210,8 +210,8 @@ def check_cadrage_health(project_id: int, db_conn: sqlite3.Connection) -> dict:
     else:
         checks.append({
             "nom": "Fichiers méthode",
-            "statut": "rouge",
-            "message": "Aucun fichier accessible"
+            "statut": "orange",
+            "message": "Aucun fichier méthode accessible (contexte non injecté)"
         })
     
     # Check 6: Backlog (section 9) à jour

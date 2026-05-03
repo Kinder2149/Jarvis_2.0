@@ -109,7 +109,7 @@ class TestBuildContextEnvelope:
         assert envelope["previous_outputs"] == {}
 
     async def test_stack_standard_loaded_when_file_exists(self, tmp_path):
-        stack_file = tmp_path / "STACK_STANDARD.md"
+        stack_file = tmp_path / "STACK_CODE.md"
         stack_file.write_text("FastAPI + SQLite + HTML vanilla")
         config = self._step_config(stack_standard=True)
         envelope = await build_context_envelope(config, str(tmp_path), {}, "")
