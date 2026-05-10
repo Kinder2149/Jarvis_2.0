@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS — Conversations</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>💬 Conversations Chat</h1>
+          <p class="page-subtitle">Toutes vos conversations avec l'IA</p>
+        </div>
+        <div class="page-header-right">
+          <button id="btn-new-conversation" class="btn-primary">
+            ➕ Nouvelle conversation
+          </button>
+        </div>
+      </div>
+
+      <div id="conversations-list" class="conversations-grid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Chargement des conversations...</p>
+        </div>
+      </div>
+
+      <div id="empty-state" class="empty-state" style="display:none">
+        <div class="empty-state-icon">💬</div>
+        <h2>Aucune conversation</h2>
+        <p>Créez votre première conversation pour commencer à discuter avec l'IA</p>
+        <button id="btn-new-conversation-empty" class="btn-primary">
+          ➕ Nouvelle conversation
+        </button>
+      </div>
+    </main>
+    <aside id="explorer" class="explorer--hidden"></aside>
+  </div>
+  <div id="toast-container"></div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/explorer.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/conversations.js"></script>
+</body>
+</html>

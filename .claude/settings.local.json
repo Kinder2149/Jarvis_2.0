@@ -41,7 +41,22 @@
       "Bash(python3 -c \" import json with open\\('/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json'\\) as f: data = json.load\\(f\\) for w in data['workflows']: print\\(f'{w[\\\\\"id\\\\\"]}: {len\\(w[\\\\\"steps\\\\\"]\\)} steps'\\) \")",
       "Bash(python -c \" import json with open\\('C:/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0/backend/data/pipelines.json'\\) as f: data = json.load\\(f\\) for w in data['workflows']: print\\(f'{w[\\\\\"id\\\\\"]}: {len\\(w[\\\\\"steps\\\\\"]\\)} steps'\\) \")",
       "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" status --short)",
-      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" log --oneline -10)"
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" log --oneline -10)",
+      "WebFetch(domain:www.pointedereve.com)",
+      "Bash(python3 -c \"import json; f=open\\('backend/data/prompts.json','r',encoding='utf-8'\\); data=json.load\\(f\\); f.close\\(\\); print\\(list\\(data.keys\\(\\)\\)\\)\")",
+      "Bash(python -c \"import json; f=open\\('backend/data/prompts.json','r',encoding='utf-8'\\); data=json.load\\(f\\); f.close\\(\\); print\\(list\\(data.keys\\(\\)\\)\\)\")",
+      "Bash(python temp_update_prompts.py)",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "Bash(curl -s http://localhost:8000/api/projects/)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(f'Projets: {len\\(d\\)} trouvés'\\); [print\\(f'  - [{p[\\\\\"id\\\\\"]}] {p[\\\\\"name\\\\\"]} | module_type={p.get\\(\\\\\"module_type\\\\\"\\)} | path={p.get\\(\\\\\"path\\\\\",\\\\\"\\\\\"\\)[:50]}'\\) for p in d[:10]]\")",
+      "PowerShell($r = Invoke-RestMethod -Uri \"http://localhost:8000/api/projects/\" -Method GET; Write-Host \"Projets: $\\($r.Count\\) trouvés\"; $r | ForEach-Object { Write-Host \"  [$\\($_.id\\)] $\\($_.name\\) | module_type=$\\($_.module_type\\) | path=$\\($_.path.Substring\\(0,[Math]::Min\\(50,$_.path.Length\\)\\)\\)\" })",
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" show 9ca4dad --stat)",
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" log --all --oneline --diff-filter=R -- \"frontend/assets/js/module-code.js\")",
+      "Bash(git -C \"/c/DEV/PROJETS/intelligence_artificielle/Jarvis-2.0\" log --all --oneline -- \"frontend/assets/js/mission.js\")",
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(git commit -m ' *)",
+      "Bash(grep -v \"^backend$\\\\|^frontend$\\\\|^tests$\\\\|^graphify-out$\\\\|^temp$\\\\|^PROJET_CONTEXTE\\\\|^CHANGELOG\\\\|^STACK_CODE\\\\|^README\\\\|^requirements\\\\|^start\\\\|^health_check\\\\|^pytest\\\\|^\\\\.git\")"
     ]
   }
 }

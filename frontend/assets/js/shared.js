@@ -27,14 +27,42 @@ window.formatCost = (usd) => usd != null ? `$${Number(usd).toFixed(3)}` : '';
 
 window.renderMarkdown = (text) => {
   if (!text) return '';
-  return text
+  
+  let result = text
     .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/^## (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/\n/g, '<br>');
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>');
+  
+  const lines = result.split('\n');
+  const output = [];
+  let inList = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isListItem = /^- (.+)$/.test(line);
+    
+    if (isListItem) {
+      if (!inList) {
+        output.push('<ul>');
+        inList = true;
+      }
+      output.push(line.replace(/^- (.+)$/, '<li>$1</li>'));
+    } else {
+      if (inList) {
+        output.push('</ul>');
+        inList = false;
+      }
+      output.push(line);
+    }
+  }
+  
+  if (inList) {
+    output.push('</ul>');
+  }
+  
+  return output.join('<br>');
 };
 
 window.renderDiff = (diffText) => {

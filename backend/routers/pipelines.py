@@ -139,32 +139,32 @@ async def validate_pipeline_step(session_id: int, step_id: int, validation: Step
         step_row = cursor.fetchone()
         
         if step_row and step_row["step_name"] == "verification":
-            # Récupérer le local_path du projet
+            # Récupérer le path du projet
             cursor.execute("""
-                SELECT p.local_path 
+                SELECT p.path 
                 FROM sessions s 
                 JOIN projects p ON s.project_id = p.id 
                 WHERE s.id = ?
             """, (session_id,))
             proj_row = cursor.fetchone()
             
-            if proj_row and proj_row["local_path"]:
-                local_path = proj_row["local_path"]
+            if proj_row and proj_row["path"]:
+                project_path = proj_row["path"]
                 from pathlib import Path
-                if Path(local_path).exists():
+                if Path(project_path).exists():
                     try:
                         import subprocess
                         subprocess.Popen(
                             ["graphify", "."],
-                            cwd=local_path,
+                            cwd=project_path,
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL
                         )
-                        logger.info(f"🔍 Graphify lancé automatiquement après validation verification pour {local_path}")
+                        logger.info(f"🔍 Graphify lancé automatiquement après validation verification pour {project_path}")
                     except FileNotFoundError:
-                        logger.warning(f"⚠️ graphify non installé, mise à jour ignorée pour {local_path}")
+                        logger.warning(f"⚠️ graphify non installé, mise à jour ignorée pour {project_path}")
                     except Exception as e:
-                        logger.error(f"❌ Erreur lancement graphify pour {local_path}: {str(e)}")
+                        logger.error(f"❌ Erreur lancement graphify pour {project_path}: {str(e)}")
     
     db.close()
     

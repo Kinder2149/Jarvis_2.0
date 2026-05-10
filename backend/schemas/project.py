@@ -4,8 +4,6 @@ from typing import Optional
 class ProjectCreate(BaseModel):
     name: str
     path: str
-    type: str
-    local_path: str | None = None
     instructions: str = ""
     module_type: str = "dossier"
     category: Optional[str] = None
@@ -25,8 +23,6 @@ class Project(BaseModel):
     id: int
     name: str
     path: str
-    type: str
-    local_path: str | None = None
     instructions: str = ""
     module_type: str = "dossier"
     category: Optional[str] = None
@@ -36,6 +32,6 @@ class Project(BaseModel):
 
 class ProjectUpdate(BaseModel):
     name: str | None = None
-    local_path: str | None = None
+    path: str | None = None
     instructions: str | None = None
     parent_dossier_id: Optional[int] = None

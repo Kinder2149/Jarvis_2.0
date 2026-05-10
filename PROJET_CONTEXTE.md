@@ -292,12 +292,12 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ Mis à jour — 2085 nodes, 3339 edges, 222 communities (2026-05-16)
-**Objectif :** UX-FIX-01-02 — Badges FAILED et ABORTED manquants dans sidebar
-**Mission terminée :** 2026-05-03 — Correction affichage statuts FAILED et ABORTED
-**Fichiers modifiés :** sidebar.js (ajout FAILED et ABORTED dans getStatusBadge() ligne 632-633)
-**Fichiers vérifiés :** ui.js (window.statusBadge ligne 76-87), style.css (classes badge--error ligne 421-424, badge--aborted ligne 442-445)
-**Résultat :** UX-01 et UX-02 marqués RÉSOLU dans PROJET_CONTEXTE.md section 4. Cause racine : sidebar.js utilisait sa propre fonction getStatusBadge() locale qui ne contenait que 5 statuts et manquait FAILED et ABORTED. ui.js avait déjà window.statusBadge() avec tous les statuts, mais sidebar.js ne l'utilisait pas. Correction : Ajout de FAILED (badge rouge 💀 avec classe badge--error) et ABORTED (badge gris distinct ⛔ avec classe badge--aborted) dans getStatusBadge(). Les classes CSS existaient déjà dans style.css. Test manuel : (1) Créer session → abandonner → voir badge "⛔" gris distinct dans sidebar → (2) Provoquer échec → voir badge "�" rouge dans sidebar → (3) Vérifier dans dashboard et page projet.
-**Prochain objectif :** Sprint 1+2 terminés (6 bugs + 2 UX résolus) — Sprint 3 : BUG-06+07 + FRAG-01 à FRAG-05
+**Objectif :** Module Sentinelle — Frontend UI complet
+**Mission terminée :** 2026-05-08 — Frontend UI Module Sentinelle
+**Fichiers créés :** frontend/sentinelle.html, frontend/assets/js/sentinelle.js
+**Fichiers modifiés :** frontend/assets/js/api.js (+22 routes Sentinelle), frontend/assets/js/sidebar.js (+bouton Sentinelle), frontend/assets/style.css (+175 lignes CSS)
+**Résultat :** Interface utilisateur complète pour le Module Sentinelle. Layout 3 panneaux : sidebar partagée + zone principale (cycle actif ou démarrage) + panneau droit (portefeuille + watchlist collapsible). États d'affichage : INACTIF (lancer cycle + liste 3 derniers cycles clôturés), PHASE_1 (formulaire saisie positions "VWCE 5 / BTC 0.001" avec parser JS), PHASE_2 (spinner veille + polling 3s + affichage résumé markdown), PHASE_3 (spinner analyse + affichage bilan + spinner propositions + 3 scénarios cards + biais warning box), PHASE_4 (sélection accumulation ou scénario), PHASE_5 (paramètres ordre + confirmation exécution), PHASE_6 (récap + bouton clôture). Panneau droit : portefeuille (liste positions ticker/quantité/enveloppe), watchlist (liste avec badges niveau risque faible=vert/modéré=orange/élevé=rouge/spéculatif=violet + ajout rapide ticker+dropdown). Routes API : 22 fonctions dans api.js (positions, watchlist, cycles, transactions, budget, skills IA). Sidebar : bouton 🛡 Sentinelle entre Atelier et Réflexion. CSS : thème sombre, variables existantes, badges couleur, spinner, warning-box, right-panel 320px. Zéro framework JS, fetch natif, transitions dynamiques sans rechargement. Test manuel : start.bat → Sentinelle visible sidebar → clic → page s'ouvre → lancer cycle → Phase 1 → saisir "VWCE 5" → valider → Phase 2 spinner → attendre veille → affichage → continuer jusqu'à Phase 6 accumulation → cycle clôturé → retour INACTIF.
+**Prochain objectif :** Tests manuels complets du flux Sentinelle end-to-end
 
 ---
 

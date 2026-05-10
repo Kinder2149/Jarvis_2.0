@@ -8,7 +8,7 @@
     try {
       currentProject = await window.API.getProject(projectId);
 
-      if (!currentProject.local_path || !currentProject.local_path.trim()) {
+      if (!currentProject.path || !currentProject.path.trim()) {
         renderNoFolder();
         return;
       }
@@ -45,9 +45,9 @@
 
     explorer.classList.remove('explorer--hidden');
 
-    const pathDisplay = currentProject.local_path.length > 40
-      ? '...' + currentProject.local_path.slice(-40)
-      : currentProject.local_path;
+    const pathDisplay = currentProject.path.length > 40
+      ? '...' + currentProject.path.slice(-40)
+      : currentProject.path;
 
     explorer.innerHTML = `
       <div class="explorer-container">
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <div class="explorer-path" id="explorer-path" title="${currentProject.local_path}">
+        <div class="explorer-path" id="explorer-path" title="${currentProject.path}">
           ${pathDisplay}
         </div>
 

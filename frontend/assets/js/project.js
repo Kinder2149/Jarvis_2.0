@@ -38,7 +38,7 @@
     document.getElementById('project-path').textContent = project.path;
 
     renderInstructions();
-    renderLocalPath();
+    renderPath();
     renderConversations();
     initializeExplorer();
   }
@@ -54,13 +54,13 @@
     }
   }
 
-  function renderLocalPath() {
-    const display = document.getElementById('local-path-display');
+  function renderPath() {
+    const display = document.getElementById('path-display');
 
-    if (project.local_path && project.local_path.trim()) {
-      display.innerHTML = `<span style="font-family:monospace;color:var(--text-primary)">${project.local_path}</span>`;
+    if (project.path && project.path.trim()) {
+      display.innerHTML = `<span style="font-family:monospace;color:var(--text-primary)">${project.path}</span>`;
     } else {
-      display.innerHTML = '<span style="color:var(--text-muted);font-style:italic">Aucun dossier lié</span>';
+      display.innerHTML = '<span style="color:var(--text-muted);font-style:italic">Aucun chemin défini</span>';
     }
   }
 
@@ -143,9 +143,9 @@
     document.getElementById('btn-save-instructions').addEventListener('click', saveInstructions);
     document.getElementById('btn-cancel-instructions').addEventListener('click', cancelInstructionsEdit);
 
-    document.getElementById('btn-edit-local-path').addEventListener('click', toggleLocalPathEdit);
-    document.getElementById('btn-save-local-path').addEventListener('click', saveLocalPath);
-    document.getElementById('btn-cancel-local-path').addEventListener('click', cancelLocalPathEdit);
+    document.getElementById('btn-edit-path').addEventListener('click', togglePathEdit);
+    document.getElementById('btn-save-path').addEventListener('click', savePath);
+    document.getElementById('btn-cancel-path').addEventListener('click', cancelPathEdit);
 
     document.getElementById('btn-project-new-chat').addEventListener('click', createNewChat);
     document.getElementById('btn-project-new-module').addEventListener('click', () => {
@@ -214,44 +214,44 @@
     }
   }
 
-  function toggleLocalPathEdit() {
-    const display = document.getElementById('local-path-display');
-    const edit = document.getElementById('local-path-edit');
-    const input = document.getElementById('local-path-input');
+  function togglePathEdit() {
+    const display = document.getElementById('path-display');
+    const edit = document.getElementById('path-edit');
+    const input = document.getElementById('path-input');
 
     display.style.display = 'none';
     edit.style.display = 'block';
-    input.value = project.local_path || '';
+    input.value = project.path || '';
     input.focus();
   }
 
-  function cancelLocalPathEdit() {
-    const display = document.getElementById('local-path-display');
-    const edit = document.getElementById('local-path-edit');
+  function cancelPathEdit() {
+    const display = document.getElementById('path-display');
+    const edit = document.getElementById('path-edit');
 
     display.style.display = 'block';
     edit.style.display = 'none';
   }
 
-  async function saveLocalPath() {
-    const input = document.getElementById('local-path-input');
+  async function savePath() {
+    const input = document.getElementById('path-input');
     const newPath = input.value.trim();
 
     try {
-      await window.API.updateProject(projectId, { local_path: newPath || null });
-      project.local_path = newPath;
-      renderLocalPath();
-      cancelLocalPathEdit();
+      await window.API.updateProject(projectId, { path: newPath || null });
+      project.path = newPath;
+      renderPath();
+      cancelPathEdit();
       
-      if (window.showToast) window.showToast('Dossier local sauvegardé');
+      if (window.showToast) window.showToast('Chemin sauvegardé');
       
       if (window.EventBus) {
-        window.EventBus.emit('project:local-path-updated', { projectId, local_path: newPath });
+        window.EventBus.emit('project:path-updated', { projectId, path: newPath });
       }
 
       location.reload();
     } catch (error) {
-      console.error('Erreur sauvegarde local_path:', error);
+      console.error('Erreur sauvegarde path:', error);
       if (window.showToast) window.showToast('Erreur de sauvegarde', 'error');
     }
   }
@@ -465,7 +465,7 @@
   }
 
   function initializeExplorer() {
-    if (project.local_path && project.local_path.trim()) {
+    if (project.path && project.path.trim()) {
       const explorer = document.getElementById('explorer');
       if (explorer) {
         explorer.classList.remove('explorer--hidden');

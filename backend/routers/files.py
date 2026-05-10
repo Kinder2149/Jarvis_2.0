@@ -101,21 +101,21 @@ def list_local_files(project_id: int):
     """Liste les fichiers du dossier local du projet (récursif, profondeur max 3)."""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT local_path FROM projects WHERE id = ?", (project_id,))
+    cursor.execute("SELECT path FROM projects WHERE id = ?", (project_id,))
     row = cursor.fetchone()
     conn.close()
     
     if not row:
         raise HTTPException(status_code=404, detail="Projet non trouvé")
     
-    local_path = row["local_path"]
+    project_path = row["path"]
     
-    if not local_path:
-        return {"files": [], "error": "Aucun dossier local défini"}
+    if not project_path:
+        return {"files": [], "error": "Aucun dossier défini"}
     
-    local_dir = Path(local_path)
-    if not local_dir.exists() or not local_dir.is_dir():
-        return {"files": [], "error": "Aucun dossier local défini"}
+    project_dir = Path(project_path)
+    if not project_dir.exists() or not project_dir.is_dir():
+        return {"files": [], "error": "Le dossier n'existe pas"}
     
     # Exclusions
     exclude_names = {"__pycache__", ".git", "node_modules", ".env"}
@@ -155,6 +155,6 @@ def list_local_files(project_id: int):
         except PermissionError:
             pass
     
-    scan_directory(local_dir)
+    scan_directory(project_dir)
     
     return {"files": files}

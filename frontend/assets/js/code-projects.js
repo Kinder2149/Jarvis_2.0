@@ -83,7 +83,7 @@
       : formatDate(project.created_at);
 
     return `
-      <div class="code-project-card card" style="cursor:pointer" onclick="location.href='dossier.html?id=${project.id}'">
+      <div class="code-project-card card" style="cursor:pointer" onclick="location.href='mission.html?project_id=${project.id}&new=true'">
         <div class="code-project-card-header">
           <h3 class="code-project-card-title">${project.name}</h3>
           <span class="code-project-badge" style="background-color:${categoryColor}20;color:${categoryColor};border:1px solid ${categoryColor}40">
@@ -217,11 +217,9 @@
     const payload = {
       name: name,
       path: finalPath,
-      type: 'code',
       module_type: 'code',
       category: category,
       parent_dossier_id: dossierId ? parseInt(dossierId) : null,
-      local_path: finalPath,
       instructions: ''
     };
 

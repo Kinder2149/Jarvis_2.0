@@ -6,6 +6,36 @@ from backend.services.file_service import parse_projet_contexte
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
+@router.get("/select-folder")
+def select_folder():
+    """Ouvre un dialogue natif de sélection de dossier et retourne le chemin choisi."""
+    import tkinter as tk
+    from tkinter import filedialog
+    
+    # Créer une fenêtre Tk invisible
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)
+    
+    # Ouvrir le dialogue de sélection de dossier
+    folder_path = filedialog.askdirectory(
+        title="Sélectionner un dossier pour le projet",
+        mustexist=True
+    )
+    
+    # Fermer la fenêtre Tk
+    root.destroy()
+    
+    if not folder_path:
+        raise HTTPException(status_code=400, detail="Aucun dossier sélectionné")
+    
+    # Retourner le chemin et le nom du dossier
+    path = Path(folder_path)
+    return {
+        "path": str(path),
+        "name": path.name
+    }
+
 @router.get("")
 def list_projects(module_type: str | None = None, parent_dossier_id: int | None = None):
     conn = get_connection()
@@ -32,7 +62,6 @@ def list_projects(module_type: str | None = None, parent_dossier_id: int | None 
     
     projects = []
     for row in rows:
-        local_path = row["local_path"] if "local_path" in row.keys() else None
         module_type_val = row["module_type"] if "module_type" in row.keys() else "dossier"
         category_val = row["category"] if "category" in row.keys() else None
         parent_dossier_id_val = row["parent_dossier_id"] if "parent_dossier_id" in row.keys() else None
@@ -41,8 +70,6 @@ def list_projects(module_type: str | None = None, parent_dossier_id: int | None 
             "id": row["id"],
             "name": row["name"],
             "path": row["path"],
-            "type": row["type"],
-            "local_path": local_path,
             "instructions": row["instructions"] if "instructions" in row.keys() else "",
             "module_type": module_type_val,
             "category": category_val,
@@ -59,7 +86,7 @@ def create_project(project: ProjectCreate):
     import os
     from datetime import datetime
     logger = logging.getLogger("jarvis")
-    logger.info(f"Création projet - Données reçues: name={project.name}, path={project.path}, type={project.type}, local_path={project.local_path}")
+    logger.info(f"Création projet - Données reçues: name={project.name}, path={project.path}, module_type={project.module_type}")
     
     path = Path(project.path)
     
@@ -119,7 +146,6 @@ def create_project(project: ProjectCreate):
             raise HTTPException(status_code=400, detail="Le chemin spécifié n'existe pas")
     
     name = project.name
-    type_project = project.type
     has_projet_contexte = path.joinpath("PROJET_CONTEXTE.md").exists()
     
     if has_projet_contexte:
@@ -131,51 +157,44 @@ def create_project(project: ProjectCreate):
                     parts = line.split("|")
                     if len(parts) >= 3:
                         name = parts[2].strip()
-                elif "Type" in line and "|" in line:
-                    parts = line.split("|")
-                    if len(parts) >= 3:
-                        type_project = parts[2].strip()
     
     conn = get_connection()
     cursor = conn.cursor()
     
     try:
-        local_path = project.local_path
         instructions = project.instructions
         module_type = project.module_type
         category = project.category
         parent_dossier_id = project.parent_dossier_id
         
         cursor.execute(
-            "INSERT INTO projects (name, path, type, local_path, instructions, module_type, category, parent_dossier_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            (name, str(path), type_project, local_path, instructions, module_type, category, parent_dossier_id)
+            "INSERT INTO projects (name, path, instructions, module_type, category, parent_dossier_id) VALUES (?, ?, ?, ?, ?, ?)",
+            (name, str(path), instructions, module_type, category, parent_dossier_id)
         )
         conn.commit()
         project_id = cursor.lastrowid
         conn.close()
         
-        # Déclenchement automatique de graphify si local_path défini et existant
-        if local_path and Path(local_path).exists():
+        # Déclenchement automatique de graphify si path existe
+        if Path(project.path).exists():
             try:
                 import subprocess
                 subprocess.Popen(
                     ["graphify", "."],
-                    cwd=local_path,
+                    cwd=project.path,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL
                 )
-                logger.info(f"🔍 Graphify lancé automatiquement pour {local_path}")
+                logger.info(f"🔍 Graphify lancé automatiquement pour {project.path}")
             except FileNotFoundError:
-                logger.warning(f"⚠️ graphify non installé, initialisation ignorée pour {local_path}")
+                logger.warning(f"⚠️ graphify non installé, initialisation ignorée pour {project.path}")
             except Exception as e:
-                logger.error(f"❌ Erreur lancement graphify pour {local_path}: {str(e)}")
+                logger.error(f"❌ Erreur lancement graphify pour {project.path}: {str(e)}")
         
         return {
             "id": project_id,
             "name": name,
             "path": str(path),
-            "type": type_project,
-            "local_path": local_path,
             "instructions": instructions,
             "module_type": module_type,
             "category": category,
@@ -212,7 +231,6 @@ def get_project(project_id: int):
     session_row = cursor.fetchone()
     conn.close()
     
-    local_path = row["local_path"] if "local_path" in row.keys() else None
     module_type_val = row["module_type"] if "module_type" in row.keys() else "dossier"
     category_val = row["category"] if "category" in row.keys() else None
     parent_dossier_id_val = row["parent_dossier_id"] if "parent_dossier_id" in row.keys() else None
@@ -221,8 +239,6 @@ def get_project(project_id: int):
         "id": row["id"],
         "name": row["name"],
         "path": row["path"],
-        "type": row["type"],
-        "local_path": local_path,
         "instructions": row["instructions"] if "instructions" in row.keys() else "",
         "module_type": module_type_val,
         "category": category_val,
@@ -343,19 +359,19 @@ def update_project(project_id: int, data: ProjectUpdate):
     
     # Récupérer valeurs actuelles si non fournies
     name = data.name if data.name is not None else row["name"]
-    local_path = data.local_path if data.local_path is not None else (row["local_path"] if "local_path" in row.keys() else None)
+    path = data.path if data.path is not None else row["path"]
     instructions = data.instructions if data.instructions is not None else (row["instructions"] if "instructions" in row.keys() else "")
     parent_dossier_id = data.parent_dossier_id if hasattr(data, 'parent_dossier_id') and data.parent_dossier_id is not None else (row["parent_dossier_id"] if "parent_dossier_id" in row.keys() else None)
 
     # Mise à jour incluant le champ name (BUG-03 corrigé)
     cursor.execute(
-        "UPDATE projects SET name = ?, local_path = ?, instructions = ?, parent_dossier_id = ? WHERE id = ?",
-        (name, local_path, instructions, parent_dossier_id, project_id)
+        "UPDATE projects SET name = ?, path = ?, instructions = ?, parent_dossier_id = ? WHERE id = ?",
+        (name, path, instructions, parent_dossier_id, project_id)
     )
     conn.commit()
     conn.close()
 
-    return {"message": "Projet mis à jour", "name": name, "local_path": local_path, "instructions": instructions, "parent_dossier_id": parent_dossier_id}
+    return {"message": "Projet mis à jour", "name": name, "path": path, "instructions": instructions, "parent_dossier_id": parent_dossier_id}
 
 @router.post("/{project_id}/route-mission")
 async def route_mission(project_id: int, body: dict):
