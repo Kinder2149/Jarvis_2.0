@@ -87,6 +87,57 @@ def _create_schema(conn: sqlite3.Connection):
             output_tokens INTEGER DEFAULT 0,
             created_at TEXT NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS sentinelle_positions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL,
+            quantite REAL NOT NULL,
+            enveloppe TEXT NOT NULL DEFAULT 'PEA',
+            date_entree TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS sentinelle_watchlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL UNIQUE,
+            niveau_risque TEXT NOT NULL DEFAULT 'modere',
+            note TEXT,
+            date_ajout TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS sentinelle_theses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            titre TEXT NOT NULL,
+            contenu TEXT,
+            statut TEXT NOT NULL DEFAULT 'active',
+            created_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS sentinelle_cycles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mois TEXT NOT NULL,
+            etat TEXT NOT NULL DEFAULT 'PHASE_1',
+            budget_mensuel REAL NOT NULL DEFAULT 20.0,
+            budget_utilise REAL NOT NULL DEFAULT 0.0,
+            mode TEXT,
+            decision TEXT,
+            donnees_veille TEXT,
+            donnees_analyse TEXT,
+            donnees_propositions TEXT,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS sentinelle_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cycle_id INTEGER REFERENCES sentinelle_cycles(id),
+            ticker TEXT NOT NULL,
+            quantite REAL NOT NULL,
+            prix_reel REAL NOT NULL,
+            frais REAL NOT NULL DEFAULT 0.0,
+            date_transaction TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
     """)
     conn.commit()
 

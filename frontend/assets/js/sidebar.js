@@ -86,9 +86,17 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
           <span class="btn-create-emoji">🏭</span>
           <span class="sidebar-text btn-create-label">Atelier</span>
         </button>
+        <button id="btn-sentinelle" class="btn-create" title="Module Sentinelle">
+          <span class="btn-create-emoji">🛡</span>
+          <span class="sidebar-text btn-create-label">Sentinelle</span>
+        </button>
         <button id="btn-new-reflexion" class="btn-create" title="Module Réflexion">
           <span class="btn-create-emoji">🧠</span>
           <span class="sidebar-text btn-create-label">Réflexion</span>
+        </button>
+        <button id="btn-new-dossier" class="btn-create" title="Nouveau Dossier">
+          <span class="btn-create-emoji">📁</span>
+          <span class="sidebar-text btn-create-label">Dossier</span>
         </button>
       </div>
     </div>
@@ -98,7 +106,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
     <div class="sidebar-tabs sidebar-text">
       <button class="sidebar-tab" data-tab="projects">📁 Projets</button>
       <button class="sidebar-tab" data-tab="conversations">💬 Chats</button>
-      <button class="sidebar-tab" data-tab="prospects">🏭 Atelier</button>
+      <button class="sidebar-tab" data-tab="prospects">🏭 Atelier${atelierCount > 0 ? ` <span class="sidebar-badge">${atelierCount}</span>` : ''}</button>
     </div>
     <div id="sidebar-tab-content" class="sidebar-nav">
   `;
@@ -123,7 +131,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
 
   document.getElementById('btn-sidebar-collapse').addEventListener('click', toggleSidebar);
   document.getElementById('btn-new-chat').addEventListener('click', () => {
-    window.location.href = 'chat.html';
+    window.location.href = 'conversations.html';
   });
   document.getElementById('btn-new-mission').addEventListener('click', () => {
     window.location.href = 'code-projects.html';
@@ -131,10 +139,112 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
   document.getElementById('btn-new-prospect')?.addEventListener('click', () => {
     window.location.href = 'atelier.html';
   });
+  document.getElementById('btn-sentinelle')?.addEventListener('click', () => {
+    window.location.href = 'sentinelle.html';
+  });
   document.getElementById('btn-new-reflexion')?.addEventListener('click', handleNewMission);
+  document.getElementById('btn-new-dossier')?.addEventListener('click', handleNewProject);
 
   const sidebarData = { projects, conversations, sessionsMap, reflexionsMap, prospects, filteredProjects };
-  let activeTab = localStorage.getItem('sidebar_active_tab') || '';
+  let activeTab = localStorage.getItem('sidebar_active_tab') || 'projects';
+
+  function renderProjectHierarchy(project, allProjects, currentPath, currentId) {
+    const projectConvs = sidebarData.conversations.filter(c => c.project_id === project.id);
+    const projectSessions = sidebarData.sessionsMap[project.id] || [];
+    const projectReflexions = sidebarData.reflexionsMap[project.id] || [];
+    const hasActivePipeline = projectSessions.length > 0;
+    const isExpanded = localStorage.getItem(`project_${project.id}_expanded`) !== 'false';
+    
+    // Trouver les projets code enfants si c'est un dossier
+    const childProjects = project.module_type === 'dossier' 
+      ? allProjects.filter(p => p.module_type === 'code' && p.parent_dossier_id === project.id)
+      : [];
+
+    const allChildren = [
+      ...projectConvs.map(c => ({ type: 'conv', data: c })),
+      ...projectReflexions.map(r => ({ type: 'ref', data: r })),
+      ...projectSessions.map(s => ({ type: 'session', data: s })),
+      ...childProjects.map(p => ({ type: 'child_project', data: p }))
+    ];
+    const total = allChildren.length;
+    
+    // Icône selon le type
+    const icon = project.module_type === 'dossier' ? '📂' : '⚙️';
+    const projectUrl = project.module_type === 'code' 
+      ? `mission.html?project_id=${project.id}&new=true`
+      : `dossier.html?id=${project.id}`;
+    const isActive = (project.module_type === 'code' && currentPath.includes('mission.html')) ||
+                     (project.module_type === 'dossier' && currentPath.includes('dossier.html') && currentId == project.id);
+
+    let html = `
+      <div class="nav-project ${project.parent_dossier_id ? 'nav-project--child' : ''}">
+        <div class="nav-project-header" data-project-id="${project.id}">
+          <span class="nav-project-toggle nav-project-arrow" data-project-id="${project.id}">
+            ${isExpanded ? '▼' : '▶'}
+          </span>
+          <a class="nav-project-name sidebar-text ${isActive ? 'nav-item--active' : ''}"
+             href="${projectUrl}">
+            ${icon} ${project.name}
+          </a>
+          ${hasActivePipeline ? '<span class="active-dot"></span>' : ''}
+          <span class="nav-project-actions">
+            <button class="nav-action-btn btn-rename-project" data-id="${project.id}" data-name="${project.name}" title="Renommer">✏️</button>
+            <button class="nav-action-btn btn-new-chat-project" data-id="${project.id}" title="Nouveau chat">💬</button>
+            <button class="nav-action-btn btn-delete-project" data-id="${project.id}" data-name="${project.name}" title="Supprimer">🗑️</button>
+          </span>
+        </div>
+        <div class="nav-project-items" style="display:${isExpanded ? 'block' : 'none'}">
+    `;
+
+    allChildren.forEach((child, idx) => {
+      const prefix = idx === total - 1 ? '└ ' : '├ ';
+      if (child.type === 'conv') {
+        const c = child.data;
+        const isActive = currentPath.includes('chat.html') && window.getURLParam && window.getURLParam('id') == c.id;
+        html += `
+          <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
+            <a href="chat.html?id=${c.id}&project_id=${project.id}" class="nav-item-label sidebar-text">
+              ${prefix}💬 ${c.title}
+            </a>
+            <button class="nav-action-btn btn-delete-conv" data-id="${c.id}" title="Supprimer">🗑️</button>
+          </div>`;
+      } else if (child.type === 'ref') {
+        const r = child.data;
+        const icons = { 'OUVERTE': '🧠', 'EN_FIGEMENT': '⏳', 'FIGEE': '🔒' };
+        const icon = icons[r.statut] || '🧠';
+        const isActive = currentPath.includes('mission.html') && window.getURLParam && window.getURLParam('session') == r.id;
+        html += `
+          <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
+            <a href="mission.html?session=${r.id}&project_id=${project.id}" class="nav-item-label sidebar-text">
+              ${prefix}${icon} ${r.titre || 'Réflexion #' + r.id}
+            </a>
+            <button class="nav-action-btn btn-delete-reflexion" data-id="${r.id}" title="Supprimer">🗑️</button>
+          </div>`;
+      } else if (child.type === 'session') {
+        const s = child.data;
+        const isActive = currentPath.includes('mission.html') && window.getURLParam && window.getURLParam('pipeline_session') == s.id;
+        html += `
+          <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
+            <a href="mission.html?pipeline_session=${s.id}&project_id=${project.id}" class="nav-item-label sidebar-text">
+              ${prefix}⚙ ${s.workflow_type}
+            </a>
+          </div>`;
+      } else if (child.type === 'child_project') {
+        const p = child.data;
+        const childIsActive = currentPath.includes('mission.html') && window.getURLParam && window.getURLParam('project_id') == p.id;
+        html += `
+          <div class="nav-item-row nav-item ${childIsActive ? 'nav-item--active' : ''}">
+            <a href="mission.html?project_id=${p.id}&new=true" class="nav-item-label sidebar-text">
+              ${prefix}⚙️ ${p.name}
+            </a>
+            <button class="nav-action-btn btn-delete-project" data-id="${p.id}" data-name="${p.name}" title="Supprimer">🗑️</button>
+          </div>`;
+      }
+    });
+
+    html += '</div></div>';
+    return html;
+  }
 
   function renderTabContent(tab) {
     const container = document.getElementById('sidebar-tab-content');
@@ -158,80 +268,27 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
       if (fp.length === 0) {
         html = '<div class="sidebar-empty sidebar-text">Aucun projet</div>';
       } else {
-        html += '<div class="nav-section"><div class="nav-section-title sidebar-text">PROJETS</div>';
-        fp.forEach(project => {
-          const projectConvs = sidebarData.conversations.filter(c => c.project_id === project.id);
-          const projectSessions = sidebarData.sessionsMap[project.id] || [];
-          const projectReflexions = sidebarData.reflexionsMap[project.id] || [];
-          const hasActivePipeline = projectSessions.length > 0;
-          const isExpanded = localStorage.getItem(`project_${project.id}_expanded`) !== 'false';
-
-          const allChildren = [
-            ...projectConvs.map(c => ({ type: 'conv', data: c })),
-            ...projectReflexions.map(r => ({ type: 'ref', data: r })),
-            ...projectSessions.map(s => ({ type: 'session', data: s }))
-          ];
-          const total = allChildren.length;
-
-          html += `
-            <div class="nav-project">
-              <div class="nav-project-header" data-project-id="${project.id}">
-                <span class="nav-project-toggle nav-project-arrow" data-project-id="${project.id}">
-                  ${isExpanded ? '▼' : '▶'}
-                </span>
-                <a class="nav-project-name sidebar-text ${currentPath.includes('dossier.html') && currentId == project.id ? 'nav-item--active' : ''}"
-                   href="dossier.html?id=${project.id}">
-                  ${project.name}
-                </a>
-                ${hasActivePipeline ? '<span class="active-dot"></span>' : ''}
-                <span class="nav-project-actions">
-                  <button class="nav-action-btn btn-rename-project" data-id="${project.id}" data-name="${project.name}" title="Renommer">✏️</button>
-                  <button class="nav-action-btn btn-new-chat-project" data-id="${project.id}" title="Nouveau chat">💬</button>
-                  <button class="nav-action-btn btn-delete-project" data-id="${project.id}" data-name="${project.name}" title="Supprimer">🗑️</button>
-                </span>
-              </div>
-              <div class="nav-project-items" style="display:${isExpanded ? 'block' : 'none'}">
-          `;
-
-          allChildren.forEach((child, idx) => {
-            const prefix = idx === total - 1 ? '└ ' : '├ ';
-            if (child.type === 'conv') {
-              const c = child.data;
-              const isActive = currentPath.includes('chat.html') && window.getURLParam && window.getURLParam('id') == c.id;
-              html += `
-                <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
-                  <a href="chat.html?id=${c.id}&project_id=${project.id}" class="nav-item-label sidebar-text">
-                    ${prefix}💬 ${c.title}
-                  </a>
-                  <button class="nav-action-btn btn-delete-conv" data-id="${c.id}" title="Supprimer">🗑️</button>
-                </div>`;
-            } else if (child.type === 'ref') {
-              const r = child.data;
-              const icons = { 'OUVERTE': '🧠', 'EN_FIGEMENT': '⏳', 'FIGEE': '🔒' };
-              const icon = icons[r.statut] || '🧠';
-              const isActive = currentPath.includes('mission.html') && window.getURLParam && window.getURLParam('session') == r.id;
-              html += `
-                <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
-                  <a href="mission.html?session=${r.id}&project_id=${project.id}" class="nav-item-label sidebar-text">
-                    ${prefix}${icon} ${r.titre || 'Réflexion #' + r.id}
-                  </a>
-                  <button class="nav-action-btn btn-delete-reflexion" data-id="${r.id}" title="Supprimer">🗑️</button>
-                </div>`;
-            } else {
-              const s = child.data;
-              const isActive = currentPath.includes('mission.html') && window.getURLParam && window.getURLParam('pipeline_session') == s.id;
-              html += `
-                <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
-                  <a href="mission.html?pipeline_session=${s.id}&project_id=${project.id}" class="nav-item-label sidebar-text">
-                    ${prefix}⚙ ${s.workflow_type}
-                  </a>
-                </div>`;
-            }
+        // Séparer dossiers et projets code orphelins
+        const dossiers = fp.filter(p => p.module_type === 'dossier');
+        const projetsCodeOrphelins = fp.filter(p => p.module_type === 'code' && !p.parent_dossier_id);
+        
+        // Section Dossiers
+        if (dossiers.length > 0) {
+          html += '<div class="nav-section"><div class="nav-section-title sidebar-text">� DOSSIERS</div>';
+          dossiers.forEach(dossier => {
+            html += renderProjectHierarchy(dossier, fp, currentPath, currentId);
           });
-
-          html += '</div></div>';
-        });
-        html += '</div>';
+          html += '</div>';
+        }
+        
+        // Section Projets Code orphelins
+        if (projetsCodeOrphelins.length > 0) {
+          html += '<div class="nav-section"><div class="nav-section-title sidebar-text">⚙️ PROJETS CODE</div>';
+          projetsCodeOrphelins.forEach(projet => {
+            html += renderProjectHierarchy(projet, fp, currentPath, currentId);
+          });
+          html += '</div>';
+        }
       }
 
     } else if (tab === 'conversations') {
@@ -455,49 +512,6 @@ function toggleSidebar() {
   });
 }
 
-async function handleNewChat() {
-  const projects = await window.API.getProjects();
-  const dossiers = projects.filter(p => p.module_type === 'dossier');
-  
-  let optionsHTML = '<option value="">Sans dossier</option>';
-  dossiers.forEach(p => {
-    optionsHTML += `<option value="${p.id}">${p.name}</option>`;
-  });
-
-  const bodyHTML = `
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Titre (optionnel)</label>
-      <input type="text" id="modal-chat-title" placeholder="Nouvelle conversation" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
-    </div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Dossier associé (optionnel)</label>
-      <select id="modal-project-select" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
-        ${optionsHTML}
-      </select>
-    </div>
-  `;
-
-  window.showModal('Nouveau Chat', bodyHTML, [
-    { label: 'Annuler', type: 'secondary', onClick: () => window.closeModal() },
-    { label: 'Créer', type: 'primary', onClick: async () => {
-      const title = document.getElementById('modal-chat-title').value.trim() || 'Nouvelle conversation';
-      const projectId = document.getElementById('modal-project-select').value;
-      try {
-        const conv = await window.API.createConversation({
-          project_id: projectId || null,
-          title: title
-        });
-        window.closeModal();
-        window.location.href = `chat.html?id=${conv.id}${projectId ? `&project_id=${projectId}` : ''}`;
-      } catch (error) {
-        window.showToast(error.message, 'error');
-      }
-    }}
-  ]);
-}
-
-
-
 
 async function handleNewMission() {
   const projects = await window.API.getProjects();
@@ -546,81 +560,61 @@ async function handleNewMission() {
 }
 
 async function handleNewProject() {
-  const bodyHTML = `
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Nom du projet *</label>
-      <input type="text" id="modal-project-name"
-        style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)"
-        placeholder="Mon Projet">
-    </div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Dossier local lié *</label>
-      <input type="text" id="modal-project-path"
-        style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)"
-        placeholder="C:\\DEV\\MON_PROJET">
-      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">
-        Le dossier doit déjà exister sur votre disque
+  // Ouvrir directement le sélecteur de dossier
+  try {
+    const result = await window.API.selectFolder();
+    
+    if (!result || !result.path) {
+      return; // Utilisateur a annulé
+    }
+    
+    const folderPath = result.path;
+    const folderName = result.name;
+    
+    // Modale de confirmation avec le nom pré-rempli
+    const bodyHTML = `
+      <div style="margin-bottom:1rem">
+        <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Nom du projet *</label>
+        <input type="text" id="modal-project-name"
+          style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)"
+          value="${folderName}">
       </div>
-    </div>
-  `;
+      <div style="margin-bottom:1rem">
+        <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Dossier sélectionné</label>
+        <div style="padding:8px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:0.85rem;word-break:break-all">
+          ${folderPath}
+        </div>
+      </div>
+    `;
 
-  window.showModal('Nouveau Projet', bodyHTML, [
-    { label: 'Annuler', type: 'secondary', onClick: () => window.closeModal() },
-    { label: '+ Créer', type: 'primary', onClick: async () => {
-      const name = document.getElementById('modal-project-name').value.trim();
-      const path = document.getElementById('modal-project-path').value.trim();
-      if (!name || !path) {
-        window.showToast('Nom et chemin sont requis', 'error');
-        return;
-      }
-      try {
-        const project = await window.API.createProject({
-          name, path, module_type: 'dossier', instructions: ''
-        });
-        window.closeModal();
-        window.showToast(`Projet "${name}" créé`, 'success');
-        window.location.href = `dossier.html?id=${project.id}`;
-      } catch(error) {
-        window.showToast(error.message, 'error');
-      }
-    }}
-  ]);
-}
-
-async function handleLinkFolder() {
-  const bodyHTML = `
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Nom du dossier *</label>
-      <input type="text" id="modal-project-name" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)" placeholder="Mon Dossier">
-    </div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Chemin du dossier local existant *</label>
-      <input type="text" id="modal-project-path" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)" placeholder="C:\\DEV\\MON_PROJET">
-      <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">Ce dossier doit déjà exister sur votre disque</div>
-    </div>
-  `;
-
-  window.showModal('Lier un dossier local', bodyHTML, [
-    { label: 'Annuler', type: 'secondary', onClick: () => window.closeModal() },
-    { label: '📁 Créer', type: 'primary', onClick: async () => {
-      const name = document.getElementById('modal-project-name').value.trim();
-      const path = document.getElementById('modal-project-path').value.trim();
-      
-      if (!name || !path) {
-        window.showToast('Nom et chemin sont requis', 'error');
-        return;
-      }
-      
-      try {
-        const project = await window.API.createProject({ name, path, module_type: 'dossier', instructions: '' });
-        window.closeModal();
-        window.showToast(`Dossier "${name}" créé`);
-        window.location.href = `dossier.html?id=${project.id}`;
-      } catch(error) {
-        window.showToast(error.message, 'error');
-      }
-    }}
-  ]);
+    window.showModal('Nouveau Projet', bodyHTML, [
+      { label: 'Annuler', type: 'secondary', onClick: () => window.closeModal() },
+      { label: '+ Créer', type: 'primary', onClick: async () => {
+        const name = document.getElementById('modal-project-name').value.trim();
+        if (!name) {
+          window.showToast('Le nom du projet est requis', 'error');
+          return;
+        }
+        try {
+          const project = await window.API.createProject({
+            name, 
+            path: folderPath,
+            module_type: 'dossier', 
+            instructions: ''
+          });
+          window.closeModal();
+          window.showToast(`Projet "${name}" créé`, 'success');
+          window.location.href = `dossier.html?id=${project.id}`;
+        } catch(error) {
+          window.showToast(error.message, 'error');
+        }
+      }}
+    ]);
+  } catch(error) {
+    if (error.message !== 'Aucun dossier sélectionné') {
+      window.showToast(error.message, 'error');
+    }
+  }
 }
 
 function getStatusBadge(status) {

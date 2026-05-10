@@ -157,26 +157,13 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             path TEXT NOT NULL UNIQUE,
-            type TEXT NOT NULL,
-            module_type TEXT DEFAULT 'dossier',
+            instructions TEXT DEFAULT '',
+            module_type TEXT NOT NULL CHECK(module_type IN ('dossier', 'code')),
             category TEXT,
             parent_dossier_id INTEGER REFERENCES projects(id),
             created_at TEXT DEFAULT (datetime('now'))
         )
     """)
-    
-    # Migration : ajout des 3 nouvelles colonnes si elles n'existent pas
-    migrations = [
-        "ALTER TABLE projects ADD COLUMN module_type TEXT DEFAULT 'dossier'",
-        "ALTER TABLE projects ADD COLUMN category TEXT",
-        "ALTER TABLE projects ADD COLUMN parent_dossier_id INTEGER REFERENCES projects(id)",
-    ]
-    for migration in migrations:
-        try:
-            cursor.execute(migration)
-        except sqlite3.OperationalError:
-            pass
-    conn.commit()
     
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS sessions (
@@ -236,18 +223,6 @@ def init_db():
         except sqlite3.OperationalError:
             pass
     conn.commit()
-    
-    try:
-        cursor.execute("ALTER TABLE projects ADD COLUMN local_path TEXT")
-        conn.commit()
-    except sqlite3.OperationalError:
-        pass
-    
-    try:
-        cursor.execute("ALTER TABLE projects ADD COLUMN instructions TEXT DEFAULT ''")
-        conn.commit()
-    except sqlite3.OperationalError:
-        pass
     
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS model_decision_log (
@@ -337,6 +312,71 @@ def init_db():
             notes       TEXT,
             created_at  TEXT DEFAULT (datetime('now')),
             updated_at  TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    conn.commit()
+    
+    # Tables Sentinelle
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sentinelle_positions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL,
+            quantite REAL NOT NULL,
+            enveloppe TEXT NOT NULL CHECK(enveloppe IN ('PEA','CTO','liquidites')),
+            date_entree TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sentinelle_watchlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL UNIQUE,
+            niveau_risque TEXT NOT NULL CHECK(niveau_risque IN ('faible','modere','eleve','speculatif')),
+            note TEXT,
+            date_ajout TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sentinelle_theses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            actif TEXT NOT NULL,
+            texte TEXT NOT NULL,
+            statut TEXT NOT NULL DEFAULT 'active' CHECK(statut IN ('active','revisee')),
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sentinelle_cycles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            etat TEXT NOT NULL DEFAULT 'PHASE_1' CHECK(etat IN ('PHASE_1','PHASE_2','PHASE_3','PHASE_4','PHASE_5','PHASE_6','CLOTURE')),
+            mode TEXT NOT NULL DEFAULT 'normal' CHECK(mode IN ('normal','accumulation','opportunite')),
+            budget_mensuel REAL NOT NULL DEFAULT 20.0,
+            budget_utilise REAL NOT NULL DEFAULT 0.0,
+            mois TEXT NOT NULL,
+            donnees_veille TEXT,
+            donnees_analyse TEXT,
+            donnees_propositions TEXT,
+            decision TEXT,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sentinelle_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cycle_id INTEGER REFERENCES sentinelle_cycles(id),
+            ticker TEXT NOT NULL,
+            quantite REAL NOT NULL,
+            prix_reel REAL NOT NULL,
+            frais REAL NOT NULL DEFAULT 0.0,
+            date_transaction TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
         )
     """)
     
