@@ -200,7 +200,9 @@ def add_message(
     role: str,
     content: str,
     db_conn: sqlite3.Connection,
-    attachments: Optional[str] = None
+    attachments: Optional[str] = None,
+    attachment_base64: Optional[str] = None,
+    attachment_filename: Optional[str] = None
 ) -> int:
     """Ajoute un message à une session."""
     cursor = db_conn.cursor()
@@ -216,9 +218,9 @@ def add_message(
     
     cursor.execute("""
         INSERT INTO reflexion_messages (
-            session_id, role, content, attachments, compacted, created_at
-        ) VALUES (?, ?, ?, ?, 0, ?)
-    """, (session_id, role, content, attachments, datetime.now().isoformat()))
+            session_id, role, content, attachments, compacted, created_at, attachment_base64, attachment_filename
+        ) VALUES (?, ?, ?, ?, 0, ?, ?, ?)
+    """, (session_id, role, content, attachments, datetime.now().isoformat(), attachment_base64, attachment_filename))
     
     # Mettre à jour updated_at de la session
     cursor.execute("""
@@ -241,14 +243,14 @@ def get_messages(
     
     if include_compacted:
         cursor.execute("""
-            SELECT id, session_id, role, content, attachments, compacted, created_at
+            SELECT id, session_id, role, content, attachments, compacted, created_at, attachment_base64, attachment_filename
             FROM reflexion_messages
             WHERE session_id = ?
             ORDER BY created_at ASC
         """, (session_id,))
     else:
         cursor.execute("""
-            SELECT id, session_id, role, content, attachments, compacted, created_at
+            SELECT id, session_id, role, content, attachments, compacted, created_at, attachment_base64, attachment_filename
             FROM reflexion_messages
             WHERE session_id = ? AND compacted = 0
             ORDER BY created_at ASC
@@ -264,19 +266,21 @@ def build_system_prompt(session: dict, project_path: Path, db_conn: sqlite3.Conn
     """
     cursor = db_conn.cursor()
     
-    # Lire profil utilisateur et règles globales depuis METHODO
+    # Lire depuis data/contexts/ (source unifiée avec les autres modules)
+    _contexts_dir = Path(__file__).parent.parent / "data" / "contexts"
     profil_utilisateur = ""
     regles_globales = ""
+    _profil_file = _contexts_dir / "profil_utilisateur.md"
+    if _profil_file.exists():
+        profil_utilisateur = _profil_file.read_text(encoding="utf-8")
+    _regles_file = _contexts_dir / "regles_globales.md"
+    if _regles_file.exists():
+        regles_globales = _regles_file.read_text(encoding="utf-8")
     
-    methodo_path = _get_methodo_path(db_conn)
-    if methodo_path:
-        profil_path = methodo_path / "PROFIL_UTILISATEUR.md"
-        if profil_path.exists():
-            profil_utilisateur = profil_path.read_text(encoding="utf-8")
-        
-        regles_path = methodo_path / "REGLES_GLOBALES.md"
-        if regles_path.exists():
-            regles_globales = regles_path.read_text(encoding="utf-8")
+    reflexion_profil = ""
+    _reflexion_file = _contexts_dir / "reflexion_profil.md"
+    if _reflexion_file.exists():
+        reflexion_profil = _reflexion_file.read_text(encoding="utf-8")
     
     # Lire PROJET_CONTEXTE.md
     projet_contexte = ""
@@ -306,6 +310,7 @@ def build_system_prompt(session: dict, project_path: Path, db_conn: sqlite3.Conn
     # Remplacer les variables
     system_prompt = prompt_template.replace("{{profil_utilisateur}}", profil_utilisateur)
     system_prompt = system_prompt.replace("{{regles_globales}}", regles_globales)
+    system_prompt = system_prompt.replace("{{reflexion_profil}}", reflexion_profil)
     system_prompt = system_prompt.replace("{{projet_contexte}}", projet_contexte)
     system_prompt = system_prompt.replace("{{graphify_report}}", graphify_report)
     
@@ -315,7 +320,9 @@ def build_system_prompt(session: dict, project_path: Path, db_conn: sqlite3.Conn
 async def send_user_message(
     session_id: int,
     content: str,
-    db_conn: sqlite3.Connection
+    db_conn: sqlite3.Connection,
+    attachment_base64: Optional[str] = None,
+    attachment_filename: Optional[str] = None
 ) -> List[dict]:
     """
     Envoie un message utilisateur et appelle Claude Sonnet 4.5 pour obtenir une réponse.
@@ -324,7 +331,8 @@ async def send_user_message(
     cursor = db_conn.cursor()
     
     # Ajouter message user
-    add_message(session_id, MessageRole.USER.value, content, db_conn)
+    add_message(session_id, MessageRole.USER.value, content, db_conn, 
+                attachment_base64=attachment_base64, attachment_filename=attachment_filename)
     
     # Récupérer la session
     session = get_session(session_id, db_conn)
@@ -354,6 +362,16 @@ async def send_user_message(
     except Exception as e:
         raise ValueError(f"Erreur construction du prompt système : {e}")
     
+    # Déterminer le modèle à utiliser
+    from backend.database import load_config
+    config = load_config()
+    if attachment_base64:
+        # Utiliser le modèle vision si une image est jointe
+        model_id = config.get("chat", {}).get("vision_model", "anthropic/claude-sonnet-4-6")
+        logger.info(f"🖼️ [REFLEXION_SERVICE] Image jointe détectée — utilisation modèle vision: {model_id}")
+    else:
+        model_id = _get_reflexion_model()
+    
     # Récupérer l'historique des messages (non compactés)
     messages_history = get_messages(session_id, db_conn, include_compacted=False)
     
@@ -361,10 +379,36 @@ async def send_user_message(
     api_messages = []
     for msg in messages_history:
         if msg["role"] in ["user", "assistant"]:
-            api_messages.append({
-                "role": msg["role"],
-                "content": msg["content"]
-            })
+            msg_content = msg["content"]
+            # Si le message a une image attachée (sauf le dernier message courant), ajouter une note textuelle
+            if msg.get("attachment_filename") and msg["id"] != messages_history[-1]["id"]:
+                msg_content += f"\n[Image jointe : {msg['attachment_filename']}]"
+            
+            # Si c'est le dernier message (celui qu'on vient d'ajouter) et qu'il a une image
+            if msg["id"] == messages_history[-1]["id"] and attachment_base64:
+                # Détecter le type MIME depuis le nom de fichier
+                ext = Path(attachment_filename).suffix.lower() if attachment_filename else ".jpg"
+                mime_map = {
+                    ".png": "image/png",
+                    ".jpg": "image/jpeg",
+                    ".jpeg": "image/jpeg",
+                    ".webp": "image/webp"
+                }
+                mime = mime_map.get(ext, "image/jpeg")
+                
+                # Format multimodal pour l'API
+                api_messages.append({
+                    "role": msg["role"],
+                    "content": [
+                        {"type": "text", "text": msg_content},
+                        {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{attachment_base64}"}}
+                    ]
+                })
+            else:
+                api_messages.append({
+                    "role": msg["role"],
+                    "content": msg_content
+                })
     
     # Récupérer les clés API
     cursor.execute("SELECT key, value FROM app_config WHERE key IN ('openrouter_key', 'anthropic_key')")
@@ -373,13 +417,14 @@ async def send_user_message(
     # Appeler le modèle
     try:
         response_content = await model_router.call_model(
-            model_id=_get_reflexion_model(),
+            model_id=model_id,
             messages=[{"role": "system", "content": system_prompt}] + api_messages,
             api_keys=api_keys,
             session_id=session_id,
             step_name="reflexion_conversation",
             model_type="analysis",
-            db_conn=db_conn
+            db_conn=db_conn,
+            module_name="reflexion"
         )
         
         # Récupérer les tokens de l'appel (dernière entrée model_decision_log)
@@ -469,19 +514,21 @@ async def freeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
             raise ValueError(f"Projet {session['project_id']} introuvable")
         project_path = Path(project_row["path"])
         
-        # Lire profil utilisateur et règles globales depuis METHODO
+        # Lire depuis data/contexts/ (source unifiée avec les autres modules)
+        _contexts_dir = Path(__file__).parent.parent / "data" / "contexts"
         profil_utilisateur = ""
         regles_globales = ""
+        _profil_file = _contexts_dir / "profil_utilisateur.md"
+        if _profil_file.exists():
+            profil_utilisateur = _profil_file.read_text(encoding="utf-8")
+        _regles_file = _contexts_dir / "regles_globales.md"
+        if _regles_file.exists():
+            regles_globales = _regles_file.read_text(encoding="utf-8")
         
-        methodo_path = _get_methodo_path(db_conn)
-        if methodo_path:
-            profil_path = methodo_path / "PROFIL_UTILISATEUR.md"
-            if profil_path.exists():
-                profil_utilisateur = profil_path.read_text(encoding="utf-8")
-            
-            regles_path = methodo_path / "REGLES_GLOBALES.md"
-            if regles_path.exists():
-                regles_globales = regles_path.read_text(encoding="utf-8")
+        reflexion_profil = ""
+        _reflexion_file = _contexts_dir / "reflexion_profil.md"
+        if _reflexion_file.exists():
+            reflexion_profil = _reflexion_file.read_text(encoding="utf-8")
         
         # Lire PROJET_CONTEXTE.md
         projet_contexte = ""
@@ -518,6 +565,7 @@ async def freeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
         # Remplacer les variables
         figement_prompt = prompt_template.replace("{{profil_utilisateur}}", profil_utilisateur)
         figement_prompt = figement_prompt.replace("{{regles_globales}}", regles_globales)
+        figement_prompt = figement_prompt.replace("{{reflexion_profil}}", reflexion_profil)
         figement_prompt = figement_prompt.replace("{{conversation_history}}", conversation_history)
         figement_prompt = figement_prompt.replace("{{projet_contexte}}", projet_contexte)
         figement_prompt = figement_prompt.replace("{{graphify_report}}", graphify_report)
@@ -536,7 +584,8 @@ async def freeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
             session_id=session_id,
             step_name="reflexion_figement",
             model_type="analysis",
-            db_conn=db_conn
+            db_conn=db_conn,
+            module_name="reflexion"
         )
         
         # Parser le livrable pour extraire files_targeted et recommandation_modele
@@ -843,3 +892,111 @@ def apply_edit(
         if tmp_path.exists():
             tmp_path.unlink()
         raise ValueError(f"Erreur écriture {file_path}: {str(e)}")
+
+
+async def detect_livrable_type(session_id: int, db_conn: sqlite3.Connection) -> dict:
+    """
+    Détecte automatiquement le type de livrable le plus adapté pour une session de réflexion.
+    Analyse la conversation et retourne { livrable_type: str, justification: str }.
+    """
+    import logging
+    logger = logging.getLogger("jarvis")
+    
+    cursor = db_conn.cursor()
+    
+    # Vérifier que la session existe
+    cursor.execute("SELECT id FROM reflexion_sessions WHERE id = ?", (session_id,))
+    if not cursor.fetchone():
+        raise ValueError(f"Session {session_id} introuvable")
+    
+    # Charger tous les messages de la session (user + assistant uniquement)
+    cursor.execute("""
+        SELECT role, content 
+        FROM reflexion_messages 
+        WHERE session_id = ? AND role IN ('user', 'assistant')
+        ORDER BY created_at ASC
+    """, (session_id,))
+    messages = cursor.fetchall()
+    
+    if not messages:
+        # Pas de conversation → valeur par défaut
+        return {
+            "livrable_type": "mission_code",
+            "justification": "Aucune conversation, valeur par défaut"
+        }
+    
+    # Construire un résumé de la conversation (limité à ~3000 tokens)
+    conversation_text = ""
+    for msg in messages:
+        role_label = "Utilisateur" if msg["role"] == "user" else "Assistant"
+        content = msg["content"][:500]  # Tronquer chaque message si trop long
+        conversation_text += f"{role_label}: {content}\n\n"
+    
+    # Limiter la taille totale (environ 3000 tokens = 12000 caractères)
+    if len(conversation_text) > 12000:
+        conversation_text = conversation_text[:12000] + "\n[...conversation tronquée...]"
+    
+    # Prompt de classification
+    prompt = f"""Analyse cette conversation et détermine le type de livrable le plus adapté parmi ces 3 options :
+
+- mission_code : la conversation aboutit à une tâche de développement à exécuter sur un projet code
+- decision_figee : la conversation aboutit à une décision importante à documenter formellement
+- plan_multi_missions : la conversation aboutit à un plan de plusieurs tâches distinctes à exécuter
+
+Conversation :
+{conversation_text}
+
+Réponds en JSON strict : {{"livrable_type": "...", "justification": "une phrase"}}"""
+    
+    try:
+        from backend.database import load_config
+        config = load_config()
+        
+        # Utiliser le modèle routing (léger, pas besoin de Sonnet pour classification)
+        model_id = config.get("model_preferences", {}).get("routing", "anthropic/claude-haiku-3.5")
+        
+        messages_api = [{"role": "user", "content": prompt}]
+        
+        result = await model_router.call_model(
+            model_id=model_id,
+            messages=messages_api,
+            api_keys=config["api_keys"],
+            session_id=0,
+            step_name="detect_livrable_type",
+            model_type="routing",
+            db_conn=None,
+            module_name="reflexion"
+        )
+        
+        # Parser le JSON retourné
+        result_clean = result.strip()
+        if result_clean.startswith("```json"):
+            result_clean = result_clean[7:]
+        if result_clean.startswith("```"):
+            result_clean = result_clean[3:]
+        if result_clean.endswith("```"):
+            result_clean = result_clean[:-3]
+        result_clean = result_clean.strip()
+        
+        detection = json.loads(result_clean)
+        
+        # Valider que livrable_type est dans les 3 valeurs autorisées
+        valid_types = ['mission_code', 'decision_figee', 'plan_multi_missions']
+        if detection.get("livrable_type") not in valid_types:
+            logger.warning(f"[REFLEXION] Type détecté invalide: {detection.get('livrable_type')}, fallback mission_code")
+            return {
+                "livrable_type": "mission_code",
+                "justification": "Type détecté invalide, valeur par défaut"
+            }
+        
+        return {
+            "livrable_type": detection["livrable_type"],
+            "justification": detection.get("justification", "Détection automatique")
+        }
+        
+    except Exception as e:
+        logger.exception(f"[REFLEXION] Erreur détection type livrable session={session_id}: {e}")
+        return {
+            "livrable_type": "mission_code",
+            "justification": "Détection impossible, valeur par défaut"
+        }

@@ -425,6 +425,7 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
                             step_config["name"],
                             step_config["model_type"],
                             db,
+                            module_name="code"
                         )
                         t_elapsed = _time.time() - t_start
                         cursor.execute(
@@ -469,6 +470,7 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
                 step_config["name"],
                 step_config["model_type"],
                 db,
+                module_name="code"
             )
         
         cursor.execute(

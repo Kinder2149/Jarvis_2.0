@@ -50,10 +50,70 @@ async def start_pipeline(request: StartPipeline):
     
     project_path = project_row["path"]
     
+    # Si une image est jointe, faire un appel vision préliminaire pour extraire la description
+    enriched_input = request.initial_input or ""
+    if request.attachment_base64 and request.attachment_filename:
+        logger.info(f"🖼️ [PIPELINE] Image jointe détectée : {request.attachment_filename} — appel vision préliminaire")
+        
+        from backend.services import model_router
+        from pathlib import Path as PathLib
+        
+        config = load_config()
+        vision_model = config.get("chat", {}).get("vision_model", "anthropic/claude-sonnet-4-6")
+        
+        # Détecter le type MIME
+        ext = PathLib(request.attachment_filename).suffix.lower()
+        mime_map = {
+            ".png": "image/png",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".webp": "image/webp"
+        }
+        mime = mime_map.get(ext, "image/jpeg")
+        
+        # Récupérer les clés API
+        cursor.execute("SELECT key, value FROM app_config WHERE key IN ('openrouter_key', 'anthropic_key')")
+        api_keys = {row["key"]: row["value"] for row in cursor.fetchall()}
+        
+        # Appel vision pour extraire la description
+        vision_prompt = "Décris précisément ce que tu vois dans cette image, dans le contexte d'une mission de développement logiciel. Sois factuel et concis."
+        
+        try:
+            vision_description = await model_router.call_model(
+                model_id=vision_model,
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": vision_prompt},
+                        {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{request.attachment_base64}"}}
+                    ]
+                }],
+                api_keys=api_keys,
+                session_id=None,
+                step_name="vision_extraction_pipeline",
+                model_type="vision",
+                db_conn=db,
+                module_name="pipeline"
+            )
+            
+            # Enrichir le prompt initial avec la description
+            enriched_input = f"""[Image jointe : {request.attachment_filename}]
+Description : {vision_description}
+
+---
+{enriched_input}"""
+            
+            logger.info(f"✅ [PIPELINE] Description extraite de l'image ({len(vision_description)} caractères)")
+        
+        except Exception as e:
+            logger.error(f"❌ [PIPELINE] Erreur lors de l'extraction vision : {e}")
+            # Continuer sans la description en cas d'erreur
+            enriched_input = f"[Image jointe : {request.attachment_filename} — extraction échouée]\n\n{enriched_input}"
+    
     session = create_session(
         request.project_id,
         request.workflow_type,
-        request.initial_input or "",
+        enriched_input,
         db,
         modele_override=request.modele_override,
         source_mission_prompt_id=request.source_mission_prompt_id

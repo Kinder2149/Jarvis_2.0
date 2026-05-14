@@ -96,6 +96,19 @@
                 <span class="connection-badge" id="badge-web_search"></span>
               </div>
             </div>
+
+            <!-- Twelve Data -->
+            <div class="api-key-row" id="key-row-twelve_data">
+              <div class="api-key-info">
+                <span class="api-key-provider">Twelve Data <span class="badge badge--optional">Optionnel</span></span>
+                <span class="api-key-description text-muted">Cours boursiers pour le Module Sentinelle (ETF, actions). Gratuit : 800 req/jour.</span>
+              </div>
+              <div class="api-key-controls">
+                <div class="api-key-value-group" id="key-display-twelve_data"></div>
+                <button class="btn-test-connection" data-provider="twelve_data">Tester</button>
+                <span class="connection-badge" id="badge-twelve_data"></span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -208,6 +221,48 @@
 
             <div class="models-actions">
               <button id="btn-save-chat" class="btn-primary">💾 Sauvegarder la config chat</button>
+            </div>
+          </div>
+
+          <div class="settings-section card">
+            <h2 class="settings-section-title">Profils Modules</h2>
+            <p class="settings-section-hint">
+              Contexte injecté dans chaque module lors des appels IA. Editable ici, appliqué au prochain démarrage de session.
+            </p>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">🛡️ Sentinelle</label>
+              <textarea id="profil-sentinelle" class="input-field" rows="10" style="resize: vertical;"
+                placeholder="Chargement..."></textarea>
+              <button class="btn-primary" data-module="sentinelle_profil">💾 Sauvegarder</button>
+            </div>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">🏪 Atelier Connecté</label>
+              <textarea id="profil-atelier" class="input-field" rows="10" style="resize: vertical;"
+                placeholder="Chargement..."></textarea>
+              <button class="btn-primary" data-module="atelier_profil">💾 Sauvegarder</button>
+            </div>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">💻 Module Code</label>
+              <textarea id="profil-code" class="input-field" rows="10" style="resize: vertical;"
+                placeholder="Chargement..."></textarea>
+              <button class="btn-primary" data-module="code_profil">💾 Sauvegarder</button>
+            </div>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">🧠 Module Réflexion</label>
+              <textarea id="profil-reflexion" class="input-field" rows="10" style="resize: vertical;"
+                placeholder="Chargement..."></textarea>
+              <button class="btn-primary" data-module="reflexion_profil">💾 Sauvegarder</button>
+            </div>
+
+            <div class="chat-config-row">
+              <label class="chat-config-label">💬 Module Chat</label>
+              <textarea id="profil-chat" class="input-field" rows="10" style="resize: vertical;"
+                placeholder="Chargement..."></textarea>
+              <button class="btn-primary" data-module="chat_profil">💾 Sauvegarder</button>
             </div>
           </div>
         </div>

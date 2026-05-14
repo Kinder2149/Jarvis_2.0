@@ -36,7 +36,7 @@ def load_config():
     api_keys = {row["key"]: row["value"] or "" for row in rows}
     if not api_keys:
         logger.warning("⚠️ [DB] Aucune clé API en DB, utilisation des valeurs par défaut vides")
-        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": ""}
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": "", "twelve_data_key": ""}
     
     # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
     env_file = Path(__file__).parent / ".env"
@@ -52,6 +52,7 @@ def load_config():
                 "ANTHROPIC_KEY": "anthropic_key",
                 "GOOGLE_KEY": "google_key",
                 "WEB_SEARCH_KEY": "web_search_key",
+                "TWELVE_DATA_KEY": "twelve_data_key",
             }
             db_key = env_map.get(env_key.strip())
             if db_key and not api_keys.get(db_key):
@@ -63,6 +64,7 @@ def load_config():
         ("ANTHROPIC_KEY", "anthropic_key"),
         ("GOOGLE_KEY", "google_key"),
         ("WEB_SEARCH_KEY", "web_search_key"),
+        ("TWELVE_DATA_KEY", "twelve_data_key"),
     ]:
         if not api_keys.get(db_key) and os.environ.get(env_var):
             api_keys[db_key] = os.environ[env_var]
@@ -79,7 +81,8 @@ def load_config():
         "model": "anthropic/claude-sonnet-4.5",
         "methodo_path": "C:\\DEV\\METHODO",
         "session_note": "",
-        "system_prompt_preset": ""
+        "system_prompt_preset": "",
+        "vision_model": "anthropic/claude-sonnet-4-6"
     }
     
     if CONFIG_PATH.exists():
@@ -109,6 +112,7 @@ def _seed_api_keys_from_env(conn):
         "ANTHROPIC_KEY": "anthropic_key",
         "GOOGLE_KEY": "google_key",
         "WEB_SEARCH_KEY": "web_search_key",
+        "TWELVE_DATA_KEY": "twelve_data_key",
     }
 
     # Lire les valeurs candidates : .env d'abord, puis variables OS
@@ -144,6 +148,22 @@ def _seed_api_keys_from_env(conn):
                 "INSERT OR REPLACE INTO app_config (key, value, category) VALUES (?, ?, 'api_keys')",
                 (db_key, candidates[env_key])
             )
+    conn.commit()
+
+def _migrate_v3(conn):
+    """Migration v3 : ajoute prix_moyen et prix_revient pour Sentinelle (idempotent)."""
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("ALTER TABLE sentinelle_positions ADD COLUMN prix_moyen REAL DEFAULT 0.0")
+    except Exception:
+        pass
+    
+    try:
+        cursor.execute("ALTER TABLE sentinelle_positions ADD COLUMN prix_revient REAL DEFAULT 0.0")
+    except Exception:
+        pass
+    
     conn.commit()
 
 def init_db():
@@ -218,6 +238,18 @@ def init_db():
         "ALTER TABLE conversations ADD COLUMN model TEXT DEFAULT ''",
     ]
     for migration in migrations_chat:
+        try:
+            cursor.execute(migration)
+        except sqlite3.OperationalError:
+            pass
+    conn.commit()
+    
+    # Migrations Messages : attachment_base64, attachment_filename
+    migrations_messages = [
+        "ALTER TABLE messages ADD COLUMN attachment_base64 TEXT",
+        "ALTER TABLE messages ADD COLUMN attachment_filename TEXT",
+    ]
+    for migration in migrations_messages:
         try:
             cursor.execute(migration)
         except sqlite3.OperationalError:
@@ -380,9 +412,24 @@ def init_db():
         )
     """)
     
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sentinelle_alertes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker TEXT NOT NULL,
+            variation_pct REAL NOT NULL,
+            cours_actuel REAL,
+            cours_reference REAL,
+            lu INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
     conn.commit()
     _create_reflexion_tables(conn)
     _migrate_v2(conn)
+    _migrate_v3(conn)
+    _migrate_prospects_v2(conn)
+    _migrate_reflexion_attachments(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
 
@@ -443,6 +490,65 @@ def _create_reflexion_tables(conn):
     conn.commit()
 
 
+def _migrate_prospects_v2(conn):
+    """Migration : détecte l'ancien schéma prospects (nom_entreprise) et recrée la table avec le nouveau schéma."""
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(prospects)")
+    columns = [row[1] for row in cursor.fetchall()]
+    if "nom" in columns:
+        return  # déjà le bon schéma
+    # Ancien schéma détecté — renommer et recréer
+    cursor.execute("ALTER TABLE prospects RENAME TO prospects_old")
+    cursor.execute("""
+        CREATE TABLE prospects (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id  INTEGER REFERENCES sessions(id) ON DELETE SET NULL,
+            nom         TEXT NOT NULL,
+            categorie   TEXT NOT NULL DEFAULT 'restauration',
+            url         TEXT,
+            statut      TEXT NOT NULL DEFAULT 'identifié',
+            score       TEXT,
+            form_data   TEXT,
+            fiche       TEXT,
+            proposition TEXT,
+            demo_path   TEXT,
+            demo_url    TEXT,
+            notes       TEXT,
+            created_at  TEXT DEFAULT (datetime('now')),
+            updated_at  TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    # Migrer ce qui peut l'être depuis l'ancien schéma
+    cursor.execute("""
+        INSERT INTO prospects (nom, statut, notes, created_at, updated_at)
+        SELECT
+            COALESCE(nom_entreprise, 'Prospect migré'),
+            COALESCE(statut, 'identifié'),
+            COALESCE(notes, ''),
+            COALESCE(created_at, datetime('now')),
+            COALESCE(updated_at, datetime('now'))
+        FROM prospects_old
+    """)
+    cursor.execute("DROP TABLE prospects_old")
+    conn.commit()
+
+
+def _migrate_reflexion_attachments(conn):
+    """Migration : ajoute attachment_base64 et attachment_filename à reflexion_messages."""
+    cursor = conn.cursor()
+    
+    migrations_reflexion = [
+        "ALTER TABLE reflexion_messages ADD COLUMN attachment_base64 TEXT",
+        "ALTER TABLE reflexion_messages ADD COLUMN attachment_filename TEXT",
+    ]
+    for migration in migrations_reflexion:
+        try:
+            cursor.execute(migration)
+        except Exception:
+            pass
+    conn.commit()
+
+
 def _migrate_v2(conn):
     """Migration v2 : ajoute les colonnes pour le Module Code refactorisé (idempotent)."""
     cursor = conn.cursor()
@@ -466,5 +572,10 @@ def _migrate_v2(conn):
         "CREATE INDEX IF NOT EXISTS idx_pipeline_steps_session_sub "
         "ON pipeline_steps(session_id, step_index, sub_step_index)"
     )
+
+    try:
+        cursor.execute("ALTER TABLE model_decision_log ADD COLUMN module_name TEXT DEFAULT 'unknown'")
+    except Exception:
+        pass
 
     conn.commit()

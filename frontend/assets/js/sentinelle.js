@@ -246,7 +246,7 @@
     document.getElementById('btn-valider-scenario').addEventListener('click', async () => {
       const scenario = document.getElementById('input-scenario').value.trim();
       if (!scenario) return window.showToast('Nommez le scénario choisi', 'warning');
-      await window.API.updateCycleDecision(cycle.id, { mode: 'achat', decision: scenario });
+      await window.API.updateCycleDecision(cycle.id, { mode: 'normal', decision: scenario });
       await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_5' });
       const montant = propositions ? propositions.budget_disponible : 20.0;
       await window.API.runOrdre(cycle.id, { scenario_choisi: scenario, montant });
@@ -262,16 +262,117 @@
 
   function renderPhase5(cycle) {
     const zone = document.getElementById('cycle-zone');
+    
+    // Extraire le ticker du scénario choisi si possible
+    let tickerExtrait = '';
+    if (cycle.decision) {
+      const match = cycle.decision.match(/\b([A-Z]{2,5})\b/);
+      if (match) tickerExtrait = match[1];
+    }
+    
+    // Afficher les paramètres d'ordre si disponibles
+    let ordreInfo = '';
+    try {
+      const propositions = cycle.donnees_propositions ? JSON.parse(cycle.donnees_propositions) : null;
+      if (propositions && propositions.ordre) {
+        ordreInfo = `
+          <div style="background:var(--bg-secondary);padding:1rem;border-radius:6px;margin-bottom:1rem">
+            <strong>Paramètres d'ordre suggérés :</strong>
+            <pre style="margin:0.5rem 0 0;font-size:0.9rem;white-space:pre-wrap">${JSON.stringify(propositions.ordre, null, 2)}</pre>
+          </div>
+        `;
+      }
+    } catch (e) {}
+    
+    const today = new Date().toISOString().split('T')[0];
+    
     zone.innerHTML = `
       <div class="card">
-        <h2>Phase 5 — Exécution</h2>
-        <p class="text-muted">Exécutez dans Trade Republic puis confirmez</p>
-        <button id="btn-confirm-execution" class="btn-primary">Confirmer l'exécution</button>
+        <h2>Phase 5 — Confirmation de l'achat réel</h2>
+        <p class="text-muted">Scénario choisi : <strong>${cycle.decision || 'N/A'}</strong></p>
+        ${ordreInfo}
+        
+        <form id="form-confirm-achat" style="display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem">
+          <div>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Ticker *</label>
+            <input type="text" id="input-ticker" value="${tickerExtrait}" required style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+          </div>
+          
+          <div>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Quantité réelle achetée *</label>
+            <input type="number" id="input-quantite" step="0.01" required style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+          </div>
+          
+          <div>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Prix unitaire réel payé (€) *</label>
+            <input type="number" id="input-prix" step="0.01" required style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+          </div>
+          
+          <div>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Frais (€)</label>
+            <input type="number" id="input-frais" value="1.0" step="0.01" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+          </div>
+          
+          <div>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Date de transaction *</label>
+            <input type="date" id="input-date-transaction" value="${today}" required style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+          </div>
+          
+          <div>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Enveloppe *</label>
+            <select id="input-enveloppe" required style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+              <option value="PEA">PEA</option>
+              <option value="CTO">CTO</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn-primary">Confirmer l'achat</button>
+        </form>
       </div>
     `;
-    document.getElementById('btn-confirm-execution').addEventListener('click', async () => {
-      await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_6' });
-      await loadCycleActif();
+    
+    document.getElementById('form-confirm-achat').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const ticker = document.getElementById('input-ticker').value.trim();
+      const quantite = parseFloat(document.getElementById('input-quantite').value);
+      const prix = parseFloat(document.getElementById('input-prix').value);
+      const frais = parseFloat(document.getElementById('input-frais').value) || 0.0;
+      const dateTransaction = document.getElementById('input-date-transaction').value;
+      const enveloppe = document.getElementById('input-enveloppe').value;
+      
+      if (!ticker || !quantite || !prix || !dateTransaction || !enveloppe) {
+        return window.showToast('Tous les champs requis doivent être remplis', 'error');
+      }
+      
+      try {
+        // Créer la transaction
+        await window.API.createTransaction({
+          cycle_id: cycle.id,
+          ticker,
+          quantite,
+          prix_reel: prix,
+          frais,
+          date_transaction: dateTransaction
+        });
+        
+        // Upsert la position
+        await window.API.upsertPosition({
+          ticker,
+          quantite,
+          prix_unitaire: prix,
+          enveloppe,
+          date_entree: dateTransaction
+        });
+        
+        // Passer à Phase 6
+        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_6' });
+        
+        window.showToast('Achat confirmé et position mise à jour', 'success');
+        await loadCycleActif();
+      } catch (error) {
+        window.showToast('Erreur : ' + error.message, 'error');
+      }
     });
   }
 
@@ -309,20 +410,57 @@
 
   async function loadPortefeuille() {
     try {
-      const positions = await window.API.getPositions();
+      const data = await window.API.getPositionsValorisation();
       const list = document.getElementById('portefeuille-list');
-      if (positions.length === 0) {
+      
+      if (!data.positions || data.positions.length === 0) {
         list.innerHTML = '<p class="text-muted">Aucune position</p>';
         return;
       }
-      list.innerHTML = positions.map(p => `
-        <div class="position-item">
-          <div><strong>${p.ticker}</strong> <span class="text-muted">${p.quantite}</span></div>
-          <div class="text-muted">${p.enveloppe}</div>
+      
+      const positionsHTML = data.positions.map(p => {
+        const coursHTML = p.cours_actuel !== null ? `${p.cours_actuel.toFixed(2)} €` : 'N/A';
+        const valorisationHTML = p.valorisation_actuelle !== null ? `${p.valorisation_actuelle.toFixed(2)} €` : 'N/A';
+        
+        let pvHTML = '';
+        if (p.plus_value_latente !== null && p.plus_value_pct !== null) {
+          const pvClass = p.plus_value_latente >= 0 ? 'text-success' : 'text-danger';
+          const pvSign = p.plus_value_latente >= 0 ? '+' : '';
+          pvHTML = `<div class="${pvClass}" style="font-size:0.85rem">${pvSign}${p.plus_value_latente.toFixed(2)} € (${pvSign}${p.plus_value_pct.toFixed(2)}%)</div>`;
+        }
+        
+        return `
+          <div class="position-item" style="padding:0.75rem;border-bottom:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+              <strong>${p.ticker}</strong>
+              <span class="text-muted">${p.enveloppe}</span>
+            </div>
+            <div style="font-size:0.85rem;color:var(--text-muted)">
+              Qté: ${p.quantite} | Cours: ${coursHTML}
+            </div>
+            <div style="font-size:0.85rem;color:var(--text-muted)">
+              Valorisation: ${valorisationHTML}
+            </div>
+            ${pvHTML}
+          </div>
+        `;
+      }).join('');
+      
+      const totalHTML = `
+        <div style="padding:1rem;background:var(--bg-secondary);border-radius:6px;margin-top:0.5rem">
+          <div style="font-weight:bold;margin-bottom:0.5rem">Total portefeuille</div>
+          <div style="font-size:0.9rem">Valorisation: ${data.total_valorisation.toFixed(2)} €</div>
+          <div style="font-size:0.9rem">Prix de revient: ${data.total_prix_revient.toFixed(2)} €</div>
+          <div style="font-size:0.9rem" class="${data.total_plus_value >= 0 ? 'text-success' : 'text-danger'}">
+            ${data.total_plus_value >= 0 ? '+' : ''}${data.total_plus_value.toFixed(2)} € (${data.total_plus_value >= 0 ? '+' : ''}${data.total_plus_value_pct.toFixed(2)}%)
+          </div>
         </div>
-      `).join('');
+      `;
+      
+      list.innerHTML = positionsHTML + totalHTML;
     } catch (e) {
       console.error('Erreur portefeuille:', e);
+      document.getElementById('portefeuille-list').innerHTML = '<p class="text-danger">Erreur chargement</p>';
     }
   }
 

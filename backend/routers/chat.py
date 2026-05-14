@@ -25,6 +25,8 @@ class ConversationCreate(BaseModel):
 class MessageCreate(BaseModel):
     content: str
     model: str | None = None
+    attachment_base64: str | None = None
+    attachment_filename: str | None = None
 
 
 # ─── Routes ────────────────────────────────────────────────────────────────────
@@ -138,7 +140,7 @@ def get_conversation(conv_id: int):
     
     # Récupérer les messages
     cursor.execute(
-        "SELECT id, role, content, created_at FROM messages WHERE conversation_id = ? ORDER BY created_at ASC",
+        "SELECT id, role, content, created_at, attachment_filename FROM messages WHERE conversation_id = ? ORDER BY created_at ASC",
         (conv_id,)
     )
     messages = [
@@ -146,7 +148,8 @@ def get_conversation(conv_id: int):
             "id": row["id"],
             "role": row["role"],
             "content": row["content"],
-            "created_at": row["created_at"]
+            "created_at": row["created_at"],
+            "attachment_filename": row["attachment_filename"] if "attachment_filename" in row.keys() else None
         }
         for row in cursor.fetchall()
     ]
@@ -184,7 +187,14 @@ async def send_message(conv_id: int, data: MessageCreate):
         config["chat"]["model"] = data.model
     
     try:
-        result = await send_chat_message(conv_id, data.content, db, config)
+        result = await send_chat_message(
+            conv_id, 
+            data.content, 
+            db, 
+            config,
+            attachment_base64=data.attachment_base64,
+            attachment_filename=data.attachment_filename
+        )
         
         # Récupérer les messages créés
         cursor = db.cursor()

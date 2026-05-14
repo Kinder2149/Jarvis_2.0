@@ -50,3 +50,5 @@ class StartPipeline(BaseModel):
     initial_input: str | None = None
     modele_override: str | None = None
     source_mission_prompt_id: int | None = None
+    attachment_base64: str | None = None
+    attachment_filename: str | None = None

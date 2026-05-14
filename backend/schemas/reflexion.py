@@ -33,12 +33,16 @@ class ReflexionMessage(BaseModel):
     role: str
     content: str
     attachments: Optional[str] = None
+    attachment_base64: Optional[str] = None
+    attachment_filename: Optional[str] = None
     compacted: bool = False
     created_at: str
 
 
 class SendMessage(BaseModel):
     content: str
+    attachment_base64: Optional[str] = None
+    attachment_filename: Optional[str] = None
 
 
 class ProposerEdit(BaseModel):

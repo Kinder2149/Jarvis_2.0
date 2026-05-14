@@ -3254,6 +3254,14 @@ a.sidebar-logo:hover {
   font-weight: 600;
 }
 
+.sidebar-badge--active {
+  background: var(--success);
+}
+
+.sidebar-badge--danger {
+  background: var(--danger);
+}
+
 .sidebar-empty {
   padding: 1.5rem 0.75rem;
   color: var(--text-muted);
@@ -3550,3 +3558,302 @@ a.sidebar-logo:hover {
   color: #a855f7;
 }
 
+/* ============================================================
+   RESPONSIVE MOBILE — breakpoint 768px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* --- Body et layout --- */
+  body {
+    overflow: auto;
+    height: 100dvh;
+  }
+
+  #app-layout {
+    display: block;
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  /* --- Sidebar → drawer overlay --- */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: 285px !important;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+  }
+
+  #sidebar.sidebar--mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Forcer le texte visible dans le drawer (ignorer l'état collapsed desktop) */
+  #sidebar .sidebar-text {
+    display: initial !important;
+  }
+  #sidebar .sidebar-collapsed-text {
+    display: none !important;
+  }
+
+  /* Masquer le bouton collapse desktop dans le drawer mobile */
+  #btn-sidebar-collapse {
+    display: none;
+  }
+
+  /* --- Backdrop --- */
+  #sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 299;
+    cursor: pointer;
+  }
+
+  #sidebar-backdrop.active {
+    display: block;
+  }
+
+  /* --- Bouton hamburger --- */
+  #btn-mobile-menu {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 200;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  /* --- Main content --- */
+  #main-content {
+    width: 100%;
+    padding: 1rem;
+    padding-top: 3.75rem;
+    min-height: 100dvh;
+  }
+
+  /* --- Explorer : toujours masqué sur mobile --- */
+  #explorer {
+    display: none !important;
+  }
+
+  /* --- Right panel Sentinelle : passe sous le main --- */
+  #right-panel {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px solid var(--border);
+    max-height: none !important;
+  }
+
+  /* --- Touch targets : 44px minimum --- */
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    min-height: 44px;
+    padding: 0.625rem 1rem;
+  }
+
+  .btn-create {
+    min-height: 48px;
+  }
+
+  .nav-item {
+    padding: 0.6rem 0.75rem;
+    min-height: 40px;
+  }
+
+  .filter-btn {
+    min-height: 40px;
+    padding: 0.5rem 1rem;
+  }
+
+  /* --- Inputs : 16px pour éviter le zoom iOS --- */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* --- Modales : s'adaptent à l'écran --- */
+  .modal {
+    min-width: unset !important;
+    width: 92vw;
+    max-width: 92vw;
+    margin: 0 auto;
+  }
+
+  /* --- Toast : repositionné en haut (évite le clavier virtuel) --- */
+  #toast-container {
+    bottom: auto;
+    top: 4.5rem;
+    right: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+
+  /* --- Dashboard stats : 2 colonnes --- */
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* --- Page header : empilé --- */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  /* --- Reflexion actions : empilées --- */
+  .reflexion-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .reflexion-actions button {
+    width: 100%;
+  }
+
+  /* --- Mission : boutons plein écran --- */
+  #btn-execute-mission,
+  #btn-copy-livrable,
+  #btn-apply-decision {
+    width: 100%;
+  }
+
+  /* --- Chat input : plein écran --- */
+  .chat-input-area {
+    padding: 0.75rem;
+  }
+
+  /* --- Kanban Atelier : scroll horizontal tactile --- */
+  .kanban-board {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+  }
+
+  /* --- Settings : clés API empilées --- */
+  .api-key-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .api-key-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .api-key-value-group {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* --- Diff viewer : taille réduite --- */
+  .diff-viewer {
+    font-size: 0.72rem;
+  }
+
+  /* --- Sidebar actions grid : 3 colonnes au lieu de 2 --- */
+  .sidebar-actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* --- Nav actions boutons : masqués sur mobile (trop petits) --- */
+  .nav-project-actions {
+    display: none;
+  }
+
+}
+
+/* Masqué par défaut sur desktop, affiché uniquement en mobile via CSS */
+#btn-mobile-menu {
+  display: none;
+}
+
+/* ─── Attachement d'images dans le chat ──────────────────────────────────── */
+
+.attach-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+}
+
+.attach-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.attach-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  gap: 0.75rem;
+}
+
+.attach-filename {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.attach-clear {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.attach-clear:hover {
+  color: var(--danger);
+}
+
+.msg-attachment-badge {
+  display: inline-block;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  border: 1px solid var(--border);
+}

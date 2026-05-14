@@ -11,6 +11,7 @@
   let currentLivrableContent = null;
   let currentLivrableType = null;
   let currentStep = 1;
+  let attachedImageReflexion = null;
 
   // ── Bootstrap ─────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async () => {
@@ -34,12 +35,15 @@
       pipelineSessionId = parseInt(pipelineParam);
       showPipelineOnly();
       await loadPipelineSession();
-    } else if (projectParam && newParam && VALID_TYPES.includes(newParam)) {
-      // Type déjà connu (vient de la sidebar) — créer directement sans formulaire intermédiaire
-      await autoCreateSession(parseInt(projectParam), newParam);
     } else if (projectParam && newParam) {
-      // Type inconnu ou "true" — afficher le formulaire de sélection
-      showCreateForm(parseInt(projectParam), newParam);
+      const livrableType = VALID_TYPES.includes(newParam) ? newParam : 'mission_code';
+      await autoCreateSession(parseInt(projectParam), livrableType);
+      
+      // Gestion du préfill depuis un livrable mission_code
+      const prefillParam = window.getURLParam('prefill');
+      if (prefillParam && newParam === 'mission_code') {
+        sessionStorage.setItem('reflexion_prefill', decodeURIComponent(prefillParam));
+      }
     } else {
       showEmptyState();
     }
@@ -48,39 +52,6 @@
   // ── Empty state ───────────────────────────────────────────────────
   function showEmptyState() {
     document.getElementById('mission-empty-state').style.display = 'block';
-  }
-
-  // ── Formulaire création (mode ?project_id=X&new=true) ─────────────
-  function showCreateForm(projId, livrableType) {
-    projectId = projId;
-    document.getElementById('mission-create-form').style.display = 'block';
-
-    if (livrableType && livrableType !== 'true') {
-      const radio = document.querySelector(`input[name="create_livrable_type"][value="${livrableType}"]`);
-      if (radio) radio.checked = true;
-    }
-  }
-
-  async function handleCreateSession() {
-    const livrableType = document.querySelector('input[name="create_livrable_type"]:checked')?.value || 'mission_code';
-    if (!projectId) {
-      window.showToast('Projet non trouvé', 'error');
-      return;
-    }
-    const btn = document.getElementById('btn-create-session');
-    btn.disabled = true;
-    btn.textContent = '⏳ Création…';
-    try {
-      const session = await window.API.createReflexion(projectId, livrableType);
-      document.getElementById('mission-create-form').style.display = 'none';
-      history.replaceState(null, '', `mission.html?session=${session.id}&project_id=${projectId}`);
-      reflexionSessionId = session.id;
-      await loadReflexionSession(session.id);
-    } catch (error) {
-      window.showToast('Erreur création session : ' + error.message, 'error');
-      btn.disabled = false;
-      btn.textContent = 'Créer la session';
-    }
   }
 
   async function autoCreateSession(projId, livrableType) {
@@ -228,6 +199,14 @@
       btnFiger.disabled = false;
       setActiveStep(1);
       scrollMessages();
+      
+      // Pré-remplir l'input depuis sessionStorage si présent (pont Réflexion → Code)
+      const prefillContent = sessionStorage.getItem('reflexion_prefill');
+      if (prefillContent) {
+        input.value = prefillContent;
+        input.focus();
+        sessionStorage.removeItem('reflexion_prefill');
+      }
     }
   }
 
@@ -257,6 +236,15 @@
 
     div.appendChild(roleEl);
     div.appendChild(contentEl);
+    
+    // Afficher badge d'attachement si présent
+    if (message.role === 'user' && message.attachment_filename) {
+      const badge = document.createElement('span');
+      badge.className = 'msg-attachment-badge';
+      badge.textContent = `📎 ${message.attachment_filename}`;
+      div.appendChild(badge);
+    }
+    
     container.appendChild(div);
   }
 
@@ -281,12 +269,27 @@
     btnSend.textContent = '⏳';
 
     try {
-      const messages = await window.API.sendReflexionMessage(reflexionSessionId, content);
+      const body = { content };
+      if (attachedImageReflexion) {
+        body.attachment_base64 = attachedImageReflexion.base64;
+        body.attachment_filename = attachedImageReflexion.filename;
+      }
+      
+      const messages = await window.API.sendReflexionMessage(reflexionSessionId, body);
       const container = document.getElementById('reflexion-messages');
       container.innerHTML = '';
       messages.forEach(msg => renderMessage(msg));
       input.value = '';
       scrollMessages();
+
+      // Reset attachement après envoi réussi
+      if (attachedImageReflexion) {
+        attachedImageReflexion = null;
+        const preview = document.getElementById('attach-preview-reflexion');
+        const inputFile = document.getElementById('attach-input-reflexion');
+        if (preview) preview.style.display = 'none';
+        if (inputFile) inputFile.value = '';
+      }
 
       // Rafraîchir le titre si première session
       if (!reflexionSession.titre) {
@@ -377,15 +380,48 @@
   }
 
   // ── Transition Zone 1 → Zone 2 : Figement ────────────────────────
-  function openFigerModal() {
+  async function openFigerModal() {
     if (!reflexionSessionId) {
       window.showToast('Aucune session active', 'error');
       return;
     }
-    document.getElementById('modal-figer').style.display = 'flex';
+    
+    const modal = document.getElementById('modal-figer');
+    const detectionZone = document.getElementById('figer-detection-zone');
+    const loadingDiv = document.getElementById('figer-detection-loading');
+    const resultDiv = document.getElementById('figer-detection-result');
+    const suggestionP = document.getElementById('figer-detection-suggestion');
+    const selectEl = document.getElementById('figer-livrable-type-select');
+    
+    modal.style.display = 'flex';
+    detectionZone.style.display = 'block';
+    loadingDiv.style.display = 'flex';
+    resultDiv.style.display = 'none';
+    
+    try {
+      const detection = await window.API.detectLivrableType(reflexionSessionId);
+      const typeLabels = {
+        mission_code: '🎯 Mission Code',
+        decision_figee: '📌 Décision figée',
+        plan_multi_missions: '📋 Plan multi-missions'
+      };
+      suggestionP.textContent = `🤖 L'IA suggère : ${typeLabels[detection.livrable_type]} — ${detection.justification}`;
+      selectEl.value = detection.livrable_type;
+      loadingDiv.style.display = 'none';
+      resultDiv.style.display = 'block';
+    } catch (error) {
+      console.error('Erreur détection type:', error);
+      loadingDiv.style.display = 'none';
+      resultDiv.style.display = 'block';
+      suggestionP.textContent = '⚠️ Détection impossible, veuillez sélectionner le type manuellement';
+      selectEl.value = 'mission_code';
+    }
   }
 
   async function confirmFiger() {
+    const selectEl = document.getElementById('figer-livrable-type-select');
+    const livrableTypeChoisi = selectEl ? selectEl.value : null;
+    
     document.getElementById('modal-figer').style.display = 'none';
     const btnFiger = document.getElementById('btn-figer');
     btnFiger.disabled = true;
@@ -393,7 +429,7 @@
     window.showToast('🔒 Figement en cours… Cela peut prendre jusqu\'a 30 secondes', 'info');
 
     try {
-      const livrable = await window.API.figerReflexion(reflexionSessionId);
+      const livrable = await window.API.figerReflexion(reflexionSessionId, livrableTypeChoisi);
       window.showToast('Mission figée et cadrage écrit', 'success');
       renderRecapFichiers(
         'recap-fichiers-figement',
@@ -463,6 +499,28 @@
       zoneExec.style.display = 'block';
       // Déclencher le preview parsing sur le contenu du livrable
       previewParsingFromLivrable(livrable.content);
+      
+      // Bouton "Lancer en mission Code"
+      const btnLaunchCode = document.getElementById('btn-launch-code-mission');
+      if (btnLaunchCode) {
+        btnLaunchCode.style.display = 'inline-flex';
+        btnLaunchCode.onclick = () => {
+          let promptContent = livrable.content;
+          
+          // Limiter à 4000 caractères pour éviter les URLs trop longues
+          if (promptContent.length > 4000) {
+            promptContent = promptContent.substring(0, 4000);
+            window.showToast('⚠️ Prompt tronqué à 4000 caractères — vérifiez le contenu avant de lancer', 'warning');
+          }
+          
+          const encodedPrompt = encodeURIComponent(promptContent);
+          const params = new URLSearchParams();
+          if (projectId) params.set('project_id', projectId);
+          params.set('prefill', encodedPrompt);
+          params.set('new', 'mission_code');
+          window.location.href = `mission.html?${params.toString()}`;
+        };
+      }
     }
 
     // decision_figee : bouton Appliquer PROJET_CONTEXTE
@@ -1031,9 +1089,69 @@
 
   // ── Event Listeners ───────────────────────────────────────────────
   function setupEventListeners() {
-    // Création session
-    document.getElementById('btn-create-session')?.addEventListener('click', handleCreateSession);
+    // Zone 1 : créer éléments d'attachement pour réflexion
+    const reflexionInputArea = document.getElementById('reflexion-input-area');
+    if (reflexionInputArea) {
+      const btnSend = document.getElementById('btn-send-message');
+      
+      const attachBtn = document.createElement('button');
+      attachBtn.id = 'attach-btn-reflexion';
+      attachBtn.className = 'attach-btn';
+      attachBtn.title = 'Joindre une image';
+      attachBtn.textContent = '📎';
+      attachBtn.type = 'button';
 
+      const attachInput = document.createElement('input');
+      attachInput.type = 'file';
+      attachInput.id = 'attach-input-reflexion';
+      attachInput.accept = 'image/png,image/jpeg,image/webp';
+      attachInput.style.display = 'none';
+
+      const attachPreview = document.createElement('div');
+      attachPreview.id = 'attach-preview-reflexion';
+      attachPreview.className = 'attach-preview';
+      attachPreview.style.display = 'none';
+      attachPreview.innerHTML = `
+        <span id="attach-filename-reflexion" class="attach-filename"></span>
+        <button id="attach-clear-reflexion" class="attach-clear" type="button">✕</button>
+      `;
+
+      reflexionInputArea.insertBefore(attachBtn, btnSend);
+      reflexionInputArea.appendChild(attachInput);
+      reflexionInputArea.appendChild(attachPreview);
+
+      // Event listeners attachement
+      attachBtn.addEventListener('click', () => {
+        attachInput.click();
+      });
+
+      attachInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          const base64 = dataUrl.split(',')[1];
+          attachedImageReflexion = {
+            base64: base64,
+            filename: file.name
+          };
+          document.getElementById('attach-filename-reflexion').textContent = file.name;
+          document.getElementById('attach-preview-reflexion').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'attach-clear-reflexion') {
+          attachedImageReflexion = null;
+          document.getElementById('attach-preview-reflexion').style.display = 'none';
+          document.getElementById('attach-input-reflexion').value = '';
+        }
+      });
+    }
+    
     // Zone 1 : envoi message
     document.getElementById('btn-send-message')?.addEventListener('click', sendMessage);
     document.getElementById('reflexion-input')?.addEventListener('keydown', (e) => {

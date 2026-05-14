@@ -8,6 +8,7 @@ backend/data/contexts/
 
 # Backups DB (générés automatiquement par les refontes)
 backend/data/jarvis.db.backup-*
+backend/data/jarvis.db.backup_*
 backend/data/jarvis_backup_*.db
 backend/data/config.json.backup
 

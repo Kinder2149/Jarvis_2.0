@@ -7,9 +7,13 @@ import logging
 from logging.handlers import RotatingFileHandler
 import json
 import shutil
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
 
 from backend.database import init_db, get_connection
 from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle
+
+scheduler = AsyncIOScheduler()
 
 LOG_PATH = Path(__file__).parent / "data" / "jarvis.log"
 LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -160,7 +164,7 @@ def seed_context_from_methodo():
     conn.close()
 
 @app.on_event("startup")
-def startup():
+async def startup():
     init_db()
     
     # Reset sessions RUNNING → FAILED (arrêt brutal serveur)
@@ -185,4 +189,31 @@ def startup():
     
     migrate_config_to_sqlite()
     seed_context_from_methodo()
+    
+    # Configurer APScheduler pour alertes Sentinelle
+    async def check_alertes_job():
+        from backend.services import sentinelle_service
+        try:
+            await sentinelle_service.run_check_alertes()
+        except Exception as e:
+            logger.error(f"Erreur job alertes Sentinelle: {e}")
+    
+    scheduler.add_job(
+        check_alertes_job,
+        'cron',
+        day_of_week='mon',
+        hour=8,
+        minute=0,
+        id='sentinelle_alertes',
+        replace_existing=True
+    )
+    scheduler.start()
+    logger.info("Scheduler APScheduler démarré — vérification alertes chaque lundi 8h")
+    
     logger.info("JARVIS démarré")
+
+
+@app.on_event("shutdown")
+def shutdown():
+    scheduler.shutdown(wait=False)
+    logger.info("Scheduler APScheduler arrêté")

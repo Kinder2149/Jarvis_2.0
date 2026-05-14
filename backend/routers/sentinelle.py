@@ -48,7 +48,14 @@ class TransactionCreate(BaseModel):
     quantite: float
     prix_reel: float
     frais: float = 0.0
-    date_transaction: str
+
+
+class PositionUpsert(BaseModel):
+    ticker: str
+    quantite: float
+    prix_unitaire: float
+    enveloppe: str
+    date_entree: str
 
 
 class OrdreCreate(BaseModel):
@@ -66,6 +73,93 @@ def list_positions():
     conn.close()
     
     return [dict(row) for row in rows]
+
+
+@router.get("/positions/valorisation")
+async def get_positions_valorisation():
+    """Récupère toutes les positions avec valorisation en temps réel."""
+    from backend.services.sentinelle_service import _fetch_twelve_data_prices, _fetch_coingecko_prices
+    from backend.database import load_config
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM sentinelle_positions ORDER BY created_at DESC")
+    positions = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    
+    if not positions:
+        return {"positions": [], "total_valorisation": 0.0, "total_prix_revient": 0.0, "total_plus_value": 0.0, "total_plus_value_pct": 0.0}
+    
+    # Séparer actions/ETF et crypto
+    stock_tickers = []
+    crypto_tickers = []
+    CRYPTO_SYMBOLS = ["BTC", "ETH", "SOL", "BNB", "ADA", "DOT", "AVAX", "MATIC", "LINK", "UNI"]
+    
+    for pos in positions:
+        ticker = pos["ticker"]
+        if ticker in CRYPTO_SYMBOLS:
+            crypto_tickers.append(ticker)
+        else:
+            stock_tickers.append(ticker)
+    
+    # Récupérer cours actuels
+    config = load_config()
+    twelve_data_key = config["api_keys"].get("twelve_data_key", "")
+    
+    stock_prices = await _fetch_twelve_data_prices(stock_tickers, twelve_data_key) if stock_tickers else {}
+    crypto_prices = await _fetch_coingecko_prices(crypto_tickers) if crypto_tickers else {}
+    
+    all_prices = {**stock_prices, **crypto_prices}
+    
+    # Enrichir chaque position
+    positions_enrichies = []
+    total_valorisation = 0.0
+    total_prix_revient = 0.0
+    
+    for pos in positions:
+        ticker = pos["ticker"]
+        quantite = pos["quantite"]
+        prix_moyen = pos.get("prix_moyen", 0.0) or 0.0
+        prix_revient = pos.get("prix_revient", 0.0) or 0.0
+        
+        # Si prix_revient pas calculé, le calculer
+        if prix_revient == 0.0 and prix_moyen > 0.0:
+            prix_revient = quantite * prix_moyen
+        
+        cours_actuel = all_prices.get(ticker, {}).get("cours", None)
+        
+        if cours_actuel is not None and cours_actuel > 0:
+            valorisation_actuelle = quantite * cours_actuel
+            plus_value_latente = valorisation_actuelle - prix_revient
+            plus_value_pct = (plus_value_latente / prix_revient * 100) if prix_revient > 0 else 0.0
+        else:
+            valorisation_actuelle = None
+            plus_value_latente = None
+            plus_value_pct = None
+        
+        positions_enrichies.append({
+            **pos,
+            "cours_actuel": cours_actuel,
+            "valorisation_actuelle": valorisation_actuelle,
+            "plus_value_latente": plus_value_latente,
+            "plus_value_pct": plus_value_pct
+        })
+        
+        if valorisation_actuelle is not None:
+            total_valorisation += valorisation_actuelle
+        if prix_revient > 0:
+            total_prix_revient += prix_revient
+    
+    total_plus_value = total_valorisation - total_prix_revient
+    total_plus_value_pct = (total_plus_value / total_prix_revient * 100) if total_prix_revient > 0 else 0.0
+    
+    return {
+        "positions": positions_enrichies,
+        "total_valorisation": total_valorisation,
+        "total_prix_revient": total_prix_revient,
+        "total_plus_value": total_plus_value,
+        "total_plus_value_pct": total_plus_value_pct
+    }
 
 
 @router.post("/positions", status_code=201)
@@ -88,7 +182,60 @@ def create_position(data: PositionCreate):
     return dict(row)
 
 
-@router.put("/positions/{position_id}")
+@router.post("/positions/upsert", status_code=200)
+def upsert_position(data: PositionUpsert):
+    """Créer ou mettre à jour une position (addition quantité + moyenne pondérée prix)."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Vérifier si position existe
+    cursor.execute("SELECT * FROM sentinelle_positions WHERE ticker = ?", (data.ticker,))
+    existing = cursor.fetchone()
+    
+    if existing:
+        # Mettre à jour : addition quantité + moyenne pondérée prix
+        ancienne_quantite = existing["quantite"]
+        ancien_prix = existing.get("prix_moyen", 0.0) or 0.0
+        nouvelle_quantite = ancienne_quantite + data.quantite
+        
+        # Moyenne pondérée
+        if nouvelle_quantite > 0:
+            nouveau_prix_moyen = (
+                (ancienne_quantite * ancien_prix + data.quantite * data.prix_unitaire) / nouvelle_quantite
+            )
+        else:
+            nouveau_prix_moyen = 0.0
+        
+        nouveau_prix_revient = nouvelle_quantite * nouveau_prix_moyen
+        
+        cursor.execute("""
+            UPDATE sentinelle_positions
+            SET quantite = ?, prix_moyen = ?, prix_revient = ?, enveloppe = ?, date_entree = ?
+            WHERE ticker = ?
+        """, (nouvelle_quantite, nouveau_prix_moyen, nouveau_prix_revient, data.enveloppe, data.date_entree, data.ticker))
+        conn.commit()
+        
+        cursor.execute("SELECT * FROM sentinelle_positions WHERE ticker = ?", (data.ticker,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict(row)
+    else:
+        # Créer nouvelle position
+        prix_revient = data.quantite * data.prix_unitaire
+        cursor.execute("""
+            INSERT INTO sentinelle_positions (ticker, quantite, enveloppe, date_entree, prix_moyen, prix_revient)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (data.ticker, data.quantite, data.enveloppe, data.date_entree, data.prix_unitaire, prix_revient))
+        conn.commit()
+        position_id = cursor.lastrowid
+        
+        cursor.execute("SELECT * FROM sentinelle_positions WHERE id = ?", (position_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict(row)
+
+
+@router.patch("/positions/{position_id}")
 def update_position(position_id: int, data: PositionUpdate):
     """Mettre à jour la quantité d'une position."""
     conn = get_connection()
@@ -449,3 +596,104 @@ async def run_ordre_cycle(cycle_id: int, data: OrdreCreate):
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur ordre: {str(e)}")
+
+
+@router.get("/cycles/recent")
+def get_cycles_recent():
+    """Retourne les 5 derniers cycles, toutes phases confondues."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT * FROM sentinelle_cycles 
+        ORDER BY created_at DESC 
+        LIMIT 5
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [dict(row) for row in rows]
+
+
+@router.get("/cycles/actif/count")
+def get_cycles_actif_count():
+    """Retourne le nombre de cycles dont etat != 'CLOTURE'."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT COUNT(*) as count 
+        FROM sentinelle_cycles 
+        WHERE etat != 'CLOTURE'
+    """)
+    row = cursor.fetchone()
+    conn.close()
+    
+    return {"count": row["count"]}
+
+
+@router.get("/alertes")
+def get_alertes():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM sentinelle_alertes
+        ORDER BY created_at DESC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
+@router.get("/alertes/count")
+def get_alertes_count():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT COUNT(*) as count
+        FROM sentinelle_alertes
+        WHERE lu = 0
+    """)
+    row = cursor.fetchone()
+    conn.close()
+    return {"count": row["count"]}
+
+
+@router.patch("/alertes/{alerte_id}/lu")
+def mark_alerte_lue(alerte_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE sentinelle_alertes
+        SET lu = 1
+        WHERE id = ?
+    """, (alerte_id,))
+    conn.commit()
+    
+    cursor.execute("SELECT * FROM sentinelle_alertes WHERE id = ?", (alerte_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        raise HTTPException(status_code=404, detail="Alerte non trouvée")
+    
+    return dict(row)
+
+
+@router.delete("/alertes/lues")
+def delete_alertes_lues():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM sentinelle_alertes WHERE lu = 1")
+    deleted_count = cursor.rowcount
+    conn.commit()
+    conn.close()
+    return {"deleted": deleted_count}
+
+
+@router.post("/alertes/run-check")
+async def run_check_alertes_debug():
+    """Endpoint de debug pour tester manuellement la vérification des alertes."""
+    from backend.services import sentinelle_service
+    result = await sentinelle_service.run_check_alertes()
+    return result

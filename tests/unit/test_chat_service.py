@@ -121,7 +121,7 @@ class TestBuildSystemPrompt:
         session_note = "Travail sur module chat"
         project = "# Projet JARVIS 2.0"
         
-        result = build_system_prompt(preset, methodo, session_note, project)
+        result = build_system_prompt(preset=preset, methodo_context=methodo, session_note=session_note, project_context=project)
         
         assert "Tu es JARVIS" in result
         assert "RÈGLES" in result
@@ -134,7 +134,7 @@ class TestBuildSystemPrompt:
         """project_context = None → pas de section PROJET ACTIF."""
         preset = "Tu es JARVIS"
         
-        result = build_system_prompt(preset, "", "", None)
+        result = build_system_prompt(preset=preset, methodo_context="", session_note="", project_context=None)
         
         assert "Tu es JARVIS" in result
         assert "PROJET ACTIF" not in result
@@ -143,7 +143,7 @@ class TestBuildSystemPrompt:
         """Seulement preset → pas de sections vides."""
         preset = "Tu es JARVIS"
         
-        result = build_system_prompt(preset, "", "", None)
+        result = build_system_prompt(preset=preset, methodo_context="", session_note="", project_context=None)
         
         assert result == "Tu es JARVIS"
 

@@ -35,7 +35,7 @@ def get_full_config():
             api_keys[key_name] = value
     
     if not api_keys:
-        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": ""}
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "twelve_data_key": ""}
     
     from pathlib import Path as _Path
     _env_file = _Path(__file__).parent.parent / ".env"
@@ -45,6 +45,7 @@ def get_full_config():
             "ANTHROPIC_KEY": "anthropic_key",
             "GOOGLE_KEY": "google_key",
             "WEB_SEARCH_KEY": "web_search_key",
+            "TWELVE_DATA_KEY": "twelve_data_key",
         }
         for line in _env_file.read_text(encoding="utf-8").splitlines():
             line = line.strip()
@@ -205,6 +206,27 @@ async def test_connection(request: TestConnectionRequest):
         
         return {"status": "success", "message": "Test Google non implémenté (Phase 2)"}
     
+    elif request.provider == "twelve_data":
+        key = api_keys.get("twelve_data_key", "")
+        if not key:
+            raise HTTPException(status_code=400, detail="Clé Twelve Data manquante")
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    "https://api.twelvedata.com/api_usage",
+                    headers={"Authorization": f"apikey {key}"},
+                    timeout=10.0
+                )
+                
+                if response.status_code == 200:
+                    return {"status": "success", "message": "Connexion réussie"}
+                else:
+                    return {"status": "error", "message": f"Erreur {response.status_code}: {response.text}"}
+        
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+    
     else:
         raise HTTPException(status_code=400, detail="Provider inconnu")
 
@@ -325,6 +347,33 @@ def save_profil_utilisateur(data: ConfigValue):
     profil_file = CONTEXTS_DIR / "profil_utilisateur.md"
     profil_file.write_text(data.value, encoding="utf-8")
     return {"message": "Profil sauvegardé"}
+
+# Couche 1 : Profils modules
+COUCHE1_FILES = {
+    "sentinelle_profil": "sentinelle_profil.md",
+    "atelier_profil": "atelier_profil.md",
+    "code_profil": "code_profil.md",
+    "reflexion_profil": "reflexion_profil.md",
+    "chat_profil": "chat_profil.md",
+}
+
+@router.get("/couche1/{module_key}")
+def get_couche1(module_key: str):
+    """Récupère le profil d'un module de la Couche 1."""
+    if module_key not in COUCHE1_FILES:
+        raise HTTPException(status_code=404, detail=f"Module '{module_key}' inconnu")
+    f = CONTEXTS_DIR / COUCHE1_FILES[module_key]
+    return {"value": f.read_text(encoding="utf-8") if f.exists() else ""}
+
+@router.post("/couche1/{module_key}")
+def save_couche1(module_key: str, body: dict):
+    """Sauvegarde le profil d'un module de la Couche 1."""
+    if module_key not in COUCHE1_FILES:
+        raise HTTPException(status_code=404, detail=f"Module '{module_key}' inconnu")
+    CONTEXTS_DIR.mkdir(parents=True, exist_ok=True)
+    f = CONTEXTS_DIR / COUCHE1_FILES[module_key]
+    f.write_text(body.get("value", ""), encoding="utf-8")
+    return {"ok": True}
 
 @router.get("/{key}")
 def get_config(key: str):

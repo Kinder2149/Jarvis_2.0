@@ -112,26 +112,30 @@ JARVIS/
     ├── code-projects.html     ← liste projets Module Code (bouton Nouvelle Mission par projet)
     ├── mission.html           ← page unique Mission : Zone 1 Réflexion + Zone 2 Livrable + Zone 3 Pipeline
     ├── chat.html              ← conversation IA (markdown, folder_path, web search, sélecteur modèle)
+    ├── conversations.html     ← liste de toutes les conversations (hub d'accès depuis sidebar btn 💬)
     ├── atelier.html           ← Atelier Connecté (kanban 6 colonnes + vue pipeline prospect)
+    ├── sentinelle.html        ← Module Sentinelle (cycle investissement PHASE_1 à PHASE_6, portefeuille, watchlist)
     └── settings.html          ← config clés API 3 providers + sélecteurs modèles par type
     └── assets/
         ├── style.css          ← thème sombre, variables CSS, layout 3 panneaux, composants
         └── js/
-            ├── api.js         ← toutes les routes API (BASE_URL = window.location.origin)
-            ├── shared.js      ← renderMarkdown, formatDate, statusBadge, costBadge, escapeHtml
-            ├── sidebar.js     ← sidebar collapsible, modals nouveau chat/module/projet/reflexion
-            ├── ui.js          ← showModal, closeModal, showToast
-            ├── dashboard.js   ← timeline, sessions actives/bloquées, stats semaine
-            ├── project.js     ← hub projet, instructions éditables, liste unifiée sessions+chats
+            ├── api.js            ← toutes les routes API (BASE_URL = window.location.origin)
+            ├── shared.js         ← renderMarkdown, formatDate, statusBadge, costBadge, initLayout
+            ├── sidebar.js        ← sidebar collapsible, modals nouveau chat/module/projet/reflexion
+            ├── ui.js             ← showModal, closeModal, showToast
+            ├── dashboard.js      ← timeline, sessions actives/bloquées, stats semaine
+            ├── project.js        ← hub projet, instructions éditables, liste unifiée sessions+chats
             ├── code-projects.js  ← liste projets Module Code (bouton Nouvelle Mission)
-            ├── mission.js     ← orchestrateur unique Mission (réflexion + figement + pipeline en une page)
-            ├── chat.js        ← messages, optimistic UI, sélecteur modèle, suppression
-            ├── explorer.js    ← arborescence fichiers locaux, preview, collapse
-            ├── atelier.js     ← kanban prospects, vue pipeline atelier, zones saisie/checkpoint/export
-            └── settings.js    ← clés API (états visuels), test connexion, dropdowns modèles
+            ├── mission.js        ← orchestrateur unique Mission (réflexion + figement + pipeline en une page)
+            ├── chat.js           ← messages, optimistic UI, sélecteur modèle, suppression
+            ├── conversations.js  ← liste conversations, suppression, redirection chat.html
+            ├── explorer.js       ← arborescence fichiers locaux, preview, collapse
+            ├── atelier.js        ← kanban prospects, vue pipeline atelier, zones saisie/checkpoint/export
+            ├── sentinelle.js     ← Module Sentinelle — cycle investissement, portefeuille, watchlist
+            └── settings.js       ← clés API (états visuels), test connexion, dropdowns modèles
 
-**Services backend actifs :** 10 / 20 maximum
-**Pages frontend :** 7 / illimité (mission.html a remplacé reflexion.html + module-code.html + code-project-detail.html)
+**Services backend actifs :** 11 / 20 maximum
+**Pages frontend :** 9 / illimité (mission.html a remplacé reflexion.html + module-code.html + code-project-detail.html — conversations.html et sentinelle.html ajoutées)
 
 ---
 
@@ -291,13 +295,28 @@ JARVIS/
 
 ## 8. SESSION EN COURS
 
-**Graphify :** ☑ Mis à jour — 2085 nodes, 3339 edges, 222 communities (2026-05-16)
-**Objectif :** Module Sentinelle — Frontend UI complet
-**Mission terminée :** 2026-05-08 — Frontend UI Module Sentinelle
-**Fichiers créés :** frontend/sentinelle.html, frontend/assets/js/sentinelle.js
-**Fichiers modifiés :** frontend/assets/js/api.js (+22 routes Sentinelle), frontend/assets/js/sidebar.js (+bouton Sentinelle), frontend/assets/style.css (+175 lignes CSS)
-**Résultat :** Interface utilisateur complète pour le Module Sentinelle. Layout 3 panneaux : sidebar partagée + zone principale (cycle actif ou démarrage) + panneau droit (portefeuille + watchlist collapsible). États d'affichage : INACTIF (lancer cycle + liste 3 derniers cycles clôturés), PHASE_1 (formulaire saisie positions "VWCE 5 / BTC 0.001" avec parser JS), PHASE_2 (spinner veille + polling 3s + affichage résumé markdown), PHASE_3 (spinner analyse + affichage bilan + spinner propositions + 3 scénarios cards + biais warning box), PHASE_4 (sélection accumulation ou scénario), PHASE_5 (paramètres ordre + confirmation exécution), PHASE_6 (récap + bouton clôture). Panneau droit : portefeuille (liste positions ticker/quantité/enveloppe), watchlist (liste avec badges niveau risque faible=vert/modéré=orange/élevé=rouge/spéculatif=violet + ajout rapide ticker+dropdown). Routes API : 22 fonctions dans api.js (positions, watchlist, cycles, transactions, budget, skills IA). Sidebar : bouton 🛡 Sentinelle entre Atelier et Réflexion. CSS : thème sombre, variables existantes, badges couleur, spinner, warning-box, right-panel 320px. Zéro framework JS, fetch natif, transitions dynamiques sans rechargement. Test manuel : start.bat → Sentinelle visible sidebar → clic → page s'ouvre → lancer cycle → Phase 1 → saisir "VWCE 5" → valider → Phase 2 spinner → attendre veille → affichage → continuer jusqu'à Phase 6 accumulation → cycle clôturé → retour INACTIF.
-**Prochain objectif :** Tests manuels complets du flux Sentinelle end-to-end
+**Graphify :** ☑ À mettre à jour
+**Objectif :** Extension attachement d'images aux modules Réflexion et Pipeline
+**Mission terminée :** 2026-05-14 — IMAGE-ATTACHMENT-EXTENSION : Extension de la fonctionnalité d'attachement d'images
+**Fichiers modifiés :**
+- backend/database.py : migrations attachment_base64 + attachment_filename pour reflexion_messages
+- backend/schemas/reflexion.py : champs attachment dans SendMessage et ReflexionMessage
+- backend/schemas/pipeline.py : champs attachment dans StartPipeline
+- backend/routers/reflexions.py : passage attachments à send_user_message + retour attachment_filename uniquement
+- backend/routers/pipelines.py : appel vision préliminaire si image jointe + enrichissement initial_input
+- backend/services/reflexion_service.py : logique vision + multimodal + historique avec note + sauvegarde
+- frontend/assets/js/mission.js : UI attachement Zone 1 réflexion (bouton 📎 + preview + badge)
+- frontend/assets/js/api.js : sendReflexionMessage et startPipeline acceptent attachments
+
+**Fonctionnalités ajoutées :**
+1. **Module Réflexion** : Attachement d'images dans n'importe quel message de la session (même logique que Chat)
+2. **Modules Pipeline** : Attachement d'image sur le prompt initial — appel vision préliminaire pour extraire description textuelle, enrichissement du prompt avec la description (l'image base64 n'est PAS stockée dans le pipeline)
+
+**Backlog technique (audit) :**
+- DUP-01 : escapeHtml définie 3 fois (chat.js / conversations.js / explorer.js) → à centraliser dans shared.js
+- INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
+
+**Prochain objectif :** Tests manuels de la fonctionnalité d'attachement d'images dans Réflexion et Pipeline
 
 ---
 

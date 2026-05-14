@@ -69,6 +69,11 @@ def get_reflexion(session_id: int):
         
         messages = reflexion_service.get_messages(session_id, conn, include_compacted=False)
         
+        # Ne pas retourner attachment_base64 (trop lourd), seulement attachment_filename
+        for msg in messages:
+            if "attachment_base64" in msg:
+                del msg["attachment_base64"]
+        
         return {
             **session,
             "messages": messages
@@ -125,7 +130,9 @@ async def send_message(session_id: int, body: SendMessage):
         messages = await reflexion_service.send_user_message(
             session_id,
             body.content,
-            conn
+            conn,
+            attachment_base64=body.attachment_base64,
+            attachment_filename=body.attachment_filename
         )
         return messages
     except ValueError as e:
@@ -219,11 +226,39 @@ def appliquer_edit(session_id: int, body: AppliquerEdit):
         conn.close()
 
 
+@router.post("/{session_id}/detect-livrable", status_code=200)
+async def detect_livrable_type(session_id: int):
+    """Détecte automatiquement le type de livrable le plus adapté pour la session."""
+    conn = get_connection()
+    try:
+        result = await reflexion_service.detect_livrable_type(session_id, conn)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.exception(f"[REFLEXIONS] Erreur dans detect_livrable_type session={session_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+
 @router.post("/{session_id}/figer", status_code=200)
-async def figer_session(session_id: int):
+async def figer_session(session_id: int, body: dict = None):
     """Fige une session de réflexion et génère le livrable final."""
     conn = get_connection()
     try:
+        # Si un livrable_type est fourni, mettre à jour la session avant figement
+        if body and "livrable_type" in body:
+            livrable_type = body["livrable_type"]
+            valid_types = ['mission_code', 'decision_figee', 'plan_multi_missions']
+            if livrable_type in valid_types:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "UPDATE reflexion_sessions SET livrable_type = ? WHERE id = ?",
+                    (livrable_type, session_id)
+                )
+                conn.commit()
+        
         livrable = await reflexion_service.freeze_session(session_id, conn)
         return livrable
     except ValueError as e:

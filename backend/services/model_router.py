@@ -35,7 +35,8 @@ async def call_model(
     session_id: int,
     step_name: str,
     model_type: str,
-    db_conn
+    db_conn,
+    module_name: str = "unknown"
 ) -> str:
     openrouter_key = api_keys.get("openrouter_key", "")
     anthropic_key = api_keys.get("anthropic_key", "")
@@ -65,9 +66,9 @@ async def call_model(
                         cursor = db_conn.cursor()
                         cursor.execute(
                             """INSERT INTO model_decision_log
-                            (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens)
-                            VALUES (?, ?, ?, ?, ?, ?)""",
-                            (session_id, step_name, model_type, model_id, input_tokens, output_tokens)
+                            (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens, module_name)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                            (session_id, step_name, model_type, model_id, input_tokens, output_tokens, module_name)
                         )
                         db_conn.commit()
                     
@@ -113,14 +114,15 @@ async def call_model(
                     content = _strip_code_fence(data["content"][0]["text"])
                     input_tokens = data.get("usage", {}).get("input_tokens", 0)
                     output_tokens = data.get("usage", {}).get("output_tokens", 0)
-                    cursor = db_conn.cursor()
-                    cursor.execute(
-                        """INSERT INTO model_decision_log
-                        (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens)
-                        VALUES (?, ?, ?, ?, ?, ?)""",
-                        (session_id, step_name, model_type, model_id, input_tokens, output_tokens)
-                    )
-                    db_conn.commit()
+                    if db_conn is not None:
+                        cursor = db_conn.cursor()
+                        cursor.execute(
+                            """INSERT INTO model_decision_log
+                            (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens, module_name)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                            (session_id, step_name, model_type, model_id, input_tokens, output_tokens, module_name)
+                        )
+                        db_conn.commit()
                     return content
                 elif response.status_code == 401:
                     raise Exception("Clé API invalide ou expirée. Vérifier dans Paramètres.")

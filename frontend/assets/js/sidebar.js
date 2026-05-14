@@ -6,12 +6,17 @@ window.initSidebar = async () => {
   if (collapsed) sidebar.classList.add('sidebar--collapsed');
 
   try {
-    const [projects, conversations, atelierCount, prospects] = await Promise.all([
+    const [projects, conversations, atelierCount, prospects, sentinelleCountData, sentinelleAlertesCountData] = await Promise.all([
       window.API.getProjects(),
       window.API.getConversations(),
       getAtelierActiveCount(),
-      window.API.getProspects().catch(() => [])
+      window.API.getProspects().catch(() => []),
+      window.API.getSentinelleActifCount().catch(() => ({ count: 0 })),
+      window.API.getSentinelleAlertesCount().catch(() => ({ count: 0 }))
     ]);
+
+    const sentinelleCount = sentinelleCountData.count || 0;
+    const sentinelleAlertesCount = sentinelleAlertesCountData.count || 0;
 
     const sessionsMap = {};
     const reflexionsMap = {};
@@ -40,14 +45,14 @@ window.initSidebar = async () => {
       }
     }
 
-    renderSidebar(projects, conversations, sessionsMap, atelierCount, prospects, reflexionsMap, todayCost);
+    renderSidebar(projects, conversations, sessionsMap, atelierCount, prospects, reflexionsMap, todayCost, sentinelleCount, sentinelleAlertesCount);
   } catch (error) {
     console.error('Erreur chargement sidebar:', error);
     sidebar.innerHTML = '<p style="color:var(--danger);padding:1rem">Erreur chargement</p>';
   }
 };
 
-function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, prospects = [], reflexionsMap = {}, todayCost = 0) {
+function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, prospects = [], reflexionsMap = {}, todayCost = 0, sentinelleCount = 0, sentinelleAlertesCount = 0) {
   const sidebar = document.getElementById('sidebar');
   const currentPath = window.location.pathname;
   const currentId = window.getURLParam('id');
@@ -88,7 +93,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
         </button>
         <button id="btn-sentinelle" class="btn-create" title="Module Sentinelle">
           <span class="btn-create-emoji">🛡</span>
-          <span class="sidebar-text btn-create-label">Sentinelle</span>
+          <span class="sidebar-text btn-create-label">Sentinelle</span>${sentinelleCount > 0 ? ` <span class="sidebar-badge sidebar-badge--active">${sentinelleCount}</span>` : ''}${sentinelleAlertesCount > 0 ? ` <span class="sidebar-badge sidebar-badge--danger">${sentinelleAlertesCount}</span>` : ''}
         </button>
         <button id="btn-new-reflexion" class="btn-create" title="Module Réflexion">
           <span class="btn-create-emoji">🧠</span>
@@ -388,6 +393,23 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
       });
     });
   }
+
+  // ---- MOBILE : hamburger + backdrop ----
+  if (!document.getElementById('sidebar-backdrop')) {
+    const backdrop = document.createElement('div');
+    backdrop.id = 'sidebar-backdrop';
+    document.body.appendChild(backdrop);
+    backdrop.addEventListener('click', closeMobileSidebar);
+  }
+
+  if (!document.getElementById('btn-mobile-menu')) {
+    const btn = document.createElement('button');
+    btn.id = 'btn-mobile-menu';
+    btn.innerHTML = '☰';
+    btn.title = 'Menu';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', toggleMobileSidebar);
+  }
 }
 
 function attachTabContentListeners() {
@@ -512,12 +534,34 @@ function toggleSidebar() {
   });
 }
 
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (!sidebar) return;
+  const isOpen = sidebar.classList.toggle('sidebar--mobile-open');
+  if (backdrop) backdrop.classList.toggle('active', isOpen);
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar) sidebar.classList.remove('sidebar--mobile-open');
+  if (backdrop) backdrop.classList.remove('active');
+}
+
 
 async function handleNewMission() {
   const projects = await window.API.getProjects();
   const filtered = projects.filter(p => p.path !== '__atelier__');
 
-  let optionsHTML = '<option value="">Sans projet</option>';
+  if (filtered.length === 0) {
+    window.showModal('Nouvelle Réflexion',
+      '<p style="color:var(--text-muted)">Aucun dossier projet disponible.<br>Créez d\'abord un dossier via le bouton 📁.</p>',
+      [{ label: 'Fermer', type: 'secondary', onClick: () => window.closeModal() }]
+    );
+    return;
+  }
+  let optionsHTML = '';
   filtered.forEach(p => {
     optionsHTML += `<option value="${p.id}">${p.name}</option>`;
   });
@@ -529,31 +573,16 @@ async function handleNewMission() {
         ${optionsHTML}
       </select>
     </div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary)">Type de livrable</label>
-      <div style="display:flex;flex-direction:column;gap:0.5rem">
-        <label style="cursor:pointer;color:var(--text-primary)">
-          <input type="radio" name="mission_livrable_type" value="mission_code" checked> 🎯 Mission Code — génère un prompt pour exécution pipeline
-        </label>
-        <label style="cursor:pointer;color:var(--text-primary)">
-          <input type="radio" name="mission_livrable_type" value="decision_figee"> 📌 Décision figée — documente une décision dans PROJET_CONTEXTE
-        </label>
-        <label style="cursor:pointer;color:var(--text-primary)">
-          <input type="radio" name="mission_livrable_type" value="plan_multi_missions"> 📋 Plan multi-missions — décompose en plusieurs missions code
-        </label>
-      </div>
-    </div>
   `;
 
   window.showModal('Nouvelle Réflexion', bodyHTML, [
     { label: 'Annuler', type: 'secondary', onClick: () => window.closeModal() },
     { label: '🧠 Créer', type: 'primary', onClick: () => {
       const projectId = document.getElementById('modal-mission-project').value;
-      const livrableType = document.querySelector('input[name="mission_livrable_type"]:checked').value;
       window.closeModal();
       const params = new URLSearchParams();
       if (projectId) params.set('project_id', projectId);
-      params.set('new', livrableType);
+      params.set('new', 'reflexion');
       window.location.href = `mission.html?${params.toString()}`;
     }}
   ]);

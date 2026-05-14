@@ -51,8 +51,10 @@
 
       renderApiKeys();
       renderModelSelects();
-      renderChatConfig();
-      await loadGlobalContext();
+      setupTabSwitching();
+      loadConfig();
+      loadGlobalContext();
+      setupProfilsModulesHandlers();
       await loadExportPaths();
       attachEventListeners();
       
@@ -66,7 +68,7 @@
   }
 
   function renderApiKeys() {
-    const providers = ['openrouter', 'anthropic', 'google', 'web_search'];
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data'];
     providers.forEach(provider => {
       const maskedValue = currentConfig.api_keys?.[`${provider}_key`] || '';
       renderApiKey(provider, maskedValue);
@@ -195,7 +197,8 @@
         openrouter_key: currentApiKeys.openrouter_key || '',
         anthropic_key: currentApiKeys.anthropic_key || '',
         google_key: currentApiKeys.google_key || '',
-        web_search_key: currentApiKeys.web_search_key || ''
+        web_search_key: currentApiKeys.web_search_key || '',
+        twelve_data_key: currentApiKeys.twelve_data_key || ''
       };
       apiKeys[`${provider}_key`] = keyValue;
 
@@ -302,7 +305,7 @@
   }
 
   function initializeTestBadges() {
-    const providers = ['openrouter', 'anthropic', 'google', 'web_search'];
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data'];
     providers.forEach(provider => {
       const badge = document.getElementById(`badge-${provider}`);
       if (badge) {
@@ -317,7 +320,7 @@
   }
 
   async function testAllProviders() {
-    const providers = ['openrouter', 'anthropic', 'google', 'web_search'];
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data'];
     const alert = document.getElementById('openrouter-alert');
     
     // Tester chaque provider qui a une clé configurée
@@ -479,6 +482,24 @@
         if (ta) ta.value = data.value || '';
       })
       .catch(() => {});
+    
+    // Charger les profils modules (Couche 1)
+    const modulesMap = {
+      'sentinelle_profil': 'profil-sentinelle',
+      'atelier_profil': 'profil-atelier',
+      'code_profil': 'profil-code',
+      'reflexion_profil': 'profil-reflexion',
+      'chat_profil': 'profil-chat'
+    };
+    
+    Object.entries(modulesMap).forEach(([moduleKey, textareaId]) => {
+      window.API.getCouche1(moduleKey)
+        .then(data => {
+          const ta = document.getElementById(textareaId);
+          if (ta) ta.value = data.value || '';
+        })
+        .catch(() => {});
+    });
   }
 
   async function saveChatConfig() {
@@ -542,6 +563,34 @@
       console.error('Erreur sauvegarde chat config:', error);
       if (window.showToast) window.showToast('Erreur de sauvegarde', 'error');
     }
+  }
+
+  // ── Handlers Profils Modules ──────────────────────────────────────────
+  function setupProfilsModulesHandlers() {
+    const buttons = document.querySelectorAll('[data-module]');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const moduleKey = btn.getAttribute('data-module');
+        const textareaId = {
+          'sentinelle_profil': 'profil-sentinelle',
+          'atelier_profil': 'profil-atelier',
+          'code_profil': 'profil-code',
+          'reflexion_profil': 'profil-reflexion',
+          'chat_profil': 'profil-chat'
+        }[moduleKey];
+        
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+        
+        try {
+          await window.API.saveCouche1(moduleKey, textarea.value);
+          if (window.showToast) window.showToast('Profil sauvegardé', 'success');
+        } catch (error) {
+          console.error('Erreur sauvegarde profil module:', error);
+          if (window.showToast) window.showToast('Erreur de sauvegarde', 'error');
+        }
+      });
+    });
   }
 
   // ── Onglet Contexte Global ──────────────────────────────────────────

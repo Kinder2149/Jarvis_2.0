@@ -3,6 +3,7 @@
   let projectId = null;
   let conversation = null;
   let isSending = false;
+  let attachedImage = null;
 
   document.addEventListener('DOMContentLoaded', async () => {
     conversationId = window.getURLParam ? window.getURLParam('id') : new URLSearchParams(location.search).get('id');
@@ -131,9 +132,11 @@
     const renderMarkdown = window.renderMarkdown || ((text) => text);
 
     if (msg.role === 'user') {
+      const attachmentBadge = msg.attachment_filename ? `<span class="msg-attachment-badge">📎 ${escapeHtml(msg.attachment_filename)}</span>` : '';
       return `
         <div class="message message--user">
           <div class="message-content">${escapeHtml(msg.content)}</div>
+          ${attachmentBadge}
           <div class="message-time">${formatDate(msg.created_at)}</div>
         </div>
       `;
@@ -165,7 +168,66 @@
     const btnSend = document.getElementById('btn-send');
     const btnDelete = document.getElementById('btn-delete-conversation');
 
+    // Créer les éléments d'attachement
+    const inputWrapper = document.querySelector('.chat-input-wrapper');
+    const attachBtn = document.createElement('button');
+    attachBtn.id = 'attach-btn';
+    attachBtn.className = 'attach-btn';
+    attachBtn.title = 'Joindre une image';
+    attachBtn.textContent = '📎';
+    attachBtn.type = 'button';
+
+    const attachInput = document.createElement('input');
+    attachInput.type = 'file';
+    attachInput.id = 'attach-input';
+    attachInput.accept = 'image/png,image/jpeg,image/webp';
+    attachInput.style.display = 'none';
+
+    const attachPreview = document.createElement('div');
+    attachPreview.id = 'attach-preview';
+    attachPreview.className = 'attach-preview';
+    attachPreview.style.display = 'none';
+    attachPreview.innerHTML = `
+      <span id="attach-filename" class="attach-filename"></span>
+      <button id="attach-clear" class="attach-clear" type="button">✕</button>
+    `;
+
+    inputWrapper.insertBefore(attachBtn, btnSend);
+    inputWrapper.appendChild(attachInput);
+    inputWrapper.parentElement.insertBefore(attachPreview, inputWrapper.nextSibling);
+
     btnSend.addEventListener('click', handleSendMessage);
+
+    // Gestion attachement image
+    attachBtn.addEventListener('click', () => {
+      attachInput.click();
+    });
+
+    attachInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        const base64 = dataUrl.split(',')[1];
+        attachedImage = {
+          base64: base64,
+          filename: file.name
+        };
+        document.getElementById('attach-filename').textContent = file.name;
+        document.getElementById('attach-preview').style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'attach-clear') {
+        attachedImage = null;
+        document.getElementById('attach-preview').style.display = 'none';
+        document.getElementById('attach-input').value = '';
+      }
+    });
 
     textarea.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'Enter') {
@@ -334,7 +396,14 @@
     try {
       const modelSelect = document.getElementById('chat-model-select');
       const selectedModel = modelSelect ? modelSelect.value : null;
-      const response = await window.API.sendMessage(conversationId, content, selectedModel || null);
+      
+      const body = { content: content, model: selectedModel || null };
+      if (attachedImage) {
+        body.attachment_base64 = attachedImage.base64;
+        body.attachment_filename = attachedImage.filename;
+      }
+      
+      const response = await window.API.post(`/api/chat/conversations/${conversationId}/messages`, body);
 
       const loadingEl = document.getElementById('loading-message');
       if (loadingEl) loadingEl.remove();
@@ -350,6 +419,13 @@
         conversation.messages.push(assistantMessage);
         container.innerHTML += renderMessage(assistantMessage);
         scrollToBottom();
+      }
+      
+      // Reset attachement après envoi réussi
+      if (attachedImage) {
+        attachedImage = null;
+        document.getElementById('attach-preview').style.display = 'none';
+        document.getElementById('attach-input').value = '';
       }
 
     } catch (error) {

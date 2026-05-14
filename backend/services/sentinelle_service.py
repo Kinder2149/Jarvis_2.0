@@ -3,11 +3,24 @@ from backend.services.model_router import get_model_id
 from datetime import datetime, timedelta
 from typing import Optional
 import httpx
-import yfinance as yf
 import json
 import logging
 
 logger = logging.getLogger("jarvis")
+
+
+def _build_sentinelle_context() -> str:
+    """Charge et concatène les 3 fichiers de contexte Sentinelle."""
+    from pathlib import Path as _Path
+    contexts_dir = _Path(__file__).parent.parent / "data" / "contexts"
+    parts = []
+    for filename in ["profil_utilisateur.md", "regles_globales.md", "sentinelle_profil.md"]:
+        f = contexts_dir / filename
+        if f.exists():
+            content = f.read_text(encoding="utf-8").strip()
+            if content:
+                parts.append(content)
+    return "\n\n---\n\n".join(parts)
 
 
 def get_budget_restant(mois: str) -> dict:
@@ -149,26 +162,50 @@ def calculer_budget_utilise_cycle(cycle_id: int) -> float:
 CRYPTO_SYMBOLS = ["BTC", "ETH", "SOL", "BNB", "ADA", "DOT", "AVAX", "MATIC", "LINK", "UNI"]
 
 
-def _fetch_yahoo_prices(tickers: list[str]) -> dict:
-    """Récupère les cours et variations depuis Yahoo Finance."""
+async def _fetch_twelve_data_prices(tickers: list[str], api_key: str) -> dict:
+    """Récupère les cours et variations depuis Twelve Data API."""
+    if not api_key:
+        logger.warning("[SENTINELLE] Clé Twelve Data manquante, cours boursiers non disponibles")
+        return {}
+    
     prices = {}
-    for ticker in tickers:
-        try:
-            stock = yf.Ticker(ticker)
-            hist = stock.history(period="1wk")
-            if not hist.empty:
-                current_price = hist['Close'].iloc[-1]
-                week_ago_price = hist['Close'].iloc[0]
-                variation_pct = ((current_price - week_ago_price) / week_ago_price) * 100
-                prices[ticker] = {
-                    "cours": round(current_price, 2),
-                    "variation_1w": round(variation_pct, 2)
-                }
-            else:
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        for ticker in tickers:
+            try:
+                response = await client.get(
+                    "https://api.twelvedata.com/time_series",
+                    params={
+                        "symbol": ticker,
+                        "interval": "1day",
+                        "outputsize": 7,
+                        "apikey": api_key
+                    }
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    if "values" in data and len(data["values"]) >= 2:
+                        values = data["values"]
+                        dernier_close = float(values[0]["close"])
+                        premier_close = float(values[-1]["close"])
+                        variation_pct = ((dernier_close - premier_close) / premier_close) * 100
+                        
+                        prices[ticker] = {
+                            "cours": round(dernier_close, 2),
+                            "variation_1w": round(variation_pct, 2)
+                        }
+                    else:
+                        logger.warning(f"[SENTINELLE] Données insuffisantes pour {ticker}")
+                        prices[ticker] = {"cours": None, "variation_1w": None}
+                else:
+                    logger.warning(f"[SENTINELLE] Erreur Twelve Data pour {ticker}: HTTP {response.status_code}")
+                    prices[ticker] = {"cours": None, "variation_1w": None}
+                    
+            except Exception as e:
+                logger.warning(f"[SENTINELLE] Erreur Twelve Data pour {ticker}: {e}")
                 prices[ticker] = {"cours": None, "variation_1w": None}
-        except Exception as e:
-            logger.warning(f"[SENTINELLE] Erreur Yahoo Finance pour {ticker}: {e}")
-            prices[ticker] = {"cours": None, "variation_1w": None}
+    
     return prices
 
 
@@ -259,7 +296,10 @@ async def run_veille(cycle_id: int) -> dict:
     crypto_tickers = [t for t in all_tickers if t in CRYPTO_SYMBOLS]
     stock_tickers = [t for t in all_tickers if t not in CRYPTO_SYMBOLS]
     
-    stock_prices = _fetch_yahoo_prices(stock_tickers)
+    config = load_config()
+    twelve_data_key = config["api_keys"].get("twelve_data_key", "")
+    
+    stock_prices = await _fetch_twelve_data_prices(stock_tickers, twelve_data_key)
     crypto_prices = await _fetch_coingecko_prices(crypto_tickers)
     
     all_prices = {**stock_prices, **crypto_prices}
@@ -278,10 +318,14 @@ Variations cette semaine :
 {json.dumps(all_prices, indent=2, ensure_ascii=False)}
 """
     
-    config = load_config()
     model_id = get_model_id("routing", config)
     
-    messages = [{"role": "user", "content": prompt}]
+    _ctx = _build_sentinelle_context()
+    messages = [
+        {"role": "system", "content": _ctx} if _ctx else None,
+        {"role": "user", "content": prompt}
+    ]
+    messages = [m for m in messages if m is not None]
     
     resultat = await model_router.call_model(
         model_id=model_id,
@@ -290,7 +334,8 @@ Variations cette semaine :
         session_id=0,
         step_name="sentinelle_veille",
         model_type="routing",
-        db_conn=None
+        db_conn=None,
+        module_name="sentinelle"
     )
     
     donnees_veille = {
@@ -331,7 +376,9 @@ async def run_analyse(cycle_id: int) -> dict:
     if not cours or (datetime.now() - datetime.fromisoformat(veille_data.get("timestamp", "2000-01-01"))).seconds > 3600:
         cursor.execute("SELECT ticker FROM sentinelle_positions")
         tickers = [row["ticker"] for row in cursor.fetchall()]
-        cours = _fetch_yahoo_prices(tickers)
+        config = load_config()
+        twelve_data_key = config["api_keys"].get("twelve_data_key", "")
+        cours = await _fetch_twelve_data_prices(tickers, twelve_data_key)
     
     positions_valorisees = []
     total_value = 0
@@ -371,7 +418,12 @@ Données :
     config = load_config()
     model_id = get_model_id("routing", config)
     
-    messages = [{"role": "user", "content": prompt}]
+    _ctx = _build_sentinelle_context()
+    messages = [
+        {"role": "system", "content": _ctx} if _ctx else None,
+        {"role": "user", "content": prompt}
+    ]
+    messages = [m for m in messages if m is not None]
     
     resultat = await model_router.call_model(
         model_id=model_id,
@@ -380,7 +432,8 @@ Données :
         session_id=0,
         step_name="sentinelle_analyse",
         model_type="routing",
-        db_conn=None
+        db_conn=None,
+        module_name="sentinelle"
     )
     
     donnees_analyse = {
@@ -466,7 +519,12 @@ Signale les biais détectés avec une question de recadrage. Ne jamais utiliser 
     config = load_config()
     model_id = get_model_id("analysis", config)
     
-    messages = [{"role": "user", "content": prompt}]
+    _ctx = _build_sentinelle_context()
+    messages = [
+        {"role": "system", "content": _ctx} if _ctx else None,
+        {"role": "user", "content": prompt}
+    ]
+    messages = [m for m in messages if m is not None]
     
     resultat = await model_router.call_model(
         model_id=model_id,
@@ -475,7 +533,8 @@ Signale les biais détectés avec une question de recadrage. Ne jamais utiliser 
         session_id=0,
         step_name="sentinelle_propositions",
         model_type="analysis",
-        db_conn=None
+        db_conn=None,
+        module_name="sentinelle"
     )
     
     donnees_propositions = {
@@ -531,7 +590,12 @@ Format : tableau clair avec 4 colonnes : Paramètre / Valeur / Pourquoi / Attent
     config = load_config()
     model_id = get_model_id("routing", config)
     
-    messages = [{"role": "user", "content": prompt}]
+    _ctx = _build_sentinelle_context()
+    messages = [
+        {"role": "system", "content": _ctx} if _ctx else None,
+        {"role": "user", "content": prompt}
+    ]
+    messages = [m for m in messages if m is not None]
     
     resultat = await model_router.call_model(
         model_id=model_id,
@@ -540,7 +604,8 @@ Format : tableau clair avec 4 colonnes : Paramètre / Valeur / Pourquoi / Attent
         session_id=0,
         step_name="sentinelle_ordre",
         model_type="routing",
-        db_conn=None
+        db_conn=None,
+        module_name="sentinelle"
     )
     
     conn.close()
@@ -551,3 +616,91 @@ Format : tableau clair avec 4 colonnes : Paramètre / Valeur / Pourquoi / Attent
         "parametres_ordre": resultat,
         "timestamp": datetime.now().isoformat()
     }
+
+
+async def run_check_alertes() -> dict:
+    """Vérifie les variations de cours et crée des alertes si >5%."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT ticker FROM sentinelle_positions")
+    positions = [row["ticker"] for row in cursor.fetchall()]
+    
+    cursor.execute("SELECT ticker FROM sentinelle_watchlist")
+    watchlist = [row["ticker"] for row in cursor.fetchall()]
+    
+    all_tickers = list(set(positions + watchlist))
+    
+    if not all_tickers:
+        conn.close()
+        logger.info("[SENTINELLE-ALERTES] Aucune position ni watchlist, rien à vérifier")
+        return {"alertes_creees": 0}
+    
+    crypto_tickers = [t for t in all_tickers if t in CRYPTO_SYMBOLS]
+    stock_tickers = [t for t in all_tickers if t not in CRYPTO_SYMBOLS]
+    
+    config = load_config()
+    twelve_data_key = config["api_keys"].get("twelve_data_key", "")
+    
+    try:
+        stock_prices = await _fetch_twelve_data_prices(stock_tickers, twelve_data_key)
+        crypto_prices = await _fetch_coingecko_prices(crypto_tickers)
+    except Exception as e:
+        logger.warning(f"[SENTINELLE-ALERTES] Erreur récupération cours: {e}")
+        conn.close()
+        return {"alertes_creees": 0, "erreur": str(e)}
+    
+    cours_actuels = {**stock_prices, **crypto_prices}
+    
+    cursor.execute("""
+        SELECT donnees_veille 
+        FROM sentinelle_cycles 
+        WHERE etat = 'CLOTURE' 
+        ORDER BY created_at DESC 
+        LIMIT 1
+    """)
+    dernier_cycle = cursor.fetchone()
+    
+    if not dernier_cycle or not dernier_cycle["donnees_veille"]:
+        logger.info("[SENTINELLE-ALERTES] Aucun cycle clôturé, utilisation cours actuels comme référence")
+        conn.close()
+        return {"alertes_creees": 0, "message": "Première vérification, pas de référence"}
+    
+    veille_data = json.loads(dernier_cycle["donnees_veille"])
+    cours_reference = veille_data.get("cours", {})
+    
+    alertes_creees = 0
+    
+    for ticker in all_tickers:
+        cours_actuel_data = cours_actuels.get(ticker, {})
+        cours_ref_data = cours_reference.get(ticker, {})
+        
+        cours_actuel = cours_actuel_data.get("cours")
+        cours_ref = cours_ref_data.get("cours")
+        
+        if cours_actuel is None or cours_ref is None or cours_ref == 0:
+            continue
+        
+        variation_pct = ((cours_actuel - cours_ref) / cours_ref) * 100
+        
+        if abs(variation_pct) >= 5.0:
+            cursor.execute("""
+                SELECT COUNT(*) as count 
+                FROM sentinelle_alertes 
+                WHERE ticker = ? AND lu = 0
+            """, (ticker,))
+            existing = cursor.fetchone()["count"]
+            
+            if existing == 0:
+                cursor.execute("""
+                    INSERT INTO sentinelle_alertes (ticker, variation_pct, cours_actuel, cours_reference)
+                    VALUES (?, ?, ?, ?)
+                """, (ticker, round(variation_pct, 2), cours_actuel, cours_ref))
+                alertes_creees += 1
+                logger.info(f"[SENTINELLE-ALERTES] Alerte créée : {ticker} {variation_pct:+.2f}%")
+    
+    conn.commit()
+    conn.close()
+    
+    logger.info(f"[SENTINELLE-ALERTES] Vérification terminée : {alertes_creees} alerte(s) créée(s)")
+    return {"alertes_creees": alertes_creees}

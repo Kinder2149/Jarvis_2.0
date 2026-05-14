@@ -31,31 +31,6 @@
           <p>Sélectionnez un projet depuis <a href="code-projects.html" style="color:var(--accent)">la liste des projets</a> pour démarrer une nouvelle mission.</p>
         </div>
 
-        <!-- Formulaire création (mode new=true) -->
-        <div id="mission-create-form" style="display:none;max-width:480px;margin:2rem auto">
-          <div class="card" style="padding:1.5rem">
-            <h2 style="margin-bottom:1.25rem">🎯 Nouvelle Mission</h2>
-            <div class="form-group" style="margin-bottom:1rem">
-              <label class="field-label">Type de livrable</label>
-              <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem">
-                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
-                  <input type="radio" name="create_livrable_type" value="mission_code" checked>
-                  <span>🎯 Mission Code — génère un prompt pour exécution pipeline</span>
-                </label>
-                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
-                  <input type="radio" name="create_livrable_type" value="decision_figee">
-                  <span>📌 Décision figée — documente une décision dans PROJET_CONTEXTE</span>
-                </label>
-                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
-                  <input type="radio" name="create_livrable_type" value="plan_multi_missions">
-                  <span>📋 Plan multi-missions — décompose en plusieurs missions code</span>
-                </label>
-              </div>
-            </div>
-            <button id="btn-create-session" class="btn-primary" style="width:100%">Créer la session</button>
-          </div>
-        </div>
-
         <!-- Flow vertical 4 étapes -->
         <div class="mission-flow" id="mission-flow" style="display:none">
 
@@ -129,6 +104,9 @@
                 </button>
                 <button id="btn-copy-livrable" class="btn-secondary btn-sm" style="width:100%;margin-top:0.5rem">
                   ✂️ Ou copier le prompt pour usage manuel
+                </button>
+                <button id="btn-launch-code-mission" class="btn-primary" style="display:none;margin-top:0.75rem;width:100%">
+                  ⚙️ Lancer en mission Code
                 </button>
               </div>
               <div id="zone-apply-decision" style="display:none">
@@ -204,7 +182,24 @@
       </div>
       <div class="modal-body">
         <p>Cette action est <strong>irréversible</strong>. La session sera figée et un livrable final sera généré.</p>
-        <p>Voulez-vous continuer ?</p>
+        
+        <div id="figer-detection-zone" style="display:none;margin:1rem 0;padding:1rem;background:var(--bg-card);border-radius:8px;border:1px solid var(--border)">
+          <div id="figer-detection-loading" style="display:none;align-items:center;gap:8px">
+            <div class="spinner" style="width:16px;height:16px"></div>
+            <span style="color:var(--text-muted)">L'IA analyse le type de livrable...</span>
+          </div>
+          <div id="figer-detection-result" style="display:none">
+            <p id="figer-detection-suggestion" style="color:var(--accent);margin-bottom:0.75rem;font-weight:500"></p>
+            <label style="display:block;margin-bottom:0.5rem;color:var(--text-primary);font-weight:500">Type de livrable :</label>
+            <select id="figer-livrable-type-select" style="width:100%;padding:8px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary)">
+              <option value="mission_code">🎯 Mission Code</option>
+              <option value="decision_figee">📌 Décision figée</option>
+              <option value="plan_multi_missions">📋 Plan multi-missions</option>
+            </select>
+          </div>
+        </div>
+        
+        <p style="margin-top:1rem">Voulez-vous continuer ?</p>
       </div>
       <div class="modal-footer">
         <button id="modal-figer-cancel" class="btn-secondary">Annuler</button>

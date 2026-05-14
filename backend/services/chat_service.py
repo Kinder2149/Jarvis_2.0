@@ -311,16 +311,17 @@ async def search_web(query: str, api_key: str | None = None) -> dict:
         return {"results": [], "error": str(e)}
 
 
-def build_system_prompt(preset: str, methodo_context: str, session_note: str, project_context: str | None, folder_context: str | None = None, global_context: str = "", context_summary: str = "", graphify_context: str = "", internet_access: bool = False) -> str:
+def build_system_prompt(personal_context: str = "", preset: str = "", methodo_context: str = "", session_note: str = "", project_context: str | None = None, folder_context: str | None = None, global_context: str = "", context_summary: str = "", graphify_context: str = "", internet_access: bool = False) -> str:
     """Construit le system prompt complet pour le chat.
     
     Args:
+        personal_context: Contexte personnel (profil_utilisateur + regles_globales + chat_profil)
         preset: Prompt de base JARVIS
         methodo_context: Contexte METHODO (vide si absent)
         session_note: Note de session utilisateur (vide si absent)
         project_context: Contexte projet (None si pas de projet)
         folder_context: Liste fichiers dossier local (None si pas de dossier)
-        global_context: Contexte global (Prompt Générique) injecté en premier
+        global_context: Contexte global (Prompt Générique) injecté après personal_context
         context_summary: Résumé de la conversation (vide si absent)
         graphify_context: Graphe du projet (vide si absent)
         
@@ -329,7 +330,12 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
     """
     parts = []
     
-    # Global context EN PREMIER
+    # Personal context EN PREMIER (profil permanent)
+    if personal_context:
+        parts.append(personal_context)
+        parts.append("---")
+    
+    # Global context APRÈS personal_context
     if global_context:
         parts.append(global_context)
         parts.append("---")
@@ -375,7 +381,14 @@ def build_system_prompt(preset: str, methodo_context: str, session_note: str, pr
     return "\n\n".join(parts)
 
 
-async def send_chat_message(conversation_id: int, user_content: str, db, config: dict) -> dict:
+async def send_chat_message(
+    conversation_id: int, 
+    user_content: str, 
+    db, 
+    config: dict,
+    attachment_base64: str | None = None,
+    attachment_filename: str | None = None
+) -> dict:
     """Envoie un message chat et retourne la réponse de l'assistant.
     
     Args:
@@ -494,38 +507,86 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
             else:
                 logger.warning(f"⚠️ [CHAT_SERVICE] Recherche web demandée mais clé absente")
     
-    # Récupérer global_context depuis app_config
+    # Charger le contexte personnel (Couche 0 + Couche 1 Chat)
     try:
-        cursor.execute("SELECT value FROM app_config WHERE key = 'global_context'")
-        global_context_row = cursor.fetchone()
-        global_context = global_context_row["value"] if global_context_row else ""
+        _ctx_dir = Path(__file__).parent.parent / "data" / "contexts"
+        _personal_parts = []
+        for _fname in ["profil_utilisateur.md", "regles_globales.md", "chat_profil.md"]:
+            _f = _ctx_dir / _fname
+            if _f.exists():
+                _content = _f.read_text(encoding="utf-8").strip()
+                if _content:
+                    _personal_parts.append(_content)
+        personal_context = "\n\n---\n\n".join(_personal_parts)
+    except Exception:
+        personal_context = ""
+    
+    # Lire global_context depuis le fichier .md (même source que Settings)
+    try:
+        _contexts_dir = Path(__file__).parent.parent / "data" / "contexts"
+        _gc_file = _contexts_dir / "global_context.md"
+        global_context = _gc_file.read_text(encoding="utf-8") if _gc_file.exists() else ""
     except Exception:
         global_context = ""
     
     # Construire le system prompt
     preset = config.get("chat", {}).get("system_prompt_preset", "")
     session_note = config.get("chat", {}).get("session_note", "")
-    system_prompt = build_system_prompt(preset, methodo_context, session_note, project_context, folder_context, global_context, context_summary, graphify_context, internet_access)
+    system_prompt = build_system_prompt(personal_context, preset, methodo_context, session_note, project_context, folder_context, global_context, context_summary, graphify_context, internet_access)
     
     # Récupérer les 20 derniers messages
     cursor.execute(
-        "SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY created_at ASC LIMIT 20",
+        "SELECT role, content, attachment_filename FROM messages WHERE conversation_id = ? ORDER BY created_at ASC LIMIT 20",
         (conversation_id,)
     )
-    history = [{"role": row["role"], "content": row["content"]} for row in cursor.fetchall()]
+    history = []
+    for row in cursor.fetchall():
+        msg_content = row["content"]
+        # Si le message a une image attachée, ajouter une note textuelle
+        if row["attachment_filename"]:
+            msg_content += f"\n[Image jointe : {row['attachment_filename']}]"
+        history.append({"role": row["role"], "content": msg_content})
     
     # Construire le message utilisateur enrichi
     enriched_user_content = user_content + file_content_injected + web_results_text
     
+    # Déterminer le modèle à utiliser
+    if attachment_base64:
+        # Utiliser le modèle vision si une image est jointe
+        model = config.get("chat", {}).get("vision_model", "anthropic/claude-sonnet-4-6")
+        logger.info(f"🖼️ [CHAT_SERVICE] Image jointe détectée — utilisation modèle vision: {model}")
+    else:
+        # Utiliser conv_model en priorité si défini
+        model = conv_model or config.get("chat", {}).get("model", "anthropic/claude-sonnet-4-5")
+    
+    # Construire le message utilisateur courant
+    if attachment_base64:
+        # Détecter le type MIME depuis le nom de fichier
+        ext = Path(attachment_filename).suffix.lower() if attachment_filename else ".jpg"
+        mime_map = {
+            ".png": "image/png",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".webp": "image/webp"
+        }
+        mime = mime_map.get(ext, "image/jpeg")
+        
+        # Format multimodal pour l'API
+        user_message_content = [
+            {"type": "text", "text": enriched_user_content},
+            {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{attachment_base64}"}}
+        ]
+    else:
+        # Format texte simple
+        user_message_content = enriched_user_content
+    
     # Construire les messages pour l'API
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(history)
-    messages.append({"role": "user", "content": enriched_user_content})
+    messages.append({"role": "user", "content": user_message_content})
     
     # Appel API OpenRouter
     openrouter_key = config.get("api_keys", {}).get("openrouter_key", "")
-    # Utiliser conv_model en priorité si défini
-    model = conv_model or config.get("chat", {}).get("model", "anthropic/claude-sonnet-4-5")
     
     logger.info(f"🔑 [CHAT_SERVICE] openrouter_key présente: {bool(openrouter_key)}, longueur: {len(openrouter_key) if openrouter_key else 0}")
     logger.info(f"🤖 [CHAT_SERVICE] Modèle: {model}")
@@ -578,8 +639,8 @@ async def send_chat_message(conversation_id: int, user_content: str, db, config:
     # Sauvegarder le message user
     now = datetime.utcnow().isoformat()
     cursor.execute(
-        "INSERT INTO messages (conversation_id, role, content, input_tokens, output_tokens, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-        (conversation_id, "user", user_content, input_tokens, 0, now)
+        "INSERT INTO messages (conversation_id, role, content, input_tokens, output_tokens, created_at, attachment_base64, attachment_filename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (conversation_id, "user", user_content, input_tokens, 0, now, attachment_base64, attachment_filename)
     )
     user_message_id = cursor.lastrowid
     

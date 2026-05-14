@@ -46,7 +46,10 @@ window.API = {
   scanProject: (id) => _get(`/projects/${id}/scan`),
   initGraphify: (id) => _post(`/projects/${id}/init-graphify`, {}),
   parseMissionPrompt: (text) => _post('/pipelines/parse-mission', { text }),
-  startPipeline: (data) => _post('/pipelines/start', data),
+  startPipeline: (data) => {
+    // data peut contenir: project_id, workflow_type, initial_input, modele_override, source_mission_prompt_id, attachment_base64, attachment_filename
+    return _post('/pipelines/start', data);
+  },
   getPipeline: (sessionId) => _get(`/pipelines/${sessionId}`),
   validateStep: (sessionId, stepId, data) => _post(`/pipelines/${sessionId}/validate/${stepId}`, data),
   retryStep: (sessionId, stepId) => _post(`/pipelines/${sessionId}/retry/${stepId}`),
@@ -63,6 +66,8 @@ window.API = {
   saveGlobalContext: (value) => _post('/config/global_context', { value }),
   getReglesGlobales: () => _get('/config/regles_globales'),
   saveReglesGlobales: (value) => _post('/config/regles_globales', { value }),
+  getCouche1: (moduleKey) => _get(`/config/couche1/${moduleKey}`),
+  saveCouche1: (moduleKey, value) => _post(`/config/couche1/${moduleKey}`, { value }),
   backupDatabase: () => _post('/config/backup', {}),
   getClientsExportPath: () => _get('/config/clients_export_path'),
   saveClientsExportPath: (value) => _post('/config/clients_export_path', { value }),
@@ -101,19 +106,25 @@ window.API = {
   getReflexion: (id) => _get(`/reflexions/${id}`),
   deleteReflexion: (id) => _del(`/reflexions/${id}`),
   abandonReflexion: (id) => _post(`/reflexions/${id}/abandon`, {}),
-  sendReflexionMessage: (id, content) => _post(`/reflexions/${id}/messages`, { content }),
+  sendReflexionMessage: (id, bodyOrContent) => {
+    const body = typeof bodyOrContent === 'string' ? { content: bodyOrContent } : bodyOrContent;
+    return _post(`/reflexions/${id}/messages`, body);
+  },
   getReflexionMessages: (id, includeCompacted = false) => _get(`/reflexions/${id}/messages?include_compacted=${includeCompacted}`),
   checkCadrageHealth: (id) => _post(`/reflexions/${id}/sante-cadrage`, {}),
   proposeEdit: (id, filePath, newContent) => _post(`/reflexions/${id}/proposer-edit`, { file_path: filePath, new_content: newContent }),
   applyEdit: (id, filePath, newContent) => _post(`/reflexions/${id}/appliquer-edit`, { file_path: filePath, new_content: newContent, confirmed: true }),
-  figerReflexion: (id) => _post(`/reflexions/${id}/figer`, {}),
+  detectLivrableType: (sessionId) => _post(`/reflexions/${sessionId}/detect-livrable`, {}),
+  figerReflexion: (id, livrableType = null) => _post(`/reflexions/${id}/figer`, livrableType ? { livrable_type: livrableType } : {}),
   getLivrable: (id) => _get(`/reflexions/${id}/livrable`),
   marquerConsomme: (id) => _post(`/reflexions/${id}/marquer-consomme`, {}),
 
   // Sentinelle
   getPositions: () => _get('/sentinelle/positions'),
+  getPositionsValorisation: () => _get('/sentinelle/positions/valorisation'),
   createPosition: (data) => _post('/sentinelle/positions', data),
-  updatePosition: (id, data) => _patch(`/sentinelle/positions/${id}`, data),
+  upsertPosition: (data) => _post('/sentinelle/positions/upsert', data),
+  updatePosition: (id, data) => _request('PUT', `/sentinelle/positions/${id}`, data),
   deletePosition: (id) => _del(`/sentinelle/positions/${id}`),
   getWatchlist: () => _get('/sentinelle/watchlist'),
   createWatchlist: (data) => _post('/sentinelle/watchlist', data),
@@ -131,4 +142,9 @@ window.API = {
   runAnalyse: (cycleId) => _post(`/sentinelle/cycles/${cycleId}/analyse`, {}),
   runPropositions: (cycleId) => _post(`/sentinelle/cycles/${cycleId}/propositions`, {}),
   runOrdre: (cycleId, data) => _post(`/sentinelle/cycles/${cycleId}/ordre`, data),
+  getSentinelleCyclesRecent: () => _get('/sentinelle/cycles/recent'),
+  getSentinelleActifCount: () => _get('/sentinelle/cycles/actif/count'),
+  getSentinelleAlertesCount: () => _get('/sentinelle/alertes/count'),
+  getSentinelleAlertes: () => _get('/sentinelle/alertes'),
+  markAlerteLue: (id) => _patch(`/sentinelle/alertes/${id}/lu`),
 };

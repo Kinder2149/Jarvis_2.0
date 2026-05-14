@@ -4,6 +4,7 @@
   let allSessions = [];
   let allAtelierProspects = [];
   let allReflexions = [];
+  let allSentinelleCycles = [];
   let currentPeriod = 'today';
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -14,15 +15,17 @@
 
   async function loadDashboardData() {
     try {
-      const [projects, conversations, atelierProspects] = await Promise.all([
+      const [projects, conversations, atelierProspects, sentinelleCycles] = await Promise.all([
         window.API.getProjects(),
         window.API.getConversations(),
-        window.API.getProspects().catch(() => [])
+        window.API.getProspects().catch(() => []),
+        window.API.getSentinelleCyclesRecent().catch(() => [])
       ]);
 
       allProjects = projects;
       allConversations = conversations;
       allAtelierProspects = atelierProspects;
+      allSentinelleCycles = sentinelleCycles;
 
       const sessionPromises = projects.map(p => 
         window.API.getProjectSessions(p.id).catch(() => [])
@@ -163,6 +166,23 @@
       });
     }
 
+    // ── Cycles Sentinelle actifs ──────────────────────────────────
+    const activeSentinelleCycles = allSentinelleCycles.filter(c => c.etat !== 'CLOTURE');
+    if (activeSentinelleCycles.length > 0) {
+      activeSentinelleCycles.forEach(cycle => {
+        html += `
+          <div class="active-pipeline-card card card--interactive">
+            <div class="active-pipeline-info">
+              <span>🛡</span>
+              <strong>Cycle Sentinelle en cours</strong>
+              <span class="text-muted">· Mois ${cycle.mois}</span>
+            </div>
+            <a href="sentinelle.html" class="btn-secondary btn-sm">→ Voir</a>
+          </div>
+        `;
+      });
+    }
+
     // ── Sessions bloquées ──────────────────────────────────────────
     if (stuckSessions.length > 0) {
       html += `
@@ -286,6 +306,17 @@
       });
     });
 
+    allSentinelleCycles.forEach(cycle => {
+      items.push({
+        type: 'sentinelle',
+        id: cycle.id,
+        title: `Cycle Sentinelle ${cycle.mois}`,
+        date: cycle.updated_at || cycle.created_at,
+        status: cycle.etat,
+        href: 'sentinelle.html'
+      });
+    });
+
     items.sort((a, b) => new Date(b.date) - new Date(a.date));
     return items;
   }
@@ -316,6 +347,7 @@
     let icon = '💬';
     if (item.type === 'module') icon = '⚙️';
     if (item.type === 'reflexion') icon = '🧠';
+    if (item.type === 'sentinelle') icon = '🛡';
     
     const projectLabel = item.project_name || 'Sans projet';
     const dateStr = window.formatDate ? window.formatDate(item.date) : new Date(item.date).toLocaleString('fr-FR');
@@ -343,6 +375,20 @@
       metaHTML += `<span class="badge badge--${item.status.toLowerCase()}">${statusLabel}</span>`;
     }
 
+    if (item.type === 'sentinelle') {
+      const statusLabels = {
+        'PHASE_1': 'Phase 1',
+        'PHASE_2': 'Veille',
+        'PHASE_3': 'Analyse',
+        'PHASE_4': 'Décision',
+        'PHASE_5': 'Ordre',
+        'PHASE_6': 'Récap',
+        'CLOTURE': 'Clôturé'
+      };
+      const statusLabel = statusLabels[item.status] || item.status;
+      metaHTML += `<span class="badge badge--${item.status === 'CLOTURE' ? 'completed' : 'running'}">${statusLabel}</span>`;
+    }
+
     let previewHTML = '';
     if (item.type === 'chat' && item.preview) {
       const truncated = item.preview.length > 80 ? item.preview.substring(0, 80) + '...' : item.preview;
@@ -363,27 +409,65 @@
 
   function renderStats() {
     const timeline = buildTimeline();
-    const weekItems = filterByPeriod(timeline, 'week');
+    const filteredItems = filterByPeriod(timeline, currentPeriod);
     
-    const sessionsCount = weekItems.filter(i => i.type === 'module' || i.type === 'reflexion').length;
-    const chatsCount = weekItems.filter(i => i.type === 'chat').length;
-    const totalCost = weekItems
+    const sessionsCount = filteredItems.filter(i => i.type === 'module' || i.type === 'reflexion' || i.type === 'sentinelle').length;
+    const chatsCount = filteredItems.filter(i => i.type === 'chat').length;
+    const totalCost = filteredItems
       .filter(i => i.type === 'module')
       .reduce((sum, i) => sum + (i.cost || 0), 0);
+
+    // Stats Module Code : missions lancées selon période
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const monthAgo = new Date(today);
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+    const missionsCodeCount = allSessions.filter(s => {
+      if (s.workflow_type !== 'code_mission') return false;
+      const createdDate = new Date(s.created_at);
+      if (currentPeriod === 'today') return createdDate >= today;
+      if (currentPeriod === 'week') return createdDate >= weekAgo;
+      if (currentPeriod === 'month') return createdDate >= monthAgo;
+      return true;
+    }).length;
+
+    // Stats Module Réflexion : sessions figées selon période
+    const reflexionsFigeesCount = allReflexions.filter(r => {
+      if (r.statut !== 'FIGEE') return false;
+      if (!r.frozen_at) return false;
+      const frozenDate = new Date(r.frozen_at);
+      if (currentPeriod === 'today') return frozenDate >= today;
+      if (currentPeriod === 'week') return frozenDate >= weekAgo;
+      if (currentPeriod === 'month') return frozenDate >= monthAgo;
+      return true;
+    }).length;
+
+    const periodLabel = currentPeriod === 'today' ? "aujourd'hui" : currentPeriod === 'week' ? 'cette semaine' : 'ce mois';
 
     const container = document.getElementById('dashboard-stats');
     container.innerHTML = `
       <div class="stat-card card">
         <div class="stat-value">${sessionsCount}</div>
-        <div class="stat-label">Sessions cette semaine</div>
+        <div class="stat-label">Sessions ${periodLabel}</div>
       </div>
       <div class="stat-card card">
         <div class="stat-value">${chatsCount}</div>
-        <div class="stat-label">Conversations cette semaine</div>
+        <div class="stat-label">Conversations ${periodLabel}</div>
+      </div>
+      <div class="stat-card card">
+        <div class="stat-value">${missionsCodeCount}</div>
+        <div class="stat-label">Missions code</div>
+      </div>
+      <div class="stat-card card">
+        <div class="stat-value">${reflexionsFigeesCount}</div>
+        <div class="stat-label">Réflexions figées</div>
       </div>
       <div class="stat-card card">
         <div class="stat-value">$${totalCost.toFixed(3)}</div>
-        <div class="stat-label">Coût cette semaine</div>
+        <div class="stat-label">Coût ${periodLabel}</div>
       </div>
     `;
   }
@@ -392,7 +476,7 @@
     const timeline = buildTimeline();
     const filtered = filterByPeriod(timeline, currentPeriod);
     
-    const sessionsCount = filtered.filter(i => i.type === 'module' || i.type === 'reflexion').length;
+    const sessionsCount = filtered.filter(i => i.type === 'module' || i.type === 'reflexion' || i.type === 'sentinelle').length;
     const chatsCount = filtered.filter(i => i.type === 'chat').length;
     const totalCost = filtered
       .filter(i => i.type === 'module')
