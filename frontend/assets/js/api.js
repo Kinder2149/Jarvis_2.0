@@ -150,4 +150,14 @@ window.API = {
 
   validateAtelierStep: (sessionId, stepId, validation) => _post(`/pipelines/${sessionId}/validate/${stepId}`, validation),
   rejectAtelierStep: (sessionId, stepId, feedback) => _post(`/pipelines/${sessionId}/validate/${stepId}`, { approved: false, feedback: feedback || '' }),
+
+  // Jarvis Orchestrator
+  listJarvisSessions: () => _get('/jarvis/sessions'),
+  createJarvisSession: (title = 'Session Jarvis') => _post('/jarvis/sessions', { title }),
+  getJarvisSession: (id) => _get(`/jarvis/sessions/${id}`),
+  deleteJarvisSession: (id) => _del(`/jarvis/sessions/${id}`),
+  sendJarvisMessage: (id, data) => _post(`/jarvis/sessions/${id}/message`, data),
+  getJarvisAgentUpdates: (id, sinceId = 0) => _get(`/jarvis/sessions/${id}/agent-updates?since_id=${sinceId}`),
+  validateJarvisStep: (sessionId, pipelineSessionId, stepId, data) =>
+    _post(`/jarvis/sessions/${sessionId}/validate/${pipelineSessionId}/${stepId}`, data),
 };

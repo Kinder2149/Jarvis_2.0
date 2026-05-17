@@ -72,13 +72,19 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
 
   let html = `
     <div class="sidebar-header">
-      <a href="index.html" class="sidebar-logo" title="Tableau de bord"><span class="sidebar-text" style="font-family:var(--mono);letter-spacing:0.1em">⚡ JARVIS</span></a>
+      <a href="jarvis.html" class="sidebar-logo" title="JARVIS Orchestrateur"><span class="sidebar-text" style="font-family:var(--mono);letter-spacing:0.1em">⚡ JARVIS</span></a>
       <button id="btn-sidebar-collapse" class="btn-icon" title="Réduire">
         <span class="sidebar-text">←</span><span class="sidebar-collapsed-text" style="display:none">→</span>
       </button>
     </div>
     <div class="sidebar-actions">
-      <div class="sidebar-actions-grid">
+      <div class="sidebar-actions-grid" style="grid-template-columns: 1fr">
+        <button id="btn-jarvis" class="btn-create" title="JARVIS Orchestrateur" style="grid-column:1/-1">
+          <span class="btn-create-emoji">⚡</span>
+          <span class="sidebar-text btn-create-label">JARVIS</span>
+        </button>
+      </div>
+      <div class="sidebar-actions-grid" style="margin-top:6px">
         <button id="btn-new-chat" class="btn-create" title="Module Chat">
           <span class="btn-create-emoji">💬</span>
           <span class="sidebar-text btn-create-label">Chat</span>
@@ -135,6 +141,9 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
   sidebar.innerHTML = html;
 
   document.getElementById('btn-sidebar-collapse').addEventListener('click', toggleSidebar);
+  document.getElementById('btn-jarvis')?.addEventListener('click', () => {
+    window.location.href = 'jarvis.html';
+  });
   document.getElementById('btn-new-chat').addEventListener('click', () => {
     window.location.href = 'conversations.html';
   });

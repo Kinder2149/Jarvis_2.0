@@ -430,8 +430,46 @@ def init_db():
     _migrate_v3(conn)
     _migrate_prospects_v2(conn)
     _migrate_reflexion_attachments(conn)
+    _migrate_jarvis_orchestrator(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
+
+
+def _migrate_jarvis_orchestrator(conn):
+    """Migration : crée les tables de l'orchestrateur Jarvis (idempotent)."""
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jarvis_sessions (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            title      TEXT    NOT NULL DEFAULT 'Session Jarvis',
+            status     TEXT    NOT NULL DEFAULT 'ACTIVE',
+            created_at TEXT    DEFAULT (datetime('now')),
+            updated_at TEXT    DEFAULT (datetime('now'))
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jarvis_messages (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id          INTEGER NOT NULL REFERENCES jarvis_sessions(id) ON DELETE CASCADE,
+            role                TEXT    NOT NULL,
+            content             TEXT    NOT NULL,
+            message_type        TEXT    NOT NULL DEFAULT 'text',
+            agent_type          TEXT,
+            pipeline_session_id INTEGER,
+            pipeline_step_id    INTEGER,
+            metadata            TEXT,
+            created_at          TEXT    DEFAULT (datetime('now'))
+        )
+    """)
+
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_jarvis_messages_session "
+        "ON jarvis_messages(session_id, id)"
+    )
+
+    conn.commit()
 
 
 def _create_reflexion_tables(conn):
