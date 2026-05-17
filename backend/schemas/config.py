@@ -6,6 +6,7 @@ class ApiKeys(BaseModel):
     anthropic_key: str = ""
     google_key: str = ""
     web_search_key: str = ""
+    fal_key: str = ""
 
 class ModelPreferences(BaseModel):
     routing: str = "google/gemini-flash-2.0"

@@ -11,7 +11,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 
 from backend.database import init_db, get_connection
-from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle
+from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle, media
 
 scheduler = AsyncIOScheduler()
 
@@ -51,6 +51,7 @@ app.include_router(atelier.router, prefix="/api")
 app.include_router(config.router, prefix="/api")
 app.include_router(reflexions.router, prefix="/api")
 app.include_router(sentinelle.router, prefix="/api")
+app.include_router(media.router, prefix="/api")
 
 frontend_path = Path(__file__).parent.parent / "frontend"
 logger.info(f"Frontend path: {frontend_path}")

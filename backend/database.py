@@ -36,7 +36,7 @@ def load_config():
     api_keys = {row["key"]: row["value"] or "" for row in rows}
     if not api_keys:
         logger.warning("⚠️ [DB] Aucune clé API en DB, utilisation des valeurs par défaut vides")
-        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": "", "twelve_data_key": ""}
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": "", "twelve_data_key": "", "fal_key": ""}
     
     # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
     env_file = Path(__file__).parent / ".env"
@@ -53,6 +53,7 @@ def load_config():
                 "GOOGLE_KEY": "google_key",
                 "WEB_SEARCH_KEY": "web_search_key",
                 "TWELVE_DATA_KEY": "twelve_data_key",
+                "FAL_KEY": "fal_key",
             }
             db_key = env_map.get(env_key.strip())
             if db_key and not api_keys.get(db_key):
@@ -65,6 +66,7 @@ def load_config():
         ("GOOGLE_KEY", "google_key"),
         ("WEB_SEARCH_KEY", "web_search_key"),
         ("TWELVE_DATA_KEY", "twelve_data_key"),
+        ("FAL_KEY", "fal_key"),
     ]:
         if not api_keys.get(db_key) and os.environ.get(env_var):
             api_keys[db_key] = os.environ[env_var]
@@ -113,6 +115,7 @@ def _seed_api_keys_from_env(conn):
         "GOOGLE_KEY": "google_key",
         "WEB_SEARCH_KEY": "web_search_key",
         "TWELVE_DATA_KEY": "twelve_data_key",
+        "FAL_KEY": "fal_key",
     }
 
     # Lire les valeurs candidates : .env d'abord, puis variables OS
@@ -424,6 +427,22 @@ def init_db():
         )
     """)
     
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS media_generations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT NOT NULL,
+            prompt TEXT,
+            status TEXT NOT NULL DEFAULT 'pending',
+            result_url TEXT,
+            result_content TEXT,
+            fal_request_id TEXT,
+            fal_endpoint TEXT,
+            error_message TEXT,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+
     conn.commit()
     _create_reflexion_tables(conn)
     _migrate_v2(conn)

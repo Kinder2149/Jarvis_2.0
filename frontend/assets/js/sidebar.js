@@ -103,6 +103,10 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
           <span class="btn-create-emoji">📁</span>
           <span class="sidebar-text btn-create-label">Dossier</span>
         </button>
+        <button id="btn-media" class="btn-create" title="Agent Media">
+          <span class="btn-create-emoji">🎨</span>
+          <span class="sidebar-text btn-create-label">Media</span>
+        </button>
       </div>
     </div>
     <div class="sidebar-search">
@@ -148,6 +152,9 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
     window.location.href = 'sentinelle.html';
   });
   document.getElementById('btn-new-reflexion')?.addEventListener('click', handleNewMission);
+  document.getElementById('btn-media')?.addEventListener('click', () => {
+    window.location.href = 'media.html';
+  });
   document.getElementById('btn-new-dossier')?.addEventListener('click', handleNewProject);
 
   const sidebarData = { projects, conversations, sessionsMap, reflexionsMap, prospects, filteredProjects };

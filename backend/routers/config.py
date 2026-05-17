@@ -35,7 +35,7 @@ def get_full_config():
             api_keys[key_name] = value
     
     if not api_keys:
-        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "twelve_data_key": ""}
+        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "twelve_data_key": "", "fal_key": ""}
     
     from pathlib import Path as _Path
     _env_file = _Path(__file__).parent.parent / ".env"

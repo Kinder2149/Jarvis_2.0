@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS — Agent Media</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    #page-media { padding: 2rem; max-width: 900px; margin: 0 auto; }
+    .media-header { margin-bottom: 2rem; }
+    .media-header h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .media-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .media-tab { background: none; border: 1px solid transparent; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; transition: all 0.15s; }
+    .media-tab:hover { background: var(--surface-hover); color: var(--text); }
+    .media-tab--active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .media-panel { display: none; }
+    .media-panel--active { display: block; }
+    .media-form { display: flex; flex-direction: column; gap: 1rem; }
+    .media-form label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; display: block; }
+    .media-form textarea, .media-form input[type="text"], .media-form select { width: 100%; box-sizing: border-box; }
+    .media-row { display: flex; gap: 1rem; }
+    .media-row > * { flex: 1; }
+    .media-result { margin-top: 1.5rem; }
+    .media-result-image img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .media-result-video video { max-width: 100%; border-radius: 8px; }
+    .media-result-url { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; word-break: break-all; }
+    .media-result-url a { color: var(--accent); }
+    .media-processing { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
+    .media-spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .social-result { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .social-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+    .social-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .social-card-platform { font-weight: 600; font-size: 0.9rem; }
+    .social-card-copy { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 0.25rem 0.6rem; cursor: pointer; font-size: 0.8rem; color: var(--text-muted); }
+    .social-card-copy:hover { background: var(--surface-hover); }
+    .social-card-text { white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; }
+    .platform-check { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .platform-check label { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.9rem; color: var(--text); }
+    .history-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: background 0.15s; }
+    .history-item:hover { background: var(--surface-hover); }
+    .history-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+    .history-thumb-placeholder { width: 64px; height: 64px; border-radius: 4px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .history-meta { flex: 1; min-width: 0; }
+    .history-type { font-size: 0.75rem; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 0.25rem; }
+    .history-prompt { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-date { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .status-badge { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; flex-shrink: 0; }
+    .status-badge--completed { background: #1a4a1a; color: #4caf50; }
+    .status-badge--failed { background: #4a1a1a; color: #f44336; }
+    .status-badge--processing { background: #1a3a4a; color: #2196f3; }
+  </style>
+</head>
+<body>
+  <div id="app-layout">
+    <aside id="sidebar"></aside>
+    <main id="main-content">
+      <div id="page-media">
+
+        <div class="media-header">
+          <h1>🎨 Agent Media</h1>
+          <p class="text-muted">Génération d'images, vidéos et contenu social via fal.ai</p>
+        </div>
+
+        <div class="media-tabs">
+          <button class="media-tab media-tab--active" data-panel="image">Image</button>
+          <button class="media-tab" data-panel="video">Vidéo</button>
+          <button class="media-tab" data-panel="img2vid">Image → Vidéo</button>
+          <button class="media-tab" data-panel="social">Contenu Social</button>
+          <button class="media-tab" data-panel="history">Historique</button>
+        </div>
+
+        <!-- IMAGE -->
+        <div class="media-panel media-panel--active" id="panel-image">
+          <div class="card">
+            <h2 style="margin-bottom:1.25rem">Génération d'image — Flux 1.1 Pro</h2>
+            <div class="media-form">
+              <div>
+                <label>Prompt</label>
+                <textarea id="img-prompt" rows="4" placeholder="Décrivez l'image souhaitée en détail..."></textarea>
+              </div>
+              <div>
+                <label>Style (optionnel)</label>
+                <select id="img-style">
+                  <option value="">Aucun style particulier</option>
+                  <option value="photorealistic, professional photography, 8k">Photoréaliste</option>
+                  <option value="digital art, vibrant colors, detailed illustration">Illustration digitale</option>
+                  <option value="minimalist, clean design, flat colors">Minimaliste</option>
+                  <option value="cinematic, dramatic lighting, film grain">Cinématique</option>
+                  <option value="watercolor painting, soft colors, artistic">Aquarelle</option>
+                  <option value="3D render, octane render, ultra detailed">3D Render</option>
+                  <option value="corporate, professional, business photography">Corporate</option>
+                </select>
+              </div>
+              <button class="btn btn--primary" id="btn-generate-image" style="align-self:flex-start">Générer l'image</button>
+            </div>
+            <div id="image-result" class="media-result"></div>
+          </div>
+        </div>
+
+        <!-- VIDEO -->
+        <div class="media-panel" id="panel-video">
+          <div class="card">
+            <h2 style="margin-bottom:1.25rem">Génération vidéo — Kling 1.6</h2>
+            <div class="media-form">
+              <div>
+                <label>Prompt</label>
+                <textarea id="vid-prompt" rows="4" placeholder="Décrivez la scène vidéo souhaitée..."></textarea>
+              </div>
+              <div class="media-row">
+                <div>
+                  <label>Durée</label>
+                  <select id="vid-duration">
+                    <option value="5">5 secondes</option>
+                    <option value="10">10 secondes</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Format</label>
+                  <select id="vid-ratio">
+                    <option value="16:9">16:9 (Paysage)</option>
+                    <option value="9:16">9:16 (Portrait / Reels)</option>
+                    <option value="1:1">1:1 (Carré)</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn--primary" id="btn-generate-video" style="align-self:flex-start">Générer la vidéo</button>
+            </div>
+            <div id="video-result" class="media-result"></div>
+          </div>
+        </div>
+
+        <!-- IMAGE TO VIDEO -->
+        <div class="media-panel" id="panel-img2vid">
+          <div class="card">
+            <h2 style="margin-bottom:1.25rem">Image → Vidéo — Kling 1.6</h2>
+            <div class="media-form">
+              <div>
+                <label>URL de l'image source</label>
+                <input type="text" id="i2v-url" placeholder="https://... (URL d'une image générée ou externe)">
+              </div>
+              <div>
+                <label>Prompt d'animation (optionnel)</label>
+                <textarea id="i2v-prompt" rows="3" placeholder="Décrivez comment animer l'image (ex: caméra qui avance, vent dans les arbres...)"></textarea>
+              </div>
+              <div class="media-row">
+                <div>
+                  <label>Durée</label>
+                  <select id="i2v-duration">
+                    <option value="5">5 secondes</option>
+                    <option value="10">10 secondes</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Format</label>
+                  <select id="i2v-ratio">
+                    <option value="16:9">16:9 (Paysage)</option>
+                    <option value="9:16">9:16 (Portrait)</option>
+                    <option value="1:1">1:1 (Carré)</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn--primary" id="btn-generate-i2v" style="align-self:flex-start">Animer l'image</button>
+            </div>
+            <div id="i2v-result" class="media-result"></div>
+          </div>
+        </div>
+
+        <!-- SOCIAL CONTENT -->
+        <div class="media-panel" id="panel-social">
+          <div class="card">
+            <h2 style="margin-bottom:1.25rem">Contenu Social Media</h2>
+            <div class="media-form">
+              <div>
+                <label>Sujet / Thème</label>
+                <textarea id="social-topic" rows="3" placeholder="Décrivez le sujet, produit ou message à communiquer..."></textarea>
+              </div>
+              <div>
+                <label>Plateformes cibles</label>
+                <div class="platform-check">
+                  <label><input type="checkbox" value="linkedin" checked> LinkedIn</label>
+                  <label><input type="checkbox" value="twitter" checked> Twitter / X</label>
+                  <label><input type="checkbox" value="instagram"> Instagram</label>
+                  <label><input type="checkbox" value="youtube"> YouTube</label>
+                </div>
+              </div>
+              <div>
+                <label>Ton</label>
+                <select id="social-tone">
+                  <option value="professionnel">Professionnel</option>
+                  <option value="décontracté et engageant">Décontracté</option>
+                  <option value="inspirant et motivant">Inspirant</option>
+                  <option value="éducatif et informatif">Éducatif</option>
+                  <option value="humoristique">Humoristique</option>
+                  <option value="direct et commercial">Commercial</option>
+                </select>
+              </div>
+              <button class="btn btn--primary" id="btn-generate-social" style="align-self:flex-start">Générer le contenu</button>
+            </div>
+            <div id="social-result" class="media-result"></div>
+          </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="media-panel" id="panel-history">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <h2>Historique des générations</h2>
+              <button class="btn btn--ghost btn--sm" id="btn-refresh-history">Actualiser</button>
+            </div>
+            <div id="history-list" class="history-list">
+              <p class="text-muted">Chargement...</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <div id="toast-container"></div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/sidebar.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script>
+    // ── Tab navigation ────────────────────────────────────────────────────────
+    document.querySelectorAll('.media-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.media-tab').forEach(t => t.classList.remove('media-tab--active'));
+        document.querySelectorAll('.media-panel').forEach(p => p.classList.remove('media-panel--active'));
+        tab.classList.add('media-tab--active');
+        document.getElementById('panel-' + tab.dataset.panel).classList.add('media-panel--active');
+        if (tab.dataset.panel === 'history') loadHistory();
+      });
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function showToast(msg, type = 'info') {
+      if (window.showToast) return window.showToast(msg, type);
+      console.log(msg);
+    }
+
+    function setLoading(btn, loading) {
+      btn.disabled = loading;
+      btn.textContent = loading ? 'En cours...' : btn.dataset.label;
+    }
+
+    document.querySelectorAll('.btn--primary').forEach(b => b.dataset.label = b.textContent);
+
+    async function pollJob(requestId, endpoint, resultEl, type) {
+      let attempts = 0;
+      const maxAttempts = 120;
+
+      async function poll() {
+        attempts++;
+        if (attempts > maxAttempts) {
+          resultEl.innerHTML = `<div class="alert alert--danger">Timeout — la génération prend trop de temps. Vérifiez l'historique plus tard.</div>`;
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/media/jobs/${requestId}?endpoint=${encodeURIComponent(endpoint)}`);
+          const data = await res.json();
+
+          if (data.status === 'completed') {
+            renderVideoResult(resultEl, data.video_url);
+          } else if (data.status === 'failed') {
+            resultEl.innerHTML = `<div class="alert alert--danger">Erreur : ${data.error || 'Génération échouée'}</div>`;
+          } else {
+            const pos = data.queue_position != null ? ` (position ${data.queue_position})` : '';
+            resultEl.innerHTML = `
+              <div class="media-processing">
+                <div class="media-spinner"></div>
+                <span>Génération en cours${pos}… tentative ${attempts}/${maxAttempts}</span>
+              </div>`;
+            setTimeout(poll, 5000);
+          }
+        } catch (e) {
+          resultEl.innerHTML = `<div class="alert alert--danger">Erreur polling : ${e.message}</div>`;
+        }
+      }
+
+      poll();
+    }
+
+    function renderVideoResult(el, url) {
+      el.innerHTML = `
+        <div class="media-result-video">
+          <video controls autoplay muted loop src="${url}" style="max-width:100%;border-radius:8px"></video>
+          <p class="media-result-url"><a href="${url}" target="_blank">Télécharger la vidéo</a></p>
+        </div>`;
+    }
+
+    // ── IMAGE ─────────────────────────────────────────────────────────────────
+    const btnImg = document.getElementById('btn-generate-image');
+    btnImg.addEventListener('click', async () => {
+      const prompt = document.getElementById('img-prompt').value.trim();
+      if (!prompt) return showToast('Entrez un prompt', 'warning');
+
+      const resultEl = document.getElementById('image-result');
+      resultEl.innerHTML = `<div class="media-processing"><div class="media-spinner"></div><span>Génération en cours (Flux 1.1 Pro)…</span></div>`;
+      setLoading(btnImg, true);
+
+      try {
+        const res = await fetch('/api/media/generate/image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, style: document.getElementById('img-style').value })
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.detail || 'Erreur génération');
+
+        resultEl.innerHTML = `
+          <div class="media-result-image">
+            <img src="${data.url}" alt="${prompt}">
+            <p class="media-result-url">
+              <a href="${data.url}" target="_blank">Ouvrir en plein écran</a>
+              &nbsp;|&nbsp; ${data.width}×${data.height}px
+            </p>
+            <button class="btn btn--ghost btn--sm" style="margin-top:0.5rem" onclick="document.getElementById('i2v-url').value='${data.url}';document.querySelector('[data-panel=img2vid]').click()">
+              Animer cette image →
+            </button>
+          </div>`;
+      } catch (e) {
+        resultEl.innerHTML = `<div class="alert alert--danger">${e.message}</div>`;
+      } finally {
+        setLoading(btnImg, false);
+      }
+    });
+
+    // ── VIDEO ─────────────────────────────────────────────────────────────────
+    const btnVid = document.getElementById('btn-generate-video');
+    btnVid.addEventListener('click', async () => {
+      const prompt = document.getElementById('vid-prompt').value.trim();
+      if (!prompt) return showToast('Entrez un prompt', 'warning');
+
+      const resultEl = document.getElementById('video-result');
+      resultEl.innerHTML = `<div class="media-processing"><div class="media-spinner"></div><span>Envoi en queue fal.ai…</span></div>`;
+      setLoading(btnVid, true);
+
+      try {
+        const res = await fetch('/api/media/generate/video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt,
+            duration: document.getElementById('vid-duration').value,
+            aspect_ratio: document.getElementById('vid-ratio').value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erreur soumission');
+
+        resultEl.innerHTML = `<div class="media-processing"><div class="media-spinner"></div><span>Job soumis (ID: ${data.request_id.slice(0, 16)}…). Polling en cours…</span></div>`;
+        pollJob(data.request_id, data.endpoint, resultEl, 'video');
+      } catch (e) {
+        resultEl.innerHTML = `<div class="alert alert--danger">${e.message}</div>`;
+      } finally {
+        setLoading(btnVid, false);
+      }
+    });
+
+    // ── IMAGE TO VIDEO ────────────────────────────────────────────────────────
+    const btnI2V = document.getElementById('btn-generate-i2v');
+    btnI2V.addEventListener('click', async () => {
+      const imageUrl = document.getElementById('i2v-url').value.trim();
+      if (!imageUrl) return showToast('Entrez l\'URL de l\'image source', 'warning');
+
+      const resultEl = document.getElementById('i2v-result');
+      resultEl.innerHTML = `<div class="media-processing"><div class="media-spinner"></div><span>Envoi en queue fal.ai…</span></div>`;
+      setLoading(btnI2V, true);
+
+      try {
+        const res = await fetch('/api/media/generate/image-to-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image_url: imageUrl,
+            prompt: document.getElementById('i2v-prompt').value.trim(),
+            duration: document.getElementById('i2v-duration').value,
+            aspect_ratio: document.getElementById('i2v-ratio').value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erreur soumission');
+
+        resultEl.innerHTML = `<div class="media-processing"><div class="media-spinner"></div><span>Job soumis. Polling en cours…</span></div>`;
+        pollJob(data.request_id, data.endpoint, resultEl, 'video');
+      } catch (e) {
+        resultEl.innerHTML = `<div class="alert alert--danger">${e.message}</div>`;
+      } finally {
+        setLoading(btnI2V, false);
+      }
+    });
+
+    // ── SOCIAL CONTENT ────────────────────────────────────────────────────────
+    const btnSocial = document.getElementById('btn-generate-social');
+    btnSocial.addEventListener('click', async () => {
+      const topic = document.getElementById('social-topic').value.trim();
+      if (!topic) return showToast('Entrez un sujet', 'warning');
+
+      const platforms = Array.from(document.querySelectorAll('.platform-check input:checked')).map(i => i.value);
+      if (!platforms.length) return showToast('Sélectionnez au moins une plateforme', 'warning');
+
+      const resultEl = document.getElementById('social-result');
+      resultEl.innerHTML = `<div class="media-processing"><div class="media-spinner"></div><span>Génération du contenu…</span></div>`;
+      setLoading(btnSocial, true);
+
+      try {
+        const res = await fetch('/api/media/generate/social-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, platforms, tone: document.getElementById('social-tone').value })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Erreur génération');
+
+        const content = data.content || {};
+        const platformIcons = { linkedin: '💼', twitter: '🐦', instagram: '📸', youtube: '▶️' };
+        const platformLabels = { linkedin: 'LinkedIn', twitter: 'Twitter / X', instagram: 'Instagram', youtube: 'YouTube' };
+
+        let html = '<div class="social-result">';
+        for (const [key, text] of Object.entries(content)) {
+          if (!text || text === 'null' || key === 'raw') continue;
+          html += `
+            <div class="social-card">
+              <div class="social-card-header">
+                <span class="social-card-platform">${platformIcons[key] || ''} ${platformLabels[key] || key}</span>
+                <button class="social-card-copy" onclick="copyText(this, '${key}')">Copier</button>
+              </div>
+              <div class="social-card-text" id="social-text-${key}">${escapeHtml(text)}</div>
+            </div>`;
+        }
+        if (content.raw) {
+          html += `<div class="social-card"><div class="social-card-text">${escapeHtml(content.raw)}</div></div>`;
+        }
+        html += '</div>';
+        resultEl.innerHTML = html;
+      } catch (e) {
+        resultEl.innerHTML = `<div class="alert alert--danger">${e.message}</div>`;
+      } finally {
+        setLoading(btnSocial, false);
+      }
+    });
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function copyText(btn, key) {
+      const el = document.getElementById('social-text-' + key);
+      if (!el) return;
+      navigator.clipboard.writeText(el.textContent).then(() => {
+        btn.textContent = 'Copié !';
+        setTimeout(() => btn.textContent = 'Copier', 2000);
+      });
+    }
+
+    // ── HISTORY ───────────────────────────────────────────────────────────────
+    async function loadHistory() {
+      const listEl = document.getElementById('history-list');
+      listEl.innerHTML = '<p class="text-muted">Chargement...</p>';
+
+      try {
+        const res = await fetch('/api/media/history?limit=30');
+        const items = await res.json();
+
+        if (!items.length) {
+          listEl.innerHTML = '<p class="text-muted">Aucune génération pour l\'instant.</p>';
+          return;
+        }
+
+        const typeIcons = { image: '🖼', video: '🎬', image_to_video: '🎞', social: '📢' };
+        const typeLabels = { image: 'Image', video: 'Vidéo', image_to_video: 'Image→Vidéo', social: 'Social' };
+
+        listEl.innerHTML = items.map(item => {
+          const thumb = item.result_url && item.type === 'image'
+            ? `<img class="history-thumb" src="${item.result_url}" alt="">`
+            : `<div class="history-thumb-placeholder">${typeIcons[item.type] || '🎨'}</div>`;
+          const statusClass = `status-badge--${item.status}`;
+          const date = item.created_at ? new Date(item.created_at + 'Z').toLocaleString('fr-FR') : '';
+          return `
+            <div class="history-item" onclick="openHistoryItem(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+              ${thumb}
+              <div class="history-meta">
+                <div class="history-type">${typeLabels[item.type] || item.type}</div>
+                <div class="history-prompt">${escapeHtml(item.prompt || '')}</div>
+                <div class="history-date">${date}</div>
+              </div>
+              <span class="status-badge ${statusClass}">${item.status}</span>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        listEl.innerHTML = `<div class="alert alert--danger">${e.message}</div>`;
+      }
+    }
+
+    function openHistoryItem(item) {
+      if (item.result_url && item.type === 'image') {
+        window.open(item.result_url, '_blank');
+      } else if (item.result_url && (item.type === 'video' || item.type === 'image_to_video')) {
+        window.open(item.result_url, '_blank');
+      }
+    }
+
+    document.getElementById('btn-refresh-history').addEventListener('click', loadHistory);
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    window.initSidebar && window.initSidebar();
+  </script>
+</body>
+</html>
