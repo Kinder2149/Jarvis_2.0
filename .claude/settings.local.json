@@ -56,7 +56,21 @@
       "Bash(git add *)",
       "Bash(git rm *)",
       "Bash(git commit -m ' *)",
-      "Bash(grep -v \"^backend$\\\\|^frontend$\\\\|^tests$\\\\|^graphify-out$\\\\|^temp$\\\\|^PROJET_CONTEXTE\\\\|^CHANGELOG\\\\|^STACK_CODE\\\\|^README\\\\|^requirements\\\\|^start\\\\|^health_check\\\\|^pytest\\\\|^\\\\.git\")"
+      "Bash(grep -v \"^backend$\\\\|^frontend$\\\\|^tests$\\\\|^graphify-out$\\\\|^temp$\\\\|^PROJET_CONTEXTE\\\\|^CHANGELOG\\\\|^STACK_CODE\\\\|^README\\\\|^requirements\\\\|^start\\\\|^health_check\\\\|^pytest\\\\|^\\\\.git\")",
+      "Bash(curl -s http://localhost:8000/api/health)",
+      "Bash(curl -s \"http://localhost:8000/api/atelier/prospects\")",
+      "Bash(curl -s \"http://localhost:8000/api/prospects\")",
+      "Bash(curl -s \"http://localhost:8000/api/sentinelle/watchlist\")",
+      "Bash(curl -s -X DELETE \"http://localhost:8000/api/sentinelle/watchlist/TSTLIVE\")",
+      "Bash(curl -s -X DELETE \"http://localhost:8000/api/sentinelle/watchlist/1\")",
+      "Bash(curl -s -X DELETE \"http://localhost:8000/api/atelier/prospects/1\")",
+      "Bash(curl -s -X DELETE \"http://localhost:8000/api/atelier/prospects/2\")",
+      "Bash(curl -s -X DELETE \"http://localhost:8000/api/atelier/prospects/3\")",
+      "Bash(curl -s -X POST http://localhost:8000/api/projects -H \"Content-Type: application/json\" -d \"{\\\\\"name\\\\\": \\\\\"Film Tracker\\\\\", \\\\\"path\\\\\": \\\\\"C:\\\\\\\\\\\\\\\\DEV\\\\\\\\\\\\\\\\TEST\\\\\\\\\\\\\\\\film-tracker\\\\\", \\\\\"module_type\\\\\": \\\\\"code\\\\\"}\")",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s http://localhost:8000/)",
+      "Bash(git fetch *)",
+      "Bash(git worktree *)"
     ]
   }
 }
