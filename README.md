@@ -29,7 +29,7 @@ Puis ouvrir manuellement `http://localhost:8000/app/index.html` dans le navigate
 ## Documentation
 
 - `PROJET_CONTEXTE.md` : Source de vérité absolue
-- `STACK_STANDARD.md` : Stack technique de référence
+- `STACK_CODE.md` : Stack technique de référence
 - `CHANGELOG.md` : Historique des missions
 
 ## Configuration

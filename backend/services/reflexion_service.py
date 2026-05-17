@@ -76,9 +76,9 @@ WRITABLE_MD_FILES = {
 VALID_MODEL_SLUGS = {
     "anthropic/claude-sonnet-4.5",
     "anthropic/claude-haiku-4.5",
-    "anthropic/claude-opus-4",
+    "anthropic/claude-opus-4.5",
     "google/gemini-2.5-flash",
-    "google/gemini-flash-1.5",
+    "google/gemini-2.5-pro",
     "openai/gpt-4o",
     "openai/gpt-4o-mini",
 }
@@ -953,7 +953,7 @@ Réponds en JSON strict : {{"livrable_type": "...", "justification": "une phrase
         config = load_config()
         
         # Utiliser le modèle routing (léger, pas besoin de Sonnet pour classification)
-        model_id = config.get("model_preferences", {}).get("routing", "anthropic/claude-haiku-3.5")
+        model_id = config.get("model_preferences", {}).get("routing", "anthropic/claude-haiku-4.5")
         
         messages_api = [{"role": "user", "content": prompt}]
         

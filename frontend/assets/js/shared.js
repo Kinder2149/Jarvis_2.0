@@ -85,6 +85,15 @@ window.renderDiff = (diffText) => {
   return html;
 };
 
+window.escapeHtml = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+};
+
 window.initLayout = async () => {
   if (typeof window.initSidebar === 'function') await window.initSidebar();
   const pid = window.getURLParam('project_id') || window.getURLParam('id');

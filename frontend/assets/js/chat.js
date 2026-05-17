@@ -157,11 +157,7 @@
     }
   }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  const escapeHtml = window.escapeHtml;
 
   function attachEventListeners() {
     const textarea = document.getElementById('chat-input');

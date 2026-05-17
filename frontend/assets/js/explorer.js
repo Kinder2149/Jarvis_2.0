@@ -92,7 +92,6 @@
     if (btnGraphify) {
       btnGraphify.addEventListener('click', () => {
         if (window.showToast) window.showToast('Graphify — Fonctionnalité à venir');
-        console.log('Graphify clicked for project:', currentProjectId);
       });
     }
 
@@ -313,9 +312,5 @@
     document.querySelectorAll('.tree-file').forEach(el => el.classList.remove('tree-file--active'));
   }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  const escapeHtml = window.escapeHtml;
 })();

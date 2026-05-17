@@ -171,9 +171,9 @@ def sample_config():
         },
         "model_preferences": {
             "routing": "google/gemini-2.5-flash",
-            "structuring": "anthropic/claude-haiku-4.5",
-            "code": "anthropic/claude-sonnet-4.5",
-            "analysis": "anthropic/claude-opus-4.5"
+            "structuring": "google/gemini-2.5-flash",
+            "code": "anthropic/claude-haiku-4.5",
+            "analysis": "anthropic/claude-sonnet-4.5"
         }
     }
 

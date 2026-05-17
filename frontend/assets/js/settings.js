@@ -214,7 +214,6 @@
         model_preferences: currentConfig.model_preferences || defaultPrefs
       };
 
-      console.log('📤 [SAVE_API_KEY] Config sauvegardée (clés masquées)');
       await window.API.saveConfig(payload);
 
       if (!currentConfig.api_keys) currentConfig.api_keys = {};
@@ -467,11 +466,10 @@
     }
     
     // Charger le contenu du profil utilisateur
-    fetch('/api/config/profil_utilisateur')
-      .then(r => r.json())
+    window.API.getCouche1('profil_utilisateur')
       .then(data => {
         const ta = document.getElementById('chat-profil-utilisateur');
-        if (ta) ta.value = data.content || '';
+        if (ta) ta.value = data.value || '';
       })
       .catch(() => {});
     
@@ -538,16 +536,8 @@
       
       // Sauvegarder le profil utilisateur
       const profilContent = document.getElementById('chat-profil-utilisateur')?.value || '';
-      fetch('/api/config/profil_utilisateur', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({value: profilContent})
-      })
-      .then(r => r.json())
-      .then(() => {
-        // Silencieux — la confirmation globale de sauvegarde suffit
-      })
-      .catch(err => console.warn('Erreur sauvegarde profil:', err));
+      window.API.saveCouche1('profil_utilisateur', profilContent)
+        .catch(err => console.warn('Erreur sauvegarde profil:', err));
       
       // Sauvegarder les règles globales
       const reglesContent = document.getElementById('chat-regles-globales')?.value || '';

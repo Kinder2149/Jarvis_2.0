@@ -8,10 +8,10 @@ class ApiKeys(BaseModel):
     web_search_key: str = ""
 
 class ModelPreferences(BaseModel):
-    routing: str = "google/gemini-flash-2.0"
-    structuring: str = "anthropic/claude-haiku-4-5"
-    code: str = "anthropic/claude-sonnet-4-5"
-    analysis: str = "anthropic/claude-opus-4"
+    routing: str = "google/gemini-2.5-flash"
+    structuring: str = "google/gemini-2.5-flash"
+    code: str = "anthropic/claude-haiku-4.5"
+    analysis: str = "anthropic/claude-sonnet-4.5"
 
 class ChatConfig(BaseModel):
     model: str = "anthropic/claude-sonnet-4.5"

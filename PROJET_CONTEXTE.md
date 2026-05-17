@@ -84,6 +84,7 @@ JARVIS/
 │   │   ├── files.py           ← read, write, diff, apply, archive docs, local-list
 │   │   ├── chat.py            ← conversations, messages, titrage auto, résumé, folder_path
 │   │   ├── atelier.py         ← CRUD prospects, start pipeline atelier, export ZIP
+│   │   ├── sentinelle.py      ← portefeuille, watchlist, cycles d'investissement, alertes, SKILLS IA
 │   │   └── config.py          ← clés API (SQLite), test connexion, modèles, profil utilisateur
 │   ├── services/
 │   │   ├── pipeline_engine.py ← state machine, orchestration, chunking, persistance
@@ -93,6 +94,7 @@ JARVIS/
 │   │   ├── chat_service.py    ← historique messages, titrage auto, lecture dossier local, web search
 │   │   ├── atelier_service.py ← logique pipeline atelier, export ZIP fichiers démo
 │   │   ├── reflexion_service.py ← session réflexion, messages IA, figement, livrables, propose/apply edit
+│   │   ├── sentinelle_service.py ← veille prix (TwelveData/CoinGecko), 4 SKILLs IA (veille/analyse/propositions/ordre), alertes APScheduler
 │   │   ├── cadrage.py         ← 7 checks santé cadrage (PROJET_CONTEXTE, graphify, section 8…)
 │   │   ├── chunking.py        ← découpage automatique missions par fichier (single_call / chunk_by_file)
 │   │   └── mission_parser.py  ← parsing prompt mission → titre, fichiers, modèle recommandé
@@ -102,7 +104,7 @@ JARVIS/
 │   │   ├── reflexion.py
 │   │   └── config.py
 │   └── data/
-│       ├── jarvis.db          ← SQLite (tables: projects, sessions, pipeline_steps, conversations, messages, app_config, prospects, reflexion_sessions, reflexion_messages, mission_prompts)
+│       ├── jarvis.db          ← SQLite (tables: projects, sessions, pipeline_steps, conversations, messages, app_config, model_decision_log, prospects, reflexion_sessions, reflexion_messages, mission_prompts, sentinelle_positions, sentinelle_watchlist, sentinelle_theses, sentinelle_cycles, sentinelle_transactions, sentinelle_alertes)
 │       ├── config.json        ← model_preferences + methodo_path (clés API dans jarvis.db)
 │       ├── pipelines.json     ← workflow code_mission (4 steps) + atelier_restauration (13 steps)
 │       └── prompts.json       ← templates prompts par step (execution, verification, cloture, atelier_*, reflexion_*)

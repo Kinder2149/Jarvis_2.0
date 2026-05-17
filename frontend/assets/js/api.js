@@ -147,4 +147,7 @@ window.API = {
   getSentinelleAlertesCount: () => _get('/sentinelle/alertes/count'),
   getSentinelleAlertes: () => _get('/sentinelle/alertes'),
   markAlerteLue: (id) => _patch(`/sentinelle/alertes/${id}/lu`),
+
+  validateAtelierStep: (sessionId, stepId, validation) => _post(`/pipelines/${sessionId}/validate/${stepId}`, validation),
+  rejectAtelierStep: (sessionId, stepId, feedback) => _post(`/pipelines/${sessionId}/validate/${stepId}`, { approved: false, feedback: feedback || '' }),
 };
