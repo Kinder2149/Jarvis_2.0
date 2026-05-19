@@ -51,8 +51,7 @@
 
       renderApiKeys();
       renderModelSelects();
-      setupTabSwitching();
-      loadConfig();
+      renderChatConfig();
       loadGlobalContext();
       setupProfilsModulesHandlers();
       await loadExportPaths();
@@ -68,7 +67,7 @@
   }
 
   function renderApiKeys() {
-    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data'];
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data', 'fal'];
     providers.forEach(provider => {
       const maskedValue = currentConfig.api_keys?.[`${provider}_key`] || '';
       renderApiKey(provider, maskedValue);
@@ -198,7 +197,8 @@
         anthropic_key: currentApiKeys.anthropic_key || '',
         google_key: currentApiKeys.google_key || '',
         web_search_key: currentApiKeys.web_search_key || '',
-        twelve_data_key: currentApiKeys.twelve_data_key || ''
+        twelve_data_key: currentApiKeys.twelve_data_key || '',
+        fal_key: currentApiKeys.fal_key || ''
       };
       apiKeys[`${provider}_key`] = keyValue;
 
@@ -305,7 +305,7 @@
   }
 
   function initializeTestBadges() {
-    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data'];
+    const providers = ['openrouter', 'anthropic', 'google', 'web_search', 'twelve_data', 'fal'];
     providers.forEach(provider => {
       const badge = document.getElementById(`badge-${provider}`);
       if (badge) {

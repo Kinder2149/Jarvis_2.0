@@ -10,6 +10,42 @@ router = APIRouter(prefix="/config", tags=["config"])
 
 CONFIG_PATH = Path(__file__).parent.parent / "data" / "config.json"
 CONTEXTS_DIR = Path(__file__).parent.parent / "data" / "contexts"
+ENV_FILE = Path(__file__).parent.parent / ".env"
+
+ENV_KEY_MAP = {
+    "openrouter_key": "OPENROUTER_KEY",
+    "anthropic_key": "ANTHROPIC_KEY",
+    "google_key": "GOOGLE_KEY",
+    "web_search_key": "WEB_SEARCH_KEY",
+    "twelve_data_key": "TWELVE_DATA_KEY",
+    "fal_key": "FAL_KEY",
+}
+
+
+def _read_env_file() -> dict:
+    """Lit les clés API depuis backend/.env et retourne un dict {db_key: value}."""
+    result = {}
+    if not ENV_FILE.exists():
+        return result
+    reverse_map = {v: k for k, v in ENV_KEY_MAP.items()}
+    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        env_key, env_val = line.split("=", 1)
+        db_key = reverse_map.get(env_key.strip())
+        if db_key and env_val.strip():
+            result[db_key] = env_val.strip()
+    return result
+
+
+def _write_env_file(api_keys: dict):
+    """Écrit les clés API dans backend/.env (source de vérité fichier)."""
+    lines = ["# Jarvis 2.0 — Clés API", "# Ce fichier est la source de vérité des clés API.", ""]
+    for db_key, env_key in ENV_KEY_MAP.items():
+        value = api_keys.get(db_key, "")
+        lines.append(f"{env_key}={value}")
+    ENV_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 class ConfigValue(BaseModel):
     value: str
@@ -19,43 +55,29 @@ class TestConnectionRequest(BaseModel):
 
 @router.get("")
 def get_full_config():
+    # Source de vérité 1 : backend/.env
+    env_keys = _read_env_file()
+
+    # Source de vérité 2 : SQLite (complète les clés absentes du .env)
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT key, value FROM app_config WHERE category = 'api_keys'")
     rows = cursor.fetchall()
     conn.close()
-    
+
+    db_keys = {row["key"]: row["value"] or "" for row in rows}
+
+    # Fusionner : .env prioritaire sur SQLite
+    merged = {**db_keys, **env_keys}
+
+    # Masquer les valeurs pour l'affichage
     api_keys = {}
-    for row in rows:
-        key_name = row["key"]
-        value = row["value"]
+    for key in ENV_KEY_MAP.keys():
+        value = merged.get(key, "")
         if value and len(value) > 4:
-            api_keys[key_name] = "..." + value[-4:]
+            api_keys[key] = "..." + value[-4:]
         else:
-            api_keys[key_name] = value
-    
-    if not api_keys:
-        api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "twelve_data_key": "", "fal_key": ""}
-    
-    from pathlib import Path as _Path
-    _env_file = _Path(__file__).parent.parent / ".env"
-    if _env_file.exists():
-        _env_map = {
-            "OPENROUTER_KEY": "openrouter_key",
-            "ANTHROPIC_KEY": "anthropic_key",
-            "GOOGLE_KEY": "google_key",
-            "WEB_SEARCH_KEY": "web_search_key",
-            "TWELVE_DATA_KEY": "twelve_data_key",
-        }
-        for line in _env_file.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            env_k, env_v = line.split("=", 1)
-            db_k = _env_map.get(env_k.strip())
-            if db_k and env_v.strip() and not api_keys.get(db_k):
-                v = env_v.strip()
-                api_keys[db_k] = "..." + v[-4:] if len(v) > 4 else v
+            api_keys[key] = value
     
     model_preferences = {
         "routing": "google/gemini-2.5-flash",
@@ -90,17 +112,21 @@ def save_config(config: Config):
     import logging
     logger = logging.getLogger("uvicorn")
     logger.info(f"📥 [SAVE_CONFIG] Payload reçu: {config.model_dump()}")
-    
+
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     config_dict = config.model_dump()
-    
+
+    # Lire les valeurs actuelles du .env pour conserver celles non modifiées
+    current_env = _read_env_file()
+
     conn = get_connection()
     cursor = conn.cursor()
-    
+
     for key_name, value in config_dict.get("api_keys", {}).items():
         if value.startswith("..."):
-            continue
-        
+            continue  # Valeur masquée = non modifiée, on la conserve
+
+        # Sauvegarder en SQLite
         cursor.execute("""
             INSERT INTO app_config (key, value, category, updated_at)
             VALUES (?, ?, 'api_keys', datetime('now'))
@@ -108,9 +134,15 @@ def save_config(config: Config):
                 value = excluded.value,
                 updated_at = excluded.updated_at
         """, (key_name, value))
-    
+
+        # Mettre à jour le dict pour le .env
+        current_env[key_name] = value
+
     conn.commit()
     conn.close()
+
+    # Écrire dans backend/.env (source de vérité fichier)
+    _write_env_file(current_env)
     
     existing_chat = {}
     if CONFIG_PATH.exists():
