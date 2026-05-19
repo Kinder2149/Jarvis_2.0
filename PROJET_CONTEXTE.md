@@ -279,6 +279,7 @@ JARVIS/
 | 2026-05-01 | Migration Gemini 2.0 Flash → 2.5 Flash AVANT la refonte | Gemini 2.0 Flash retiré le 2026-06-01 par OpenRouter — éviter un double chantier de migration en plein refactoring |
 | 2026-05-01 | Pas de migration des sessions pipeline historiques | Ménage des sessions inactives en BDD à la place — la dette est faible, valeur utilisateur nulle, risque de migration évité |
 | 2026-05-01 | Migration Gemini 2.0 Flash → 2.5 Flash effectuée | OpenRouter retire Gemini 2.0 Flash le 2026-06-01 — migration faite AVANT refonte pipeline pour éviter double chantier |
+| 2026-05-15 | SENTINELLE via JARVIS : thèses hors scope conversation | Thèses = interface dédiée sentinelle.html. Depuis JARVIS : consultation et watchlist uniquement. Agir (transactions) : jamais. |
 
 ---
 
@@ -296,27 +297,52 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ☑ À mettre à jour
-**Objectif :** Extension attachement d'images aux modules Réflexion et Pipeline
-**Mission terminée :** 2026-05-14 — IMAGE-ATTACHMENT-EXTENSION : Extension de la fonctionnalité d'attachement d'images
+**Objectif :** Polling résultat génération MEDIA dans jarvis.html
+**Mission terminée :** 2026-05-19 — MEDIA-POLLING
 **Fichiers modifiés :**
-- backend/database.py : migrations attachment_base64 + attachment_filename pour reflexion_messages
-- backend/schemas/reflexion.py : champs attachment dans SendMessage et ReflexionMessage
-- backend/schemas/pipeline.py : champs attachment dans StartPipeline
-- backend/routers/reflexions.py : passage attachments à send_user_message + retour attachment_filename uniquement
-- backend/routers/pipelines.py : appel vision préliminaire si image jointe + enrichissement initial_input
-- backend/services/reflexion_service.py : logique vision + multimodal + historique avec note + sauvegarde
-- frontend/assets/js/mission.js : UI attachement Zone 1 réflexion (bouton 📎 + preview + badge)
-- frontend/assets/js/api.js : sendReflexionMessage et startPipeline acceptent attachments
+- frontend/jarvis.html : ajout polling MEDIA (lignes 1456-1521 + 1588-1590 + 1610-1613)
+- CHANGELOG.md : ajout ligne mission MEDIA-POLLING
+- PROJET_CONTEXTE.md : mise à jour section 8
 
-**Fonctionnalités ajoutées :**
-1. **Module Réflexion** : Attachement d'images dans n'importe quel message de la session (même logique que Chat)
-2. **Modules Pipeline** : Attachement d'image sur le prompt initial — appel vision préliminaire pour extraire description textuelle, enrichissement du prompt avec la description (l'image base64 n'est PAS stockée dans le pipeline)
+**Implémentation polling MEDIA :**
+
+1. **Détection démarrage** (ligne 1610-1613)
+   - Après réponse POST chat : si `agent=MEDIA` ET `instance_ref.type=media_running`
+   - Appel `startMediaPolling(convId, initialCount)` avec compteur messages actuel
+
+2. **Fonction startMediaPolling()** (lignes 1461-1512)
+   - Interval : 3 secondes (plus rapide que FORGE/ATELIER)
+   - Timeout : 120 secondes max (40 tentatives)
+   - À chaque tick : GET `/api/jarvis/conversations/{id}`
+   - Détection nouveau message : `role=assistant` + `agent=MEDIA` + content ne contient PAS "Génération lancée"
+   - Si trouvé : re-render tous messages + scroll + stopper polling
+   - Si timeout : message d'erreur + stopper polling
+
+3. **Fonction stopMediaPolling()** (lignes 1514-1521)
+   - clearInterval + reset variables (mediaPollingInterval, mediaPollingStartTime)
+   - hideForgeBanner() pour retirer indicateur visuel
+
+4. **Stopper si nouveau message** (lignes 1588-1590)
+   - `send()` appelle `stopMediaPolling()` + `stopForgePolling()` avant envoi
+   - Un seul polling actif à la fois
+
+5. **Indicateur visuel**
+   - `showForgeBanner('MEDIA')` affiche bandeau "🎨 MEDIA en cours · mise à jour auto toutes les 3s"
+   - Couleur rouge distinctive (rgba(239,68,68))
+   - Bandeau retiré automatiquement quand résultat arrive ou timeout
+
+**Résultat :**
+- ✅ Utilisateur voit automatiquement le lien vers l'image/vidéo générée sans recharger
+- ✅ Timeout gracieux après 2 minutes avec message explicite
+- ✅ Polling stoppé proprement si abandon (nouveau message) ou résultat reçu
+- ✅ Indicateur visuel pendant génération (bandeau rouge avec emoji 🎨)
+- ✅ Rendu markdown transforme bien les URLs en liens cliquables (fonction renderMd existante)
 
 **Backlog technique (audit) :**
 - DUP-01 : escapeHtml définie 3 fois (chat.js / conversations.js / explorer.js) → à centraliser dans shared.js
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests manuels de la fonctionnalité d'attachement d'images dans Réflexion et Pipeline
+**Prochain objectif :** Tests E2E MEDIA — Scénario génération image avec polling
 
 ---
 

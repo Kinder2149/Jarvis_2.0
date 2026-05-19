@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import logging
+import asyncio
 from datetime import datetime
 from backend.database import get_connection
 from backend.services.context_manager import build_context_envelope, inject_into_template, write_cloture_docs
@@ -301,6 +302,11 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
                             (output_json, step_row["id"])
                         )
                         db.commit()
+                        asyncio.create_task(_generate_summary_fr(
+                            step_row["id"],
+                            step_config.get("display_name", "Santé du cadrage"),
+                            output_json
+                        ))
                         logger.info(f"✅ [PIPELINE] Santé cadrage: {health_report['verdict_global']} ({len(health_report['checks'])} checks)")
                     else:
                         logger.error(f"❌ [PIPELINE] Session {session_id} introuvable pour sante_cadrage")
@@ -316,6 +322,11 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
                         (step_row["id"],)
                     )
                     db.commit()
+                    asyncio.create_task(_generate_summary_fr(
+                        step_row["id"],
+                        step_config.get("display_name", step_config.get("name", "Étape")),
+                        ""
+                    ))
                 
                 # Vérifier si c'est le dernier step
                 total_steps = len(steps_config)
@@ -520,6 +531,11 @@ async def execute_step(session_id: int, step_index: int, project_path: str, db, 
                 "UPDATE pipeline_steps SET status = ? WHERE id = ?",
                 ("COMPLETED", step_row["id"])
             )
+            asyncio.create_task(_generate_summary_fr(
+                step_row["id"],
+                step_row["step_display_name"],
+                output
+            ))
             
             total_steps = len(steps_config)
             if step_index == total_steps - 1:
@@ -784,3 +800,47 @@ def _handle_atelier_export(session_id: int, step_id: int, db):
         )
         db.commit()
         raise
+
+
+async def _generate_summary_fr(step_id: int, step_display_name: str, output_data: str):
+    """
+    Fire-and-forget : génère un résumé fonctionnel en français pour un step COMPLETED.
+    Ouvre sa propre connexion SQLite — indépendant du pipeline en cours.
+    """
+    try:
+        from backend.database import get_connection, load_config
+        from backend.services.model_router import get_model_id, call_model as _call
+
+        config = load_config()
+        prompt = (
+            f"Résume en UNE phrase en français, pour un non-développeur, "
+            f"ce qui a été accompli à cette étape.\n"
+            f"Étape : {step_display_name}\n"
+            f"Résultat (extrait) : {(output_data or '')[:500]}\n\n"
+            f"Réponds avec juste la phrase, sans ponctuation finale."
+        )
+
+        model_id = get_model_id("structuring", config)
+        summary = await _call(
+            model_id=model_id,
+            messages=[{"role": "user", "content": prompt}],
+            api_keys=config["api_keys"],
+            session_id=None,
+            step_name="summary_fr",
+            model_type="structuring",
+            db_conn=None,
+            module_name="pipeline"
+        )
+
+        db = get_connection()
+        db.execute(
+            "UPDATE pipeline_steps SET summary_fr = ? WHERE id = ?",
+            (summary.strip(), step_id)
+        )
+        db.commit()
+        db.close()
+    except Exception as e:
+        import logging
+        logging.getLogger("jarvis").warning(
+            f"[PIPELINE] summary_fr step_id={step_id} échoué: {e}"
+        )

@@ -135,7 +135,7 @@ def list_local_files(project_id: int):
                 if item.suffix in exclude_extensions:
                     continue
                 
-                relative_path = item.relative_to(local_dir)
+                relative_path = item.relative_to(project_dir)
                 
                 if item.is_file():
                     files.append({

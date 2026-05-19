@@ -309,8 +309,8 @@ async def start_prospect_pipeline(prospect_id: int):
     
     if not project_row:
         cursor.execute(
-            "INSERT INTO projects (name, path, type) VALUES (?, ?, ?)",
-            ("Atelier Connecté", "__atelier__", "atelier")
+            "INSERT INTO projects (name, path, module_type) VALUES (?, ?, ?)",
+            ("Atelier Connecté", "__atelier__", "code")
         )
         conn.commit()
         project_id = cursor.lastrowid

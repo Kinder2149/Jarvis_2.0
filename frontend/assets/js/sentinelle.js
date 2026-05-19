@@ -80,159 +80,165 @@
     try {
       const cycle = await window.API.createCycle({ mois, budget_mensuel: 20.0 });
       currentCycle = cycle;
-      window.showToast('Cycle démarré', 'success');
-      renderCyclePhase(cycle);
+      window.showToast('Cycle démarré, lancement veille...', 'success');
+      
+      // Démarrer directement la veille sans passer par un formulaire de saisie
+      await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_2' });
+      await window.API.runVeille(cycle.id);
+      await loadCycleActif();
+      startPolling();
     } catch (e) {
       window.showToast('Erreur: ' + e.message, 'error');
     }
   }
 
   function renderCyclePhase(cycle) {
-    const phase = cycle.etat;
-    if (phase === 'PHASE_1') renderPhase1(cycle);
-    else if (phase === 'PHASE_2') renderPhase2(cycle);
-    else if (phase === 'PHASE_3') renderPhase3(cycle);
-    else if (phase === 'PHASE_4') renderPhase4(cycle);
-    else if (phase === 'PHASE_5') renderPhase5(cycle);
-    else if (phase === 'PHASE_6') renderPhase6(cycle);
+    const zone = document.getElementById('cycle-zone');
+    const etat = cycle.etat;
+    let html = '';
+
+    // Phase 1 — toujours affichée si le cycle existe
+    html += buildPhase1Block(cycle);
+
+    // Phase 2 — affichée si donnees_veille existe
+    if (cycle.donnees_veille) {
+      html += buildPhase2CompletedBlock(cycle);
+    } else if (etat === 'PHASE_2') {
+      html += buildPhase2WaitingBlock();
+    }
+
+    // Phase 3 — affichée si donnees_analyse existe
+    if (cycle.donnees_analyse) {
+      html += buildPhase3CompletedBlock(cycle);
+    } else if (etat === 'PHASE_3') {
+      html += buildPhase3WaitingBlock();
+    }
+
+    // Propositions — affichées si donnees_propositions existe
+    if (cycle.donnees_propositions) {
+      html += buildPropositionsBlock(cycle);
+    } else if (etat === 'PHASE_3' && cycle.donnees_analyse) {
+      html += buildPropositionsButtonBlock(cycle);
+    }
+
+    // Phase 4 — affichée si on est en PHASE_4 (active, avec boutons)
+    if (etat === 'PHASE_4') {
+      html += buildPhase4ActiveBlock(cycle);
+    } else if (cycle.decision) {
+      html += buildPhase4CompletedBlock(cycle);
+    }
+
+    // Phase 5 — affichée si on est en PHASE_5 (active, avec formulaire)
+    if (etat === 'PHASE_5') {
+      html += buildPhase5FormBlock(cycle);
+    } else if ((etat === 'PHASE_6' || etat === 'CLOTURE') && cycle.decision && cycle.decision !== 'Accumulation') {
+      html += buildPhase5CompletedBlock(cycle);
+    }
+
+    // Phase 6 — affichée si on est en PHASE_6
+    if (etat === 'PHASE_6') {
+      html += buildPhase6CloseButtonBlock(cycle);
+    }
+
+    zone.innerHTML = html;
+    rebindAllListeners(cycle);
   }
 
-  function renderPhase1(cycle) {
-    const zone = document.getElementById('cycle-zone');
-    zone.innerHTML = `
-      <div class="card">
-        <h2>Phase 1 — Saisie positions</h2>
-        <p class="text-muted">Format: TICKER QUANTITE [PEA|CTO] / TICKER QUANTITE [PEA|CTO]</p>
-        <p class="text-muted" style="font-size:0.85em">L'enveloppe est optionnelle (défaut PEA). Utilisez CTO pour les cryptos et actions étrangères hors EEA.</p>
-        <input type="text" id="input-positions" placeholder="Ex: VWCE 5 PEA / BTC 0.001 CTO / IWDA 3" class="input-lg">
-        <button id="btn-validate-positions" class="btn-primary">Valider les positions</button>
+  // ── Fonctions de construction de blocs chronologiques ────────────
+
+  function buildPhase1Block(cycle) {
+    return `
+      <div class="card card-history">
+        <h2>Phase 1 — Démarrage</h2>
+        <p class="text-muted">Cycle démarré pour ${cycle.mois} — Budget ${cycle.budget_mensuel}€</p>
       </div>
     `;
-    document.getElementById('btn-validate-positions').addEventListener('click', () => handleValidatePositions(cycle));
   }
 
-  async function handleValidatePositions(cycle) {
-    const input = document.getElementById('input-positions').value.trim();
-    if (!input) return window.showToast('Saisissez au moins une position', 'warning');
+  function buildPhase2WaitingBlock() {
+    return `
+      <div class="card card-active">
+        <h2>Phase 2 — Veille en cours</h2>
+        <div class="spinner">Sentinelle scanne les marchés...</div>
+      </div>
+    `;
+  }
 
-    const enveloppes_valides = ['PEA', 'CTO', 'LIQUIDITES'];
-    const parts = input.split('/').map(p => p.trim()).filter(p => p);
-    for (const part of parts) {
-      const tokens = part.split(/\s+/);
-      const ticker = tokens[0];
-      const quantite = tokens[1];
-      if (!ticker || !quantite) continue;
-      const enveloppe_raw = tokens[2] ? tokens[2].toUpperCase() : 'PEA';
-      const enveloppe = enveloppes_valides.includes(enveloppe_raw) ? enveloppe_raw.toLowerCase() : 'PEA';
-      try {
-        await window.API.createPosition({
-          ticker: ticker.toUpperCase(),
-          quantite: parseFloat(quantite),
-          enveloppe,
-          date_entree: new Date().toISOString().split('T')[0]
-        });
-      } catch (e) {
-        console.error('Erreur position:', e);
-      }
+  function buildPhase2CompletedBlock(cycle) {
+    const veille = JSON.parse(cycle.donnees_veille);
+    return `
+      <div class="card card-history">
+        <h2>Phase 2 — Veille</h2>
+        <div class="markdown-content">${window.renderMarkdown(veille.resume_ia)}</div>
+      </div>
+    `;
+  }
+
+  function buildPhase3WaitingBlock() {
+    return `
+      <div class="card card-active">
+        <h2>Phase 3 — Analyse en cours</h2>
+        <div class="spinner">Sentinelle analyse votre portefeuille...</div>
+      </div>
+    `;
+  }
+
+  function buildPhase3CompletedBlock(cycle) {
+    const analyse = JSON.parse(cycle.donnees_analyse);
+    return `
+      <div class="card card-history">
+        <h2>Phase 3 — Analyse</h2>
+        <div class="markdown-content">${window.renderMarkdown(analyse.resume_ia)}</div>
+      </div>
+    `;
+  }
+
+  function buildPropositionsButtonBlock(cycle) {
+    return `
+      <div class="card card-active">
+        <h2>Phase 3 — Propositions</h2>
+        <button id="btn-voir-propositions" class="btn-primary">Voir les propositions</button>
+      </div>
+    `;
+  }
+
+  function buildPropositionsBlock(cycle) {
+    const propositions = JSON.parse(cycle.donnees_propositions);
+    const biais = propositions.biais_detectes || [];
+    let biaisHTML = '';
+    if (biais.length > 0) {
+      biaisHTML = '<div class="warning-box"><strong>⚠️ Biais détectés:</strong>';
+      biais.forEach(b => {
+        biaisHTML += `<p>${b.type}: ${b.details}</p>`;
+      });
+      biaisHTML += '</div>';
     }
     
-    await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_2' });
-    window.showToast('Positions enregistrées, lancement veille...', 'info');
-    await window.API.runVeille(cycle.id);
-    await loadPortefeuille();
-    await loadCycleActif();
-    startPolling();
+    // Si on est encore en PHASE_3, afficher le bouton de validation (card active)
+    // Sinon, c'est juste de l'historique (card history)
+    const isActive = cycle.etat === 'PHASE_3';
+    const cardClass = isActive ? 'card-active' : 'card-history';
+    const buttonHTML = isActive ? '<button id="btn-valider-propositions" class="btn-primary" style="margin-top:1rem">Valider → Décision</button>' : '';
+    
+    return `
+      <div class="card ${cardClass}">
+        <h2>Phase 3 — Propositions</h2>
+        <div class="markdown-content">${window.renderMarkdown(propositions.scenarios)}</div>
+        ${biaisHTML}
+        ${buttonHTML}
+      </div>
+    `;
   }
 
-  function renderPhase2(cycle) {
-    const zone = document.getElementById('cycle-zone');
-    if (!cycle.donnees_veille) {
-      zone.innerHTML = `
-        <div class="card">
-          <h2>Phase 2 — Veille en cours</h2>
-          <div class="spinner">Sentinelle scanne les marchés...</div>
-        </div>
-      `;
-      startPolling();
-    } else {
-      const veille = JSON.parse(cycle.donnees_veille);
-      zone.innerHTML = `
-        <div class="card">
-          <h2>Phase 2 — Veille terminée</h2>
-          <div class="markdown-content">${window.renderMarkdown(veille.resume_ia)}</div>
-          <button id="btn-continue-analyse" class="btn-primary">Continuer vers l'analyse</button>
-        </div>
-      `;
-      document.getElementById('btn-continue-analyse').addEventListener('click', async () => {
-        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_3' });
-        await window.API.runAnalyse(cycle.id);
-        await loadCycleActif();
-        startPolling();
-      });
-    }
-  }
-
-  function renderPhase3(cycle) {
-    const zone = document.getElementById('cycle-zone');
-    if (!cycle.donnees_analyse) {
-      zone.innerHTML = `
-        <div class="card">
-          <h2>Phase 3 — Analyse en cours</h2>
-          <div class="spinner">Sentinelle analyse votre portefeuille...</div>
-        </div>
-      `;
-      startPolling();
-    } else if (!cycle.donnees_propositions) {
-      const analyse = JSON.parse(cycle.donnees_analyse);
-      zone.innerHTML = `
-        <div class="card">
-          <h2>Phase 3 — Analyse terminée</h2>
-          <div class="markdown-content">${window.renderMarkdown(analyse.resume_ia)}</div>
-          <button id="btn-voir-propositions" class="btn-primary">Voir les propositions</button>
-        </div>
-      `;
-      document.getElementById('btn-voir-propositions').addEventListener('click', async () => {
-        await window.API.runPropositions(cycle.id);
-        await loadCycleActif();
-        startPolling();
-      });
-    } else {
-      stopPolling();
-      const propositions = JSON.parse(cycle.donnees_propositions);
-      const biais = propositions.biais_detectes || [];
-      let biaisHTML = '';
-      if (biais.length > 0) {
-        biaisHTML = '<div class="warning-box"><strong>⚠️ Biais détectés:</strong>';
-        biais.forEach(b => {
-          biaisHTML += `<p>${b.type}: ${b.details}</p>`;
-        });
-        biaisHTML += '</div>';
-      }
-      zone.innerHTML = `
-        <div class="card">
-          <h2>Phase 3 — Propositions</h2>
-          <div class="markdown-content">${window.renderMarkdown(propositions.scenarios)}</div>
-          ${biaisHTML}
-          <button id="btn-valider-propositions" class="btn-primary">Valider</button>
-        </div>
-      `;
-      document.getElementById('btn-valider-propositions').addEventListener('click', async () => {
-        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_4' });
-        await loadCycleActif();
-      });
-    }
-  }
-
-  function renderPhase4(cycle) {
-    const zone = document.getElementById('cycle-zone');
+  function buildPhase4ActiveBlock(cycle) {
     const propositions = cycle.donnees_propositions ? JSON.parse(cycle.donnees_propositions) : null;
     const scenariosHTML = propositions
       ? `<div class="markdown-content" style="margin-bottom:1rem">${window.renderMarkdown(propositions.scenarios)}</div>`
       : '';
-
-    zone.innerHTML = `
-      <div class="card">
-        <h2>Phase 4 — Décision</h2>
+    
+    return `
+      <div class="card card-active">
+        <h2>Phase 4 — Décision (en attente)</h2>
         ${scenariosHTML}
         <p class="text-muted">Nommez le scénario choisi (ex: "Scénario 1 — VWCE") ou passez en accumulation</p>
         <input type="text" id="input-scenario" placeholder="Nom du scénario choisi" class="input-lg">
@@ -242,35 +248,24 @@
         </div>
       </div>
     `;
-
-    document.getElementById('btn-valider-scenario').addEventListener('click', async () => {
-      const scenario = document.getElementById('input-scenario').value.trim();
-      if (!scenario) return window.showToast('Nommez le scénario choisi', 'warning');
-      await window.API.updateCycleDecision(cycle.id, { mode: 'normal', decision: scenario });
-      await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_5' });
-      const montant = propositions ? propositions.budget_disponible : 20.0;
-      await window.API.runOrdre(cycle.id, { scenario_choisi: scenario, montant });
-      await loadCycleActif();
-    });
-
-    document.getElementById('btn-accumulation').addEventListener('click', async () => {
-      await window.API.updateCycleDecision(cycle.id, { mode: 'accumulation', decision: 'Accumulation' });
-      await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_6' });
-      await loadCycleActif();
-    });
   }
 
-  function renderPhase5(cycle) {
-    const zone = document.getElementById('cycle-zone');
-    
-    // Extraire le ticker du scénario choisi si possible
+  function buildPhase4CompletedBlock(cycle) {
+    return `
+      <div class="card card-history">
+        <h2>Phase 4 — Décision prise</h2>
+        <p>Scénario choisi : <strong>${cycle.decision}</strong></p>
+      </div>
+    `;
+  }
+
+  function buildPhase5FormBlock(cycle) {
     let tickerExtrait = '';
     if (cycle.decision) {
       const match = cycle.decision.match(/\b([A-Z]{2,5})\b/);
       if (match) tickerExtrait = match[1];
     }
     
-    // Afficher les paramètres d'ordre si disponibles
     let ordreInfo = '';
     try {
       const propositions = cycle.donnees_propositions ? JSON.parse(cycle.donnees_propositions) : null;
@@ -286,8 +281,8 @@
     
     const today = new Date().toISOString().split('T')[0];
     
-    zone.innerHTML = `
-      <div class="card">
+    return `
+      <div class="card card-active">
         <h2>Phase 5 — Confirmation de l'achat réel</h2>
         <p class="text-muted">Scénario choisi : <strong>${cycle.decision || 'N/A'}</strong></p>
         ${ordreInfo}
@@ -330,68 +325,153 @@
         </form>
       </div>
     `;
-    
-    document.getElementById('form-confirm-achat').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const ticker = document.getElementById('input-ticker').value.trim();
-      const quantite = parseFloat(document.getElementById('input-quantite').value);
-      const prix = parseFloat(document.getElementById('input-prix').value);
-      const frais = parseFloat(document.getElementById('input-frais').value) || 0.0;
-      const dateTransaction = document.getElementById('input-date-transaction').value;
-      const enveloppe = document.getElementById('input-enveloppe').value;
-      
-      if (!ticker || !quantite || !prix || !dateTransaction || !enveloppe) {
-        return window.showToast('Tous les champs requis doivent être remplis', 'error');
-      }
-      
-      try {
-        // Créer la transaction
-        await window.API.createTransaction({
-          cycle_id: cycle.id,
-          ticker,
-          quantite,
-          prix_reel: prix,
-          frais,
-          date_transaction: dateTransaction
-        });
-        
-        // Upsert la position
-        await window.API.upsertPosition({
-          ticker,
-          quantite,
-          prix_unitaire: prix,
-          enveloppe,
-          date_entree: dateTransaction
-        });
-        
-        // Passer à Phase 6
-        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_6' });
-        
-        window.showToast('Achat confirmé et position mise à jour', 'success');
-        await loadCycleActif();
-      } catch (error) {
-        window.showToast('Erreur : ' + error.message, 'error');
-      }
-    });
   }
 
-  function renderPhase6(cycle) {
-    const zone = document.getElementById('cycle-zone');
-    zone.innerHTML = `
-      <div class="card">
+  function buildPhase5CompletedBlock(cycle) {
+    return `
+      <div class="card card-history">
+        <h2>Phase 5 — Achat confirmé</h2>
+        <p class="text-muted">Transaction enregistrée</p>
+      </div>
+    `;
+  }
+
+  function buildPhase6CloseButtonBlock(cycle) {
+    return `
+      <div class="card card-active">
         <h2>Phase 6 — Clôture</h2>
         <p class="text-muted">Cycle terminé</p>
         <button id="btn-cloturer" class="btn-primary">Clôturer</button>
       </div>
     `;
-    document.getElementById('btn-cloturer').addEventListener('click', async () => {
-      await window.API.cloturerCycle(cycle.id, {});
-      window.showToast('Cycle clôturé', 'success');
-      currentCycle = null;
+  }
+
+  // ── Rebind des event listeners après injection HTML ──────────────
+
+  function rebindAllListeners(cycle) {
+    // Phase 2 - Continuer vers analyse
+    const btnContinueAnalyse = document.getElementById('btn-continue-analyse');
+    if (btnContinueAnalyse) {
+      btnContinueAnalyse.addEventListener('click', async () => {
+        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_3' });
+        await window.API.runAnalyse(cycle.id);
+        await loadCycleActif();
+        startPolling();
+      });
+    }
+
+    // Phase 3 - Voir propositions
+    const btnVoirPropositions = document.getElementById('btn-voir-propositions');
+    if (btnVoirPropositions) {
+      btnVoirPropositions.addEventListener('click', async () => {
+        await window.API.runPropositions(cycle.id);
+        await loadCycleActif();
+        startPolling();
+      });
+    }
+
+    // Phase 3 - Valider propositions (passage à Phase 4)
+    const btnValiderPropositions = document.getElementById('btn-valider-propositions');
+    if (btnValiderPropositions) {
+      btnValiderPropositions.addEventListener('click', async () => {
+        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_4' });
+        await loadCycleActif();
+      });
+    }
+
+    // Phase 4 - Valider scénario
+    const btnValiderScenario = document.getElementById('btn-valider-scenario');
+    if (btnValiderScenario) {
+      btnValiderScenario.addEventListener('click', async () => {
+        const scenario = document.getElementById('input-scenario').value.trim();
+        if (!scenario) return window.showToast('Nommez le scénario choisi', 'warning');
+        const propositions = cycle.donnees_propositions ? JSON.parse(cycle.donnees_propositions) : null;
+        await window.API.updateCycleDecision(cycle.id, { mode: 'normal', decision: scenario });
+        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_5' });
+        const montant = propositions ? propositions.budget_disponible : 20.0;
+        await window.API.runOrdre(cycle.id, { scenario_choisi: scenario, montant });
+        await loadCycleActif();
+      });
+    }
+
+    // Phase 4 - Accumulation
+    const btnAccumulation = document.getElementById('btn-accumulation');
+    if (btnAccumulation) {
+      btnAccumulation.addEventListener('click', async () => {
+        await window.API.updateCycleDecision(cycle.id, { mode: 'accumulation', decision: 'Accumulation' });
+        await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_6' });
+        await loadCycleActif();
+      });
+    }
+
+    // Phase 5 - Formulaire confirmation achat
+    const formConfirmAchat = document.getElementById('form-confirm-achat');
+    if (formConfirmAchat) {
+      formConfirmAchat.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const ticker = document.getElementById('input-ticker').value.trim();
+        const quantite = parseFloat(document.getElementById('input-quantite').value);
+        const prix = parseFloat(document.getElementById('input-prix').value);
+        const frais = parseFloat(document.getElementById('input-frais').value) || 0.0;
+        const dateTransaction = document.getElementById('input-date-transaction').value;
+        const enveloppe = document.getElementById('input-enveloppe').value;
+        
+        if (!ticker || !quantite || !prix || !dateTransaction || !enveloppe) {
+          return window.showToast('Tous les champs requis doivent être remplis', 'error');
+        }
+        
+        try {
+          await window.API.createTransaction({
+            cycle_id: cycle.id,
+            ticker,
+            quantite,
+            prix_reel: prix,
+            frais,
+            date_transaction: dateTransaction
+          });
+          
+          await window.API.upsertPosition({
+            ticker,
+            quantite,
+            prix_unitaire: prix,
+            enveloppe,
+            date_entree: dateTransaction
+          });
+          
+          await window.API.updateCycleEtat(cycle.id, { etat: 'PHASE_6' });
+          
+          window.showToast('Achat confirmé et position mise à jour', 'success');
+          await loadCycleActif();
+        } catch (error) {
+          window.showToast('Erreur : ' + error.message, 'error');
+        }
+      });
+    }
+
+    // Phase 6 - Clôturer
+    const btnCloturer = document.getElementById('btn-cloturer');
+    if (btnCloturer) {
+      btnCloturer.addEventListener('click', async () => {
+        await window.API.cloturerCycle(cycle.id, {});
+        window.showToast('Cycle clôturé', 'success');
+        currentCycle = null;
+        stopPolling();
+        await loadCycleActif();
+      });
+    }
+
+    // Gérer le polling
+    const etat = cycle.etat;
+    if (etat === 'PHASE_2' && !cycle.donnees_veille) {
+      startPolling();
+    } else if (etat === 'PHASE_3' && !cycle.donnees_analyse) {
+      startPolling();
+    } else if (etat === 'PHASE_3' && cycle.donnees_analyse && !cycle.donnees_propositions) {
+      startPolling();
+    } else {
       stopPolling();
-      await loadCycleActif();
-    });
+    }
   }
 
   function startPolling() {

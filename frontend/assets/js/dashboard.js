@@ -483,7 +483,8 @@
       .reduce((sum, i) => sum + (i.cost || 0), 0);
 
     const subtitle = document.getElementById('dashboard-subtitle');
-    
+    if (!subtitle) return;
+
     if (filtered.length === 0) {
       subtitle.textContent = currentPeriod === 'today' 
         ? 'Aucune activité aujourd\'hui' 

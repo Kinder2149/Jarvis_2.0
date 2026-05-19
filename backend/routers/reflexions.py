@@ -100,6 +100,22 @@ def delete_reflexion(session_id: int):
         conn.close()
 
 
+@router.post("/{session_id}/defreeze")
+def defreeze_reflexion(session_id: int):
+    """Dé-fige une session MENTOR (retour à OUVERTE). Impossible si FORGE a démarré."""
+    conn = get_connection()
+    try:
+        session = reflexion_service.defreeze_session(session_id, conn)
+        return session
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except Exception as e:
+        logger.exception(f"[REFLEXIONS] Erreur defreeze {session_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+
 @router.post("/{session_id}/abandon", status_code=200)
 def abandon_reflexion(session_id: int):
     """Passe une session en statut ABANDONNEE."""

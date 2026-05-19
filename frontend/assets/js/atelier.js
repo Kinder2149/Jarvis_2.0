@@ -1,8 +1,9 @@
 (function () {
-  // ── État ──────────────────────────────────────────────────────
+  // ── État ────────────────────────────────────────────────────────────
   let currentProspectId = null;
   let currentSessionId = null;
   let pollInterval = null;
+  let attachedImageSaisie = null;
 
   // Colonnes kanban (ordre affiché)
   const KANBAN_COLS = [
@@ -501,6 +502,14 @@
             style="width:100%;resize:vertical"></textarea>
           <div class="form-hint">Informations complémentaires pour enrichir l'analyse IA</div>
         </div>
+        <div id="saisie-attach-zone" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem">
+          <button id="attach-btn-saisie" class="attach-btn" type="button" title="Joindre une image">📎</button>
+          <input id="attach-input-saisie" type="file" accept="image/png,image/jpeg,image/webp" style="display:none">
+          <div id="attach-preview-saisie" class="attach-preview" style="display:none">
+            <span id="attach-filename-saisie" class="attach-filename"></span>
+            <button id="attach-clear-saisie" class="attach-clear" type="button">✕</button>
+          </div>
+        </div>
         <div class="mc-validation-actions">
           <button id="btn-saisie-submit" class="btn-primary">Lancer l'analyse ➜</button>
         </div>
@@ -530,14 +539,68 @@
       }
     } catch (e) { /* pas bloquant */ }
 
+    // Event listeners pour l'attachement d'image
+    const attachBtn = document.getElementById('attach-btn-saisie');
+    const attachInput = document.getElementById('attach-input-saisie');
+    const attachPreview = document.getElementById('attach-preview-saisie');
+    const attachFilename = document.getElementById('attach-filename-saisie');
+    const attachClear = document.getElementById('attach-clear-saisie');
+
+    if (attachBtn && attachInput) {
+      attachBtn.addEventListener('click', () => {
+        attachInput.click();
+      });
+
+      attachInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          const base64 = dataUrl.split(',')[1];
+          attachedImageSaisie = {
+            base64: base64,
+            filename: file.name
+          };
+          if (attachFilename) attachFilename.textContent = file.name;
+          if (attachPreview) attachPreview.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      });
+
+      if (attachClear) {
+        attachClear.addEventListener('click', () => {
+          attachedImageSaisie = null;
+          if (attachPreview) attachPreview.style.display = 'none';
+          if (attachInput) attachInput.value = '';
+        });
+      }
+    }
+
     document.getElementById('btn-saisie-submit')?.addEventListener('click', async () => {
-      const observations = document.getElementById('saisie-observations')?.value.trim() || '';
+      let observations = document.getElementById('saisie-observations')?.value.trim() || '';
 
       const btn = document.getElementById('btn-saisie-submit');
       btn.disabled = true;
       btn.textContent = 'Envoi...';
 
       const { prospect } = await window.API.getProspect(currentProspectId).catch(() => ({ prospect: {} }));
+
+      // Si une image est attachée, appeler l'endpoint vision pour obtenir la description
+      if (attachedImageSaisie) {
+        try {
+          const visionResult = await window.API.visionExtract(
+            attachedImageSaisie.base64,
+            attachedImageSaisie.filename
+          );
+          const imageDescription = visionResult.description || '';
+          observations += `\n\n[Image jointe : ${attachedImageSaisie.filename}]\n${imageDescription}`;
+        } catch (visionError) {
+          console.warn('Erreur extraction vision:', visionError);
+          observations += `\n\n[Image jointe : ${attachedImageSaisie.filename}]`;
+        }
+      }
 
       const formData = {
         nom: prospect.nom || '',
@@ -559,6 +622,9 @@
           approved: true,
           edited_output: JSON.stringify(formData)
         });
+
+        // Reset attachement après soumission réussie
+        attachedImageSaisie = null;
 
         window.showToast && window.showToast('Analyse lancée !');
         await showPipelineView(currentProspectId);

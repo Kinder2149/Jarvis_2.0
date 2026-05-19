@@ -8,8 +8,9 @@ DB_PATH = Path(__file__).parent / "data" / "jarvis.db"
 CONFIG_PATH = Path(__file__).parent / "data" / "config.json"
 
 def get_connection():
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = sqlite3.connect(str(DB_PATH), timeout=10)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
 def load_config():
@@ -95,11 +96,19 @@ def load_config():
                 chat_config.update(config_file["chat"])
                 logger.info(f"💬 [DB] chat config chargée depuis config.json")
     
-    logger.info(f"✅ [DB] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles")
+    # Charger les contextes utilisateur depuis les fichiers .md (backend/data/contexts/)
+    contexts_dir = Path(__file__).parent / "data" / "contexts"
+    context = {}
+    for key in ("profil_utilisateur", "global_context", "regles_globales"):
+        f = contexts_dir / f"{key}.md"
+        context[key] = f.read_text(encoding="utf-8").strip() if f.exists() else ""
+
+    logger.info(f"✅ [DB] Config chargée: {len(api_keys)} clés API, {len(model_preferences)} préférences modèles, contexte: {[k for k, v in context.items() if v]}")
     return {
         "api_keys": api_keys,
         "model_preferences": model_preferences,
-        "chat": chat_config
+        "chat": chat_config,
+        "context": context
     }
 
 def _seed_api_keys_from_env(conn):
@@ -430,6 +439,8 @@ def init_db():
     _migrate_v3(conn)
     _migrate_prospects_v2(conn)
     _migrate_reflexion_attachments(conn)
+    _migrate_v4_jarvis(conn)
+    _migrate_v5_media(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
 
@@ -546,6 +557,157 @@ def _migrate_reflexion_attachments(conn):
             cursor.execute(migration)
         except Exception:
             pass
+    conn.commit()
+
+
+def _migrate_v4_jarvis(conn):
+    """Migration v4 : fondation architecture multi-agents (idempotent)."""
+    cursor = conn.cursor()
+    
+    # Table agent_registry : registre des agents disponibles
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS agent_registry (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            name          TEXT NOT NULL UNIQUE,
+            display_name  TEXT NOT NULL,
+            description   TEXT NOT NULL,
+            routing_hints TEXT NOT NULL,
+            page_url      TEXT,
+            color         TEXT DEFAULT '#6b7280',
+            is_active     INTEGER DEFAULT 1,
+            created_at    TEXT DEFAULT (datetime('now'))
+        )
+    """)
+    
+    # Seed des 5 agents (INSERT OR IGNORE — idempotent grâce à UNIQUE sur name)
+    agents = [
+        (
+            "JARVIS",
+            "JARVIS",
+            "Orchestrateur central et conversation directe. Répond directement si aucun agent spécialiste n'est pertinent. Analyse l'intention et route vers le bon agent.",
+            '["bonjour", "aide-moi", "explique", "comment", "pourquoi", "qu\'est-ce que", "question", "information"]',
+            None,
+            "#6b7280"
+        ),
+        (
+            "MENTOR",
+            "MENTOR",
+            "Analyse structurée et production de livrables actionnables. Conduit des sessions de réflexion pour produire des missions code, des décisions figées ou des plans multi-missions.",
+            '["analyser", "réfléchir", "décider", "planifier", "aide-moi à", "qu\'est-ce que tu penses", "mission code", "livrable", "stratégie", "comment aborder", "réflexion", "réfléchissons"]',
+            "/app/mission.html",
+            "#3b82f6"
+        ),
+        (
+            "FORGE",
+            "FORGE",
+            "Exécution pure de missions code. Reçoit un livrable MENTOR et l'applique via le pipeline d'exécution. N'analyse pas, n'improvise pas.",
+            '["exécute", "applique", "lance le pipeline", "démarre forge", "implémente", "forge", "fichier à modifier", "lance la mission"]',
+            "/app/mission.html",
+            "#f97316"
+        ),
+        (
+            "SENTINELLE",
+            "SENTINELLE",
+            "Surveillance et gestion du portefeuille d'investissement personnel selon la règle 70/20/10. Consulte positions, budget, alertes, et met à jour thèses et watchlist.",
+            '["portefeuille", "investissement", "position", "budget", "70/20/10", "pea", "cto", "watchlist", "thèse", "dividende", "cours", "alerte", "acheter", "vendre", "action", "ticker", "sentinelle"]',
+            "/app/sentinelle.html",
+            "#22c55e"
+        ),
+        (
+            "ATELIER",
+            "ATELIER",
+            "Pipeline commercial prospects pour la restauration. Crée des prospects, génère des fiches et des démonstrations HTML personnalisées.",
+            '["prospect", "restaurant", "restauration", "client", "démo", "kanban", "atelier", "fiche prospect", "pipeline prospect", "nouveau prospect"]',
+            "/app/atelier.html",
+            "#a855f7"
+        ),
+    ]
+    cursor.executemany("""
+        INSERT OR IGNORE INTO agent_registry
+            (name, display_name, description, routing_hints, page_url, color)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, agents)
+    
+    # C5+C6 — Corriger description et couleur ATELIER (INSERT OR IGNORE ne met pas à jour les lignes existantes)
+    cursor.execute("""
+        UPDATE agent_registry SET
+            description = 'Crée un prospect restauration via une conversation rapide (3 questions). Le kanban, le pipeline démo et l''export restent dans l''Atelier.',
+            color = '#e879f9'
+        WHERE name = 'ATELIER'
+    """)
+    
+    # C4 — Corriger description MENTOR
+    cursor.execute("""
+        UPDATE agent_registry SET
+            description = 'Réflexion structurée pour cadrer une mission code (V1). Conduit une session de conversation puis génère un livrable que FORGE peut exécuter.'
+        WHERE name = 'MENTOR'
+    """)
+    
+    # mission_prompts : enveloppe structurée FORGE + reverse pointer
+    for sql in [
+        "ALTER TABLE mission_prompts ADD COLUMN livrable_forge TEXT",
+        "ALTER TABLE mission_prompts ADD COLUMN forge_session_id INTEGER REFERENCES sessions(id)",
+        "ALTER TABLE mission_prompts ADD COLUMN consumed_at TEXT",
+    ]:
+        try:
+            cursor.execute(sql)
+        except Exception:
+            pass
+    
+    # messages : tracking agent + lien instance
+    for sql in [
+        "ALTER TABLE messages ADD COLUMN agent TEXT DEFAULT 'JARVIS'",
+        "ALTER TABLE messages ADD COLUMN instance_ref TEXT",
+    ]:
+        try:
+            cursor.execute(sql)
+        except Exception:
+            pass
+    
+    # pipeline_steps : résumé fonctionnel en français
+    try:
+        cursor.execute("ALTER TABLE pipeline_steps ADD COLUMN summary_fr TEXT")
+    except Exception:
+        pass
+    
+    conn.commit()
+
+
+def _migrate_v5_media(conn):
+    """Migration v5 : agent MEDIA — table jobs + seed agent_registry (idempotent)."""
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS media_jobs (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id INTEGER REFERENCES conversations(id) ON DELETE SET NULL,
+            media_type      TEXT NOT NULL CHECK(media_type IN ('image', 'video')),
+            prompt          TEXT NOT NULL,
+            result_url      TEXT,
+            status          TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'done', 'error')),
+            created_at      TEXT DEFAULT (datetime('now'))
+        )
+    """)
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO agent_registry
+            (name, display_name, description, routing_hints, page_url, color)
+        VALUES (
+            'MEDIA',
+            'MEDIA',
+            'Génération d''images (Flux 1.1 Pro) et vidéos (Kling 1.6) via fal.ai. Crée du contenu visuel à partir d''une description en langage naturel.',
+            '["image", "photo", "illustration", "vidéo", "video", "clip", "animation", "génère", "génère une image", "crée une image", "dessine", "visualise", "flux", "kling"]',
+            NULL,
+            '#ef4444'
+        )
+    """)
+
+    # Migration app_config : ajout colonne updated_at si absente
+    try:
+        cursor.execute("ALTER TABLE app_config ADD COLUMN updated_at TEXT")
+    except Exception:
+        pass  # Colonne déjà présente — idempotent
+
     conn.commit()
 
 

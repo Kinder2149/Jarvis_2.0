@@ -2,12 +2,11 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from pathlib import Path
 from datetime import datetime
 import json
 
 from backend.database import get_connection, load_config
-from backend.services.chat_service import send_chat_message
+from backend.services.chat_service import send_chat_message, generate_conversation_summary
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -319,94 +318,12 @@ def update_conversation_folder(conv_id: int, data: FolderUpdate):
 @router.post("/conversations/{conversation_id}/update-summary")
 async def update_conversation_summary(conversation_id: int):
     """Génère et met à jour le résumé de la conversation via LLM."""
-    import logging
-    logger = logging.getLogger("uvicorn")
-    
-    db = get_connection()
-    cursor = db.cursor()
-    
-    # 1. Récupérer la conversation
-    cursor.execute("SELECT * FROM conversations WHERE id = ?", (conversation_id,))
-    conv_row = cursor.fetchone()
-    if not conv_row:
-        db.close()
-        raise HTTPException(status_code=404, detail="Conversation introuvable")
-    
-    # 2. Récupérer tous les messages
-    cursor.execute(
-        "SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY created_at ASC",
-        (conversation_id,)
-    )
-    messages = cursor.fetchall()
-    
-    if not messages:
-        db.close()
-        return {"summary": "", "ok": True, "message": "Aucun message à résumer"}
-    
-    # 3. Récupérer context_summary actuel
-    previous_summary = conv_row["context_summary"] if "context_summary" in conv_row.keys() else ""
-    
-    # 4. Récupérer global_context
-    _ctx_file = Path(__file__).parent.parent / "data" / "contexts" / "global_context.md"
-    global_context = _ctx_file.read_text(encoding="utf-8") if _ctx_file.exists() else ""
-    
-    # 5. Construire l'historique
-    conversation_history = "\n".join([
-        f"{msg['role'].upper()}: {msg['content'][:500]}" for msg in messages
-    ])
-    
-    # 6. Construire le prompt de résumé
-    prompt = f"""{global_context}
----
-Tu es un assistant de synthèse de conversation.
-Résumé précédent : {previous_summary if previous_summary else "(aucun)"}
-Historique des échanges :
-{conversation_history}
-
-Produis un résumé concis (max 400 mots) qui capture :
-- Les sujets abordés et décisions prises
-- Les informations techniques importantes (fichiers, erreurs, solutions)
-- L'état actuel de la conversation et ce qui reste à faire
-
-Format : texte libre, structuré par thèmes si nécessaire. Pas de liste de messages."""
-    
-    # 7. Appeler le LLM (routing, cheap)
-    config = load_config()
-    
-    # Utiliser get_model_id pour routing
-    from backend.services.model_router import get_model_id
-    model_id = get_model_id("routing", config)
-    
-    # Appeler call_model
-    from backend.services.model_router import call_model
-    
-    try:
-        new_summary = await call_model(
-            model_id,
-            [{"role": "user", "content": prompt}],
-            config.get("api_keys", {}),
-            None,
-            "summary",
-            "routing",
-            None
-        )
-        
-        # 8. Sauvegarder le résumé
-        cursor.execute(
-            "UPDATE conversations SET context_summary = ? WHERE id = ?",
-            (new_summary, conversation_id)
-        )
-        db.commit()
-        db.close()
-        
-        logger.info(f"📋 [CHAT] Résumé mis à jour pour conversation {conversation_id}")
-        
-        return {"summary": new_summary, "ok": True}
-    
-    except Exception as e:
-        db.close()
-        logger.error(f"❌ [CHAT] Erreur génération résumé : {e}")
-        raise HTTPException(status_code=500, detail=f"Erreur génération résumé : {str(e)}")
+    result = await generate_conversation_summary(conversation_id)
+    if not result["ok"]:
+        if result.get("message") == "Conversation introuvable":
+            raise HTTPException(status_code=404, detail="Conversation introuvable")
+        raise HTTPException(status_code=500, detail=result.get("message", "Erreur inconnue"))
+    return result
 
 
 @router.delete("/conversations/{conv_id}")

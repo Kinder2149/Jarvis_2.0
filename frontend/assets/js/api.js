@@ -89,6 +89,7 @@ window.API = {
   updateConversationFolder: (id, folder_path) => _patch(`/chat/conversations/${id}/folder`, { folder_path }),
   updateConvSummary: (convId) => _post(`/chat/conversations/${convId}/update-summary`, {}),
   deleteConversation: (id) => _del(`/chat/conversations/${id}`),
+  visionExtract: (attachment_base64, attachment_filename) => _post('/chat/vision-extract', { attachment_base64, attachment_filename }),
 
   // Atelier
   getProspects: () => _get('/atelier/prospects'),
@@ -147,4 +148,17 @@ window.API = {
   getSentinelleAlertesCount: () => _get('/sentinelle/alertes/count'),
   getSentinelleAlertes: () => _get('/sentinelle/alertes'),
   markAlerteLue: (id) => _patch(`/sentinelle/alertes/${id}/lu`),
+
+  // JARVIS multi-agents
+  createJarvisConversation: (data) => _post('/jarvis/conversations', data),
+  getJarvisConversations: () => _get('/jarvis/conversations'),
+  getJarvisConversation: (id) => _get(`/jarvis/conversations/${id}`),
+  sendJarvisMessage: (id, content, forceAgent = null) => _post(`/jarvis/conversations/${id}/chat`, { message: content, force_agent: forceAgent }),
+  deleteJarvisConversation: (id) => _del(`/jarvis/conversations/${id}`),
+  startJarvisForge: (missionPromptId, conversationId) => _post('/jarvis/forge/start', { mission_prompt_id: missionPromptId, conversation_id: conversationId }),
+  getJarvisPipelineProgress: (sessionId) => _get(`/jarvis/pipeline/${sessionId}/progress`),
+  resetJarvisForge: (projectId) => _post(`/jarvis/project/${projectId}/reset-forge`, {}),
+  verifyJarvisForge: (sessionId) => _post(`/jarvis/verify/${sessionId}`),
+  getJarvisPipelinesOverview: (activeOnly = false) =>
+    _get(`/jarvis/pipelines/overview${activeOnly ? '?active_only=true' : ''}`),
 };

@@ -102,11 +102,10 @@ def save_config(config: Config):
             continue
         
         cursor.execute("""
-            INSERT INTO app_config (key, value, category, updated_at)
-            VALUES (?, ?, 'api_keys', datetime('now'))
+            INSERT INTO app_config (key, value, category)
+            VALUES (?, ?, 'api_keys')
             ON CONFLICT(key) DO UPDATE SET
-                value = excluded.value,
-                updated_at = excluded.updated_at
+                value = excluded.value
         """, (key_name, value))
     
     conn.commit()

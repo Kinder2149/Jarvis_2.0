@@ -12,6 +12,7 @@
   let currentLivrableType = null;
   let currentStep = 1;
   let attachedImageReflexion = null;
+  let attachedImageMission = null;
 
   // ── Bootstrap ─────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async () => {
@@ -24,6 +25,8 @@
     const pipelineParam = window.getURLParam('pipeline_session');
     const projectParam = window.getURLParam('project_id');
     const newParam = window.getURLParam('new');
+    const fromJarvis = window.getURLParam('from') === 'jarvis';
+    const jarvisConvId = window.getURLParam('conv');
 
     projectId = projectParam ? parseInt(projectParam) : null;
 
@@ -46,6 +49,10 @@
       }
     } else {
       showEmptyState();
+    }
+
+    if (fromJarvis && jarvisConvId) {
+      injectJarvisBackButton(jarvisConvId);
     }
   }
 
@@ -671,19 +678,33 @@
     btn.textContent = '⏳ Lancement…';
 
     try {
-      const result = await window.API.startPipeline({
+      const pipelinePayload = {
         project_id: projectId,
         workflow_type: 'code_mission',
         initial_input: missionText,
         modele_override: modelOverride,
         source_mission_prompt_id: sourceMissionPromptId || null
-      });
+      };
+      if (attachedImageMission) {
+        pipelinePayload.attachment_base64 = attachedImageMission.base64;
+        pipelinePayload.attachment_filename = attachedImageMission.filename;
+      }
+      const result = await window.API.startPipeline(pipelinePayload);
 
       pipelineSessionId = result.session?.id || result.session_id || result.id;
       if (!pipelineSessionId) throw new Error('Session ID non trouvé dans la réponse');
 
       // Marquer le livrable comme consommé
       try { await window.API.marquerConsomme(reflexionSessionId); } catch (e) { console.warn('marquerConsomme non critique:', e.message); }
+
+      // Reset attachement après lancement réussi
+      if (attachedImageMission) {
+        attachedImageMission = null;
+        const preview = document.getElementById('attach-preview-mission');
+        if (preview) preview.style.display = 'none';
+        const input = document.getElementById('attach-input-mission');
+        if (input) input.value = '';
+      }
 
       // Passer à l'étape 3 et démarrer le polling
       document.getElementById('step-3-placeholder').style.display = 'none';
@@ -1151,6 +1172,68 @@
         }
       });
     }
+
+    // Zone 2 : créer éléments d'attachement pour mission
+    const btnExecuteMission = document.getElementById('btn-execute-mission');
+    if (btnExecuteMission) {
+      const attachBtnMission = document.createElement('button');
+      attachBtnMission.id = 'attach-btn-mission';
+      attachBtnMission.className = 'attach-btn';
+      attachBtnMission.title = 'Joindre une image';
+      attachBtnMission.textContent = '📎';
+      attachBtnMission.type = 'button';
+
+      const attachInputMission = document.createElement('input');
+      attachInputMission.type = 'file';
+      attachInputMission.id = 'attach-input-mission';
+      attachInputMission.accept = 'image/png,image/jpeg,image/webp';
+      attachInputMission.style.display = 'none';
+
+      const attachPreviewMission = document.createElement('div');
+      attachPreviewMission.id = 'attach-preview-mission';
+      attachPreviewMission.className = 'attach-preview';
+      attachPreviewMission.style.display = 'none';
+      attachPreviewMission.innerHTML = `
+        <span id="attach-filename-mission" class="attach-filename"></span>
+        <button id="attach-clear-mission" class="attach-clear" type="button">✕</button>
+      `;
+
+      // Insérer AVANT le bouton btn-execute-mission
+      btnExecuteMission.parentNode.insertBefore(attachBtnMission, btnExecuteMission);
+      btnExecuteMission.parentNode.insertBefore(attachInputMission, btnExecuteMission);
+      btnExecuteMission.parentNode.insertBefore(attachPreviewMission, btnExecuteMission);
+
+      // Event listeners attachement mission
+      attachBtnMission.addEventListener('click', () => {
+        attachInputMission.click();
+      });
+
+      attachInputMission.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          const base64 = dataUrl.split(',')[1];
+          attachedImageMission = {
+            base64: base64,
+            filename: file.name
+          };
+          document.getElementById('attach-filename-mission').textContent = file.name;
+          document.getElementById('attach-preview-mission').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'attach-clear-mission') {
+          attachedImageMission = null;
+          document.getElementById('attach-preview-mission').style.display = 'none';
+          document.getElementById('attach-input-mission').value = '';
+        }
+      });
+    }
     
     // Zone 1 : envoi message
     document.getElementById('btn-send-message')?.addEventListener('click', sendMessage);
@@ -1241,6 +1324,29 @@
 
     // Nettoyage polling au déchargement
     window.addEventListener('beforeunload', stopPolling);
+  }
+
+  // ── Bouton retour JARVIS ──────────────────────────────────────────
+  function injectJarvisBackButton(convId) {
+    const header = document.querySelector('.mission-header-left');
+    if (!header) return;
+
+    // Éviter doublon si déjà présent
+    if (document.getElementById('btn-back-jarvis')) return;
+
+    const btn = document.createElement('a');
+    btn.id = 'btn-back-jarvis';
+    btn.href = `jarvis.html?conv=${convId}`;
+    btn.className = 'btn-back-jarvis';
+    btn.textContent = '← Retour à JARVIS';
+
+    // Insérer avant le h1
+    const h1 = header.querySelector('h1');
+    if (h1) {
+      header.insertBefore(btn, h1);
+    } else {
+      header.prepend(btn);
+    }
   }
 
 })();

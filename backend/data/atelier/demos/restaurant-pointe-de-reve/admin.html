@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Gérant — Restaurant Pointe de Rêve</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ====================================================================
+     ÉCRAN LOGIN
+     ==================================================================== -->
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <h1 class="login-box-title">Restaurant Pointe de Rêve</h1>
+    
+    <div class="login-input-group">
+      <label for="passwordInput" style="margin-bottom: 0.5rem;">Mot de passe</label>
+      <input 
+        type="password" 
+        id="passwordInput" 
+        placeholder="Entrez votre mot de passe"
+        autocomplete="current-password"
+      >
+      <button 
+        type="button" 
+        id="togglePassword" 
+        class="toggle-password" 
+        aria-label="Afficher/masquer le mot de passe"
+        title="Afficher/masquer"
+      >
+        👁️
+      </button>
+    </div>
+
+    <div id="loginError" class="hidden"></div>
+
+    <button type="button" id="loginBtn" class="btn-primary login-submit">
+      Accéder à mon espace
+    </button>
+  </div>
+</div>
+
+<!-- ====================================================================
+     DASHBOARD ADMIN
+     ==================================================================== -->
+
+<div id="dashboard" class="hidden" style="display: none;">
+  
+  <!-- Header Admin -->
+  <div class="admin-header">
+    <div>
+      <h1 class="admin-title">Restaurant Pointe de Rêve</h1>
+      <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; opacity: 0.9;" id="currentDate"></p>
+    </div>
+    <button type="button" id="logoutBtn" class="btn-logout">Se déconnecter</button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid" style="margin-bottom: 2rem;">
+    <div class="kpi-card">
+      <div class="kpi-label">Couverts déjeuner</div>
+      <div class="kpi-value" id="kpiLunch">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Couverts dîner</div>
+      <div class="kpi-value" id="kpiDiner">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">En attente</div>
+      <div class="kpi-value" id="kpiPending">0</div>
+    </div>
+  </div>
+
+  <!-- À traiter en priorité -->
+  <div class="admin-section" style="margin-bottom: 2rem;">
+    <h2 class="admin-section-title">À traiter en priorité</h2>
+    <div id="priorityList" style="display: grid; gap: 1rem;"></div>
+    <p id="noPriority" style="text-align: center; color: var(--text-secondary); padding: 2rem; font-style: italic;">
+      Aucune réservation en attente.
+    </p>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div style="border-bottom: 2px solid var(--border-soft); margin-bottom: 2rem;">
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <button type="button" class="tab-btn active" data-tab="reservations">
+        Réservations
+      </button>
+      <button type="button" class="tab-btn" data-tab="ardoise">
+        Ardoise du jour
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab: Réservations -->
+  <div id="reservations-tab" class="menu-tab-content active" style="display: block;">
+    <div class="admin-section">
+      <h2 class="admin-section-title">Gestion des réservations</h2>
+      
+      <!-- Filtres -->
+      <div class="filters">
+        <button type="button" class="filter-btn active" data-filter="all">Toutes</button>
+        <button type="button" class="filter-btn" data-filter="pending">En attente</button>
+        <button type="button" class="filter-btn" data-filter="confirmed">Confirmées</button>
+        <button type="button" class="filter-btn" data-filter="cancelled">Annulées</button>
+      </div>
+
+      <!-- Réservations List -->
+      <div id="reservationsList" style="display: grid; gap: 1rem;"></div>
+      <p id="noReservations" style="text-align: center; color: var(--text-secondary); padding: 2rem; font-style: italic;">
+        Aucune réservation pour cette sélection.
+      </p>
+    </div>
+  </div>
+
+  <!-- Tab: Ardoise -->
+  <div id="ardoise-tab" class="menu-tab-content" style="display: none;">
+    <div class="admin-section">
+      <h2 class="admin-section-title">Ardoise du jour</h2>
+
+      <!-- Toggle Disponibilité -->
+      <div class="toggle-switch" style="margin-bottom: 2rem;">
+        <div class="toggle-switch-box" id="ardoise-toggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="toggle-label">Ardoise disponible aujourd'hui</span>
+      </div>
+
+      <!-- Formulaire Ardoise -->
+      <div class="editor-form">
+        
+        <!-- Plat du jour -->
+        <div class="editor-field-group">
+          <label for="admin-plat">Plat du jour *</label>
+          <input 
+            type="text" 
+            id="admin-plat" 
+            placeholder="Ex: Blanquette de veau à l'ancienne"
+            maxlength="100"
+          >
+        </div>
+
+        <!-- Prix Plat -->
+        <div class="editor-field-group">
+          <label for="admin-plat-prix">Prix *</label>
+          <input 
+            type="text" 
+            id="admin-plat-prix" 
+            placeholder="Ex: 16,50 €"
+            maxlength="20"
+          >
+        </div>
+
+        <!-- Note Plat -->
+        <div class="editor-field-group">
+          <label for="admin-plat-note">Description courte (optionnel)</label>
+          <input 
+            type="text" 
+            id="admin-plat-note" 
+            placeholder="Ex: Mijotée 3h, servie avec riz basmati"
+            maxlength="100"
+          >
+        </div>
+
+        <!-- Entrée du jour -->
+        <div class="editor-field-group">
+          <label for="admin-entree">Entrée du jour (optionnel)</label>
+          <input 
+            type="text" 
+            id="admin-entree" 
+            placeholder="Ex: Terrine maison et ses pickles"
+            maxlength="100"
+          >
+        </div>
+
+        <!-- Prix Entrée -->
+        <div class="editor-field-group">
+          <label for="admin-entree-prix">Prix entrée</label>
+          <input 
+            type="text" 
+            id="admin-entree-prix" 
+            placeholder="Ex: 9,50 €"
+            maxlength="20"
+          >
+        </div>
+
+        <!-- Dessert du jour -->
+        <div class="editor-field-group">
+          <label for="admin-dessert">Dessert du jour (optionnel)</label>
+          <input 
+            type="text" 
+            id="admin-dessert" 
+            placeholder="Ex: Tarte tatin tiède"
+            maxlength="100"
+          >
+        </div>
+
+        <!-- Prix Dessert -->
+        <div class="editor-field-group">
+          <label for="admin-dessert-prix">Prix dessert</label>
+          <input 
+            type="text" 
+            id="admin-dessert-prix" 
+            placeholder="Ex: 7,50 €"
+            maxlength="20"
+          >
+        </div>
+
+        <!-- Actions -->
+        <div class="editor-actions">
+          <button type="button" id="saveArdoiseBtn" class="btn-primary">
+            Mettre à jour l'ardoise
+          </button>
+        </div>
+
+        <!-- Confirmation Message -->
+        <div id="ardoiseConfirmation" class="notification notification-success hidden" style="display: none; margin-top: 1rem;">
+          ✓ Ardoise mise à jour !
+        </div>
+      </div>
+
+      <!-- Aperçu temps réel -->
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-soft);">
+        <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Aperçu sur le site</h3>
+        <div id="ardoisePreview" style="background: var(--bg-alt); padding: 1.5rem; border-radius: var(--radius-md); font-size: 0.95rem;">
+          <p style="color: var(--text-secondary); font-style: italic;">L'aperçu s'affichera ici…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="admin.js"></script>
+
+</body>
+</html>

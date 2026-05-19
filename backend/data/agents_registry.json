@@ -1,0 +1,58 @@
+{
+  "agents": [
+    {
+      "id": "jarvis",
+      "nom": "JARVIS",
+      "role": "ORCHESTRATEUR",
+      "description": "Orchestrateur central et conversation directe. Répond directement si aucun agent spécialiste n'est pertinent.",
+      "route": "/api/jarvis/",
+      "declencheurs": ["bonjour", "aide-moi", "explique", "comment", "pourquoi", "question", "information"],
+      "url_orchestrator": "#agent-jarvis"
+    },
+    {
+      "id": "mentor",
+      "nom": "MENTOR",
+      "role": "STRATÈGE",
+      "description": "Réflexion structurée pour cadrer une mission code. Conduit une session de conversation puis génère un livrable que FORGE peut exécuter.",
+      "route": "/api/reflexions/",
+      "declencheurs": ["analyser", "réfléchir", "décider", "planifier", "stratégie", "mission code", "livrable", "réflexion"],
+      "url_orchestrator": "#jcard-MENTOR"
+    },
+    {
+      "id": "forge",
+      "nom": "FORGE",
+      "role": "EXÉCUTEUR",
+      "description": "Exécution pure de missions code. Reçoit un livrable MENTOR et l'applique via le pipeline d'exécution.",
+      "route": "/api/pipelines/",
+      "declencheurs": ["exécute", "applique", "lance le pipeline", "démarre forge", "implémente", "forge", "mission"],
+      "url_orchestrator": "#jcard-FORGE"
+    },
+    {
+      "id": "sentinelle",
+      "nom": "SENTINELLE",
+      "role": "ANALYSTE",
+      "description": "Surveillance et gestion du portefeuille d'investissement personnel. Consulte positions, budget, alertes, watchlist.",
+      "route": "/api/sentinelle/",
+      "declencheurs": ["portefeuille", "investissement", "position", "budget", "pea", "cto", "watchlist", "dividende", "cours", "alerte", "acheter", "vendre", "action"],
+      "url_orchestrator": "#jcard-SENTINELLE"
+    },
+    {
+      "id": "atelier",
+      "nom": "ATELIER",
+      "role": "CRÉATEUR",
+      "description": "Pipeline commercial prospects pour la restauration. Crée des prospects, génère des fiches et des démonstrations HTML personnalisées.",
+      "route": "/api/atelier/",
+      "declencheurs": ["prospect", "restaurant", "restauration", "client", "démo", "kanban", "atelier", "pipeline prospect"],
+      "url_orchestrator": "#jcard-ATELIER"
+    },
+    {
+      "id": "media",
+      "nom": "MEDIA",
+      "role": "CRÉATEUR MEDIA",
+      "description": "Génération d'images (Flux 1.1 Pro) et vidéos (Kling 1.6) via fal.ai. Crée du contenu visuel à partir d'une description en langage naturel.",
+      "route": "/api/media/",
+      "declencheurs": ["image", "photo", "illustration", "vidéo", "video", "clip", "animation", "génère une image", "crée une image", "visualise"],
+      "url_orchestrator": "#jcard-MEDIA"
+    }
+  ]
+}

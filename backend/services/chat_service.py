@@ -253,6 +253,82 @@ def read_local_file(folder_path: str, relative_path: str) -> dict:
         return {"content": "", "truncated": False, "error": str(e)}
 
 
+async def generate_conversation_summary(conversation_id: int) -> dict:
+    """Génère et sauvegarde le résumé d'une conversation via LLM.
+    Peut être appelée directement sans passer par la route HTTP.
+    """
+    from backend.database import get_connection, load_config
+    from backend.services.model_router import get_model_id, call_model
+
+    db = get_connection()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM conversations WHERE id = ?", (conversation_id,))
+    conv_row = cursor.fetchone()
+    if not conv_row:
+        db.close()
+        return {"summary": "", "ok": False, "message": "Conversation introuvable"}
+
+    cursor.execute(
+        "SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY created_at ASC",
+        (conversation_id,)
+    )
+    messages = cursor.fetchall()
+
+    if not messages:
+        db.close()
+        return {"summary": "", "ok": True, "message": "Aucun message à résumer"}
+
+    previous_summary = conv_row["context_summary"] if "context_summary" in conv_row.keys() else ""
+
+    _ctx_file = Path(__file__).parent.parent / "data" / "contexts" / "global_context.md"
+    global_context = _ctx_file.read_text(encoding="utf-8") if _ctx_file.exists() else ""
+
+    conversation_history = "\n".join([
+        f"{msg['role'].upper()}: {msg['content'][:500]}" for msg in messages
+    ])
+
+    prompt = f"""{global_context}
+---
+Tu es un assistant de synthèse de conversation.
+Résumé précédent : {previous_summary if previous_summary else "(aucun)"}
+Historique des échanges :
+{conversation_history}
+
+Produis un résumé concis (max 400 mots) qui capture :
+- Les sujets abordés et décisions prises
+- Les informations techniques importantes (fichiers, erreurs, solutions)
+- L'état actuel de la conversation et ce qui reste à faire
+
+Format : texte libre, structuré par thèmes si nécessaire. Pas de liste de messages."""
+
+    config = load_config()
+    model_id = get_model_id("routing", config)
+
+    try:
+        new_summary = await call_model(
+            model_id,
+            [{"role": "user", "content": prompt}],
+            config.get("api_keys", {}),
+            None,
+            "summary",
+            "routing",
+            None
+        )
+        cursor.execute(
+            "UPDATE conversations SET context_summary = ? WHERE id = ?",
+            (new_summary, conversation_id)
+        )
+        db.commit()
+        db.close()
+        logger.info(f"📋 [CHAT_SERVICE] Résumé mis à jour pour conversation {conversation_id}")
+        return {"summary": new_summary, "ok": True}
+    except Exception as e:
+        db.close()
+        logger.error(f"❌ [CHAT_SERVICE] Erreur génération résumé : {e}")
+        return {"summary": "", "ok": False, "message": str(e)}
+
+
 async def search_web(query: str, api_key: str | None = None) -> dict:
     """Effectue une recherche web et retourne les résultats.
     
@@ -688,9 +764,8 @@ async def send_chat_message(
     if user_message_count % 10 == 0 and user_message_count > 0:
         logger.info(f"📋 [CHAT_SERVICE] Déclenchement auto-update résumé — {user_message_count} paires pour conv {conversation_id}")
         import asyncio
-        from backend.routers.chat import update_conversation_summary
         try:
-            asyncio.ensure_future(update_conversation_summary(conversation_id))
+            asyncio.ensure_future(generate_conversation_summary(conversation_id))
         except Exception as e:
             logger.warning(f"⚠️ [CHAT_SERVICE] Erreur auto-update résumé : {e}")
     

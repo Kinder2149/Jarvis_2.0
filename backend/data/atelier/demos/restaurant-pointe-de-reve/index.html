@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Pointe de Rêve</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ====================================================================
+       NAVIGATION STICKY
+       ==================================================================== -->
+  <header>
+    <nav class="section-container">
+      <a href="#top" class="logo">Pointe de Rêve</a>
+      <button class="menu-toggle" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-links">
+        <li><a href="#top">Accueil</a></li>
+        <li><a href="#carte">Notre carte</a></li>
+        <li><a href="#ardoise">Ardoise du jour</a></li>
+        <li><a href="#reservation">Réserver</a></li>
+        <li><a href="admin.html" class="btn-primary" style="margin-left: auto;">🔒 Espace Gérant</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ====================================================================
+       HERO SECTION
+       ==================================================================== -->
+  <section class="hero" id="top">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Restaurant Pointe de Rêve</h1>
+      <p class="hero-subtitle">Une cuisine de qualité, faite maison qui change au gré des saisons</p>
+      <a href="#reservation" class="btn-primary">Réserver une table</a>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       SECTION PRÉSENTATION
+       ==================================================================== -->
+  <section class="section section-alt">
+    <div class="section-container">
+      <h2 class="section-title">Qui sommes-nous ?</h2>
+      <div class="grid-2">
+        <div>
+          <p>
+            Le restaurant Pointe de Rêve propose une cuisine de qualité, faite maison qui change au gré des saisons. 
+            L'objectif est de régaler les clients dans une ambiance simple et familiale.
+          </p>
+          <p>
+            Nous sélectionnons nos ingrédients chez nos producteurs locaux pour vous offrir le meilleur de la région. 
+            Chaque plat est préparé avec soin et passion, en respectant les saisons et les saveurs authentiques.
+          </p>
+          <p>
+            Que vous veniez en famille, entre amis ou pour un repas d'affaires, notre équipe vous accueille 
+            dans un cadre chaleureux où le bien-être du client est au cœur de nos préoccupations.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <div class="card">
+            <h3 style="text-align: center; color: var(--accent); margin-bottom: 1rem;">Notre philosophie</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li style="margin-bottom: 0.75rem;">✓ Cuisine maison</li>
+              <li style="margin-bottom: 0.75rem;">✓ Produits locaux & de saison</li>
+              <li style="margin-bottom: 0.75rem;">✓ Ambiance familiale</li>
+              <li style="margin-bottom: 0.75rem;">✓ Authentique & savoureux</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       SECTION ARDOISE DU JOUR
+       ==================================================================== -->
+  <section class="ardoise-section section-alt" style="background-color: rgba(212, 163, 115, 0.08);">
+    <div class="section-container">
+      <div class="ardoise-wrapper">
+        <div id="ardoise" class="show">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+            <span class="badge" style="background-color: var(--accent); color: white;">Aujourd'hui</span>
+            <h2 class="ardoise-title" style="margin: 0; font-size: 1.75rem;">L'ardoise du jour</h2>
+          </div>
+
+          <!-- Entrée du jour -->
+          <div class="ardoise-item" id="ardoise-entree-container">
+            <div class="ardoise-item-header">
+              <span class="ardoise-item-name" id="ardoise-entree-nom">Terrine maison et ses pickles</span>
+              <span class="ardoise-item-price" id="ardoise-entree-prix">9,50 €</span>
+            </div>
+          </div>
+
+          <!-- Plat du jour -->
+          <div class="ardoise-item" id="ardoise-plat-container">
+            <div class="ardoise-item-header">
+              <span class="ardoise-item-name" id="ardoise-plat-nom">Blanquette de veau à l'ancienne</span>
+              <span class="ardoise-item-price" id="ardoise-plat-prix">16,50 €</span>
+            </div>
+            <p class="ardoise-item-note" id="ardoise-plat-note">Mijotée pendant 3 heures, servie avec son riz basmati</p>
+          </div>
+
+          <!-- Dessert du jour -->
+          <div class="ardoise-item" id="ardoise-dessert-container">
+            <div class="ardoise-item-header">
+              <span class="ardoise-item-name" id="ardoise-dessert-nom">Tarte tatin tiède</span>
+              <span class="ardoise-item-price" id="ardoise-dessert-prix">7,50 €</span>
+            </div>
+          </div>
+        </div>
+        <div id="ardoise-empty" class="hidden" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+          <p>L'ardoise du jour n'est pas disponible.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       SECTION NOTRE CARTE
+       ==================================================================== -->
+  <section class="section carte-section" id="carte">
+    <div class="section-container">
+      <h2 class="section-title">Notre carte</h2>
+
+      <div class="menu-tabs">
+        <button class="tab-btn active" data-tab="entrees">Entrées</button>
+        <button class="tab-btn" data-tab="plats">Plats</button>
+        <button class="tab-btn" data-tab="desserts">Desserts</button>
+      </div>
+
+      <!-- Entrées -->
+      <div class="menu-tab-content active" data-tab-content="entrees">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Terrine maison</span>
+            <span class="menu-item-price">9,50 €</span>
+          </div>
+          <p class="menu-item-description">Terrine maison et ses pickles</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Salade de chèvre chaud</span>
+            <span class="menu-item-price">11,00 €</span>
+          </div>
+          <p class="menu-item-description">Chèvre frais, miel, noix et salade verte</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Carpaccio de betteraves</span>
+            <span class="menu-item-price">10,00 €</span>
+          </div>
+          <p class="menu-item-description">Betteraves rouges et jaunes, fromage blanc, germes</p>
+        </div>
+      </div>
+
+      <!-- Plats -->
+      <div class="menu-tab-content" data-tab-content="plats">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Blanquette de veau à l'ancienne</span>
+            <span class="menu-item-price">16,50 €</span>
+          </div>
+          <p class="menu-item-description">Mijotée 3 heures, riz basmati, champignons et petits oignons</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Côte de porc fermier</span>
+            <span class="menu-item-price">17,00 €</span>
+          </div>
+          <p class="menu-item-description">Sauce champagne-moutarde, pommes Anna</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Filet de poisson du jour</span>
+            <span class="menu-item-price">15,50 €</span>
+          </div>
+          <p class="menu-item-description">Préparation du moment, légumes de saison, sauce beurre blanc</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Pâtes maison aux légumes</span>
+            <span class="menu-item-price">13,50 €</span>
+          </div>
+          <p class="menu-item-description">Fraîches du jour, sauce tomate ou crème, parmesan</p>
+        </div>
+      </div>
+
+      <!-- Desserts -->
+      <div class="menu-tab-content" data-tab-content="desserts">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Tarte tatin tiède</span>
+            <span class="menu-item-price">7,50 €</span>
+          </div>
+          <p class="menu-item-description">Pommes caramélisées, pâte feuilletée, glace vanille</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Fondant au chocolat</span>
+            <span class="menu-item-price">7,50 €</span>
+          </div>
+          <p class="menu-item-description">Coulant cœur chocolat, glace vanille</p>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Panna cotta maison</span>
+            <span class="menu-item-price">7,00 €</span>
+          </div>
+          <p class="menu-item-description">Crème fraîche, coulis de fruits rouges</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       SECTION RÉSERVATION
+       ==================================================================== -->
+  <section class="section reservation-section section-alt" id="reservation">
+    <div class="section-container">
+      <h2 class="section-title">Réserver une table</h2>
+      
+      <div class="reservation-wrapper">
+        <div id="confirmationMessage" class="hidden">
+          ✓ Réservation enregistrée ! Nous vous confirmerons rapidement par téléphone.
+        </div>
+
+        <form id="reservationForm">
+          <!-- Prénom -->
+          <div class="form-group">
+            <label for="res-nom">Votre nom *</label>
+            <input 
+              type="text" 
+              id="res-nom" 
+              name="nom" 
+              placeholder="Jean Dupont"
+              minlength="2"
+              required
+              aria-label="Votre nom"
+            >
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="res-email">Votre email *</label>
+            <input 
+              type="email" 
+              id="res-email" 
+              name="email" 
+              placeholder="jean.dupont@exemple.com"
+              required
+              aria-label="Votre email"
+            >
+          </div>
+
+          <!-- Téléphone -->
+          <div class="form-group">
+            <label for="res-tel">Votre téléphone *</label>
+            <input 
+              type="tel" 
+              id="res-tel" 
+              name="tel" 
+              placeholder="06 12 34 56 78"
+              pattern="[0-9\s\-\+\(\)]+"
+              required
+              aria-label="Votre téléphone"
+            >
+          </div>
+
+          <!-- Date et Heure -->
+          <div class="form-row form-row-2cols">
+            <div class="form-group">
+              <label for="res-date">Date souhaitée *</label>
+              <input 
+                type="date" 
+                id="res-date" 
+                name="date" 
+                required
+                aria-label="Date de la réservation"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="res-heure">Heure *</label>
+              <select id="res-heure" name="heure" required aria-label="Heure de la réservation">
+                <option value="">Choisir une heure</option>
+                <optgroup label="Déjeuner">
+                  <option value="12h00">12h00</option>
+                  <option value="12h30">12h30</option>
+                  <option value="13h00">13h00</option>
+                  <option value="13h30">13h30</option>
+                </optgroup>
+                <optgroup label="Dîner">
+                  <option value="19h00">19h00</option>
+                  <option value="19h30">19h30</option>
+                  <option value="20h00">20h00</option>
+                  <option value="20h30">20h30</option>
+                  <option value="21h00">21h00</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <!-- Nombre de couverts -->
+          <div class="form-group">
+            <label>Nombre de couverts *</label>
+            <div class="stepper">
+              <button type="button" class="stepper-btn" id="stepper-minus" aria-label="Diminuer le nombre de couverts">−</button>
+              <input 
+                type="text" 
+                id="res-personnes" 
+                name="personnes" 
+                value="2" 
+                readonly 
+                class="stepper-input"
+                aria-label="Nombre de couverts"
+              >
+              <button type="button" class="stepper-btn" id="stepper-plus" aria-label="Augmenter le nombre de couverts">+</button>
+            </div>
+          </div>
+
+          <!-- Message / Allergie -->
+          <div class="form-group">
+            <label for="res-message">Message ou allergie (optionnel)</label>
+            <textarea 
+              id="res-message" 
+              name="message" 
+              placeholder="Allergie, occasion spéciale, demandes particulières..."
+              maxlength="300"
+              aria-label="Message ou allergie"
+            ></textarea>
+            <span class="char-counter">
+              <span id="char-current">0</span>/300 caractères
+            </span>
+          </div>
+
+          <!-- Bouton submit -->
+          <button type="submit" class="btn-primary" style="width: 100%; padding: 1rem;">
+            Réserver ma table
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       SECTION INFOS PRATIQUES
+       ==================================================================== -->
+  <section class="section contact-section">
+    <div class="section-container">
+      <h2 class="section-title">Nous trouver</h2>
+      
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-item-icon">📍</div>
+            <div class="contact-item-content">
+              <h4>Localisation</h4>
+              <p>Villeurbanne (Rhône)</p>
+              <a href="https://www.google.com/maps/search/Restaurant+Pointe+de+Reve+Villeurbanne" target="_blank" rel="noopener">
+                Voir sur Google Maps →
+              </a>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-item-icon">📞</div>
+            <div class="contact-item-content">
+              <h4>Téléphone</h4>
+              <p><a href="tel:+33980598716">+33 9 80 59 87 16</a></p>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                Appels & réservations
+              </p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-item-icon">🕐</div>
+            <div class="contact-item-content">
+              <h4>Horaires</h4>
+              <p>Lundi - Vendredi : 12h00 - 14h00 / 19h00 - 22h00</p>
+              <p>Samedi : 12h00 - 14h30 / 19h00 - 23h00</p>
+              <p>Dimanche : Fermé</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info">
+          <div style="background-color: #ffffff; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+            <h3 style="color: var(--accent); margin-bottom: 1rem;">Réservation en ligne</h3>
+            <p style="margin-bottom: 1.5rem;">
+              Réservez votre table directement depuis cette page, 24h/24, 7j/7. 
+              Nous vous confirmerons rapidement par téléphone.
+            </p>
+            <a href="#reservation" class="btn-primary">Réserver maintenant</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer>
+    <div class="section-container">
+      <p>&copy; <span id="year">2025</span> Restaurant Pointe de Rêve. Tous droits réservés.</p>
+      <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+        <a href="admin.html">Espace Gérant</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

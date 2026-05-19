@@ -6,13 +6,14 @@ window.initSidebar = async () => {
   if (collapsed) sidebar.classList.add('sidebar--collapsed');
 
   try {
-    const [projects, conversations, atelierCount, prospects, sentinelleCountData, sentinelleAlertesCountData] = await Promise.all([
+    const [projects, conversations, atelierCount, prospects, sentinelleCountData, sentinelleAlertesCountData, jarvisConversations] = await Promise.all([
       window.API.getProjects(),
       window.API.getConversations(),
       getAtelierActiveCount(),
       window.API.getProspects().catch(() => []),
       window.API.getSentinelleActifCount().catch(() => ({ count: 0 })),
-      window.API.getSentinelleAlertesCount().catch(() => ({ count: 0 }))
+      window.API.getSentinelleAlertesCount().catch(() => ({ count: 0 })),
+      window.API.getJarvisConversations().catch(() => [])
     ]);
 
     const sentinelleCount = sentinelleCountData.count || 0;
@@ -45,14 +46,14 @@ window.initSidebar = async () => {
       }
     }
 
-    renderSidebar(projects, conversations, sessionsMap, atelierCount, prospects, reflexionsMap, todayCost, sentinelleCount, sentinelleAlertesCount);
+    renderSidebar(projects, conversations, sessionsMap, atelierCount, prospects, reflexionsMap, todayCost, sentinelleCount, sentinelleAlertesCount, jarvisConversations);
   } catch (error) {
     console.error('Erreur chargement sidebar:', error);
     sidebar.innerHTML = '<p style="color:var(--danger);padding:1rem">Erreur chargement</p>';
   }
 };
 
-function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, prospects = [], reflexionsMap = {}, todayCost = 0, sentinelleCount = 0, sentinelleAlertesCount = 0) {
+function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, prospects = [], reflexionsMap = {}, todayCost = 0, sentinelleCount = 0, sentinelleAlertesCount = 0, jarvisConversations = []) {
   const sidebar = document.getElementById('sidebar');
   const currentPath = window.location.pathname;
   const currentId = window.getURLParam('id');
@@ -111,6 +112,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
     <div class="sidebar-tabs sidebar-text">
       <button class="sidebar-tab" data-tab="projects">📁 Projets</button>
       <button class="sidebar-tab" data-tab="conversations">💬 Chats</button>
+      <button class="sidebar-tab" data-tab="jarvis">⚡ JARVIS${jarvisConversations.length > 0 ? ` <span class="sidebar-badge">${jarvisConversations.length}</span>` : ''}</button>
       <button class="sidebar-tab" data-tab="prospects">🏭 Atelier${atelierCount > 0 ? ` <span class="sidebar-badge">${atelierCount}</span>` : ''}</button>
     </div>
     <div id="sidebar-tab-content" class="sidebar-nav">
@@ -125,6 +127,10 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
         <span class="sidebar-text">� <span style="font-family:var(--mono)">$${todayCost.toFixed(3)}</span> aujourd'hui</span>
         <span class="sidebar-collapsed-text" style="display:none">💰</span>
       </div>
+      <a href="jarvis.html" class="sidebar-settings" title="Orchestrateur JARVIS">
+        <span class="sidebar-text">⚡ Orchestrateur</span>
+        <span class="sidebar-collapsed-text" style="display:none">⚡</span>
+      </a>
       <a href="settings.html" class="sidebar-settings">
         <span class="sidebar-text">⚙️ Paramètres</span>
         <span class="sidebar-collapsed-text" style="display:none">⚙️</span>
@@ -150,7 +156,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
   document.getElementById('btn-new-reflexion')?.addEventListener('click', handleNewMission);
   document.getElementById('btn-new-dossier')?.addEventListener('click', handleNewProject);
 
-  const sidebarData = { projects, conversations, sessionsMap, reflexionsMap, prospects, filteredProjects };
+  const sidebarData = { projects, conversations, sessionsMap, reflexionsMap, prospects, filteredProjects, jarvisConversations };
   let activeTab = localStorage.getItem('sidebar_active_tab') || 'projects';
 
   function renderProjectHierarchy(project, allProjects, currentPath, currentId) {
@@ -332,6 +338,24 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
         }
       }
 
+    } else if (tab === 'jarvis') {
+      if (sidebarData.jarvisConversations.length === 0) {
+        html = '<div class="sidebar-empty sidebar-text">Aucune conversation JARVIS</div>';
+      } else {
+        html += '<div class="nav-section"><div class="nav-section-title sidebar-text">CONVERSATIONS JARVIS</div>';
+        sidebarData.jarvisConversations.slice(0, 5).forEach(conv => {
+          const isActive = window.location.href.includes('jarvis.html') && window.getURLParam && window.getURLParam('id') == conv.id;
+          html += `
+            <div class="nav-item-row nav-item ${isActive ? 'nav-item--active' : ''}">
+              <a href="jarvis.html?id=${conv.id}" class="nav-item-label sidebar-text">
+                ⚡ ${conv.title || 'Conversation #' + conv.id}
+              </a>
+              <button class="nav-action-btn btn-delete-jarvis-conv" data-id="${conv.id}" title="Supprimer">🗑️</button>
+            </div>`;
+        });
+        html += '</div>';
+      }
+
     } else if (tab === 'prospects') {
       if (sidebarData.prospects.length === 0) {
         html = '<div class="sidebar-empty sidebar-text">Aucun prospect</div>';
@@ -458,6 +482,25 @@ function attachTabContentListeners() {
         window.showToast && window.showToast('Réflexion supprimée', 'success');
         if (window.location.href.includes('mission.html')) {
           window.location.href = 'index.html';
+        } else {
+          await window.initSidebar();
+        }
+      } catch(err) {
+        window.showToast && window.showToast('Erreur : ' + err.message, 'error');
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-delete-jarvis-conv').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const id = parseInt(btn.dataset.id);
+      if (!confirm('Supprimer cette conversation JARVIS ?')) return;
+      try {
+        await window.API.deleteJarvisConversation(id);
+        window.showToast && window.showToast('Conversation JARVIS supprimée', 'success');
+        if (window.location.href.includes('jarvis.html')) {
+          window.location.href = 'jarvis.html';
         } else {
           await window.initSidebar();
         }

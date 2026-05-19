@@ -52,7 +52,7 @@ async def call_model(
                         "HTTP-Referer": "http://localhost:8000",
                         "X-Title": "JARVIS"
                     },
-                    {"model": model_id, "messages": messages}
+                    {"model": model_id, "messages": messages, "max_tokens": 8192}
                 )
 
                 if response.status_code == 200:

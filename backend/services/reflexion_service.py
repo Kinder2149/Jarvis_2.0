@@ -108,7 +108,7 @@ def create_session(
         ) VALUES (?, ?, ?, ?, 0, 0, ?, ?)
     """, (
         project_id,
-        livrable_type.value,
+        livrable_type.value if hasattr(livrable_type, 'value') else livrable_type,
         ReflexionStatut.OUVERTE.value,
         modele_utilise,
         datetime.now().isoformat(),
@@ -629,6 +629,18 @@ async def freeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
         ))
         livrable_id = cursor.lastrowid
         
+        # Peupler livrable_forge pour FORGE (uniquement pour mission_code)
+        if livrable_type == "mission_code":
+            livrable_forge_data = await _extract_livrable_forge(
+                livrable_content, files_targeted, recommandation_modele,
+                api_keys, session_id, db_conn
+            )
+            cursor.execute(
+                "UPDATE mission_prompts SET livrable_forge = ? WHERE id = ?",
+                (json.dumps(livrable_forge_data, ensure_ascii=False), livrable_id)
+            )
+            db_conn.commit()
+        
         # Mettre à jour la session
         cursor.execute("""
             UPDATE reflexion_sessions
@@ -1000,3 +1012,97 @@ Réponds en JSON strict : {{"livrable_type": "...", "justification": "une phrase
             "livrable_type": "mission_code",
             "justification": "Détection impossible, valeur par défaut"
         }
+
+
+async def _extract_livrable_forge(
+    content: str,
+    files_targeted: list,
+    recommandation_modele: str,
+    api_keys: dict,
+    session_id: int,
+    db_conn
+) -> dict:
+    """Extrait périmètre et critères de succès depuis le livrable via Gemini Flash."""
+    import logging
+    logger = logging.getLogger("jarvis")
+    
+    prompt = f"""Extrait les éléments structurés de ce livrable de mission code.
+
+Livrable :
+{content[:2000]}
+
+Réponds UNIQUEMENT en JSON valide, aucun texte autour :
+{{"perimetre": "description en 30 mots max", "criteres_succes": ["critère 1", "critère 2"]}}"""
+
+    try:
+        from backend.database import load_config
+        config = load_config()
+        model_id = model_router.get_model_id("structuring", config)
+        response = await model_router.call_model(
+            model_id=model_id,
+            messages=[{"role": "user", "content": prompt}],
+            api_keys=api_keys,
+            session_id=session_id,
+            step_name="livrable_forge_extraction",
+            model_type="structuring",
+            db_conn=db_conn,
+            module_name="reflexion"
+        )
+        extracted = json.loads(response)
+        return {
+            "fichiers_concernes": files_targeted,
+            "perimetre": extracted.get("perimetre", ""),
+            "criteres_succes": extracted.get("criteres_succes", []),
+            "modele_recommande": recommandation_modele or ""
+        }
+    except Exception as e:
+        logger.warning(f"[REFLEXION] extraction livrable_forge échouée ({e}) — structure minimale")
+        return {
+            "fichiers_concernes": files_targeted,
+            "perimetre": "",
+            "criteres_succes": [],
+            "modele_recommande": recommandation_modele or ""
+        }
+
+
+def defreeze_session(session_id: int, db_conn: sqlite3.Connection) -> dict:
+    """
+    Dé-fige une session : retour à OUVERTE.
+    Interdit si forge_session_id n'est pas NULL (FORGE a déjà démarré).
+    """
+    cursor = db_conn.cursor()
+
+    session = get_session(session_id, db_conn)
+    if not session:
+        raise ValueError(f"Session {session_id} introuvable")
+    if session["statut"] != ReflexionStatut.FIGEE.value:
+        raise ValueError(f"Session non figée (statut actuel : {session['statut']})")
+
+    # Vérifier qu'aucun pipeline FORGE n'a démarré
+    if session.get("livrable_id"):
+        cursor.execute(
+            "SELECT forge_session_id FROM mission_prompts WHERE id = ?",
+            (session["livrable_id"],)
+        )
+        row = cursor.fetchone()
+        if row and row["forge_session_id"]:
+            raise ValueError(
+                "FORGE a déjà démarré l'exécution — le dé-figement est impossible. "
+                "Crée une nouvelle réflexion si tu veux modifier la mission."
+            )
+
+    # Supprimer les mission_prompts liés (livrable non utilisé, plus valide)
+    cursor.execute(
+        "DELETE FROM mission_prompts WHERE reflexion_session_id = ?",
+        (session_id,)
+    )
+
+    # Remettre en OUVERTE
+    cursor.execute("""
+        UPDATE reflexion_sessions
+        SET statut = 'OUVERTE', livrable_id = NULL, frozen_at = NULL, updated_at = ?
+        WHERE id = ?
+    """, (datetime.now().isoformat(), session_id))
+    db_conn.commit()
+
+    return get_session(session_id, db_conn)
