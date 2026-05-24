@@ -297,39 +297,51 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ✅ Mis à jour (hook post-commit)
-**Objectif :** 2 corrections UX livrables MENTOR + FORGE
-**Mission terminée :** 2026-05-24 — LIVRABLES-UX
+**Objectif :** 5 corrections timeout + UX + performance
+**Mission terminée :** 2026-05-24 — PERF-ROBUSTESSE
 **Fichiers modifiés :**
-- backend/services/mentor_handler.py : auto-détection type livrable + confirmation
-- backend/services/forge_handler.py : explication échec + lien relance mission.html
-- CHANGELOG.md : ajout ligne mission LIVRABLES-UX
+- backend/services/model_router.py : timeout 60s appels LLM
+- backend/services/atelier_handler.py : vérification prospect supprimé + message site inaccessible
+- frontend/assets/js/atelier.js : event delegation kanban
+- frontend/assets/js/sidebar.js : parallélisation sessions+réflexions
+- CHANGELOG.md : ajout ligne mission PERF-ROBUSTESSE
 - PROJET_CONTEXTE.md : mise à jour section 8
 
 **Corrections appliquées :**
 
-**L-1 : MENTOR auto-détection type livrable**
-- Fonction `_detect_livrable_type()` détecte mots-clés (décision, plan multi, code)
-- Type non-standard (DECISION_FIGEE, PLAN_MULTI_MISSIONS) demande confirmation avant création session
-- MISSION_CODE reste flux direct sans friction (cas fréquent)
-- `_resolve_type_confirmation()` gère réponse oui/correction explicite
-- `_resolve_session()` accepte paramètre `livrable_type` optionnel
-- Labels affichage : "Mission Code (exécutable par FORGE)", "Décision Architecture (figée, non exécutable)", "Plan Multi-missions (plusieurs étapes)"
+**C-1 : Timeout 60s appels LLM**
+- Wrapper `asyncio.wait_for(timeout=60.0)` sur tous appels OpenRouter + Anthropic dans `model_router.py`
+- `raise RuntimeError("Timeout LLM après 60s")` si dépassé
+- Exception catchée par handlers et renvoyée comme message d'erreur normal
 
-**L-3 : FORGE explication échec + lien relance**
-- `handle_status_query()` : cas spécial FAILED affiche étape échouée + message erreur + lien relance
-- `_run_pipeline_in_background()` : message failed inclut erreur + lien relance
-- `_continue_pipeline_in_background()` : même correction message failed
-- Requête SQL récupère `step_display_name` + `error_message` de l'étape FAILED
-- Lien direct `mission.html?session={id}&from=jarvis` pour relancer depuis étape échouée
+**C-2 : Vérification prospect supprimé pipeline ATELIER**
+- Au début `_run_phase1_bg()` + `_run_phase2_bg()` : `SELECT id FROM prospects WHERE id=?`
+- Si absent : `logger.warning` + `_inject_message_conversation("prospect supprimé, pipeline annulé")` + `return`
+- Même vérification session ABORTED
+
+**C-3 : Event delegation kanban ATELIER**
+- Suppression `addEventListener` directs sur `.prospect-card` + `.btn-prospect-delete` dans `renderKanban()`
+- Ajout event delegation sur `#kanban-board` dans `DOMContentLoaded` (une seule fois, flag `_delegated`)
+- `e.target.closest('.prospect-card')` pour clic card, `e.target.closest('.btn-prospect-delete')` pour suppression
+- Évite N listeners après N cycles polling
+
+**M-1 : Parallélisation sidebar sessions+réflexions**
+- Remplacement `for...of` séquentiel (`await getProjectSessions` + `await getReflexions`) par `Promise.allSettled` sur `projects.map` avec `Promise.allSettled` interne `[sessions, reflexions]`
+- Gain temps chargement sidebar proportionnel au nombre de projets
+
+**M-3 : Message explicite site inaccessible ATELIER**
+- Détection `fetch_ok` dans `_handle_new_prospect` + `_finalize_collecting_with_url`
+- Si false : ajout `site_note` "⚠️ Le site {url} est inaccessible ou a retourné une erreur. Je vais analyser le prospect avec les informations disponibles (nom, URL, notes) sans accéder au site."
+- Inclus dans `content` retourné à l'utilisateur, évite hallucinations sur contenu site inexistant
 
 **Graphify post-commit :**
-- 2937 nodes, 4717 edges, 455 communities
+- 2947 nodes, 4717 edges, 465 communities
 - GRAPH_REPORT.md mis à jour automatiquement
 
 **Backlog technique (audit) :**
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests manuels — (L-1) Message "Je veux prendre une décision d'architecture" → MENTOR demande confirmation → réponse "oui" → session DECISION_FIGEE créée. (L-3) Pipeline FAILED → demander "c'est quoi l'état de FORGE ?" → JARVIS répond avec étape échouée + erreur + lien mission.html
+**Prochain objectif :** Tests manuels — (C-1) Appel LLM > 60s → message "Timeout LLM après 60s". (C-2) Supprimer prospect pendant pipeline → message "prospect supprimé, pipeline annulé". (C-3) Recharger kanban 5 fois + cliquer card → 1 seule requête. (M-1) DevTools Network sidebar → requêtes sessions+réflexions en parallèle. (M-3) URL invalide ATELIER → message "inaccessible"
 
 ---
 
