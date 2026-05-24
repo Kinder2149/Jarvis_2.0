@@ -297,47 +297,38 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ✅ Mis à jour (hook post-commit)
-**Objectif :** Audit complet — 8 corrections bloquantes
-**Mission terminée :** 2026-05-24 — AUDIT-CORRECTIONS
+**Objectif :** 6 corrections performance + modernisation
+**Mission terminée :** 2026-05-24 — PERF-FIXES
 **Fichiers modifiés :**
-- frontend/assets/js/sidebar.js : bouton Code → jarvis.html (ligne 148)
-- frontend/mission.html : lien état vide → jarvis.html (ligne 36)
-- frontend/assets/js/mission.js : redirection abandon → jarvis.html (ligne 380)
-- frontend/assets/js/dashboard.js : supprimé (orphelin)
-- frontend/assets/js/code-projects.js : supprimé (orphelin)
-- start.bat : retrait IP Tailscale (ligne 10)
-- frontend/jarvis.html : menu dropdown complété Sentinelle + Atelier (lignes 1113-1114)
-- backend/services/sentinelle_handler.py : ticker minuscules accepté (lignes 131-135)
-- backend/services/atelier_handler.py : abort checkpoint annule session pipeline (lignes 345-353)
-- CHANGELOG.md : ajout ligne mission AUDIT-CORRECTIONS
+- frontend/jarvis.html : loadStats ATELIER optimisé + debounce 1.5s + polling MEDIA non interrompu
+- frontend/assets/js/shared.js : escapeHtml centralisé (window.escapeHtml + window._esc)
+- frontend/assets/js/chat.js : suppression définition locale escapeHtml
+- frontend/assets/js/conversations.js : suppression définition locale escapeHtml
+- frontend/assets/js/explorer.js : suppression définition locale escapeHtml
+- frontend/assets/js/board.js : suppression définition locale _esc (utilise window._esc)
+- backend/main.py : lifespan moderne (remplacement @app.on_event)
+- frontend/assets/favicon.svg : créé (lettre J blanche fond indigo)
+- frontend/*.html (13 fichiers) : <link rel="icon"> ajouté dans <head>
+- CHANGELOG.md : ajout ligne mission PERF-FIXES
 - PROJET_CONTEXTE.md : mise à jour section 8
 
 **Corrections appliquées :**
 
-1. **Bouton Code sidebar** — Redirection vers jarvis.html au lieu de code-projects.html (page supprimée)
-2. **Lien état vide mission.html** — Texte "Retournez sur JARVIS" au lieu de "Sélectionnez un projet"
-3. **Abandon mission sans projet** — Redirection jarvis.html au lieu de code-projects.html
-4. **Fichiers JS orphelins** — Suppression dashboard.js et code-projects.js (aucune référence HTML)
-5. **IP Tailscale start.bat** — Ligne echo supprimée (sécurité)
-6. **Menu dropdown jarvis.html** — Ajout Sentinelle et Atelier entre séparateurs
-7. **Ticker watchlist minuscules** — Regex [A-Za-z]{2,5} + .upper() pour accepter "aapl" → "AAPL"
-8. **Abort checkpoint ATELIER** — UPDATE sessions + pipeline_steps status=ABORTED pour éviter état incohérent
-
-**Commit inclut aussi :**
-- 5 fichiers board-*.html (pages board par agent)
-- frontend/assets/board.css (styles board)
-- frontend/assets/js/board.js (logique board)
-- Suppressions : code-projects.html, index.html (remplacés par jarvis.html)
+1. **loadStats() ATELIER optimisé** — Suppression boucle getProspect individuel (avant 1 GET /prospects + N GET /prospects/{id}, après 1 seul GET /prospects avec lecture directe statut, gain ~95% requêtes)
+2. **loadStats() debounce 1.5s** — Variable _loadStatsTimer + clearTimeout/setTimeout dans send() finally, évite appels rafale si messages multiples rapides, appel DOMContentLoaded reste direct
+3. **Polling MEDIA non interrompu** — Suppression stopMediaPolling() dans send(), garde seulement stopForgePolling(), MEDIA continue arrière-plan affiche résultat même si user envoie autre message
+4. **Favicon SVG créé** — frontend/assets/favicon.svg (lettre J blanche fond indigo) + <link rel="icon"> ajouté <head> après <meta charset> dans 13 pages HTML (jarvis, atelier, chat, conversations, dossier, mission, sentinelle, settings, board-*), plus de 404 favicon.ico logs uvicorn
+5. **FastAPI lifespan moderne** — Ajout import contextlib.asynccontextmanager, remplacement @app.on_event("startup") + @app.on_event("shutdown") par fonction lifespan(app) avec yield, app = FastAPI(lifespan=lifespan), plus de DeprecationWarning démarrage
+6. **escapeHtml centralisé shared.js** — Avant 4 définitions locales (chat.js, conversations.js, explorer.js, board.js), après 1 seule window.escapeHtml + window._esc dans shared.js, suppression 4 définitions locales, toutes pages chargent déjà shared.js avant autres scripts
 
 **Graphify post-commit :**
-- 2927 nodes, 4711 edges, 446 communities
+- 2924 nodes, 4700 edges, 448 communities
 - GRAPH_REPORT.md mis à jour automatiquement
 
 **Backlog technique (audit) :**
-- DUP-01 : escapeHtml définie 3 fois (chat.js / conversations.js / explorer.js) → à centraliser dans shared.js
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests manuels — Vérifier boutons sidebar + menu dropdown + abandon mission
+**Prochain objectif :** Tests manuels — Vérifier loadStats ATELIER (1 requête au lieu de N), favicon visible, polling MEDIA non interrompu, pas de DeprecationWarning démarrage serveur
 
 ---
 
