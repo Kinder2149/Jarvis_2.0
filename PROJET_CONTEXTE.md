@@ -297,51 +297,54 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ✅ Mis à jour (hook post-commit)
-**Objectif :** 5 corrections timeout + UX + performance
-**Mission terminée :** 2026-05-24 — PERF-ROBUSTESSE
+**Objectif :** 5 corrections robustesse + 1 UX
+**Mission terminée :** 2026-05-24 — ROBUSTESSE-UX
 **Fichiers modifiés :**
-- backend/services/model_router.py : timeout 60s appels LLM
-- backend/services/atelier_handler.py : vérification prospect supprimé + message site inaccessible
-- frontend/assets/js/atelier.js : event delegation kanban
-- frontend/assets/js/sidebar.js : parallélisation sessions+réflexions
-- CHANGELOG.md : ajout ligne mission PERF-ROBUSTESSE
+- backend/services/media_handler.py : détection image cassée Pollinations
+- backend/services/sentinelle_handler.py : retour direct portefeuille vide
+- backend/services/file_service.py : détection conflit fichiers modifiés
+- backend/routers/files.py : ajout pipeline_started_at
+- backend/services/mentor_handler.py : vérification projet supprimé
+- frontend/jarvis.html : texte statique "Multi-agents · IA"
+- CHANGELOG.md : ajout ligne mission ROBUSTESSE-UX
 - PROJET_CONTEXTE.md : mise à jour section 8
 
 **Corrections appliquées :**
 
-**C-1 : Timeout 60s appels LLM**
-- Wrapper `asyncio.wait_for(timeout=60.0)` sur tous appels OpenRouter + Anthropic dans `model_router.py`
-- `raise RuntimeError("Timeout LLM après 60s")` si dépassé
-- Exception catchée par handlers et renvoyée comme message d'erreur normal
+**R-1 : MEDIA image cassée silencieuse**
+- Prefetch Pollinations avec détection `resp.status_code < 400`
+- Si échec : INSERT `status='error'` + message "⚠️ Pollinations est inaccessible ou la génération a échoué. Réessaie dans quelques instants ou décris une image différente."
+- Au lieu de `status='done'` + "✅ Image générée" avec image cassée dans navigateur
 
-**C-2 : Vérification prospect supprimé pipeline ATELIER**
-- Au début `_run_phase1_bg()` + `_run_phase2_bg()` : `SELECT id FROM prospects WHERE id=?`
-- Si absent : `logger.warning` + `_inject_message_conversation("prospect supprimé, pipeline annulé")` + `return`
-- Même vérification session ABORTED
+**R-2 : SENTINELLE portefeuille vide → conseil générique**
+- Après fetchall positions/watchlist/alertes, si les 3 listes vides
+- Return direct "**Ton portefeuille SENTINELLE est vide.** 📭\n\nPour commencer, ouvre la page [Sentinelle](sentinelle.html) et : - Ajoute des positions à ton portefeuille - Configure ta watchlist - Définis tes thèses d'investissement"
+- Évite appel LLM inutile avec données vides générant conseil sans valeur
 
-**C-3 : Event delegation kanban ATELIER**
-- Suppression `addEventListener` directs sur `.prospect-card` + `.btn-prospect-delete` dans `renderKanban()`
-- Ajout event delegation sur `#kanban-board` dans `DOMContentLoaded` (une seule fois, flag `_delegated`)
-- `e.target.closest('.prospect-card')` pour clic card, `e.target.closest('.btn-prospect-delete')` pour suppression
-- Évite N listeners après N cycles polling
+**R-3 : FORGE fichiers locaux écrasés sans avertissement**
+- `apply_files()` accepte `pipeline_started_at: float | None`
+- PHASE 1 check `file_path.stat().st_mtime > pipeline_started_at` pour chaque fichier existant
+- Si conflit détecté : raise Exception("Conflit détecté — N fichier(s) modifié(s) depuis le démarrage du pipeline : ..., applique les changements manuellement ou relance le pipeline")
+- `ApplyFilesRequest.pipeline_started_at` ajouté dans files.py
+- Protège développeur qui modifie fichier manuellement pendant pipeline tournant
 
-**M-1 : Parallélisation sidebar sessions+réflexions**
-- Remplacement `for...of` séquentiel (`await getProjectSessions` + `await getReflexions`) par `Promise.allSettled` sur `projects.map` avec `Promise.allSettled` interne `[sessions, reflexions]`
-- Gain temps chargement sidebar proportionnel au nombre de projets
+**R-5 : MENTOR projet supprimé pendant session**
+- `handle()` après résolution `project_id` (fallback inclus) et AVANT `_resolve_session()`
+- `SELECT id FROM projects WHERE id=?`, si absent return "[MENTOR] Le projet #{project_id} a été supprimé. Sélectionne un autre projet dans le panneau gauche avant de continuer."
+- Évite erreur DB non gérée si projet supprimé entre-temps
 
-**M-3 : Message explicite site inaccessible ATELIER**
-- Détection `fetch_ok` dans `_handle_new_prospect` + `_finalize_collecting_with_url`
-- Si false : ajout `site_note` "⚠️ Le site {url} est inaccessible ou a retourné une erreur. Je vais analyser le prospect avec les informations disponibles (nom, URL, notes) sans accéder au site."
-- Inclus dans `content` retourné à l'utilisateur, évite hallucinations sur contenu site inexistant
+**UX-1 : jarvis.html texte statique "5 agents · 24/7"**
+- Remplacement span `#jnav-agents-count` par "Multi-agents · IA"
+- Texte générique non obsolète si nombre agents change
 
 **Graphify post-commit :**
-- 2947 nodes, 4717 edges, 465 communities
+- 2952 nodes, 4722 edges, 468 communities
 - GRAPH_REPORT.md mis à jour automatiquement
 
 **Backlog technique (audit) :**
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests manuels — (C-1) Appel LLM > 60s → message "Timeout LLM après 60s". (C-2) Supprimer prospect pendant pipeline → message "prospect supprimé, pipeline annulé". (C-3) Recharger kanban 5 fois + cliquer card → 1 seule requête. (M-1) DevTools Network sidebar → requêtes sessions+réflexions en parallèle. (M-3) URL invalide ATELIER → message "inaccessible"
+**Prochain objectif :** Tests manuels — (R-1) MEDIA demande image avec réseau coupé → message "Pollinations inaccessible". (R-2) SENTINELLE question avec portefeuille vide → message "portefeuille vide". (R-3) Modifier fichier pendant pipeline FORGE → Exception conflit. (R-5) MENTOR avec projet supprimé → message "projet supprimé". (UX-1) Vérifier span affiche "Multi-agents · IA"
 
 ---
 
