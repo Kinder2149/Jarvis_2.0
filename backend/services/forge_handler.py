@@ -223,6 +223,28 @@ async def handle_status_query(
                 "ABORTED": "interrompu ⛔",
             }
             label = labels.get(session["status"], session["status"])
+            
+            # Cas spécial FAILED : afficher l'étape échouée + erreur + lien relance
+            if session["status"] == "FAILED":
+                cursor.execute("""
+                    SELECT step_display_name, error_message
+                    FROM pipeline_steps
+                    WHERE session_id = ? AND status = 'FAILED'
+                    ORDER BY step_index DESC LIMIT 1
+                """, (pipeline_id,))
+                failed_step = cursor.fetchone()
+                step_info = ""
+                if failed_step:
+                    step_name = failed_step["step_display_name"] or "étape inconnue"
+                    error = failed_step["error_message"] or "erreur non détaillée"
+                    step_info = f"\n\n**Étape échouée :** {step_name}\n**Erreur :** {error}"
+                content = (
+                    f"**FORGE** — Le pipeline a échoué ❌{step_info}\n\n"
+                    f"Pour voir le détail et relancer depuis l'étape échouée :\n"
+                    f"→ [Ouvrir dans FORGE](mission.html?session={pipeline_id}&from=jarvis)"
+                )
+                return content, "FORGE", current_instance_ref, False, None
+            
             content = (
                 f"[FORGE] Pipeline en cours — statut : **{label}**\n\n"
                 f"→ [Voir le détail →](mission.html?session={pipeline_id}&from=jarvis)"
@@ -528,9 +550,12 @@ async def _continue_pipeline_in_background(session_id: int, start_step: int,
             _inject_jarvis_message(
                 conversation_id=conversation_id,
                 content=(
-                    f"**FORGE** — Le pipeline a rencontré une erreur : *{error_msg}*\n\n"
-                    "Tu peux me décrire ce qui s'est passé — on ajuste la mission avant de retenter."
-                )
+                    f"**FORGE** — Le pipeline a rencontré une erreur ❌\n\n"
+                    f"**Erreur :** {error_msg}\n\n"
+                    f"Pour voir le détail et relancer :\n"
+                    f"→ [Ouvrir dans FORGE](mission.html?session={session_id}&from=jarvis)"
+                ),
+                instance_ref={"type": "pipeline", "id": session_id}
             )
     except Exception as e:
         logger.error(f"[FORGE] _continue_pipeline_in_background échoué (session={session_id}): {e}")
@@ -614,8 +639,10 @@ async def _run_pipeline_in_background(session_id: int, project_path: str, conver
             _inject_jarvis_message(
                 conversation_id=conversation_id,
                 content=(
-                    f"**FORGE** — Le pipeline a rencontré une erreur : *{error_msg}*\n\n"
-                    "Décris-moi ce qui s'est passé — on ajuste la mission et on relance."
+                    f"**FORGE** — Le pipeline a rencontré une erreur ❌\n\n"
+                    f"**Erreur :** {error_msg}\n\n"
+                    f"Pour voir le détail et relancer :\n"
+                    f"→ [Ouvrir dans FORGE](mission.html?session={session_id}&from=jarvis)"
                 ),
                 instance_ref={"type": "pipeline", "id": session_id}
             )

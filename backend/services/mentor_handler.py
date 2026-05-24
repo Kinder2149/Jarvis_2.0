@@ -13,6 +13,40 @@ _FORGE_CONFIRM_SIGNALS = [
     "démarre", "demarre", "allez",
 ]
 
+def _detect_livrable_type(message: str) -> LivrableType:
+    """Détecte le type de livrable à partir de mots-clés dans le message."""
+    msg = message.lower()
+    if any(k in msg for k in ["décision", "décider", "decision", "architecture",
+                               "figer", "fige", "choix technique", "figer la décision"]):
+        return LivrableType.DECISION_FIGEE
+    if any(k in msg for k in ["plan multi", "plusieurs missions", "multi-missions",
+                               "plan en étapes", "plusieurs étapes", "roadmap"]):
+        return LivrableType.PLAN_MULTI_MISSIONS
+    return LivrableType.MISSION_CODE
+
+_TYPE_LABELS = {
+    LivrableType.MISSION_CODE:         "Mission Code *(exécutable par FORGE)*",
+    LivrableType.DECISION_FIGEE:       "Décision Architecture *(figée, non exécutable)*",
+    LivrableType.PLAN_MULTI_MISSIONS:  "Plan Multi-missions *(plusieurs étapes)*",
+}
+
+def _resolve_type_confirmation(message: str, instance_ref: dict) -> tuple:
+    """
+    Retourne (type_confirmé, premier_message_original).
+    L'utilisateur peut confirmer ('oui') ou corriger ('décision', 'plan multi', 'code').
+    """
+    msg = message.lower().strip()
+    first_msg = instance_ref.get("first_message", message)
+    # Correction explicite
+    if any(k in msg for k in ["décision", "decision", "architecture", "figer"]):
+        return LivrableType.DECISION_FIGEE, first_msg
+    if any(k in msg for k in ["plan multi", "plusieurs missions", "multi", "roadmap", "étapes"]):
+        return LivrableType.PLAN_MULTI_MISSIONS, first_msg
+    if any(k in msg for k in ["code", "mission code", "forge", "développement"]):
+        return LivrableType.MISSION_CODE, first_msg
+    # "oui" ou aucune correction → confirmer le type détecté
+    return LivrableType(instance_ref.get("livrable_type", "mission_code")), first_msg
+
 def _is_forge_validation(message: str) -> bool:
     """Détecte si l'utilisateur répond 'oui' à la question de démarrage FORGE."""
     msg = message.lower().strip()
@@ -32,6 +66,40 @@ async def handle(
     Trouve ou crée une session réflexion OUVERTE, délègue à reflexion_service.
     """
     cursor = db.cursor()
+
+    # Confirmation du type de livrable (tour dédié)
+    if current_instance_ref and current_instance_ref.get("type") == "mentor_type_confirm":
+        confirmed_type, first_msg = _resolve_type_confirmation(
+            message, current_instance_ref
+        )
+        # Résoudre le projet (même logique fallback qu'en dessous)
+        _project_id = project_id
+        if not _project_id:
+            cursor.execute(
+                "SELECT id, name FROM projects WHERE module_type "
+                "IN ('code', 'dossier') ORDER BY id LIMIT 1"
+            )
+            row = cursor.fetchone()
+            if row:
+                _project_id = row["id"]
+        if not _project_id:
+            return ("[MENTOR] Aucun projet disponible.", "MENTOR", None, False, None)
+        # Créer la session avec le type confirmé
+        session_id = reflexion_service.create_session(_project_id, confirmed_type, db)
+        # Envoyer le premier message original
+        messages = await reflexion_service.send_user_message(session_id, first_msg, db)
+        assistant_msgs = [m for m in messages if m["role"] == "assistant"]
+        content = assistant_msgs[-1]["content"] if assistant_msgs else "[MENTOR] Aucune réponse."
+        content = (f"*(Session **{_TYPE_LABELS[confirmed_type]}** créée.)*\n\n" + content)
+        instance_ref = {"type": "reflexion", "id": session_id}
+        suggest_freeze, freeze_reason = await _check_suggest_freeze(session_id, messages, config, db)
+        if suggest_freeze:
+            content = content.rstrip() + (
+                "\n\n---\n**Mission prête.** Réponds **oui** pour passer à FORGE, "
+                "ou continue à affiner."
+            )
+            instance_ref = {"type": "reflexion", "id": session_id, "awaiting_forge_confirm": True}
+        return content, "MENTOR", instance_ref, suggest_freeze, freeze_reason
 
     # Détection : l'utilisateur répond "oui" à la question de démarrage FORGE
     # (current_instance_ref de type "reflexion" + instance précédente avait suggest_freeze)
@@ -67,9 +135,29 @@ async def handle(
                 "MENTOR", None, False, None
             )
     
+    # Premier message MENTOR dans cette conversation → détection du type
+    is_new_session = (
+        current_instance_ref is None
+        or current_instance_ref.get("type") not in ("reflexion",)
+    )
+    detected_type = LivrableType.MISSION_CODE
+    if is_new_session:
+        detected = _detect_livrable_type(message)
+        if detected != LivrableType.MISSION_CODE:
+            # Type non-standard : demander confirmation avant de créer la session
+            label = _TYPE_LABELS[detected]
+            content = (
+                f"J'ai détecté que tu veux créer une **{label}**.\n\n"
+                f"Tu confirmes ? *(oui · ou précise : 'mission code', 'décision figée', 'plan multi-missions')*"
+            )
+            ref = {"type": "mentor_type_confirm", "livrable_type": detected.value, "first_message": message}
+            return content, "MENTOR", ref, False, None
+        # MISSION_CODE : procéder directement, aucune confirmation nécessaire
+        detected_type = LivrableType.MISSION_CODE
+    
     # Trouver ou créer la session réflexion
     reflexion_session_id = _resolve_session(
-        project_id, current_instance_ref, db, cursor
+        project_id, current_instance_ref, db, cursor, detected_type
     )
     
     # Envoyer le message à MENTOR
@@ -81,7 +169,7 @@ async def handle(
         # Session plus ouverte (FIGEE, ABANDONNEE) → en créer une nouvelle
         logger.warning(f"[MENTOR] Session {reflexion_session_id} inaccessible ({e}), nouvelle session")
         reflexion_session_id = reflexion_service.create_session(
-            project_id, LivrableType.MISSION_CODE, db
+            project_id, detected_type, db
         )
         messages = await reflexion_service.send_user_message(
             reflexion_session_id, message, db
@@ -121,7 +209,8 @@ def _resolve_session(
     project_id: int,
     current_instance_ref: dict | None,
     db,
-    cursor
+    cursor,
+    livrable_type: LivrableType = LivrableType.MISSION_CODE
 ) -> int:
     """Retourne l'ID de session à utiliser (existante ou nouvelle).
 
@@ -138,13 +227,13 @@ def _resolve_session(
             return session_id
         # Session fermée (figée/abandonnée) → en créer une nouvelle pour cette conversation
         return reflexion_service.create_session(
-            project_id, LivrableType.MISSION_CODE, db
+            project_id, livrable_type, db
         )
 
     # 2. Pas d'instance_ref = premier message MENTOR dans cette conversation
     #    → toujours créer une session fraîche (pas de réutilisation cross-conversation)
     return reflexion_service.create_session(
-        project_id, LivrableType.MISSION_CODE, db
+        project_id, livrable_type, db
     )
 
 
