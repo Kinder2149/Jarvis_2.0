@@ -296,53 +296,48 @@ JARVIS/
 
 ## 8. SESSION EN COURS
 
-**Graphify :** ☑ À mettre à jour
-**Objectif :** Polling résultat génération MEDIA dans jarvis.html
-**Mission terminée :** 2026-05-19 — MEDIA-POLLING
+**Graphify :** ✅ Mis à jour (hook post-commit)
+**Objectif :** Audit complet — 8 corrections bloquantes
+**Mission terminée :** 2026-05-24 — AUDIT-CORRECTIONS
 **Fichiers modifiés :**
-- frontend/jarvis.html : ajout polling MEDIA (lignes 1456-1521 + 1588-1590 + 1610-1613)
-- CHANGELOG.md : ajout ligne mission MEDIA-POLLING
+- frontend/assets/js/sidebar.js : bouton Code → jarvis.html (ligne 148)
+- frontend/mission.html : lien état vide → jarvis.html (ligne 36)
+- frontend/assets/js/mission.js : redirection abandon → jarvis.html (ligne 380)
+- frontend/assets/js/dashboard.js : supprimé (orphelin)
+- frontend/assets/js/code-projects.js : supprimé (orphelin)
+- start.bat : retrait IP Tailscale (ligne 10)
+- frontend/jarvis.html : menu dropdown complété Sentinelle + Atelier (lignes 1113-1114)
+- backend/services/sentinelle_handler.py : ticker minuscules accepté (lignes 131-135)
+- backend/services/atelier_handler.py : abort checkpoint annule session pipeline (lignes 345-353)
+- CHANGELOG.md : ajout ligne mission AUDIT-CORRECTIONS
 - PROJET_CONTEXTE.md : mise à jour section 8
 
-**Implémentation polling MEDIA :**
+**Corrections appliquées :**
 
-1. **Détection démarrage** (ligne 1610-1613)
-   - Après réponse POST chat : si `agent=MEDIA` ET `instance_ref.type=media_running`
-   - Appel `startMediaPolling(convId, initialCount)` avec compteur messages actuel
+1. **Bouton Code sidebar** — Redirection vers jarvis.html au lieu de code-projects.html (page supprimée)
+2. **Lien état vide mission.html** — Texte "Retournez sur JARVIS" au lieu de "Sélectionnez un projet"
+3. **Abandon mission sans projet** — Redirection jarvis.html au lieu de code-projects.html
+4. **Fichiers JS orphelins** — Suppression dashboard.js et code-projects.js (aucune référence HTML)
+5. **IP Tailscale start.bat** — Ligne echo supprimée (sécurité)
+6. **Menu dropdown jarvis.html** — Ajout Sentinelle et Atelier entre séparateurs
+7. **Ticker watchlist minuscules** — Regex [A-Za-z]{2,5} + .upper() pour accepter "aapl" → "AAPL"
+8. **Abort checkpoint ATELIER** — UPDATE sessions + pipeline_steps status=ABORTED pour éviter état incohérent
 
-2. **Fonction startMediaPolling()** (lignes 1461-1512)
-   - Interval : 3 secondes (plus rapide que FORGE/ATELIER)
-   - Timeout : 120 secondes max (40 tentatives)
-   - À chaque tick : GET `/api/jarvis/conversations/{id}`
-   - Détection nouveau message : `role=assistant` + `agent=MEDIA` + content ne contient PAS "Génération lancée"
-   - Si trouvé : re-render tous messages + scroll + stopper polling
-   - Si timeout : message d'erreur + stopper polling
+**Commit inclut aussi :**
+- 5 fichiers board-*.html (pages board par agent)
+- frontend/assets/board.css (styles board)
+- frontend/assets/js/board.js (logique board)
+- Suppressions : code-projects.html, index.html (remplacés par jarvis.html)
 
-3. **Fonction stopMediaPolling()** (lignes 1514-1521)
-   - clearInterval + reset variables (mediaPollingInterval, mediaPollingStartTime)
-   - hideForgeBanner() pour retirer indicateur visuel
-
-4. **Stopper si nouveau message** (lignes 1588-1590)
-   - `send()` appelle `stopMediaPolling()` + `stopForgePolling()` avant envoi
-   - Un seul polling actif à la fois
-
-5. **Indicateur visuel**
-   - `showForgeBanner('MEDIA')` affiche bandeau "🎨 MEDIA en cours · mise à jour auto toutes les 3s"
-   - Couleur rouge distinctive (rgba(239,68,68))
-   - Bandeau retiré automatiquement quand résultat arrive ou timeout
-
-**Résultat :**
-- ✅ Utilisateur voit automatiquement le lien vers l'image/vidéo générée sans recharger
-- ✅ Timeout gracieux après 2 minutes avec message explicite
-- ✅ Polling stoppé proprement si abandon (nouveau message) ou résultat reçu
-- ✅ Indicateur visuel pendant génération (bandeau rouge avec emoji 🎨)
-- ✅ Rendu markdown transforme bien les URLs en liens cliquables (fonction renderMd existante)
+**Graphify post-commit :**
+- 2927 nodes, 4711 edges, 446 communities
+- GRAPH_REPORT.md mis à jour automatiquement
 
 **Backlog technique (audit) :**
 - DUP-01 : escapeHtml définie 3 fois (chat.js / conversations.js / explorer.js) → à centraliser dans shared.js
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests E2E MEDIA — Scénario génération image avec polling
+**Prochain objectif :** Tests manuels — Vérifier boutons sidebar + menu dropdown + abandon mission
 
 ---
 
