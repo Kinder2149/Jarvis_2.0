@@ -31,6 +31,37 @@
       stopPolling();
       window.location.href = 'atelier.html';
     });
+
+    // Event delegation kanban (une seule fois)
+    const kanbanBoard = document.getElementById('kanban-board');
+    if (kanbanBoard && !kanbanBoard._delegated) {
+      kanbanBoard._delegated = true;
+      kanbanBoard.addEventListener('click', async (e) => {
+        // Clic sur carte prospect
+        const card = e.target.closest('.prospect-card');
+        if (card && !e.target.closest('.btn-prospect-delete')) {
+          const id = parseInt(card.dataset.id);
+          window.location.href = `atelier.html?prospect_id=${id}`;
+          return;
+        }
+        // Clic sur bouton suppression
+        const deleteBtn = e.target.closest('.btn-prospect-delete');
+        if (deleteBtn) {
+          e.stopPropagation();
+          const id = parseInt(deleteBtn.dataset.id);
+          const prospectCard = deleteBtn.closest('.prospect-card');
+          const prospectName = prospectCard?.querySelector('.prospect-name')?.textContent?.trim() || 'ce prospect';
+          if (!confirm(`Supprimer "${prospectName}" et toute sa progression ?\n\nCette action est irréversible.`)) return;
+          try {
+            await window.API.deleteProspect(id);
+            window.showToast && window.showToast('Prospect supprimé', 'success');
+            await loadKanban();
+          } catch (err) {
+            window.showToast && window.showToast('Erreur suppression: ' + err.message, 'error');
+          }
+        }
+      });
+    }
   });
 
   // ── Vue Prospects ─────────────────────────────────────────────
@@ -75,31 +106,7 @@
       </div>
     `).join('');
 
-    // Attacher les clics sur les cartes
-    board.querySelectorAll('.prospect-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const id = parseInt(card.dataset.id);
-        window.location.href = `atelier.html?prospect_id=${id}`;
-      });
-    });
-
-    // Boutons suppression
-    board.querySelectorAll('.btn-prospect-delete').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const id = parseInt(btn.dataset.id);
-        const card = btn.closest('.prospect-card');
-        const prospectName = card?.querySelector('.prospect-name')?.textContent?.trim() || 'ce prospect';
-        if (!confirm(`Supprimer "${prospectName}" et toute sa progression ?\n\nCette action est irréversible.`)) return;
-        try {
-          await window.API.deleteProspect(id);
-          window.showToast && window.showToast('Prospect supprimé', 'success');
-          await loadKanban();
-        } catch (err) {
-          window.showToast && window.showToast('Erreur suppression: ' + err.message, 'error');
-        }
-      });
-    });
+    // Event listeners gérés par delegation (voir DOMContentLoaded)
   }
 
   function getSessionIndicator(sessionStatus) {

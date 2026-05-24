@@ -191,6 +191,14 @@ async def _finalize_collecting_with_url(prospect_id: int, nom: str, url: str,
     site_data = await fetch_url(url)
     fetch_ok = site_data.get("text") and not site_data["text"].startswith("[Erreur")
 
+    site_note = ""
+    if not fetch_ok:
+        site_note = (
+            f"\n\n⚠️ Le site `{url}` est inaccessible ou a retourné une erreur. "
+            f"Je vais analyser le prospect avec les informations disponibles "
+            f"(nom, URL, notes) sans accéder au site."
+        )
+
     form_data = await _extract_form_data(url, site_data, config, db) if fetch_ok else _fallback_form_data(url)
     form_data["nom_restaurant"] = nom
     _update_prospect(prospect_id, nom, json.dumps(form_data, ensure_ascii=False), db)
@@ -198,7 +206,7 @@ async def _finalize_collecting_with_url(prospect_id: int, nom: str, url: str,
     try:
         session_id = await _launch_pipeline(prospect_id, conversation_id, nom, db, config)
         content = (
-            f"✅ **Prospect {nom} créé !**\n\n"
+            f"✅ **Prospect {nom} créé !**{site_note}\n\n"
             f"L'analyse et la génération de la proposition démarrent en arrière-plan. "
             f"Je te notifie quand c'est prêt.\n\n"
             f"[→ Suivre dans l'Atelier](atelier.html?prospect_id={prospect_id})"
@@ -229,11 +237,17 @@ async def _handle_new_prospect(url: str, message: str, db, config: dict) -> tupl
     site_data = await fetch_url(url)
     fetch_ok = site_data.get("text") and not site_data["text"].startswith("[Erreur")
 
+    site_note = ""
     if fetch_ok:
         form_data = await _extract_form_data(url, site_data, config, db)
     else:
         logger.warning(f"[ATELIER] Scraping échoué pour {url} — fallback domaine")
         form_data = _fallback_form_data(url)
+        site_note = (
+            f"\n\n⚠️ Le site `{url}` est inaccessible ou a retourné une erreur. "
+            f"Je vais analyser le prospect avec les informations disponibles "
+            f"(nom, URL, notes) sans accéder au site."
+        )
 
     nom = form_data.get("nom_restaurant") or nom_temp
     _update_prospect(prospect_id, nom, json.dumps(form_data, ensure_ascii=False), db)
@@ -241,7 +255,7 @@ async def _handle_new_prospect(url: str, message: str, db, config: dict) -> tupl
     summary = _build_summary(form_data)
     state = {"type": "atelier_confirm", "prospect_id": prospect_id, "nom": nom}
     content = (
-        f"✅ J'ai analysé **{url}**\n\n"
+        f"✅ J'ai analysé **{url}**{site_note}\n\n"
         f"{summary}\n\n"
         f"**Je lance la génération de la démo ?** *(oui pour démarrer · non pour annuler)*"
     )
@@ -446,6 +460,26 @@ async def _run_phase1_bg(session_id: int, conversation_id: int,
     """
     db = get_connection()
     try:
+        # Vérification prospect supprimé
+        cursor = db.cursor()
+        cursor.execute("SELECT id FROM prospects WHERE id = ?", (prospect_id,))
+        if not cursor.fetchone():
+            logger.warning(f"[ATELIER] Prospect {prospect_id} supprimé, pipeline annulé")
+            try:
+                _inject_message_conversation(
+                    conversation_id,
+                    "Le prospect a été supprimé, pipeline annulé."
+                )
+            except Exception:
+                pass
+            return
+        
+        # Vérification session pipeline
+        cursor.execute("SELECT id, status FROM sessions WHERE id = ?", (session_id,))
+        session = cursor.fetchone()
+        if not session or session["status"] == "ABORTED":
+            return
+        
         from backend.services.pipeline_engine import execute_step
 
         result = await execute_step(session_id, 1, "__atelier__", db, config)
@@ -537,6 +571,26 @@ async def _run_phase2_bg(session_id: int, conversation_id: int,
     """
     db = get_connection()
     try:
+        # Vérification prospect supprimé
+        cursor = db.cursor()
+        cursor.execute("SELECT id FROM prospects WHERE id = ?", (prospect_id,))
+        if not cursor.fetchone():
+            logger.warning(f"[ATELIER] Prospect {prospect_id} supprimé, pipeline annulé")
+            try:
+                _inject_message_conversation(
+                    conversation_id,
+                    "Le prospect a été supprimé, pipeline annulé."
+                )
+            except Exception:
+                pass
+            return
+        
+        # Vérification session pipeline
+        cursor.execute("SELECT id, status FROM sessions WHERE id = ?", (session_id,))
+        session = cursor.fetchone()
+        if not session or session["status"] == "ABORTED":
+            return
+        
         from backend.services.pipeline_engine import execute_step
 
         result = await execute_step(session_id, 5, "__atelier__", db, config)

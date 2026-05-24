@@ -44,16 +44,22 @@ async def call_model(
     if openrouter_key:
         try:
             async with httpx.AsyncClient(timeout=300.0) as client:
-                response = await _post_with_retry(
-                    client,
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    {
-                        "Authorization": f"Bearer {openrouter_key}",
-                        "HTTP-Referer": "http://localhost:8000",
-                        "X-Title": "JARVIS"
-                    },
-                    {"model": model_id, "messages": messages, "max_tokens": 8192}
-                )
+                try:
+                    response = await asyncio.wait_for(
+                        _post_with_retry(
+                            client,
+                            "https://openrouter.ai/api/v1/chat/completions",
+                            {
+                                "Authorization": f"Bearer {openrouter_key}",
+                                "HTTP-Referer": "http://localhost:8000",
+                                "X-Title": "JARVIS"
+                            },
+                            {"model": model_id, "messages": messages, "max_tokens": 8192}
+                        ),
+                        timeout=60.0
+                    )
+                except asyncio.TimeoutError:
+                    raise RuntimeError("Timeout LLM après 60s — réessaie dans un moment.")
 
                 if response.status_code == 200:
                     data = response.json()
@@ -98,16 +104,22 @@ async def call_model(
     elif "anthropic/" in model_id and anthropic_key:
         try:
             async with httpx.AsyncClient(timeout=300.0) as client:
-                response = await _post_with_retry(
-                    client,
-                    "https://api.anthropic.com/v1/messages",
-                    {
-                        "x-api-key": anthropic_key,
-                        "anthropic-version": "2023-06-01",
-                        "content-type": "application/json"
-                    },
-                    {"model": model_id.replace("anthropic/", ""), "max_tokens": 4096, "messages": messages}
-                )
+                try:
+                    response = await asyncio.wait_for(
+                        _post_with_retry(
+                            client,
+                            "https://api.anthropic.com/v1/messages",
+                            {
+                                "x-api-key": anthropic_key,
+                                "anthropic-version": "2023-06-01",
+                                "content-type": "application/json"
+                            },
+                            {"model": model_id.replace("anthropic/", ""), "max_tokens": 4096, "messages": messages}
+                        ),
+                        timeout=60.0
+                    )
+                except asyncio.TimeoutError:
+                    raise RuntimeError("Timeout LLM après 60s — réessaie dans un moment.")
 
                 if response.status_code == 200:
                     data = response.json()

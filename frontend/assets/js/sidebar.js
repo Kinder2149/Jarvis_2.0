@@ -24,26 +24,30 @@ window.initSidebar = async () => {
     
     const today = new Date().toDateString();
     let todayCost = 0;
-    for (const project of projects) {
-      try {
-        const allSessions = await window.API.getProjectSessions(project.id);
-        allSessions.forEach(s => {
-          if (new Date(s.created_at).toDateString() === today) {
-            todayCost += (s.total_cost_usd || 0);
-          }
-        });
-        sessionsMap[project.id] = allSessions
-          .filter(s => !['COMPLETED', 'ABORTED', 'FAILED'].includes(s.status))
-          .slice(0, 5);
-      } catch (e) {
-        sessionsMap[project.id] = [];
-      }
-      try {
-        const reflexions = await window.API.getReflexions(project.id);
-        reflexionsMap[project.id] = reflexions.filter(s => s.statut !== 'ABANDONNEE').slice(0, 5);
-      } catch (e) {
-        reflexionsMap[project.id] = [];
-      }
+    const results = await Promise.allSettled(
+      projects.map(async p => {
+        const [sessions, reflexions] = await Promise.allSettled([
+          window.API.getProjectSessions(p.id),
+          window.API.getReflexions(p.id)
+        ]);
+        const allSessions = sessions.status === 'fulfilled' ? sessions.value : [];
+        const rxs = reflexions.status === 'fulfilled' ? reflexions.value : [];
+        return { project: p, allSessions, rxs };
+      })
+    );
+
+    for (const r of results) {
+      if (r.status !== 'fulfilled') continue;
+      const { project: p, allSessions, rxs } = r.value;
+      allSessions.forEach(s => {
+        if (new Date(s.created_at).toDateString() === today) {
+          todayCost += (s.total_cost_usd || 0);
+        }
+      });
+      sessionsMap[p.id] = allSessions
+        .filter(s => !['COMPLETED', 'ABORTED', 'FAILED'].includes(s.status))
+        .slice(0, 5);
+      reflexionsMap[p.id] = rxs.filter(s => s.statut !== 'ABANDONNEE').slice(0, 5);
     }
 
     renderSidebar(projects, conversations, sessionsMap, atelierCount, prospects, reflexionsMap, todayCost, sentinelleCount, sentinelleAlertesCount, jarvisConversations);
