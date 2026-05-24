@@ -312,10 +312,4 @@
 
     document.querySelectorAll('.tree-file').forEach(el => el.classList.remove('tree-file--active'));
   }
-
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
 })();

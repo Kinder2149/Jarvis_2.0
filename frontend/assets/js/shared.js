@@ -9,6 +9,17 @@ window.EventBus = {
 
 window.getURLParam = (name) => new URLSearchParams(window.location.search).get(name);
 
+window.escapeHtml = function(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+window._esc = window.escapeHtml;
+
 window.formatDate = (isoString) => {
   if (!isoString) return '';
   const d = new Date(isoString);

@@ -157,12 +157,6 @@
     }
   }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
   function attachEventListeners() {
     const textarea = document.getElementById('chat-input');
     const btnSend = document.getElementById('btn-send');

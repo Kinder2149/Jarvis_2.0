@@ -80,12 +80,6 @@
     });
   }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
   function attachEventListeners() {
     document.getElementById('btn-new-conversation').addEventListener('click', handleNewConversation);
     document.getElementById('btn-new-conversation-empty')?.addEventListener('click', handleNewConversation);

@@ -6,20 +6,6 @@
 */
 
 /**
- * Échappe les caractères HTML dangereux
- * @param {string} s - Chaîne à échapper
- * @returns {string} Chaîne échappée ou '' si null/undefined
- */
-function _esc(s) {
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/**
  * Temps relatif en français depuis une date
  * @param {string} dateStr - Date ISO (format SQLite sans 'Z')
  * @returns {string} Temps relatif formaté

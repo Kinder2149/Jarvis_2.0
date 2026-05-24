@@ -9,6 +9,7 @@ import json
 import shutil
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
+from contextlib import asynccontextmanager
 
 from backend.database import init_db, get_connection
 from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle, jarvis, media, orchestrateur
@@ -33,7 +34,63 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="JARVIS")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    init_db()
+    
+    # Reset sessions RUNNING → FAILED (arrêt brutal serveur)
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute(
+        "UPDATE sessions SET status = 'FAILED', updated_at = datetime('now') WHERE status = 'RUNNING'"
+    )
+    affected_sessions = cursor.rowcount
+    
+    cursor.execute(
+        "UPDATE pipeline_steps SET status = 'FAILED', error_message = 'Interrompu par redémarrage serveur' WHERE status = 'RUNNING'"
+    )
+    affected_steps = cursor.rowcount
+    
+    conn.commit()
+    conn.close()
+    
+    if affected_sessions > 0:
+        logger.warning(f"Startup recovery: {affected_sessions} sessions RUNNING → FAILED, {affected_steps} steps réinitialisés")
+    
+    migrate_config_to_sqlite()
+    seed_context_from_methodo()
+    
+    # Configurer APScheduler pour alertes Sentinelle
+    async def check_alertes_job():
+        from backend.services import sentinelle_service
+        try:
+            await sentinelle_service.run_check_alertes()
+        except Exception as e:
+            logger.error(f"Erreur job alertes Sentinelle: {e}")
+    
+    scheduler.add_job(
+        check_alertes_job,
+        'cron',
+        day_of_week='mon',
+        hour=8,
+        minute=0,
+        id='sentinelle_alertes',
+        replace_existing=True
+    )
+    scheduler.start()
+    logger.info("Scheduler APScheduler démarré — vérification alertes chaque lundi 8h")
+    
+    logger.info("JARVIS démarré")
+    
+    yield
+    
+    # Shutdown
+    scheduler.shutdown(wait=False)
+    logger.info("Scheduler APScheduler arrêté")
+
+app = FastAPI(title="JARVIS", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -165,58 +222,3 @@ def seed_context_from_methodo():
     
     conn.commit()
     conn.close()
-
-@app.on_event("startup")
-async def startup():
-    init_db()
-    
-    # Reset sessions RUNNING → FAILED (arrêt brutal serveur)
-    conn = get_connection()
-    cursor = conn.cursor()
-    
-    cursor.execute(
-        "UPDATE sessions SET status = 'FAILED', updated_at = datetime('now') WHERE status = 'RUNNING'"
-    )
-    affected_sessions = cursor.rowcount
-    
-    cursor.execute(
-        "UPDATE pipeline_steps SET status = 'FAILED', error_message = 'Interrompu par redémarrage serveur' WHERE status = 'RUNNING'"
-    )
-    affected_steps = cursor.rowcount
-    
-    conn.commit()
-    conn.close()
-    
-    if affected_sessions > 0:
-        logger.warning(f"Startup recovery: {affected_sessions} sessions RUNNING → FAILED, {affected_steps} steps réinitialisés")
-    
-    migrate_config_to_sqlite()
-    seed_context_from_methodo()
-    
-    # Configurer APScheduler pour alertes Sentinelle
-    async def check_alertes_job():
-        from backend.services import sentinelle_service
-        try:
-            await sentinelle_service.run_check_alertes()
-        except Exception as e:
-            logger.error(f"Erreur job alertes Sentinelle: {e}")
-    
-    scheduler.add_job(
-        check_alertes_job,
-        'cron',
-        day_of_week='mon',
-        hour=8,
-        minute=0,
-        id='sentinelle_alertes',
-        replace_existing=True
-    )
-    scheduler.start()
-    logger.info("Scheduler APScheduler démarré — vérification alertes chaque lundi 8h")
-    
-    logger.info("JARVIS démarré")
-
-
-@app.on_event("shutdown")
-def shutdown():
-    scheduler.shutdown(wait=False)
-    logger.info("Scheduler APScheduler arrêté")

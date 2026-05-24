@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JARVIS — Orchestrateur</title>
   <link rel="stylesheet" href="assets/style.css">
@@ -2396,8 +2397,7 @@
     const content = input.value.trim();
     if (!content) return;
 
-    // Stopper tout polling en cours (MEDIA, FORGE, ATELIER)
-    stopMediaPolling();
+    // Stopper le polling FORGE si changement de sujet
     stopForgePolling();
 
     isSending = true;
@@ -2455,7 +2455,8 @@
       isSending = false;
       document.getElementById('btn-send').disabled = false;
       input.focus();
-      loadStats();
+      clearTimeout(_loadStatsTimer);
+      _loadStatsTimer = setTimeout(loadStats, 1500);
     }
   }
 
@@ -2559,6 +2560,8 @@
   }
 
   // ── Stats agents ──────────────────────────────────────────────────────────
+  let _loadStatsTimer = null;
+
   async function loadStats() {
     try {
       const projects = await window.API.getProjects();
@@ -2599,15 +2602,11 @@
     // ATELIER
     try {
       const prospects = await window.API.getProspects();
-      let atelierRunning = 0;
-      for (const p of prospects.slice(0, 20)) {
-        try {
-          const detail = await window.API.getProspect(p.id);
-          if (detail.session && ['RUNNING', 'WAITING_VALIDATION'].includes(detail.session.status)) {
-            atelierRunning++;
-          }
-        } catch(_) {}
-      }
+      const arr = Array.isArray(prospects) ? prospects : (prospects?.prospects ?? []);
+      const atelierRunning = arr.filter(p => {
+        const s = p.statut || p.status || p.pipeline_status || '';
+        return ['RUNNING', 'WAITING_VALIDATION'].includes(s);
+      }).length;
       setEl('stat-ATELIER', atelierRunning > 0
         ? atelierRunning + ' prospect' + (atelierRunning > 1 ? 's' : '') + ' en pipeline'
         : 'Aucun pipeline actif');
