@@ -297,38 +297,39 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ✅ Mis à jour (hook post-commit)
-**Objectif :** 6 corrections performance + modernisation
-**Mission terminée :** 2026-05-24 — PERF-FIXES
+**Objectif :** 2 corrections UX livrables MENTOR + FORGE
+**Mission terminée :** 2026-05-24 — LIVRABLES-UX
 **Fichiers modifiés :**
-- frontend/jarvis.html : loadStats ATELIER optimisé + debounce 1.5s + polling MEDIA non interrompu
-- frontend/assets/js/shared.js : escapeHtml centralisé (window.escapeHtml + window._esc)
-- frontend/assets/js/chat.js : suppression définition locale escapeHtml
-- frontend/assets/js/conversations.js : suppression définition locale escapeHtml
-- frontend/assets/js/explorer.js : suppression définition locale escapeHtml
-- frontend/assets/js/board.js : suppression définition locale _esc (utilise window._esc)
-- backend/main.py : lifespan moderne (remplacement @app.on_event)
-- frontend/assets/favicon.svg : créé (lettre J blanche fond indigo)
-- frontend/*.html (13 fichiers) : <link rel="icon"> ajouté dans <head>
-- CHANGELOG.md : ajout ligne mission PERF-FIXES
+- backend/services/mentor_handler.py : auto-détection type livrable + confirmation
+- backend/services/forge_handler.py : explication échec + lien relance mission.html
+- CHANGELOG.md : ajout ligne mission LIVRABLES-UX
 - PROJET_CONTEXTE.md : mise à jour section 8
 
 **Corrections appliquées :**
 
-1. **loadStats() ATELIER optimisé** — Suppression boucle getProspect individuel (avant 1 GET /prospects + N GET /prospects/{id}, après 1 seul GET /prospects avec lecture directe statut, gain ~95% requêtes)
-2. **loadStats() debounce 1.5s** — Variable _loadStatsTimer + clearTimeout/setTimeout dans send() finally, évite appels rafale si messages multiples rapides, appel DOMContentLoaded reste direct
-3. **Polling MEDIA non interrompu** — Suppression stopMediaPolling() dans send(), garde seulement stopForgePolling(), MEDIA continue arrière-plan affiche résultat même si user envoie autre message
-4. **Favicon SVG créé** — frontend/assets/favicon.svg (lettre J blanche fond indigo) + <link rel="icon"> ajouté <head> après <meta charset> dans 13 pages HTML (jarvis, atelier, chat, conversations, dossier, mission, sentinelle, settings, board-*), plus de 404 favicon.ico logs uvicorn
-5. **FastAPI lifespan moderne** — Ajout import contextlib.asynccontextmanager, remplacement @app.on_event("startup") + @app.on_event("shutdown") par fonction lifespan(app) avec yield, app = FastAPI(lifespan=lifespan), plus de DeprecationWarning démarrage
-6. **escapeHtml centralisé shared.js** — Avant 4 définitions locales (chat.js, conversations.js, explorer.js, board.js), après 1 seule window.escapeHtml + window._esc dans shared.js, suppression 4 définitions locales, toutes pages chargent déjà shared.js avant autres scripts
+**L-1 : MENTOR auto-détection type livrable**
+- Fonction `_detect_livrable_type()` détecte mots-clés (décision, plan multi, code)
+- Type non-standard (DECISION_FIGEE, PLAN_MULTI_MISSIONS) demande confirmation avant création session
+- MISSION_CODE reste flux direct sans friction (cas fréquent)
+- `_resolve_type_confirmation()` gère réponse oui/correction explicite
+- `_resolve_session()` accepte paramètre `livrable_type` optionnel
+- Labels affichage : "Mission Code (exécutable par FORGE)", "Décision Architecture (figée, non exécutable)", "Plan Multi-missions (plusieurs étapes)"
+
+**L-3 : FORGE explication échec + lien relance**
+- `handle_status_query()` : cas spécial FAILED affiche étape échouée + message erreur + lien relance
+- `_run_pipeline_in_background()` : message failed inclut erreur + lien relance
+- `_continue_pipeline_in_background()` : même correction message failed
+- Requête SQL récupère `step_display_name` + `error_message` de l'étape FAILED
+- Lien direct `mission.html?session={id}&from=jarvis` pour relancer depuis étape échouée
 
 **Graphify post-commit :**
-- 2924 nodes, 4700 edges, 448 communities
+- 2937 nodes, 4717 edges, 455 communities
 - GRAPH_REPORT.md mis à jour automatiquement
 
 **Backlog technique (audit) :**
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests manuels — Vérifier loadStats ATELIER (1 requête au lieu de N), favicon visible, polling MEDIA non interrompu, pas de DeprecationWarning démarrage serveur
+**Prochain objectif :** Tests manuels — (L-1) Message "Je veux prendre une décision d'architecture" → MENTOR demande confirmation → réponse "oui" → session DECISION_FIGEE créée. (L-3) Pipeline FAILED → demander "c'est quoi l'état de FORGE ?" → JARVIS répond avec étape échouée + erreur + lien mission.html
 
 ---
 
