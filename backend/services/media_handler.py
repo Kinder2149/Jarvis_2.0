@@ -198,14 +198,28 @@ async def _run_generation(conversation_id: int, state: dict, config: dict) -> No
             no_bg = any(w in prompt.lower() for w in
                 ["white background", "plain white", "no background", "sans fond", "détouré"])
             result_url = _build_pollinations_url(prompt, no_background=no_bg)
-            # Déclencher la génération côté Pollinations avant d'injecter le message
-            # (l'image sera en cache quand le navigateur la chargera)
+            
+            prefetch_ok = False
             try:
                 async with httpx.AsyncClient(timeout=60) as client:
-                    await client.get(result_url, follow_redirects=True)
+                    resp = await client.get(result_url, follow_redirects=True)
+                    prefetch_ok = resp.status_code < 400
             except Exception as poll_err:
                 logger.warning(f"[MEDIA] Pollinations prefetch warning: {poll_err}")
-
+            
+            if not prefetch_ok:
+                db.execute("""
+                    INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
+                    VALUES (?, ?, ?, ?, 'error', datetime('now'))
+                """, (conversation_id, media_type, prompt, result_url))
+                db.commit()
+                _inject_message(
+                    conversation_id, db,
+                    "[MEDIA] ⚠️ Pollinations est inaccessible ou la génération a échoué.\n\n"
+                    "Réessaie dans quelques instants ou décris une image différente."
+                )
+                return
+            
             db.execute("""
                 INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
                 VALUES (?, ?, ?, ?, 'done', datetime('now'))

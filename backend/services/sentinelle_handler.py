@@ -86,6 +86,15 @@ async def _handle_consulter(message: str, config: dict, db) -> str:
     cur.execute("SELECT ticker, variation_pct, cours_actuel FROM sentinelle_alertes WHERE lu = 0 ORDER BY created_at DESC LIMIT 5")
     alertes = [dict(r) for r in cur.fetchall()]
     
+    if not positions and not watchlist and not alertes:
+        return (
+            "**Ton portefeuille SENTINELLE est vide.** 📭\n\n"
+            "Pour commencer, ouvre la page [Sentinelle](sentinelle.html) et :\n"
+            "- Ajoute des positions à ton portefeuille\n"
+            "- Configure ta watchlist\n"
+            "- Définis tes thèses d'investissement"
+        )
+    
     prompt_system = f"""Tu es SENTINELLE, l'assistant investissement de Kinder.
 Tu réponds à ses questions sur son portefeuille de façon concise et précise.
 Données disponibles (JSON) :

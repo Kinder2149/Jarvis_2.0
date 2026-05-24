@@ -82,7 +82,8 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-atelier.html)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-media.html)",
       "Bash(curl -s \"http://localhost:8000/api/media/history?limit=5\")",
-      "Bash(curl -s \"http://localhost:8000/api/media/history?limit=3\")"
+      "Bash(curl -s \"http://localhost:8000/api/media/history?limit=3\")",
+      "mcp__Claude_in_Chrome__tabs_context_mcp"
     ]
   }
 }

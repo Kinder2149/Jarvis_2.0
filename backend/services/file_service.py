@@ -28,10 +28,11 @@ def write_file(file_path: str, content: str) -> bool:
             tmp_path.unlink()
         return False
 
-def apply_files(changes: list[dict]) -> bool:
+def apply_files(changes: list[dict], pipeline_started_at: float | None = None) -> bool:
     file_paths = []
     tmp_paths = []
     backup_paths = []
+    conflict_files = []
     
     # PHASE 1 — Vérification préalable (aucune écriture)
     try:
@@ -43,6 +44,10 @@ def apply_files(changes: list[dict]) -> bool:
             
             if ".." in file_path.parts:
                 raise ValueError(f"Chemin non sécurisé : {change['path']}")
+            
+            if pipeline_started_at is not None and file_path.exists():
+                if file_path.stat().st_mtime > pipeline_started_at:
+                    conflict_files.append(str(file_path))
             
             parent_dir = file_path.parent
             if not parent_dir.exists():
@@ -65,6 +70,13 @@ def apply_files(changes: list[dict]) -> bool:
     except Exception as e:
         logger.error(f"Vérification échouée : {e}")
         raise Exception(f"Vérification échouée : {e}")
+    
+    if conflict_files:
+        raise Exception(
+            f"Conflit détecté — {len(conflict_files)} fichier(s) modifié(s) depuis le "
+            f"démarrage du pipeline : {', '.join(conflict_files)}. "
+            f"Applique les changements manuellement ou relance le pipeline."
+        )
     
     # PHASE 2 — Écriture des fichiers temporaires
     written_tmp = []

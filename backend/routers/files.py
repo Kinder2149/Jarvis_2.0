@@ -15,6 +15,7 @@ class DiffRequest(BaseModel):
 
 class ApplyFilesRequest(BaseModel):
     changes: list[dict]
+    pipeline_started_at: float | None = None
 
 @router.get("/{project_id}/list")
 def list_files(project_id: int):
@@ -89,7 +90,7 @@ def apply_file_changes(project_id: int, request: ApplyFilesRequest):
             "content": change["content"]
         })
     
-    success = apply_files(changes_with_full_paths)
+    success = apply_files(changes_with_full_paths, pipeline_started_at=request.pipeline_started_at)
     
     if not success:
         raise HTTPException(status_code=500, detail="Échec de l'application des modifications")

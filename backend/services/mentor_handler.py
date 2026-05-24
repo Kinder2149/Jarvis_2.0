@@ -135,6 +135,15 @@ async def handle(
                 "MENTOR", None, False, None
             )
     
+    # Vérifier que le projet existe toujours
+    cursor.execute("SELECT id FROM projects WHERE id = ?", (project_id,))
+    if not cursor.fetchone():
+        return (
+            f"[MENTOR] Le projet #{project_id} a été supprimé. "
+            "Sélectionne un autre projet dans le panneau gauche avant de continuer.",
+            "MENTOR", None, False, None
+        )
+    
     # Premier message MENTOR dans cette conversation → détection du type
     is_new_session = (
         current_instance_ref is None
