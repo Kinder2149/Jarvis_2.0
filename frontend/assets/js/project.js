@@ -343,7 +343,7 @@
     try {
       await window.API.deleteProject(projectId);
       if (window.showToast) window.showToast('Dossier supprimé');
-      location.href = 'index.html';
+      location.href = 'jarvis.html';
     } catch (error) {
       console.error('Erreur suppression dossier:', error);
       if (window.showToast) window.showToast('Erreur suppression', 'error');

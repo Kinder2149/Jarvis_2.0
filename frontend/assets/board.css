@@ -1,0 +1,355 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOARD.CSS — Infrastructure CSS partagée pour tous les boards d'agents JARVIS
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   Utilise les variables CSS de style.css (--bg-primary, --bg-card, etc.)
+   La couleur d'accent agent est définie via --board-accent en inline sur .board-app
+   
+   Exemple : <div class="board-app" style="--board-accent:#f97316">
+*/
+
+/* ─── Layout principal ──────────────────────────────────────────────────── */
+.board-app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* ─── Navigation top ────────────────────────────────────────────────────── */
+.board-nav {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sidebar);
+  flex-shrink: 0;
+  gap: 1rem;
+}
+
+.board-back {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.board-back:hover {
+  color: var(--board-accent);
+}
+
+.board-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.board-avatar {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.board-agent-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--board-accent);
+  letter-spacing: -0.02em;
+}
+
+.board-agent-role {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#btn-refresh {
+  font-size: 0.75rem;
+  padding: 0.26rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+#btn-refresh:hover {
+  border-color: var(--board-accent);
+  color: var(--board-accent);
+}
+
+/* ─── Corps scrollable ──────────────────────────────────────────────────── */
+.board-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.board-body::-webkit-scrollbar {
+  width: 4px;
+}
+.board-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.board-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* ─── KPIs ──────────────────────────────────────────────────────────────── */
+.board-kpis {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.board-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  min-width: 110px;
+  flex: 1;
+}
+
+.board-stat-card--highlight {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.board-stat-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.board-stat-lbl {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.25rem;
+}
+
+/* ─── Alerte ────────────────────────────────────────────────────────────── */
+.board-alert {
+  background: rgba(245, 158, 11, 0.07);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Sections ──────────────────────────────────────────────────────────── */
+.board-section-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────── */
+.board-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.board-card--urgent {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.04);
+  border-left: 3px solid #f59e0b;
+}
+
+.board-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.board-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.board-card-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.board-card-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.board-card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Badges ────────────────────────────────────────────────────────────── */
+.board-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.board-badge--running {
+  background: rgba(249, 115, 22, 0.13);
+  color: #f97316;
+}
+
+.board-badge--waiting {
+  background: rgba(245, 158, 11, 0.13);
+  color: #f59e0b;
+}
+
+.board-badge--completed {
+  background: rgba(74, 222, 128, 0.13);
+  color: #4ade80;
+}
+
+.board-badge--failed {
+  background: rgba(248, 113, 113, 0.13);
+  color: #f87171;
+}
+
+.board-badge--aborted {
+  background: rgba(100, 116, 139, 0.13);
+  color: #64748b;
+}
+
+.board-badge--ouverte {
+  background: rgba(100, 116, 139, 0.13);
+  color: #94a3b8;
+}
+
+.board-badge--neutral {
+  background: rgba(100, 116, 139, 0.13);
+  color: #94a3b8;
+}
+
+/* ─── Progress bar ──────────────────────────────────────────────────────── */
+.board-progress {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.board-progress-bar {
+  height: 100%;
+  background: var(--board-accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.board-progress-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* ─── Boutons ───────────────────────────────────────────────────────────── */
+.board-btn {
+  font-size: 0.72rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.board-btn:hover {
+  border-color: var(--board-accent);
+  color: var(--board-accent);
+}
+
+.board-btn--primary {
+  border-color: var(--board-accent);
+  color: var(--board-accent);
+}
+
+/* ─── État vide ─────────────────────────────────────────────────────────── */
+.board-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.board-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.4;
+  display: block;
+}
+
+.board-empty-msg {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.board-empty-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ─── Footer ────────────────────────────────────────────────────────────── */
+.board-footer {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.board-footer-link {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.board-footer-link:hover {
+  color: var(--board-accent);
+}

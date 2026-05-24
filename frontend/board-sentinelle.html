@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTINELLE — Board JARVIS</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/board.css">
+</head>
+<body>
+<div class="board-app" style="--board-accent:#2dd4bf">
+
+  <nav class="board-nav">
+    <a href="jarvis.html" class="board-back">← JARVIS</a>
+    <div class="board-identity">
+      <img src="assets/agents/Sentinelle1.png" alt="SENTINELLE" class="board-avatar">
+      <div>
+        <div class="board-agent-name">SENTINELLE</div>
+        <div class="board-agent-role">Portefeuille</div>
+      </div>
+    </div>
+    <button id="btn-refresh">↺ Rafraîchir</button>
+  </nav>
+
+  <div class="board-body">
+    <div class="board-kpis" id="kpis"></div>
+    <div class="board-alert" id="alert-zone" hidden></div>
+    <div id="content"></div>
+    <footer class="board-footer">
+      <a href="sentinelle.html" class="board-footer-link">→ Gérer le portefeuille dans SENTINELLE</a>
+    </footer>
+  </div>
+
+</div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/board.js"></script>
+<script>
+
+function fmtMoney(val, devise) {
+  devise = devise || '€';
+  if (val == null || isNaN(val)) return '—';
+  const abs = Math.abs(val);
+  const sign = val < 0 ? '-' : val > 0 ? '+' : '';
+  const fmt = abs >= 1000
+    ? abs.toLocaleString('fr-FR', { maximumFractionDigits: 0 })
+    : abs.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+  return `${sign}${fmt} ${devise}`;
+}
+
+function fmtPct(val) {
+  if (val == null || isNaN(val)) return '';
+  const sign = val > 0 ? '+' : '';
+  return `${sign}${Number(val).toFixed(1)}%`;
+}
+
+function plColor(val) {
+  if (val > 0) return '#2dd4bf';
+  if (val < 0) return '#f87171';
+  return 'var(--text-muted)';
+}
+
+function normalizePos(p) {
+  return {
+    ...p,
+    _ticker : p.ticker ?? p.symbole ?? p.symbol ?? '?',
+    _nom    : p.nom ?? p.name ?? p.ticker ?? p.symbole ?? '?',
+    _valeur : p.valeur_actuelle ?? p.current_value
+              ?? ((p.quantite ?? 0) * (p.prix_actuel ?? p.current_price ?? 0)),
+    _pl     : p.plus_value ?? p.pl ?? 0,
+    _plPct  : p.rendement_pct ?? p.pl_pct ?? 0,
+    _devise : p.devise ?? '€',
+  };
+}
+
+async function loadBoard() {
+  document.getElementById('kpis').innerHTML =
+    '<div style="color:var(--text-muted);font-size:0.8rem">Chargement…</div>';
+  document.getElementById('content').innerHTML = '';
+  document.getElementById('alert-zone').hidden = true;
+
+  try {
+    // ÉTAPE 1 — Collecte
+    const currentMois = new Date().toISOString().slice(0, 7);
+
+    const [posRaw, alertes, cycleActif, budget] = await Promise.all([
+      window.API.getPositionsValorisation().catch(() => []),
+      window.API.getSentinelleAlertes().catch(() => []),
+      window.API.getCycleActif().catch(() => null),
+      window.API.getBudgetMois(currentMois).catch(() => null),
+    ]);
+
+    const posArr = Array.isArray(posRaw) ? posRaw : (posRaw?.positions ?? []);
+    const positions = posArr.map(normalizePos);
+
+    // ÉTAPE 2 — Calculs
+    const valeurTotale = positions.reduce((s, p) => s + (p._valeur || 0), 0);
+    const plTotal      = positions.reduce((s, p) => s + (p._pl    || 0), 0);
+    const alertesNonLues = (Array.isArray(alertes) ? alertes : [])
+      .filter(a => !a.lu && a.lu !== 1);
+
+    // ÉTAPE 3 — KPIs
+    document.getElementById('kpis').innerHTML = [
+      statCard(
+        positions.length > 0
+          ? fmtMoney(valeurTotale, '€').replace(/^\+/, '')
+          : '—',
+        'Valeur portefeuille'
+      ),
+      statCard(
+        positions.length > 0 ? fmtMoney(plTotal, '€') : '—',
+        'P&L total',
+        { color: plTotal !== 0 ? plColor(plTotal) : null }
+      ),
+      statCard(
+        alertesNonLues.length,
+        'Alertes actives',
+        { highlight: alertesNonLues.length > 0,
+          color: alertesNonLues.length > 0 ? '#f87171' : null }
+      ),
+      statCard(positions.length, 'Positions'),
+    ].join('');
+
+    // ÉTAPE 4 — Alert zone
+    if (alertesNonLues.length > 0) {
+      const z = document.getElementById('alert-zone');
+      z.hidden = false;
+      z.innerHTML = `🚨 ${alertesNonLues.length} alerte${alertesNonLues.length > 1 ? 's' : ''} non lue${alertesNonLues.length > 1 ? 's' : ''}`;
+    }
+
+    // ÉTAPE 5 — Rendu sections
+    let html = '';
+
+    // SECTION 1 — Alertes
+    if (alertesNonLues.length > 0) {
+      html += `<div class="board-section-title">🚨 Alertes</div>`;
+      for (const a of alertesNonLues.slice(0, 5)) {
+        html += `
+          <div class="board-card board-card--urgent">
+            <div class="board-card-header">
+              <span class="board-card-title">
+                ${_esc(a.message || a.titre || a.type || 'Alerte')}
+              </span>
+              <span class="board-card-sub" style="margin-left:auto">${ago(a.created_at)}</span>
+            </div>
+            ${a.ticker ? `<div class="board-card-sub">${_esc(a.ticker)}</div>` : ''}
+          </div>`;
+      }
+    }
+
+    // SECTION 2 — Positions
+    if (positions.length > 0) {
+      html += `<div class="board-section-title" style="margin-top:1rem">📊 Positions</div>`;
+      const sorted = positions.sort((a, b) => b._valeur - a._valeur);
+      for (const p of sorted) {
+        html += `
+          <div class="board-card">
+            <div class="board-card-header">
+              <span class="board-card-title">${_esc(p._ticker)}</span>
+              <span style="font-size:0.82rem;font-weight:700;color:${plColor(p._pl)};margin-left:auto">
+                ${fmtMoney(p._pl, p._devise)}
+                ${fmtPct(p._plPct) ? ` (${fmtPct(p._plPct)})` : ''}
+              </span>
+            </div>
+            <div class="board-card-sub">
+              ${p._nom !== p._ticker ? _esc(p._nom) + ' · ' : ''}
+              Valeur : <strong>${fmtMoney(p._valeur, p._devise).replace(/^\+/, '')}</strong>
+              · Qté : ${p.quantite ?? '—'}
+            </div>
+          </div>`;
+      }
+    }
+
+    // SECTION 3 — Cycle actif
+    if (cycleActif != null) {
+      html += `<div class="board-section-title" style="margin-top:1rem">🔄 Cycle actif</div>`;
+      html += `
+        <div class="board-card">
+          <div class="board-card-header">
+            ${badge(cycleActif.etat || 'EN COURS', cycleActif.etat || 'running')}
+            <span class="board-card-title">Cycle #${cycleActif.id}</span>
+            <span class="board-card-sub" style="margin-left:auto">${ago(cycleActif.created_at)}</span>
+          </div>
+          ${(cycleActif.notes || cycleActif.description)
+            ? `<div class="board-card-meta">${_esc(cycleActif.notes || cycleActif.description)}</div>` 
+            : ''}
+          <div class="board-card-actions">
+            <a href="sentinelle.html" class="board-btn board-btn--primary">→ Gérer dans SENTINELLE</a>
+          </div>
+        </div>`;
+    }
+
+    // SECTION 4 — Budget du mois
+    if (budget != null) {
+      html += `<div class="board-section-title" style="margin-top:1rem">💰 Budget ${currentMois}</div>`;
+      const bTotal = budget.budget_total ?? budget.total ?? 0;
+      const bInvesti = budget.investi ?? budget.invested ?? 0;
+      const bDispo = budget.disponible ?? budget.available ?? (bTotal - bInvesti);
+      html += `
+        <div class="board-card">
+          <div class="board-card-header">
+            <span class="board-card-title">Budget mensuel</span>
+          </div>
+          <div class="board-card-sub">
+            Alloué : <strong>${fmtMoney(bTotal,'€').replace(/^\+/,'')}</strong>
+            · Investi : ${fmtMoney(bInvesti,'€').replace(/^\+/,'')}
+            · Disponible : <strong style="color:#2dd4bf">${fmtMoney(bDispo,'€').replace(/^\+/,'')}</strong>
+          </div>
+        </div>`;
+    }
+
+    // État vide
+    if (positions.length === 0 && alertesNonLues.length === 0 && !cycleActif) {
+      html = emptyState(
+        'Aucune donnée SENTINELLE.',
+        'Ajoutez des positions et configurez votre portefeuille dans SENTINELLE.'
+      );
+    }
+
+    document.getElementById('content').innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('content').innerHTML = `
+      <div class="board-empty">
+        <div class="board-empty-msg" style="color:#f87171">Erreur de chargement</div>
+        <div class="board-empty-hint">${_esc(e.message)}</div>
+      </div>`;
+    console.error('[SENTINELLE Board]', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadBoard);
+document.getElementById('btn-refresh').onclick = loadBoard;
+
+</script>
+</body>
+</html>

@@ -73,7 +73,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
 
   let html = `
     <div class="sidebar-header">
-      <a href="index.html" class="sidebar-logo" title="Tableau de bord"><span class="sidebar-text" style="font-family:var(--mono);letter-spacing:0.1em">⚡ JARVIS</span></a>
+      <a href="jarvis.html" class="sidebar-logo" title="Tableau de bord"><span class="sidebar-text" style="font-family:var(--mono);letter-spacing:0.1em">⚡ JARVIS</span></a>
       <button id="btn-sidebar-collapse" class="btn-icon" title="Réduire">
         <span class="sidebar-text">←</span><span class="sidebar-collapsed-text" style="display:none">→</span>
       </button>
@@ -145,7 +145,7 @@ function renderSidebar(projects, conversations, sessionsMap, atelierCount = 0, p
     window.location.href = 'conversations.html';
   });
   document.getElementById('btn-new-mission').addEventListener('click', () => {
-    window.location.href = 'code-projects.html';
+    window.location.href = 'jarvis.html';
   });
   document.getElementById('btn-new-prospect')?.addEventListener('click', () => {
     window.location.href = 'atelier.html';
@@ -462,7 +462,7 @@ function attachTabContentListeners() {
         await window.API.deleteConversation(id);
         window.showToast && window.showToast('Conversation supprimée', 'success');
         if (window.location.href.includes('chat.html')) {
-          window.location.href = 'index.html';
+          window.location.href = 'jarvis.html';
         } else {
           await window.initSidebar();
         }
@@ -481,7 +481,7 @@ function attachTabContentListeners() {
         await window.API.deleteReflexion(id);
         window.showToast && window.showToast('Réflexion supprimée', 'success');
         if (window.location.href.includes('mission.html')) {
-          window.location.href = 'index.html';
+          window.location.href = 'jarvis.html';
         } else {
           await window.initSidebar();
         }

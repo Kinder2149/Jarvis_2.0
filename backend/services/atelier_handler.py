@@ -341,6 +341,16 @@ async def _handle_checkpoint_confirm(conversation_id: int, message: str,
 
     elif _is_abort_signal(message):
         cursor = db.cursor()
+        # Annuler aussi la session pipeline pour éviter l'état incohérent
+        if session_id:
+            cursor.execute(
+                "UPDATE sessions SET status = 'ABORTED', updated_at = datetime('now') WHERE id = ? AND status = 'WAITING_VALIDATION'",
+                (session_id,)
+            )
+            cursor.execute(
+                "UPDATE pipeline_steps SET status = 'ABORTED' WHERE session_id = ? AND status = 'WAITING_VALIDATION'",
+                (session_id,)
+            )
         cursor.execute(
             "UPDATE prospects SET statut = 'en_attente', updated_at = datetime('now') WHERE id = ?",
             (prospect_id,)

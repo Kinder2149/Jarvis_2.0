@@ -128,11 +128,11 @@ async def _handle_mettre_a_jour(message: str, db) -> str:
 
 def _update_watchlist(message: str, db) -> str:
     """Ajoute ou retire un ticker de la watchlist."""
-    ticker_match = re.search(r'\b([A-Z]{2,5})\b', message)
+    ticker_match = re.search(r'\b([A-Za-z]{2,5})\b', message)
     if not ticker_match:
         return "Je n'ai pas pu identifier le ticker dans ta demande."
     
-    ticker = ticker_match.group(1)
+    ticker = ticker_match.group(1).upper()
     cursor = db.cursor()
     
     if any(word in message.lower() for word in ["ajoute", "ajouter", "add"]):

@@ -161,4 +161,6 @@ window.API = {
   verifyJarvisForge: (sessionId) => _post(`/jarvis/verify/${sessionId}`),
   getJarvisPipelinesOverview: (activeOnly = false) =>
     _get(`/jarvis/pipelines/overview${activeOnly ? '?active_only=true' : ''}`),
+  getMediaStats: () => _get('/media/stats'),
+  getMediaHistory: (limit = 20) => _get('/media/history?limit=' + limit),
 };

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MENTOR — Board JARVIS</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/board.css">
+</head>
+<body>
+<div class="board-app" style="--board-accent:#f59e0b">
+
+  <nav class="board-nav">
+    <a href="jarvis.html" class="board-back">← JARVIS</a>
+    <div class="board-identity">
+      <img src="assets/agents/Mentor1.png" alt="MENTOR" class="board-avatar">
+      <div>
+        <div class="board-agent-name">MENTOR</div>
+        <div class="board-agent-role">Réflexion</div>
+      </div>
+    </div>
+    <button id="btn-refresh">↺ Rafraîchir</button>
+  </nav>
+
+  <div class="board-body">
+    <div class="board-kpis" id="kpis"></div>
+    <div class="board-alert" id="alert-zone" hidden></div>
+    <div id="content"></div>
+    <footer class="board-footer">
+      <span style="font-size:0.72rem;color:var(--text-muted)">
+        MENTOR est piloté via JARVIS — utilisez le chat pour démarrer une session de réflexion
+      </span>
+    </footer>
+  </div>
+
+</div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/board.js"></script>
+<script>
+
+function reflexionTitle(r) {
+  const parts = [];
+  if (r.livrable_type) parts.push(`[${r.livrable_type}]`);
+  if (r.titre) parts.push(r.titre);
+  return parts.length > 0 ? parts.join(' ').trim() : `Réflexion #${r.id}`;
+}
+
+function reflexionDate(r) {
+  return ago(r.updated_at || r.created_at);
+}
+
+async function loadBoard() {
+  document.getElementById('kpis').innerHTML =
+    '<div style="color:var(--text-muted);font-size:0.8rem">Chargement…</div>';
+  document.getElementById('content').innerHTML = '';
+  document.getElementById('alert-zone').hidden = true;
+
+  try {
+    // ÉTAPE 1 — Collecte
+    const projects = await window.API.getProjects();
+
+    const reflexionsByProject = await Promise.all(
+      projects.map(p =>
+        window.API.getReflexions(p.id)
+          .then(list => list.map(r => ({ ...r, project_name: p.name })))
+          .catch(() => [])
+      )
+    );
+    const all = reflexionsByProject.flat();
+
+    // ÉTAPE 2 — Groupement
+    const enFigement = all.filter(r => r.statut === 'EN_FIGEMENT');
+    const figees     = all.filter(r => r.statut === 'FIGEE');
+    const actives    = all.filter(r => ['EN_COURS', 'OUVERTE'].includes(r.statut));
+
+    // 3 dernières abandonnées seulement
+    const archivees = all
+      .filter(r => r.statut === 'ABANDONNEE')
+      .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))
+      .slice(0, 3);
+
+    // Nb de projets distincts avec au moins une réflexion non-abandonnée
+    const projetsCouverts = new Set(
+      all.filter(r => r.statut !== 'ABANDONNEE').map(r => r.project_id)
+    ).size;
+
+    // ÉTAPE 3 — KPIs
+    document.getElementById('kpis').innerHTML = [
+      statCard(enFigement.length + actives.length, 'Sessions actives'),
+      statCard(figees.length, 'Livrables prêts',
+               { highlight: figees.length > 0, color: figees.length > 0 ? '#f59e0b' : null }),
+      statCard(projetsCouverts, 'Projets couverts'),
+      statCard(all.filter(r => r.statut === 'ABANDONNEE').length, 'Abandonnées'),
+    ].join('');
+
+    // ÉTAPE 4 — Alert zone
+    if (figees.length > 0) {
+      const z = document.getElementById('alert-zone');
+      z.hidden = false;
+      z.innerHTML = `📦 ${figees.length} livrable${figees.length > 1 ? 's sont prêts' : ' est prêt'} — FORGE peut être lancé`;
+    }
+
+    // ÉTAPE 5 — Rendu des sections
+    let html = '';
+
+    // SECTION 1 — ⚡ En attente de validation
+    if (enFigement.length > 0) {
+      html += `<div class="board-section-title">⚡ En attente de validation</div>`;
+      for (const r of enFigement) {
+        html += `
+          <div class="board-card board-card--urgent">
+            <div class="board-card-header">
+              ${badge('EN FIGEMENT', 'EN_FIGEMENT')}
+              <span class="board-card-title">${_esc(reflexionTitle(r))}</span>
+            </div>
+            <div class="board-card-sub">${_esc(r.project_name)} · ${reflexionDate(r)}</div>
+            <div class="board-card-actions">
+              <a href="mission.html?session=${r.id}" class="board-btn board-btn--primary">→ Finaliser le figement</a>
+            </div>
+          </div>`;
+      }
+    }
+
+    // SECTION 2 — 📦 Livrables prêts pour FORGE
+    if (figees.length > 0) {
+      html += `<div class="board-section-title" style="margin-top:1rem">📦 Livrables prêts pour FORGE</div>`;
+      for (const r of figees) {
+        html += `
+          <div class="board-card">
+            <div class="board-card-header">
+              ${badge('FIGÉ', 'FIGEE')}
+              <span class="board-card-title">${_esc(reflexionTitle(r))}</span>
+            </div>
+            <div class="board-card-sub">${_esc(r.project_name)} · ${reflexionDate(r)}</div>
+            <div class="board-card-actions">
+              <a href="mission.html?session=${r.id}" class="board-btn board-btn--primary">→ Voir le livrable</a>
+            </div>
+          </div>`;
+      }
+    }
+
+    // SECTION 3 — 💬 Sessions en cours
+    if (actives.length > 0) {
+      html += `<div class="board-section-title" style="margin-top:1rem">💬 Sessions en cours</div>`;
+      for (const r of actives) {
+        html += `
+          <div class="board-card">
+            <div class="board-card-header">
+              ${badge(r.statut, r.statut)}
+              <span class="board-card-title">${_esc(reflexionTitle(r))}</span>
+            </div>
+            <div class="board-card-sub">${_esc(r.project_name)} · ${reflexionDate(r)}</div>
+            <div class="board-card-actions">
+              <a href="mission.html?session=${r.id}" class="board-btn">→ Reprendre</a>
+            </div>
+          </div>`;
+      }
+    }
+
+    // SECTION 4 — Archivées
+    if (archivees.length > 0) {
+      html += `<div class="board-section-title" style="margin-top:1rem">Archivées</div>`;
+      for (const r of archivees) {
+        html += `
+          <div class="board-card" style="opacity:0.55">
+            <div class="board-card-header">
+              ${badge('ABANDONNÉE', 'ABANDONNEE')}
+              <span class="board-card-title">${_esc(reflexionTitle(r))}</span>
+            </div>
+            <div class="board-card-sub">${_esc(r.project_name)} · ${reflexionDate(r)}</div>
+          </div>`;
+      }
+    }
+
+    // État vide
+    if (!enFigement.length && !figees.length && !actives.length && !archivees.length) {
+      html = emptyState(
+        'Aucune réflexion MENTOR.',
+        'Parlez à MENTOR via JARVIS pour démarrer une session de réflexion sur un projet.'
+      );
+    }
+
+    document.getElementById('content').innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('content').innerHTML = `
+      <div class="board-empty">
+        <div class="board-empty-msg" style="color:#f87171">Erreur de chargement</div>
+        <div class="board-empty-hint">${_esc(e.message)}</div>
+      </div>`;
+    console.error('[MENTOR Board]', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadBoard);
+document.getElementById('btn-refresh').onclick = loadBoard;
+
+</script>
+</body>
+</html>

@@ -188,7 +188,7 @@
       
       // Afficher le bouton retour pour les sessions abandonnées
       const btnBack = document.getElementById('btn-back-project');
-      if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'index.html';
+      if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'jarvis.html';
       const footerEl = document.getElementById('step-4-footer');
       if (footerEl) footerEl.style.display = 'block';
     } else if (session.statut === 'EN_FIGEMENT') {
@@ -377,7 +377,7 @@
             window.showToast('Session abandonnée');
             window.location.href = projectId
               ? `dossier.html?id=${projectId}` 
-              : 'code-projects.html';
+              : 'jarvis.html';
           } catch (error) {
             window.showToast('Erreur abandon : ' + error.message, 'error');
           }
@@ -950,7 +950,7 @@
 
         // Bouton retour au dossier
         const btnBack = document.getElementById('btn-back-project');
-        if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'index.html';
+        if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'jarvis.html';
         const footerEl = document.getElementById('step-4-footer');
         if (footerEl) footerEl.style.display = 'block';
 
@@ -970,7 +970,7 @@
 
       const backLink = projectId
         ? `<a href="dossier.html?id=${projectId}" class="btn-secondary">📁 Retour au dossier</a>`
-        : `<a href="index.html" class="btn-secondary">🏠 Tableau de bord</a>`;
+        : `<a href="jarvis.html" class="btn-secondary">🏠 Tableau de bord</a>`;
 
       actionZone.innerHTML = `
         <div class="mc-action-header"><h3>${emoji} ${label}</h3>${errorDetail}</div>
@@ -1309,7 +1309,7 @@
             }
 
             const btnBack = document.getElementById('btn-back-project');
-            if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'index.html';
+            if (btnBack) btnBack.href = projectId ? `dossier.html?id=${projectId}` : 'jarvis.html';
             const footerEl = document.getElementById('step-4-footer');
             if (footerEl) footerEl.style.display = 'block';
           }

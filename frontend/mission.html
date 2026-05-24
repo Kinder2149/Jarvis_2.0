@@ -8,10 +8,15 @@
 </head>
 <body>
   <div id="app-layout">
-    <aside id="sidebar"></aside>
     <main id="main-content" class="mission-main">
 
       <div id="page-mission" class="mission-page">
+
+        <!-- Barre de retour JARVIS -->
+        <div class="back-bar">
+          <a href="jarvis.html" class="back-link">← JARVIS</a>
+          <span class="back-page-title">Mission & Réflexion</span>
+        </div>
 
         <!-- En-tête session -->
         <div class="mission-header">
@@ -28,7 +33,7 @@
         <!-- État vide (aucun paramètre URL) -->
         <div id="mission-empty-state" class="empty-state" style="display:none">
           <h2>🎯 Missions</h2>
-          <p>Sélectionnez un projet depuis <a href="code-projects.html" style="color:var(--accent)">la liste des projets</a> pour démarrer une nouvelle mission.</p>
+          <p>Retournez sur <a href="jarvis.html" style="color:var(--accent)">JARVIS</a> pour sélectionner un projet et démarrer une nouvelle mission.</p>
         </div>
 
         <!-- Flow vertical 4 étapes -->
@@ -230,7 +235,6 @@
   <script src="assets/js/api.js"></script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/shared.js"></script>
-  <script src="assets/js/sidebar.js"></script>
   <script src="assets/js/mission.js"></script>
 </body>
 </html>

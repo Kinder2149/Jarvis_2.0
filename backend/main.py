@@ -66,7 +66,7 @@ else:
 
 @app.get("/")
 def root():
-    return RedirectResponse(url="/app/index.html")
+    return RedirectResponse(url="/app/jarvis.html")
 
 def migrate_config_to_sqlite():
     """Migre les clés API de config.json vers SQLite (une seule fois)."""

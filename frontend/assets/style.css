@@ -36,6 +36,29 @@ body {
   overflow: hidden;
 }
 
+/* Back bar pour pages secondaires */
+.back-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sidebar);
+  flex-shrink: 0;
+}
+.back-link {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  font-weight: 600;
+}
+.back-link:hover { color: var(--accent); }
+.back-page-title {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 #app-layout {
   display: flex;
   height: 100vh;

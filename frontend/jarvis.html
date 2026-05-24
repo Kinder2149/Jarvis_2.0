@@ -67,6 +67,13 @@
       background: #4ade80;
       box-shadow: 0 0 5px #4ade80;
     }
+    #jnav-dot.thinking {
+      animation: dot-pulse 0.8s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%,100% { box-shadow: 0 0 5px #4ade80; opacity: 1; }
+      50%      { box-shadow: 0 0 12px #4ade80, 0 0 20px #4ade80; opacity: 0.7; }
+    }
 
     /* Menu dropdown nav */
     #jnav-menu-btn {
@@ -120,23 +127,89 @@
     }
 
     /* ═══════════════════════════════════════════════════════
-       LEFT PANEL
+       LEFT SIDEBAR — Conversations
        ═══════════════════════════════════════════════════════ */
-    #jleft {
-      width: 340px;
+    #jleft-sidebar {
+      width: 240px;
       flex-shrink: 0;
       border-right: 1px solid var(--border);
       background: var(--bg-sidebar);
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      transition: width 0.25s ease;
+      position: relative;
+    }
+    #jleft-sidebar.sidebar--collapsed {
+      width: 40px;
+    }
+    #jleft-sidebar.sidebar--collapsed .jleft-content { display: none; }
+    .jleft-content {
+      flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
     }
-    #jleft::-webkit-scrollbar { width: 4px; }
-    #jleft::-webkit-scrollbar-track { background: transparent; }
-    #jleft::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .jleft-content::-webkit-scrollbar { width: 4px; }
+    .jleft-content::-webkit-scrollbar-track { background: transparent; }
+    .jleft-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    /* Hero */
+    #jleft-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .jleft-brand-mini {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .jsidebar-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .jsidebar-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    #jleft-sidebar.sidebar--collapsed #jleft-header { display: none; }
+    #jleft-sidebar.sidebar--collapsed #jleft-toggle { right: auto; left: 50%; transform: translateX(-50%); }
+    #jright-sidebar.sidebar--collapsed #jright-toggle { left: 50%; transform: translateX(-50%); }
+
+    /* ═══════════════════════════════════════════════════════
+       RIGHT SIDEBAR — Stats + Agents
+       ═══════════════════════════════════════════════════════ */
+    #jright-sidebar {
+      width: 360px;
+      flex-shrink: 0;
+      border-left: 1px solid var(--border);
+      background: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.25s ease;
+      position: relative;
+    }
+    #jright-sidebar.sidebar--collapsed {
+      width: 40px;
+    }
+    #jright-sidebar.sidebar--collapsed .jright-content { display: none; }
+    .jright-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .jright-content::-webkit-scrollbar { width: 4px; }
+    .jright-content::-webkit-scrollbar-track { background: transparent; }
+    .jright-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* Hero stats */
     #jleft-hero {
       padding: 1.35rem 1.25rem 1.1rem;
       border-bottom: 1px solid var(--border);
@@ -220,7 +293,7 @@
       border: 1px solid rgba(91,142,240,0.25);
       border-radius: 12px;
       padding: 0.85rem;
-      cursor: pointer;
+      cursor: default;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -304,7 +377,152 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.55rem;
-      padding: 0 1.25rem 1.5rem;
+      padding: 0 1.25rem 1rem;
+    }
+
+    /* Zone terminal agent */
+    #jagent-terminal {
+      margin: 0 1.25rem 1.5rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      max-height: 45vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #jterm-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+    #jterm-agent-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .jterm-MENTOR { background: rgba(245,158,11,0.13); color: #f59e0b; border-top: 2px solid #f59e0b; }
+    .jterm-FORGE { background: rgba(249,115,22,0.13); color: #f97316; border-top: 2px solid #f97316; }
+    .jterm-SENTINELLE { background: rgba(45,212,191,0.13); color: #2dd4bf; border-top: 2px solid #2dd4bf; }
+    .jterm-ATELIER { background: rgba(232,121,249,0.13); color: #e879f9; border-top: 2px solid #e879f9; }
+    .jterm-MEDIA { background: rgba(239,68,68,0.13); color: #ef4444; border-top: 2px solid #ef4444; }
+    #jterm-title {
+      flex: 1;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    #jterm-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      transition: border-color 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    #jterm-close:hover { border-color: #f87171; color: #f87171; }
+    #jterm-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.8rem 0.9rem;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+    #jterm-body::-webkit-scrollbar { width: 4px; }
+    #jterm-body::-webkit-scrollbar-track { background: transparent; }
+    #jterm-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .jterm-empty {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+    }
+    .jterm-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .jterm-item-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+    .jterm-item-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+    .jterm-item-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .jterm-btn {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .jterm-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .jterm-btn-success { border-color: #4ade80; color: #4ade80; }
+    .jterm-btn-success:hover { background: rgba(74,222,128,0.1); }
+    .jterm-btn-danger { border-color: #f87171; color: #f87171; }
+    .jterm-btn-danger:hover { background: rgba(248,113,113,0.1); }
+    .jterm-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.3rem;
+    }
+    .jterm-badge-RUNNING { background: rgba(249,115,22,0.13); color: #f97316; }
+    .jterm-badge-WAITING_VALIDATION { background: rgba(245,158,11,0.13); color: #f59e0b; }
+    .jterm-badge-COMPLETED { background: rgba(74,222,128,0.13); color: #4ade80; }
+    .jterm-badge-FAILED { background: rgba(248,113,113,0.13); color: #f87171; }
+    .jterm-badge-OUVERTE { background: rgba(100,116,139,0.13); color: #94a3b8; }
+    .jterm-badge-EN_COURS { background: rgba(249,115,22,0.13); color: #f97316; }
+    .jterm-badge-EN_FIGEMENT { background: rgba(250,204,21,0.13); color: #facc15; }
+    .jterm-badge-FIGEE { background: rgba(74,222,128,0.13); color: #4ade80; }
+    .jterm-badge-ABANDONNEE { background: rgba(100,116,139,0.13); color: #64748b; }
+    .jagent-card-alert {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+      width: 16px;
+      height: 16px;
+      background: #f59e0b;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(245,158,11,0.4);
     }
 
     /* Agent cards */
@@ -552,9 +770,57 @@
       border-top: 1px solid var(--border);
       background: var(--bg-sidebar);
       flex-shrink: 0;
-      display: flex; flex-direction: column; gap: 0.3rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
     }
     #jchat-row { display: flex; gap: 0.5rem; align-items: flex-end; }
+
+    /* Dropdown sélecteur agent */
+    #jagent-selector-wrap {
+      position: relative;
+    }
+    #jagent-selector-btn {
+      font-size: 0.72rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+    }
+    #jagent-selector-btn:hover { border-color: var(--accent); }
+    #jagent-selector-dropdown {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 0.3rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.3rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.05rem;
+      z-index: 50;
+      min-width: 160px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    #jagent-selector-dropdown.open { display: flex; }
+    .jagent-selector-item {
+      font-size: 0.75rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .jagent-selector-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .jagent-selector-item.active { background: var(--accent-dim); color: var(--accent); }
     #jchat-input {
       flex: 1; background: var(--bg-input);
       border: 1px solid var(--border); border-radius: 10px;
@@ -585,10 +851,19 @@
     .jfreeze span { flex: 1; }
 
     /* ═══════════════════════════════════════════════════════
-       LISTE CONVERSATIONS
+       LISTE CONVERSATIONS (sidebar gauche)
        ═══════════════════════════════════════════════════════ */
+    #jconv-section-label {
+      padding: 0.9rem 1rem 0.45rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
     #jconv-list {
-      padding: 0 1.25rem 1.5rem;
+      padding: 0 1rem 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
@@ -825,18 +1100,21 @@
       <span class="jnav-tagline">Multi-Agent Platform</span>
     </div>
     <div class="jnav-status">
-      <span class="jnav-dot"></span>
-      5 actifs · 24/7
+      <span class="jnav-dot" id="jnav-dot"></span>
+      <span id="jnav-agents-count">5 agents · 24/7</span>
     </div>
     <button id="jnav-monitor-btn" onclick="togglePipelineMonitor()">⚙ Pipelines</button>
     <button id="jnav-menu-btn" onclick="toggleNavMenu()">☰ Menu</button>
   </nav>
 
 <div id="jnav-dropdown">
-  <a href="conversations.html" class="jnav-dd-item">💬 Conversations</a>
+  <a href="conversations.html"  class="jnav-dd-item">💬 Conversations</a>
   <div class="jnav-dd-sep"></div>
-  <a href="index.html"         class="jnav-dd-item">🏠 Dashboard</a>
-  <a href="settings.html"      class="jnav-dd-item">⚙️ Paramètres</a>
+  <a href="sentinelle.html"     class="jnav-dd-item">🛡️ Sentinelle</a>
+  <a href="atelier.html"        class="jnav-dd-item">🏭 Atelier</a>
+  <div class="jnav-dd-sep"></div>
+  <a href="jarvis.html"         class="jnav-dd-item">🏠 Accueil JARVIS</a>
+  <a href="settings.html"       class="jnav-dd-item">⚙️ Paramètres</a>
 </div>
 
 <!-- PIPELINE MONITOR OVERLAY -->
@@ -854,143 +1132,17 @@
   <!-- BODY SPLIT -->
   <div id="jarvis-body">
 
-    <!-- ══ LEFT PANEL ══ -->
-    <div id="jleft">
-
-      <!-- Hero -->
-      <div id="jleft-hero">
-        <div class="jleft-brand">
-          <span class="jleft-logo">⚡ JARVIS</span>
-          <div class="jleft-online">
-            <span class="jleft-online-dot"></span>
-            5 agents · 24/7
-          </div>
-        </div>
-        <h1 class="jleft-title">Ton équipe IA,<br><em>sous la main.</em></h1>
-        <div class="jleft-stats">
-          <div class="jleft-stat">
-            <span class="jleft-stat-val" id="jstat-sessions">—</span>
-            <span class="jleft-stat-lbl">sessions</span>
-          </div>
-          <div class="jleft-stat-sep"></div>
-          <div class="jleft-stat">
-            <span class="jleft-stat-val" id="jstat-livrables">—</span>
-            <span class="jleft-stat-lbl">livrables</span>
-          </div>
-          <div class="jleft-stat-sep"></div>
-          <div class="jleft-stat">
-            <span class="jleft-stat-val">24/7</span>
-            <span class="jleft-stat-lbl">en ligne</span>
-          </div>
-        </div>
+    <!-- ══ LEFT SIDEBAR — Conversations ══ -->
+    <div id="jleft-sidebar">
+      <button class="jsidebar-toggle" id="jleft-toggle" onclick="toggleLeftSidebar()" style="position:absolute;top:0.75rem;right:0.75rem;z-index:10;">←</button>
+      <div id="jleft-header">
+        <span class="jleft-brand-mini">⚡ JARVIS</span>
       </div>
-
-      <!-- JARVIS card — featured, horizontale -->
-      <div id="jcard-JARVIS" class="jagent-card jagent-card--active"
-           onclick="selectAgent('JARVIS')">
-        <img src="assets/agents/Jarvis1.png" alt="JARVIS" class="jcard-j-img">
-        <div class="jcard-j-info">
-          <span class="jcard-j-label">Orchestrateur</span>
-          <div class="jcard-j-name">JARVIS</div>
-          <div class="jcard-j-stat">
-            <span class="jdot-active"></span>
-            <span>En ligne · route automatiquement</span>
-          </div>
-        </div>
+      <div class="jleft-content">
+        <div id="jconv-section-label" style="display:none">Conversations récentes</div>
+        <div id="jconv-list"></div>
       </div>
-
-      <!-- Section 4 agents -->
-      <div class="jagents-section-label">Ton équipe</div>
-      <div id="jagents-grid">
-
-        <!-- MENTOR -->
-        <div class="jagent-card" id="jcard-MENTOR"
-             style="--ac:#f59e0b;--ac-dim:rgba(245,158,11,0.2)"
-             onclick="selectAgent('MENTOR')">
-          <div class="jagent-card-img">
-            <img src="assets/agents/Mentor1.png" alt="MENTOR">
-          </div>
-          <span class="jagent-card-label">Mentor</span>
-          <span class="jagent-card-role">Stratège</span>
-          <div class="jagent-card-stat">
-            <span class="jstat-dot idle" id="dot-MENTOR"></span>
-            <span id="stat-MENTOR">Chargement…</span>
-          </div>
-          <a href="mission.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Réflexions</a>
-        </div>
-
-        <!-- FORGE -->
-        <div class="jagent-card" id="jcard-FORGE"
-             style="--ac:#f97316;--ac-dim:rgba(249,115,22,0.2)"
-             onclick="selectAgent('FORGE')">
-          <div class="jagent-card-img">
-            <img src="assets/agents/Forge1.png" alt="FORGE">
-          </div>
-          <span class="jagent-card-label">Forge</span>
-          <span class="jagent-card-role">Exécuteur</span>
-          <div class="jagent-card-stat">
-            <span class="jstat-dot idle" id="dot-FORGE"></span>
-            <span id="stat-FORGE">Chargement…</span>
-          </div>
-          <a href="code-projects.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Projets</a>
-        </div>
-
-        <!-- SENTINELLE -->
-        <div class="jagent-card" id="jcard-SENTINELLE"
-             style="--ac:#2dd4bf;--ac-dim:rgba(45,212,191,0.2)"
-             onclick="selectAgent('SENTINELLE')">
-          <div class="jagent-card-img">
-            <img src="assets/agents/Sentinelle1.png" alt="SENTINELLE">
-          </div>
-          <span class="jagent-card-label">Sentinelle</span>
-          <span class="jagent-card-role">Analyste</span>
-          <div class="jagent-card-stat">
-            <span class="jstat-dot idle" id="dot-SENTINELLE"></span>
-            <span id="stat-SENTINELLE">Chargement…</span>
-          </div>
-          <a href="sentinelle.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Portfolio</a>
-        </div>
-
-        <!-- ATELIER -->
-        <div class="jagent-card" id="jcard-ATELIER"
-             style="--ac:#e879f9;--ac-dim:rgba(232,121,249,0.2)"
-             onclick="selectAgent('ATELIER')">
-          <div class="jagent-card-img">
-            <img src="assets/agents/Atelier1.png" alt="ATELIER">
-          </div>
-          <span class="jagent-card-label">Atelier</span>
-          <span class="jagent-card-role">Créateur</span>
-          <div class="jagent-card-stat">
-            <span class="jstat-dot idle" id="dot-ATELIER"></span>
-            <span id="stat-ATELIER">Chargement…</span>
-          </div>
-          <a href="atelier.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Prospects</a>
-        </div>
-
-        <!-- MEDIA -->
-        <div class="jagent-card" id="jcard-MEDIA"
-             style="--ac:#ef4444;--ac-dim:rgba(239,68,68,0.2)"
-             onclick="selectAgent('MEDIA')">
-          <div class="jagent-card-img">
-            <img src="assets/agents/Media1.png" alt="MEDIA">
-          </div>
-          <span class="jagent-card-label">Media</span>
-          <span class="jagent-card-role">Créateur Media</span>
-          <div class="jagent-card-stat">
-            <span class="jstat-dot idle" id="dot-MEDIA"></span>
-            <span id="stat-MEDIA">Chargement…</span>
-          </div>
-        </div>
-
-      </div><!-- /#jagents-grid -->
-
-      <!-- Conversations récentes -->
-      <div class="jagents-section-label" id="jconv-section-label" style="display:none">
-        Conversations récentes
-      </div>
-      <div id="jconv-list"></div>
-
-    </div><!-- /#jleft -->
+    </div>
 
     <!-- ══ CHAT PANEL ══ -->
     <div id="jchat-panel">
@@ -1015,11 +1167,24 @@
       <div id="jchat-messages">
         <div id="jchat-empty">
           <div class="jchat-empty-icon">JARVIS</div>
-          <span>Sélectionnez un agent à gauche et posez votre première question</span>
+          <span>Parlez à JARVIS ou choisissez un agent via le sélecteur ci-dessous</span>
         </div>
       </div>
 
       <div id="jchat-input-zone">
+        <div id="jagent-selector-wrap">
+          <button id="jagent-selector-btn" onclick="toggleAgentSelector()">
+            ⚡ JARVIS ▾
+          </button>
+          <div id="jagent-selector-dropdown">
+            <div class="jagent-selector-item active" data-agent="JARVIS" onclick="selectAgentFromDropdown('JARVIS')">⚡ JARVIS (auto)</div>
+            <div class="jagent-selector-item" data-agent="MENTOR" onclick="selectAgentFromDropdown('MENTOR')">🧠 MENTOR</div>
+            <div class="jagent-selector-item" data-agent="FORGE" onclick="selectAgentFromDropdown('FORGE')">⚙️ FORGE</div>
+            <div class="jagent-selector-item" data-agent="SENTINELLE" onclick="selectAgentFromDropdown('SENTINELLE')">🛡️ SENTINELLE</div>
+            <div class="jagent-selector-item" data-agent="ATELIER" onclick="selectAgentFromDropdown('ATELIER')">💼 ATELIER</div>
+            <div class="jagent-selector-item" data-agent="MEDIA" onclick="selectAgentFromDropdown('MEDIA')">🎨 MEDIA</div>
+          </div>
+        </div>
         <div id="jchat-row">
           <textarea id="jchat-input" rows="1" placeholder="Message à JARVIS…"></textarea>
           <button id="btn-send">Envoyer →</button>
@@ -1028,6 +1193,144 @@
       </div>
 
     </div><!-- /#jchat-panel -->
+
+    <!-- ══ RIGHT SIDEBAR — Stats + Agents ══ -->
+    <div id="jright-sidebar">
+      <button class="jsidebar-toggle" id="jright-toggle" onclick="toggleRightSidebar()" style="position:absolute;top:0.75rem;left:0.75rem;z-index:10;">→</button>
+      <div class="jright-content">
+
+        <!-- Hero stats -->
+        <div id="jleft-hero">
+          <div class="jleft-brand">
+            <span class="jleft-logo">⚡ JARVIS</span>
+            <div class="jleft-online">
+              <span class="jleft-online-dot"></span>
+              5 agents · 24/7
+            </div>
+          </div>
+          <h1 class="jleft-title">Ton équipe IA,<br><em>sous la main.</em></h1>
+          <div class="jleft-stats">
+            <div class="jleft-stat">
+              <span class="jleft-stat-val" id="jstat-sessions">—</span>
+              <span class="jleft-stat-lbl">sessions</span>
+            </div>
+            <div class="jleft-stat-sep"></div>
+            <div class="jleft-stat">
+              <span class="jleft-stat-val" id="jstat-livrables">—</span>
+              <span class="jleft-stat-lbl">livrables</span>
+            </div>
+            <div class="jleft-stat-sep"></div>
+            <div class="jleft-stat">
+              <span class="jleft-stat-val">24/7</span>
+              <span class="jleft-stat-lbl">en ligne</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- JARVIS card — featured, horizontale -->
+        <div id="jcard-JARVIS" class="jagent-card jagent-card--active">
+          <img src="assets/agents/Jarvis1.png" alt="JARVIS" class="jcard-j-img">
+          <div class="jcard-j-info">
+            <span class="jcard-j-label">Orchestrateur</span>
+            <div class="jcard-j-name">JARVIS</div>
+            <div class="jcard-j-stat">
+              <span class="jdot-active"></span>
+              <span>En ligne · route automatiquement</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4 agents -->
+        <div class="jagents-section-label">Ton équipe</div>
+        <div id="jagents-grid">
+
+          <!-- MENTOR -->
+          <div class="jagent-card" id="jcard-MENTOR"
+               style="--ac:#f59e0b;--ac-dim:rgba(245,158,11,0.2)"
+               onclick="openTerminal('MENTOR')">
+            <div class="jagent-card-img">
+              <img src="assets/agents/Mentor1.png" alt="MENTOR">
+            </div>
+            <span class="jagent-card-label">Mentor</span>
+            <span class="jagent-card-role">Stratège</span>
+            <div class="jagent-card-stat">
+              <span class="jstat-dot idle" id="dot-MENTOR"></span>
+              <span id="stat-MENTOR">Chargement…</span>
+            </div>
+            <a href="board-mentor.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
+          </div>
+
+          <!-- FORGE -->
+          <div class="jagent-card" id="jcard-FORGE"
+               style="--ac:#f97316;--ac-dim:rgba(249,115,22,0.2)"
+               onclick="openTerminal('FORGE')">
+            <div class="jagent-card-img">
+              <img src="assets/agents/Forge1.png" alt="FORGE">
+            </div>
+            <span class="jagent-card-label">Forge</span>
+            <span class="jagent-card-role">Exécuteur</span>
+            <div class="jagent-card-stat">
+              <span class="jstat-dot idle" id="dot-FORGE"></span>
+              <span id="stat-FORGE">Chargement…</span>
+            </div>
+            <a href="board-forge.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
+          </div>
+
+          <!-- SENTINELLE -->
+          <div class="jagent-card" id="jcard-SENTINELLE"
+               style="--ac:#2dd4bf;--ac-dim:rgba(45,212,191,0.2)"
+               onclick="openTerminal('SENTINELLE')">
+            <div class="jagent-card-img">
+              <img src="assets/agents/Sentinelle1.png" alt="SENTINELLE">
+            </div>
+            <span class="jagent-card-label">Sentinelle</span>
+            <span class="jagent-card-role">Analyste</span>
+            <div class="jagent-card-stat">
+              <span class="jstat-dot idle" id="dot-SENTINELLE"></span>
+              <span id="stat-SENTINELLE">Chargement…</span>
+            </div>
+            <a href="board-sentinelle.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
+          </div>
+
+          <!-- ATELIER -->
+          <div class="jagent-card" id="jcard-ATELIER"
+               style="--ac:#e879f9;--ac-dim:rgba(232,121,249,0.2)"
+               onclick="openTerminal('ATELIER')">
+            <div class="jagent-card-img">
+              <img src="assets/agents/Atelier1.png" alt="ATELIER">
+            </div>
+            <span class="jagent-card-label">Atelier</span>
+            <span class="jagent-card-role">Créateur</span>
+            <div class="jagent-card-stat">
+              <span class="jstat-dot idle" id="dot-ATELIER"></span>
+              <span id="stat-ATELIER">Chargement…</span>
+            </div>
+            <a href="board-atelier.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
+          </div>
+
+          <!-- MEDIA -->
+          <div class="jagent-card" id="jcard-MEDIA"
+               style="--ac:#ef4444;--ac-dim:rgba(239,68,68,0.2)"
+               onclick="openTerminal('MEDIA')">
+            <div class="jagent-card-img">
+              <img src="assets/agents/Media1.png" alt="MEDIA">
+            </div>
+            <span class="jagent-card-label">Media</span>
+            <span class="jagent-card-role">Créateur Media</span>
+            <div class="jagent-card-stat">
+              <span class="jstat-dot idle" id="dot-MEDIA"></span>
+              <span id="stat-MEDIA">Chargement…</span>
+            </div>
+            <a href="board-media.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
+          </div>
+
+        </div><!-- /#jagents-grid -->
+
+        <!-- Zone terminal agent -->
+        <div id="jagent-terminal" style="display:none"></div>
+
+      </div><!-- /.jright-content -->
+    </div><!-- /#jright-sidebar -->
 
   </div><!-- /#jarvis-body -->
 </div><!-- /#jarvis-app -->
@@ -1052,7 +1355,501 @@
     await initConversation();
     loadStats();
     attachEvents();
+    initSidebars();
   });
+
+  // ── Sidebars collapsibles ────────────────────────────────────────────────
+  function initSidebars() {
+    if (localStorage.getItem('jsidebar_version') !== '2') {
+      localStorage.removeItem('jsidebar_left');
+      localStorage.removeItem('jsidebar_right');
+      localStorage.setItem('jsidebar_version', '2');
+    }
+    const leftCollapsed = localStorage.getItem('jsidebar_left') === 'true';
+    const rightCollapsed = localStorage.getItem('jsidebar_right') === 'true';
+    if (leftCollapsed) document.getElementById('jleft-sidebar').classList.add('sidebar--collapsed');
+    if (rightCollapsed) document.getElementById('jright-sidebar').classList.add('sidebar--collapsed');
+    updateSidebarToggles();
+  }
+
+  window.toggleLeftSidebar = function() {
+    const sidebar = document.getElementById('jleft-sidebar');
+    sidebar.classList.toggle('sidebar--collapsed');
+    const collapsed = sidebar.classList.contains('sidebar--collapsed');
+    localStorage.setItem('jsidebar_left', collapsed);
+    updateSidebarToggles();
+  };
+
+  window.toggleRightSidebar = function() {
+    const sidebar = document.getElementById('jright-sidebar');
+    sidebar.classList.toggle('sidebar--collapsed');
+    const collapsed = sidebar.classList.contains('sidebar--collapsed');
+    localStorage.setItem('jsidebar_right', collapsed);
+    updateSidebarToggles();
+  };
+
+  function updateSidebarToggles() {
+    const leftBtn = document.getElementById('jleft-toggle');
+    const leftCollapsed = document.getElementById('jleft-sidebar').classList.contains('sidebar--collapsed');
+    if (leftBtn) leftBtn.textContent = leftCollapsed ? '→' : '←';
+    
+    const rightBtn = document.getElementById('jright-toggle');
+    const rightCollapsed = document.getElementById('jright-sidebar').classList.contains('sidebar--collapsed');
+    if (rightBtn) rightBtn.textContent = rightCollapsed ? '←' : '→';
+  }
+
+  // ── Dropdown sélecteur agent ─────────────────────────────────────────────
+  window.toggleAgentSelector = function() {
+    const dropdown = document.getElementById('jagent-selector-dropdown');
+    dropdown.classList.toggle('open');
+  };
+
+  window.selectAgentFromDropdown = function(name) {
+    userForcedAgent = (name === 'JARVIS') ? null : name;
+    activeAgent = name;
+    _updateAgentUI(name);
+    
+    // Mise à jour du bouton dropdown
+    const btn = document.getElementById('jagent-selector-btn');
+    const icons = { JARVIS: '⚡', MENTOR: '🧠', FORGE: '⚙️', SENTINELLE: '🛡️', ATELIER: '💼', MEDIA: '🎨' };
+    const suffix = (name === 'JARVIS') ? ' (auto)' : '';
+    btn.textContent = (icons[name] || '⚡') + ' ' + name + suffix + ' ▾';
+    
+    // Mise à jour des items actifs
+    document.querySelectorAll('.jagent-selector-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.agent === name);
+    });
+    
+    // Fermer le dropdown
+    document.getElementById('jagent-selector-dropdown').classList.remove('open');
+    document.getElementById('jchat-input').focus();
+  };
+
+  // ── Terminal agent ───────────────────────────────────────────────────────
+  let terminalPollingInterval = null;
+  let currentTerminalAgent = null;
+
+  window.openTerminal = async function(name) {
+    // Arrêter le polling précédent
+    stopTerminalPolling();
+    
+    // Mettre en surbrillance la carte cliquée
+    document.querySelectorAll('.jagent-card').forEach(c => c.classList.remove('jagent-card--active'));
+    const card = document.getElementById('jcard-' + name);
+    if (card) card.classList.add('jagent-card--active');
+    
+    currentTerminalAgent = name;
+    
+    // Afficher le terminal avec structure
+    const terminal = document.getElementById('jagent-terminal');
+    terminal.style.display = 'flex';
+    terminal.className = 'jterm-' + name;
+    
+    const labels = {
+      MENTOR: '🧠 MENTOR',
+      FORGE: '⚙️ FORGE',
+      SENTINELLE: '🛡️ SENTINELLE',
+      ATELIER: '💼 ATELIER',
+      MEDIA: '🎨 MEDIA'
+    };
+    
+    const titles = {
+      MENTOR: 'Réflexions ouvertes',
+      FORGE: 'Pipelines en cours',
+      SENTINELLE: 'Veille active',
+      ATELIER: 'Prospects en pipeline',
+      MEDIA: 'Générations Media'
+    };
+    
+    terminal.innerHTML = `
+      <div id="jterm-header">
+        <span id="jterm-agent-label">${labels[name] || name}</span>
+        <span id="jterm-title">${titles[name] || name}</span>
+        <button id="jterm-close" onclick="closeTerminal()">✕</button>
+      </div>
+      <div id="jterm-body">
+        <div class="jterm-empty">Chargement...</div>
+      </div>
+    `;
+    
+    // Charger le contenu
+    await loadTerminalContent(name);
+    
+    // Démarrer le polling
+    startTerminalPolling(name);
+  };
+
+  window.closeTerminal = function() {
+    stopTerminalPolling();
+    const terminal = document.getElementById('jagent-terminal');
+    terminal.style.display = 'none';
+    terminal.innerHTML = '';
+    currentTerminalAgent = null;
+    
+    // Retirer la surbrillance des cartes
+    document.querySelectorAll('.jagent-card').forEach(c => c.classList.remove('jagent-card--active'));
+  };
+
+  function startTerminalPolling(name) {
+    if (terminalPollingInterval) return;
+    terminalPollingInterval = setInterval(() => {
+      if (currentTerminalAgent === name) {
+        loadTerminalContent(name);
+      }
+    }, 5000);
+  }
+
+  function stopTerminalPolling() {
+    if (terminalPollingInterval) {
+      clearInterval(terminalPollingInterval);
+      terminalPollingInterval = null;
+    }
+  }
+
+  async function loadTerminalContent(name) {
+    const body = document.getElementById('jterm-body');
+    if (!body) return;
+    
+    try {
+      switch(name) {
+        case 'MENTOR':
+          await loadMentorTerminal(body);
+          break;
+        case 'FORGE':
+          await loadForgeTerminal(body);
+          break;
+        case 'SENTINELLE':
+          await loadSentinelleTerminal(body);
+          break;
+        case 'ATELIER':
+          await loadAtelierTerminal(body);
+          break;
+        case 'MEDIA':
+          await loadMediaTerminal(body);
+          break;
+        default:
+          body.innerHTML = '<div class="jterm-empty">Terminal non disponible</div>';
+      }
+    } catch(e) {
+      console.error('[Terminal]', name, e);
+      body.innerHTML = '<div class="jterm-empty" style="color:#f87171">Erreur : ' + e.message + '</div>';
+    }
+  }
+
+  // ── TERMINAL MENTOR ──────────────────────────────────────────────────────
+  async function loadMentorTerminal(body) {
+    const projects = await window.API.getProjects();
+    const reflexions = [];
+    
+    for (const p of projects) {
+      try {
+        const rxs = await window.API.getReflexions(p.id);
+        for (const r of rxs) {
+          if (r.statut !== 'FIGEE' && r.statut !== 'ABANDONNEE') {
+            reflexions.push({ ...r, project_name: p.name || p.nom || `Projet #${p.id}` });
+          }
+        }
+      } catch(_) {}
+    }
+    
+    if (reflexions.length === 0) {
+      body.innerHTML = '<div class="jterm-empty">Aucune réflexion en cours</div>';
+      return;
+    }
+    
+    let html = '';
+    for (const r of reflexions) {
+      const title = r.titre || new Date(r.created_at).toLocaleDateString('fr-FR');
+      html += `
+        <div class="jterm-item">
+          <div class="jterm-item-title">${_esc(r.project_name)}</div>
+          <div class="jterm-item-meta">
+            ${_esc(title)}
+            <span class="jterm-badge jterm-badge-${r.statut}">${r.statut}</span>
+          </div>
+          <div class="jterm-item-actions">
+            <a href="mission.html?session=${r.id}" class="jterm-btn">→ Voir</a>
+          </div>
+        </div>
+      `;
+    }
+    body.innerHTML = html;
+  }
+
+  // ── TERMINAL FORGE ───────────────────────────────────────────────────────
+  async function loadForgeTerminal(body) {
+    const data = await window.API.getJarvisPipelinesOverview(true);
+    const pipelines = data.pipelines || [];
+    
+    if (pipelines.length === 0) {
+      body.innerHTML = '<div class="jterm-empty">Aucun pipeline actif</div>';
+      return;
+    }
+    
+    let html = '';
+    for (const p of pipelines) {
+      const mission = p.mission_title || `Pipeline #${p.id}`;
+      const project = p.project_name || `Projet #${p.project_id}`;
+      const stepInfo = p.current_step_name
+        ? `Étape ${(p.current_step_index ?? 0) + 1}/${p.total_steps ?? '?'} — ${p.current_step_name}`
+        : `${(p.current_step_index ?? 0) + 1}/${p.total_steps ?? '?'} étapes`;
+      
+      html += `
+        <div class="jterm-item">
+          <div class="jterm-item-title">${_esc(mission)}</div>
+          <div class="jterm-item-meta">
+            ${_esc(project)}
+            <span class="jterm-badge jterm-badge-${p.status}">${p.status}</span>
+          </div>
+          <div class="jterm-item-meta">${_esc(stepInfo)}</div>
+          <div class="jterm-item-actions">
+      `;
+      
+      if (p.status === 'WAITING_VALIDATION' && p.current_step_id) {
+        html += `
+            <button class="jterm-btn jterm-btn-success" onclick="validateForgeStep(${p.id}, ${p.current_step_id}, true)">✅ Valider</button>
+            <button class="jterm-btn jterm-btn-danger" onclick="validateForgeStep(${p.id}, ${p.current_step_id}, false)">✕ Rejeter</button>
+        `;
+      }
+      
+      html += `
+            <a href="mission.html?session=${p.id}" class="jterm-btn">→ Vue détaillée</a>
+          </div>
+        </div>
+      `;
+    }
+    body.innerHTML = html;
+  }
+
+  window.validateForgeStep = async function(sessionId, stepId, approved) {
+    try {
+      await window.API.validateStep(sessionId, stepId, { approved });
+      await loadTerminalContent('FORGE');
+    } catch(e) {
+      alert('Erreur : ' + e.message);
+    }
+  };
+
+  // ── TERMINAL SENTINELLE ──────────────────────────────────────────────────
+  async function loadSentinelleTerminal(body) {
+    try {
+      const [alertes, actifCount] = await Promise.all([
+        window.API.getSentinelleAlertes().catch(() => []),
+        window.API.getSentinelleActifCount().catch(() => ({ count: 0 }))
+      ]);
+      
+      const alertesNonLues = alertes.filter(a => !a.lu);
+      const actifs = actifCount.count || 0;
+      
+      if (alertesNonLues.length === 0) {
+        body.innerHTML = `
+          <div class="jterm-empty">Aucune alerte active</div>
+          <div class="jterm-item">
+            <div class="jterm-item-meta">${actifs} position${actifs > 1 ? 's' : ''} active${actifs > 1 ? 's' : ''}</div>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      for (const alerte of alertesNonLues) {
+        const titre = alerte.titre || alerte.message || 'Alerte';
+        const message = alerte.message || '';
+        html += `
+          <div class="jterm-item">
+            <div class="jterm-item-title">${_esc(titre)}</div>
+            ${message && message !== titre ? `<div class="jterm-item-meta">${_esc(message)}</div>` : ''}
+            <div class="jterm-item-actions">
+              <button class="jterm-btn jterm-btn-success" onclick="markSentinelleAlerteLue(${alerte.id})">✓ Lue</button>
+            </div>
+          </div>
+        `;
+      }
+      
+      html += `
+        <div class="jterm-item">
+          <div class="jterm-item-meta">${actifs} position${actifs > 1 ? 's' : ''} active${actifs > 1 ? 's' : ''}</div>
+        </div>
+      `;
+      
+      body.innerHTML = html;
+    } catch(e) {
+      body.innerHTML = '<div class="jterm-empty">Données non disponibles</div>';
+    }
+  }
+
+  window.markSentinelleAlerteLue = async function(alerteId) {
+    try {
+      await window.API.markAlerteLue(alerteId);
+      await loadTerminalContent('SENTINELLE');
+    } catch(e) {
+      alert('Erreur : ' + e.message);
+    }
+  };
+
+  // ── TERMINAL ATELIER ─────────────────────────────────────────────────────
+  async function loadAtelierTerminal(body) {
+    const prospects = await window.API.getProspects();
+    const actifs = [];
+    
+    for (const p of prospects) {
+      try {
+        const detail = await window.API.getProspect(p.id);
+        if (detail.session && ['RUNNING', 'WAITING_VALIDATION'].includes(detail.session.status)) {
+          actifs.push(detail);
+        }
+      } catch(_) {}
+    }
+    
+    if (actifs.length === 0) {
+      body.innerHTML = '<div class="jterm-empty">Aucun prospect en pipeline</div>';
+      return;
+    }
+    
+    let html = '';
+    for (const p of actifs) {
+      const prospect = p.prospect;  // { id, nom, url, ... }
+      const session = p.session;
+      const currentStep = session.steps?.find(s => s.step_index === session.current_step_index);
+      const stepInfo = currentStep
+        ? `Étape ${session.current_step_index + 1}/13 — ${currentStep.step_display_name}`
+        : `Étape ${session.current_step_index + 1}/13`;
+
+      html += `
+        <div class="jterm-item">
+          <div class="jterm-item-title">${_esc(prospect.nom)}</div>
+          <div class="jterm-item-meta">
+            ${prospect.url ? _esc(prospect.url) : ''}
+            <span class="jterm-badge jterm-badge-${session.status}">${session.status}</span>
+          </div>
+          <div class="jterm-item-meta">${_esc(stepInfo)}</div>
+          <div class="jterm-item-actions">
+      `;
+
+      if (currentStep && currentStep.status === 'WAITING_VALIDATION') {
+        if (currentStep.output_type === 'checkpoint') {
+          html += `
+            <button class="jterm-btn jterm-btn-success" onclick="validateAtelierStep(${session.id}, ${currentStep.id}, true)">✅ Valider — lancer la génération</button>
+            <button class="jterm-btn jterm-btn-danger" onclick="validateAtelierStep(${session.id}, ${currentStep.id}, false)">✕ Refuser</button>
+          `;
+        } else if (currentStep.output_type === 'form') {
+          html += `
+            <button class="jterm-btn" onclick="openAtelierFormModal(${prospect.id}, ${session.id}, ${currentStep.id})">📋 Remplir la fiche terrain →</button>
+          `;
+        }
+      }
+
+      html += `
+            <a href="atelier.html?prospect_id=${prospect.id}" class="jterm-btn">→ Détails</a>
+          </div>
+        </div>
+      `;
+    }
+    body.innerHTML = html;
+  }
+
+  window.validateAtelierStep = async function(sessionId, stepId, approved) {
+    try {
+      await window.API.validateStep(sessionId, stepId, { approved });
+      await loadTerminalContent('ATELIER');
+    } catch(e) {
+      alert('Erreur : ' + e.message);
+    }
+  };
+
+  window.openAtelierFormModal = async function(prospectId, sessionId, stepId) {
+    // getProspect retourne { prospect: {...}, session: {...} }
+    const { prospect } = await window.API.getProspect(prospectId);
+    
+    const formHtml = `
+      <div style="padding:1rem">
+        <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:700">Fiche terrain — ${_esc(prospect.nom)}</h3>
+        <form id="atelier-terrain-form" style="display:flex;flex-direction:column;gap:0.8rem">
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.3rem">Nom établissement</label>
+            <input type="text" name="nom" value="${_esc(prospect.nom || '')}" 
+              style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary)">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.3rem">URL</label>
+            <input type="url" name="url" value="${_esc(prospect.url || '')}"
+              style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary)">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.3rem">Observations terrain</label>
+            <textarea name="observations" rows="3"
+              style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);resize:vertical">${_esc(prospect.observations || '')}</textarea>
+          </div>
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.3rem">Horaires</label>
+            <input type="text" name="horaires" value="${_esc(prospect.horaires || '')}"
+              style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary)">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.3rem">Menu (aperçu)</label>
+            <textarea name="menu" rows="2"
+              style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);resize:vertical">${_esc(prospect.menu || '')}</textarea>
+          </div>
+          <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:0.5rem">
+            <button type="button" onclick="window.closeModal()" 
+              style="padding:0.5rem 1rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);border-radius:6px;cursor:pointer">
+              Annuler
+            </button>
+            <button type="submit"
+              style="padding:0.5rem 1rem;border:none;background:var(--accent);color:#fff;border-radius:6px;cursor:pointer;font-weight:600">
+              Valider et continuer
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+    
+    // showModal attend (title, bodyHTML, actions[]) — on crée l'overlay directement
+    // pour conserver le submit natif du formulaire (les boutons sont dans le form)
+    const existingOverlay = document.querySelector('.modal-overlay');
+    if (existingOverlay) existingOverlay.remove();
+    const _overlay = document.createElement('div');
+    _overlay.className = 'modal-overlay';
+    const _modal = document.createElement('div');
+    _modal.className = 'modal';
+    const _body = document.createElement('div');
+    _body.className = 'modal-body';
+    _body.style.cssText = 'max-height:78vh;overflow-y:auto;padding:0';
+    _body.innerHTML = formHtml;
+    _modal.appendChild(_body);
+    _overlay.appendChild(_modal);
+    document.body.appendChild(_overlay);
+    _overlay.addEventListener('click', e => { if (e.target === _overlay) window.closeModal(); });
+
+    // Attacher l'event submit
+    document.getElementById('atelier-terrain-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        await window.API.validateStep(sessionId, stepId, data);
+        window.closeModal();
+        await loadTerminalContent('ATELIER');
+      } catch(err) {
+        alert('Erreur : ' + err.message);
+      }
+    });
+  };
+
+  // ── TERMINAL MEDIA ───────────────────────────────────────────────────────
+  async function loadMediaTerminal(body) {
+    if (mediaPollingInterval !== null) {
+      body.innerHTML = `
+        <div class="jterm-item">
+          <div class="jterm-item-title">⏳ Génération en cours...</div>
+          <div class="jterm-item-meta">MEDIA travaille. Le résultat apparaîtra dans le chat.</div>
+        </div>
+      `;
+    } else {
+      body.innerHTML = '<div class="jterm-empty">Aucune génération active</div>';
+    }
+  }
 
   // ── Helper UI ────────────────────────────────────────────────────────────
   function _updateAgentUI(name) {
@@ -1421,6 +2218,9 @@
   function startForgePolling(pipelineId, label) {
     if (forgePollingInterval) return;
     showForgeBanner(label || 'FORGE');
+    if (label === 'FORGE') toggleDot('dot-FORGE', true);
+    if (label === 'ATELIER') toggleDot('dot-ATELIER', true);
+    if (label === 'MEDIA') toggleDot('dot-MEDIA', true);
     forgePollingInterval = setInterval(async () => {
       if (!convId) return;
       try {
@@ -1525,6 +2325,7 @@
       mediaPollingInterval = null;
       mediaPollingStartTime = null;
     }
+    toggleDot('dot-MEDIA', false);
     hideForgeBanner();
   }
 
@@ -1533,6 +2334,8 @@
       clearInterval(forgePollingInterval);
       forgePollingInterval = null;
     }
+    toggleDot('dot-FORGE', false);
+    toggleDot('dot-ATELIER', false);
     hideForgeBanner();
   }
 
@@ -1604,11 +2407,13 @@
 
     appendMsg('user', content);
     appendTyping();
+    document.getElementById('jnav-dot')?.classList.add('thinking');
 
     try {
       const forceAgent = userForcedAgent;
       const res = await window.API.sendJarvisMessage(convId, content, forceAgent);
       removeTyping();
+      document.getElementById('jnav-dot')?.classList.remove('thinking');
       appendMsg('assistant', res.content, true, res.agent, res.instance_ref || null);
 
       if (res.suggest_freeze && res.freeze_reason) showFreeze(res.freeze_reason, res.instance_ref || null);
@@ -1644,11 +2449,13 @@
       }
     } catch (e) {
       removeTyping();
+      document.getElementById('jnav-dot')?.classList.remove('thinking');
       appendMsg('assistant', 'Erreur : ' + e.message);
     } finally {
       isSending = false;
       document.getElementById('btn-send').disabled = false;
       input.focus();
+      loadStats();
     }
   }
 
@@ -1736,10 +2543,16 @@
       input.style.height = Math.min(input.scrollHeight, 110) + 'px';
     });
 
-    // Fermer le dropdown nav si clic en dehors
+    // Fermer les dropdowns si clic en dehors
     document.addEventListener('click', function(e) {
+      // Dropdown nav
       if (!e.target.closest('#jnav-menu-btn') && !e.target.closest('#jnav-dropdown')) {
         const dd = document.getElementById('jnav-dropdown');
+        if (dd) dd.classList.remove('open');
+      }
+      // Dropdown agent selector
+      if (!e.target.closest('#jagent-selector-btn') && !e.target.closest('#jagent-selector-dropdown')) {
+        const dd = document.getElementById('jagent-selector-dropdown');
         if (dd) dd.classList.remove('open');
       }
     });
@@ -1786,21 +2599,34 @@
     // ATELIER
     try {
       const prospects = await window.API.getProspects();
-      const n = prospects.filter(p => p.statut !== 'conclu').length;
-      setEl('stat-ATELIER', n + ' prospect' + (n !== 1 ? 's' : '') + ' actif' + (n !== 1 ? 's' : ''));
-      toggleDot('dot-ATELIER', n > 0);
+      let atelierRunning = 0;
+      for (const p of prospects.slice(0, 20)) {
+        try {
+          const detail = await window.API.getProspect(p.id);
+          if (detail.session && ['RUNNING', 'WAITING_VALIDATION'].includes(detail.session.status)) {
+            atelierRunning++;
+          }
+        } catch(_) {}
+      }
+      setEl('stat-ATELIER', atelierRunning > 0
+        ? atelierRunning + ' prospect' + (atelierRunning > 1 ? 's' : '') + ' en pipeline'
+        : 'Aucun pipeline actif');
+      toggleDot('dot-ATELIER', atelierRunning > 0);
     } catch (_) { setEl('stat-ATELIER', '—'); }
 
     // MEDIA
     try {
       const mediaStats = await fetch('/api/media/stats').then(r => r.json());
       const total = mediaStats.total || 0;
-      const label = total > 0
-        ? total + ' génération' + (total !== 1 ? 's' : '')
-        : 'Aucune génération';
+      toggleDot('dot-MEDIA', mediaPollingInterval !== null);
+      const label = mediaPollingInterval !== null ? 'Génération en cours...' :
+        (total > 0 ? total + ' génération' + (total !== 1 ? 's' : '') : 'Aucune génération');
       setEl('stat-MEDIA', label);
-      toggleDot('dot-MEDIA', total > 0);
     } catch (_) { setEl('stat-MEDIA', '—'); }
+
+    const activeAgents = ['dot-MENTOR','dot-FORGE','dot-SENTINELLE','dot-ATELIER','dot-MEDIA']
+      .filter(id => { const el = document.getElementById(id); return el && !el.classList.contains('idle'); }).length;
+    setEl('jnav-agents-count', activeAgents > 0 ? activeAgents + ' actif' + (activeAgents > 1 ? 's' : '') + ' · 24/7' : '5 agents · standby');
   }
 
   function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }

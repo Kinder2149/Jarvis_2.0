@@ -476,7 +476,7 @@
     try {
       await window.API.deleteConversation(conversationId);
       if (window.showToast) window.showToast('Conversation supprimée');
-      location.href = 'index.html';
+      location.href = 'jarvis.html';
     } catch (error) {
       console.error('Erreur suppression:', error);
       if (window.showToast) window.showToast('Erreur suppression', 'error');

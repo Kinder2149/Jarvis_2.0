@@ -70,7 +70,19 @@
       "Bash(curl -s http://localhost:8000/health)",
       "Bash(curl -s http://localhost:8000/)",
       "Bash(git fetch *)",
-      "Bash(git worktree *)"
+      "Bash(git worktree *)",
+      "Bash(Test-Path \"C:\\\\DEV\\\\PROJETS\\\\intelligence_artificielle\\\\Jarvis-2.0\\\\frontend\\\\index.html\")",
+      "Bash(curl -s http://localhost:8000/api/config)",
+      "Bash(curl -s http://localhost:8000/api/jarvis/conversations)",
+      "Bash(curl -s http://localhost:8000/api/media/stats)",
+      "Bash(curl -s http://localhost:8000/api/media/history?limit=5)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-forge.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-mentor.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-sentinelle.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-atelier.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/app/board-media.html)",
+      "Bash(curl -s \"http://localhost:8000/api/media/history?limit=5\")",
+      "Bash(curl -s \"http://localhost:8000/api/media/history?limit=3\")"
     ]
   }
 }
