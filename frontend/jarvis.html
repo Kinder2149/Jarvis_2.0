@@ -702,21 +702,21 @@
       flex-direction: column;
       gap: 0.7rem;
     }
-    .jmsg { display: flex; gap: 0.65rem; max-width: 720px; }
+    .jmsg { display: flex; gap: 0.75rem; max-width: 840px; }
     .jmsg--user { align-self: flex-end; flex-direction: row-reverse; }
     .jmsg-avatar {
-      width: 26px; height: 26px;
+      width: 32px; height: 32px;
       border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; font-weight: 700;
+      font-size: 0.75rem; font-weight: 700;
     }
     .jmsg--user .jmsg-avatar      { background: var(--accent-dim); color: var(--accent); }
     .jmsg--assistant .jmsg-avatar { background: rgba(91,142,240,0.10); color: var(--accent); border: 1px solid var(--border); }
     .jmsg-wrap { display: flex; flex-direction: column; gap: 0.2rem; }
     .jmsg-badge {
       display: inline-flex; align-items: center;
-      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.09em;
-      text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 20px;
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 20px;
     }
     .badge-JARVIS     { background: rgba(91,142,240,0.13);  color: #5b8ef0; }
     .badge-MENTOR     { background: rgba(245,158,11,0.13);  color: #f59e0b; }
@@ -724,13 +724,14 @@
     .badge-SENTINELLE { background: rgba(45,212,191,0.13);  color: #2dd4bf; }
     .badge-ATELIER    { background: rgba(232,121,249,0.13); color: #e879f9; }
     .badge-MEDIA      { background: rgba(239,68,68,0.13);   color: #ef4444; }
+    .badge-DISC       { background: rgba(34,197,94,0.13);  color: #22c55e; }
     .jmsg-bubble {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.6rem 0.9rem;
-      font-size: 0.86rem;
-      line-height: 1.65;
+      border-radius: 12px;
+      padding: 0.85rem 1.15rem;
+      font-size: 0.94rem;
+      line-height: 1.72;
       white-space: pre-wrap;
       word-break: break-word;
     }
@@ -918,9 +919,9 @@
     .jconv-del:hover { color: #f87171; }
 
     /* Markdown dans les bulles */
-    .jmsg-bubble h2.jmd-h { font-size: 0.95rem; font-weight: 700; margin: 0.5rem 0 0.2rem; color: var(--text-primary); }
-    .jmsg-bubble h3.jmd-h { font-size: 0.88rem; font-weight: 700; margin: 0.4rem 0 0.15rem; color: var(--text-primary); }
-    .jmsg-bubble h4.jmd-h { font-size: 0.82rem; font-weight: 600; margin: 0.3rem 0 0.1rem; color: var(--text-muted); }
+    .jmsg-bubble h2.jmd-h { font-size: 1.05rem; font-weight: 700; margin: 0.6rem 0 0.25rem; color: var(--text-primary); }
+    .jmsg-bubble h3.jmd-h { font-size: 0.97rem; font-weight: 700; margin: 0.5rem 0 0.2rem; color: var(--text-primary); }
+    .jmsg-bubble h4.jmd-h { font-size: 0.9rem; font-weight: 600; margin: 0.35rem 0 0.15rem; color: var(--text-muted); }
     .jmsg-bubble strong { color: var(--text-primary); }
     .jmsg-bubble em { color: var(--text-muted); font-style: italic; }
     .jmsg-bubble code.jmd-code {
@@ -1107,6 +1108,83 @@
     .jplan-btn:hover { opacity: 0.85; }
     .jplan-btn--ok  { background: var(--accent, #6366f1); color: #fff; }
     .jplan-btn--no  { background: var(--surface-2, #2a2a3a); color: var(--text-muted); }
+
+    /* ─── Mode Cascade ──────────────────────────────────────────────── */
+    .forge-pause-banner {
+      background: #fef3cd;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      color: #664d03;
+    }
+
+    .cascade-prompt-card {
+      background: #f0f4ff;
+      border: 1.5px solid #6b8cff;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 0.5rem 0;
+    }
+
+    .cascade-step-header {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #4a6cf7;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cascade-prompt-body {
+      background: #fff;
+      border: 1px solid #d0d8ff;
+      border-radius: 5px;
+      padding: 0.8rem;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 0.8rem;
+      font-family: monospace;
+    }
+
+    .cascade-copy-btn {
+      background: #4a6cf7;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.4rem 1rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cascade-copy-btn:hover { background: #3558e0; }
+    .cascade-copy-btn.copied { background: #3d9b5f; }
+
+    .cascade-closure-card {
+      background: #f0fff4;
+      border: 1.5px solid #3d9b5f;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 0.5rem 0;
+    }
+    .cascade-closure-card h4 {
+      color: #2d7a4a;
+      margin: 0.8rem 0 0.3rem;
+      font-size: 0.85rem;
+    }
+    .cascade-closure-block {
+      background: #fff;
+      border: 1px solid #b7e4c7;
+      border-radius: 5px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.82rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      margin-bottom: 0.4rem;
+    }
   </style>
 </head>
 <body>
@@ -1170,7 +1248,13 @@
         <div id="jchat-badge-wrap">
           <div class="jchat-agent-badge badge-JARVIS" id="jchat-badge">⚡ JARVIS</div>
           <span id="jchat-mode" class="jchat-mode-auto">auto-routing</span>
-          <span id="jchat-conv-title" style="font-size:0.7rem;color:var(--text-muted);margin-left:0.4rem;opacity:0.7;"></span>
+          <span id="jchat-conv-title-wrap" style="display:inline-flex;align-items:center;gap:0.2rem;margin-left:0.5rem">
+            <span id="jchat-conv-title"
+              onclick="startRenameConv()"
+              title="Cliquer pour renommer"
+              style="font-size:0.8rem;color:var(--text-primary);opacity:0.72;cursor:pointer;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+            <span onclick="startRenameConv()" style="font-size:0.65rem;color:var(--text-muted);cursor:pointer;opacity:0.45;user-select:none" title="Renommer">✏️</span>
+          </span>
         </div>
         <select id="jchat-project-select"
           style="font-size:0.72rem;padding:0.22rem 0.5rem;border-radius:6px;
@@ -1181,6 +1265,11 @@
           <option value="">— Aucun projet —</option>
         </select>
         <button id="btn-new-jchat">+ Nouvelle</button>
+      </div>
+
+      <div id="forge-pause-banner" class="forge-pause-banner" style="display:none">
+        ⏸️ <strong>FORGE en pause</strong> — Les missions code sont exécutées via Cascade (Windsurf).
+        Les plans multi-agents continuent de fonctionner normalement.
       </div>
 
       <div id="jchat-messages">
@@ -1343,6 +1432,22 @@
             <a href="board-media.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
           </div>
 
+          <!-- DISC -->
+          <div class="jagent-card" id="jcard-DISC"
+               style="--ac:#22c55e;--ac-dim:rgba(34,197,94,0.2)"
+               onclick="selectAgent('DISC')">
+            <div class="jagent-card-img">
+              <img src="assets/agents/Disc1.svg" alt="DISC"
+                   onerror="this.style.display='none'">
+            </div>
+            <span class="jagent-card-label">Disc</span>
+            <span class="jagent-card-role">Expert Règles Ultimate</span>
+            <div class="jagent-card-stat">
+              <span class="jstat-dot idle" id="dot-DISC"></span>
+              <span id="stat-DISC">Chargement…</span>
+            </div>
+          </div>
+
         </div><!-- /#jagents-grid -->
 
         <!-- Zone terminal agent -->
@@ -1364,9 +1469,10 @@
   const STORAGE_KEY = 'jarvis_conv_id_v2';
   let convId = null;
   let isSending = false;
-  let activeAgent = 'JARVIS';    // agent affiché (visuel, mis à jour par les réponses)
-  let userForcedAgent = null;    // null = auto-routing | 'MENTOR' etc = mode direct
+  let activeAgent = 'JARVIS';
+  let userForcedAgent = null;
   let forgePollingInterval = null;
+  let activeReflexionId = null;
 
   // ── Init ─────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async () => {
@@ -1375,6 +1481,7 @@
     loadStats();
     attachEvents();
     initSidebars();
+    await checkCascadeMode();
   });
 
   // ── Sidebars collapsibles ────────────────────────────────────────────────
@@ -1558,26 +1665,52 @@
   // ── TERMINAL MENTOR ──────────────────────────────────────────────────────
   async function loadMentorTerminal(body) {
     const projects = await window.API.getProjects();
-    const reflexions = [];
-    
+    const openSessions = [];
+    const figeeSessions = [];
+
     for (const p of projects) {
       try {
         const rxs = await window.API.getReflexions(p.id);
+        const pname = p.name || p.nom || `Projet #${p.id}`;
         for (const r of rxs) {
-          if (r.statut !== 'FIGEE' && r.statut !== 'ABANDONNEE') {
-            reflexions.push({ ...r, project_name: p.name || p.nom || `Projet #${p.id}` });
+          if (r.statut === 'FIGEE') {
+            figeeSessions.push({ ...r, project_name: pname });
+          } else if (r.statut !== 'ABANDONNEE') {
+            openSessions.push({ ...r, project_name: pname });
           }
         }
       } catch(_) {}
     }
-    
-    if (reflexions.length === 0) {
+
+    if (openSessions.length === 0 && figeeSessions.length === 0) {
       body.innerHTML = '<div class="jterm-empty">Aucune réflexion en cours</div>';
       return;
     }
-    
+
     let html = '';
-    for (const r of reflexions) {
+
+    // Session active dans la conversation courante — en tête si présente
+    const activeSession = openSessions.find(r => r.id === activeReflexionId);
+    if (activeSession) {
+      const title = activeSession.titre || new Date(activeSession.created_at).toLocaleDateString('fr-FR');
+      html += `
+        <div style="font-size:0.7rem;color:#5b8ef0;opacity:0.8;padding:0 0.25rem;margin-bottom:0.2rem">Session en cours</div>
+        <div class="jterm-item" style="border-left:2px solid #5b8ef0;background:rgba(91,142,240,0.06)">
+          <div class="jterm-item-title">${_esc(activeSession.project_name)}</div>
+          <div class="jterm-item-meta">
+            ${_esc(title)}
+            <span class="jterm-badge jterm-badge-${activeSession.statut}">${activeSession.statut}</span>
+          </div>
+          <div class="jterm-item-actions">
+            <a href="mission.html?session=${activeSession.id}" class="jterm-btn">→ Voir</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // Autres sessions ouvertes
+    for (const r of openSessions) {
+      if (r.id === activeReflexionId) continue;
       const title = r.titre || new Date(r.created_at).toLocaleDateString('fr-FR');
       html += `
         <div class="jterm-item">
@@ -1592,8 +1725,96 @@
         </div>
       `;
     }
+
+    if (figeeSessions.length > 0) {
+      html += `<div style="margin-top:0.75rem;font-size:0.72rem;color:#f59e0b;opacity:0.8;padding:0 0.25rem">Missions en attente Cascade</div>`;
+      for (const r of figeeSessions) {
+        const title = r.titre || new Date(r.created_at).toLocaleDateString('fr-FR');
+        html += `
+          <div class="jterm-item" style="border-left:2px solid #f59e0b">
+            <div class="jterm-item-title">${_esc(r.project_name)}</div>
+            <div class="jterm-item-meta">
+              ${_esc(title)}
+              <span class="jterm-badge jterm-badge-FIGEE">FIGÉE</span>
+            </div>
+            <div class="jterm-item-actions">
+              <button class="jterm-btn" onclick="viewCascadePrompt(${r.id})">📋 Prompt</button>
+              <button class="jterm-btn jterm-btn-danger" onclick="abandonFigee(${r.id})">✕ Abandonner</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
     body.innerHTML = html;
   }
+
+  window.viewCascadePrompt = async function(sessionId) {
+    try {
+      const livrable = await window.API.getLivrable(sessionId);
+      const content = livrable.content || '';
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center';
+      overlay.innerHTML = `
+        <div style="background:#1e2533;border:1px solid #334155;border-radius:10px;padding:1.25rem;max-width:680px;width:90vw;max-height:80vh;display:flex;flex-direction:column;gap:0.75rem">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="color:#f59e0b;font-weight:600;font-size:0.9rem">📋 Prompt Cascade</span>
+            <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.1rem">✕</button>
+          </div>
+          <textarea readonly style="flex:1;min-height:300px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:0.8rem;padding:0.75rem;resize:vertical">${_esc(content)}</textarea>
+          <button onclick="navigator.clipboard.writeText(${JSON.stringify(content)}).then(()=>this.textContent='✓ Copié !').catch(()=>{})" style="background:#f59e0b;color:#000;border:none;border-radius:6px;padding:0.5rem 1rem;cursor:pointer;font-weight:600">📋 Copier tout</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    } catch(e) {
+      alert('Erreur chargement livrable : ' + e.message);
+    }
+  };
+
+  function startRenameConv() {
+    if (!convId) return;
+    const titleEl = document.getElementById('jchat-conv-title');
+    const wrap = document.getElementById('jchat-conv-title-wrap');
+    const current = titleEl.textContent;
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.value = current === 'JARVIS' ? '' : current;
+    inp.placeholder = 'Nom de la conversation…';
+    inp.maxLength = 120;
+    inp.style.cssText = 'font-size:0.8rem;background:var(--bg-input);border:1px solid var(--accent);border-radius:4px;padding:0.15rem 0.5rem;color:var(--text-primary);width:200px;outline:none';
+    wrap.replaceChild(inp, titleEl);
+    inp.focus();
+    inp.select();
+    async function save() {
+      const newTitle = inp.value.trim();
+      wrap.replaceChild(titleEl, inp);
+      if (newTitle !== current) {
+        try {
+          await window.API.renameConversation(convId, newTitle || '');
+          titleEl.textContent = newTitle || 'JARVIS';
+          // Mettre à jour la liste latérale
+          const item = document.querySelector(`.jconv-item[data-id="${convId}"] .jconv-title`);
+          if (item) item.textContent = newTitle || 'JARVIS';
+        } catch(e) { console.error('Rename failed', e); }
+      }
+    }
+    inp.addEventListener('blur', save);
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') inp.blur();
+      if (e.key === 'Escape') { inp.value = current; inp.blur(); }
+    });
+  }
+
+  window.abandonFigee = async function(sessionId) {
+    if (!confirm('Abandonner cette mission ? Le prompt Cascade sera définitivement supprimé.')) return;
+    try {
+      await window.API.abandonReflexion(sessionId);
+      await loadTerminalContent('MENTOR');
+    } catch(e) {
+      alert('Erreur : ' + e.message);
+    }
+  };
 
   // ── TERMINAL FORGE ───────────────────────────────────────────────────────
   async function loadForgeTerminal(body) {
@@ -1918,6 +2139,7 @@
       try {
         const conv = await window.API.getJarvisConversation(parseInt(stored));
         convId = conv.id;
+        activeReflexionId = null;
         document.getElementById('jchat-conv-title').textContent = conv.title || 'JARVIS';
         _syncProjectSelector(conv.project_id);
         renderMessages(conv.messages || []);
@@ -1976,6 +2198,7 @@
       const conv = await window.API.getJarvisConversation(id);
       convId = conv.id;
       localStorage.setItem(STORAGE_KEY, String(convId));
+      activeReflexionId = null;
       document.getElementById('jchat-conv-title').textContent = conv.title || 'JARVIS';
       _syncProjectSelector(conv.project_id);
       renderMessages(conv.messages || []);
@@ -2155,6 +2378,11 @@
       }
       wrap.appendChild(badge);
 
+      // Suivi session active
+      if (instanceRef && instanceRef.type === 'reflexion' && instanceRef.id) {
+        activeReflexionId = instanceRef.id;
+      }
+
       // Lien contextuel basé sur instanceRef.type (pas sur l'agent)
       if (instanceRef && instanceRef.type === 'reflexion' && instanceRef.id) {
         const link = document.createElement('a');
@@ -2175,7 +2403,14 @@
     const bubble = document.createElement('div');
     bubble.className = 'jmsg-bubble';
     if (role === 'assistant') {
-      bubble.innerHTML = renderMd(content);
+      // Rendu spécial pour les cartes Cascade
+      if (instanceRef && instanceRef.type === 'cascade_mission') {
+        bubble.innerHTML = renderCascadeCard(content, instanceRef);
+      } else if (instanceRef && instanceRef.type === 'cascade_mission_done') {
+        bubble.innerHTML = renderCascadeClosureCard(content);
+      } else {
+        bubble.innerHTML = renderMd(content);
+      }
     } else {
       bubble.textContent = content;
     }
@@ -2753,9 +2988,21 @@
       setEl('stat-MEDIA', label);
     } catch (_) { setEl('stat-MEDIA', '—'); }
 
-    const activeAgents = ['dot-MENTOR','dot-FORGE','dot-SENTINELLE','dot-ATELIER','dot-MEDIA']
+    // DISC
+    try {
+      const discStats = await fetch('/api/disc/stats').then(r => r.json());
+      const rulesLoaded = discStats.rules_loaded || 0;
+      const totalQ = discStats.total_questions || 0;
+      const discLabel = rulesLoaded > 0
+        ? rulesLoaded + ' règle' + (rulesLoaded > 1 ? 's' : '') + (totalQ > 0 ? ' · ' + totalQ + ' question' + (totalQ > 1 ? 's' : '') : '')
+        : 'Base vide';
+      setEl('stat-DISC', discLabel);
+      toggleDot('dot-DISC', rulesLoaded > 0);
+    } catch (_) { setEl('stat-DISC', '—'); }
+
+    const activeAgents = ['dot-MENTOR','dot-FORGE','dot-SENTINELLE','dot-ATELIER','dot-MEDIA','dot-DISC']
       .filter(id => { const el = document.getElementById(id); return el && !el.classList.contains('idle'); }).length;
-    setEl('jnav-agents-count', activeAgents > 0 ? activeAgents + ' actif' + (activeAgents > 1 ? 's' : '') + ' · 24/7' : '5 agents · standby');
+    setEl('jnav-agents-count', activeAgents > 0 ? activeAgents + ' actif' + (activeAgents > 1 ? 's' : '') + ' · 24/7' : '6 agents · standby');
   }
 
   function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
@@ -2880,6 +3127,70 @@ window.monitorDelete = async function(id) {
     loadPipelineMonitor();
   } catch(e) { alert('Erreur : ' + e.message); }
 };
+
+  // ── Mode Cascade ──────────────────────────────────────────────────────────
+  async function checkCascadeMode() {
+    try {
+      const config = await window.API.getConfig();
+      if (config.cascade_mode === true) {
+        const banner = document.getElementById('forge-pause-banner');
+        if (banner) banner.style.display = 'block';
+      }
+    } catch (e) {
+      console.error('Erreur chargement cascade_mode:', e);
+    }
+  }
+
+  function renderCascadeCard(content, instanceRef) {
+    const step = instanceRef.step || 1;
+    const total = instanceRef.total || 1;
+
+    // Extraire le prompt entre les délimiteurs ---
+    const parts = content.split('\n---\n');
+    const promptText = parts.length >= 3 ? parts[1].trim() : content;
+
+    const cardId = 'cascade-card-' + Date.now();
+    return `
+      <div class="cascade-prompt-card">
+        <div class="cascade-step-header">Étape ${step}/${total} — Prompt Cascade</div>
+        <div class="cascade-prompt-body" id="prompt-body-${cardId}">${escapeHtml(promptText)}</div>
+        <button class="cascade-copy-btn" onclick="copyCascadePrompt('prompt-body-${cardId}', this)">
+          📋 Copier le prompt
+        </button>
+      </div>
+    `;
+  }
+
+  function renderCascadeClosureCard(content) {
+    // Rendre le markdown standard enveloppé dans la carte verte
+    return `<div class="cascade-closure-card">${renderMd(content)}</div>`;
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  window.copyCascadePrompt = function(elementId, btn) {
+    const text = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copié';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copier le prompt';
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(err => {
+      console.error('Erreur copie:', err);
+      btn.textContent = '❌ Erreur';
+      setTimeout(() => {
+        btn.textContent = '📋 Copier le prompt';
+      }, 2000);
+    });
+  };
 </script>
 </body>
 </html>

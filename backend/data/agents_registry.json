@@ -53,6 +53,15 @@
       "route": "/api/media/",
       "declencheurs": ["image", "photo", "illustration", "vidéo", "video", "clip", "animation", "génère une image", "crée une image", "visualise"],
       "url_orchestrator": "#jcard-MEDIA"
+    },
+    {
+      "id": "disc",
+      "nom": "DISC",
+      "role": "EXPERT RÈGLES ULTIMATE",
+      "description": "Expert des règles officielles WFDF d'Ultimate Frisbee 2025-2028. Répond aux questions de règles, situations de jeu, self-officiating et Spirit of the Game (SOTG).",
+      "route": "/api/disc/",
+      "declencheurs": ["ultimate", "frisbee", "disc", "règle", "foul", "faute", "stall", "turnover", "SOTG", "spirit", "WFDF", "violation", "out of bounds", "end zone"],
+      "url_orchestrator": "#jcard-DISC"
     }
   ]
 }

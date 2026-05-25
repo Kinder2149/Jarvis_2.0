@@ -86,6 +86,8 @@ def load_config():
         "vision_model": "anthropic/claude-sonnet-4-6"
     }
     
+    cascade_mode = True
+    
     if CONFIG_PATH.exists():
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
             config_file = json.load(f)
@@ -95,6 +97,7 @@ def load_config():
             if "chat" in config_file:
                 chat_config.update(config_file["chat"])
                 logger.info(f"💬 [DB] chat config chargée depuis config.json")
+            cascade_mode = config_file.get("cascade_mode", True)
     
     # Charger les contextes utilisateur depuis les fichiers .md (backend/data/contexts/)
     contexts_dir = Path(__file__).parent / "data" / "contexts"
@@ -108,7 +111,8 @@ def load_config():
         "api_keys": api_keys,
         "model_preferences": model_preferences,
         "chat": chat_config,
-        "context": context
+        "context": context,
+        "cascade_mode": cascade_mode
     }
 
 def _seed_api_keys_from_env(conn):
@@ -479,6 +483,7 @@ def init_db():
     _migrate_v4_jarvis(conn)
     _migrate_v5_media(conn)
     _migrate_v6_consultation_state(conn)
+    _migrate_v7_disc(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
 
@@ -809,5 +814,84 @@ def _migrate_v2(conn):
         cursor.execute("ALTER TABLE model_decision_log ADD COLUMN module_name TEXT DEFAULT 'unknown'")
     except Exception:
         pass
+
+    conn.commit()
+
+
+def _migrate_v7_disc(conn):
+    """Migration v7 : agent DISC — tables disc_rules + disc_sessions + seed (idempotent)."""
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disc_rules (
+            id             INTEGER PRIMARY KEY AUTOINCREMENT,
+            article        TEXT NOT NULL UNIQUE,
+            parent_article TEXT,
+            titre          TEXT NOT NULL,
+            contenu        TEXT NOT NULL,
+            categorie      TEXT NOT NULL CHECK(categorie IN (
+                               'definitions','field','possession','stall','fouls',
+                               'violations','scoring','out_of_bounds','restart',
+                               'timeouts','spirit','officiating')),
+            mots_cles      TEXT DEFAULT '[]',
+            cross_refs     TEXT DEFAULT '[]',
+            created_at     TEXT DEFAULT (datetime('now'))
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disc_sessions (
+            id               INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id  INTEGER,
+            question         TEXT NOT NULL,
+            articles_utilises TEXT DEFAULT '[]',
+            created_at       TEXT DEFAULT (datetime('now'))
+        )
+    """)
+
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_disc_rules_article ON disc_rules(article)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_disc_rules_categorie ON disc_rules(categorie)")
+
+    # Seed agent dans le registry
+    cursor.execute("""
+        INSERT OR IGNORE INTO agent_registry
+            (name, display_name, description, routing_hints, page_url, color)
+        VALUES (
+            'DISC',
+            'DISC',
+            'Expert des règles officielles WFDF d''Ultimate Frisbee 2025-2028. Répond aux questions de règles, situations de jeu, self-officiating et Spirit of the Game (SOTG).',
+            '["ultimate", "frisbee", "disc", "règle", "foul", "faute", "stall", "turnover", "SOTG", "spirit", "WFDF", "violation", "out of bounds", "end zone", "self-officiating", "disque", "lancer", "réception", "hors-jeu"]',
+            NULL,
+            '#22c55e'
+        )
+    """)
+
+    # Seed 15+ règles fondamentales WFDF 2025-2028 (numéros approximatifs)
+    seed_rules = [
+        ("1", None, "Spirit of the Game", "Ultimate repose sur le Spirit of the Game, qui place la responsabilité du fair-play sur chaque joueur. Un jeu compétitif peut et doit se dérouler dans un esprit de respect mutuel entre joueurs. Les règles du jeu sont conçues de sorte qu'il soit possible de résoudre toutes les situations sans un arbitre officiel. Les joueurs doivent toujours tenter de jouer dans les limites de l'esprit du jeu, même lorsque l'adversaire ne le fait pas.", "spirit", '["spirit","SOTG","fair play","respect","self-officiating","esprit"]', '["1.1","1.2"]'),
+        ("2.1", "2", "Terrain", "Le terrain est un rectangle de 100 mètres de long sur 37 mètres de large, avec deux zones d'en-but aux deux extrémités de 18 mètres chacune. Les lignes délimitant le terrain ne font pas partie du terrain de jeu (in-bounds). Un joueur dont les deux pieds sont à l'intérieur des lignes est considéré comme in-bounds.", "field", '["terrain","field","dimensions","ligne","end zone","zone en-but"]', '["11","12"]'),
+        ("2.2", "2", "Définitions — Disque vivant et mort", "Le disque est vivant (live) dès que le lanceur établit son point de pivot. Le disque est mort (dead) dans les cas suivants : a) il touche le sol ; b) il est intercepté ou capturé par la défense ; c) il sort des limites du terrain ; d) un appel (call) est formulé et accepté.", "definitions", '["disque vivant","disque mort","live","dead","pivot","point de pivot"]', '["9","10","11"]'),
+        ("2.3", "2", "Définitions — Possession et réception", "La possession du disque signifie qu'un joueur tient fermement le disque. Une réception (catch) est établie lorsqu'un joueur attrapant saisit le disque et maintient cette saisie suffisamment longtemps pour établir le contrôle sur le disque. Un joueur ne contrôle pas le disque s'il rebondit sur sa main ou si le premier contact avec le sol (sol ou obstacle) modifie sa trajectoire.", "definitions", '["possession","réception","catch","attraper","contrôle","saisie"]', '["9","10","14"]'),
+        ("2.4", "2", "Définitions — Turnover", "Un turnover se produit lorsque la possession du disque change d'équipe. Cela survient dans les cas suivants : a) le disque touche le sol sans être contrôlé ; b) le disque est intercepté par un défenseur ; c) le disque sort des limites du terrain ; d) le stall count atteint 10 (stall-out) ; e) une violation de lancer est commise.", "definitions", '["turnover","changement possession","stall-out","interception","sol"]', '["9","10","11","12"]'),
+        ("9", None, "Stall Count", "Le stall count est le décompte de 1 à 10 effectué par le défenseur marquant le porteur du disque. Le décompte doit être audible. Si le stall count atteint 10 avant que le disque soit lancé (stall-out), c'est un turnover. Le décompte recommence à 1 : a) après un appel ; b) si le marqueur s'éloigne de plus de 3 mètres du porteur ; c) sur reprise de jeu après time-out. Le décompte reprend à 'stall [nombre+1]' dans certaines situations de contestation.", "stall", '["stall","décompte","marqueur","10","stall-out","stalling","compte"]', '["9.1","9.2","9.3","9.4","9.5"]'),
+        ("9.3", "9", "Décompte rapide (Fast Count)", "Si le décompte est trop rapide (moins d'une seconde entre chaque nombre), le porteur peut appeler 'Fast count'. Le décompte reprend à 'stall [nombre actuel - 1]' si le compte était à 2 ou plus, ou à 'stall 1' si en début de compte.", "stall", '["fast count","décompte rapide","stalling","compte trop rapide"]', '["9","17"]'),
+        ("10", None, "Hors-limites — Out of Bounds", "Le disque est hors-limites (out of bounds, OOB) lorsqu'il touche le sol, un objet ou une personne hors des lignes. La ligne elle-même n'est pas in-bounds. Pour une réception OOB, ce qui compte est le premier point de contact avec le sol ou un objet fixe. Un joueur dans les airs peut réceptionner in-bounds tant qu'aucune partie de son corps ne touche OOB pendant la réception.", "out_of_bounds", '["out of bounds","hors-limites","OOB","ligne","réception","sol","limites"]', '["10.1","10.2","10.3","11"]'),
+        ("10.2", "10", "Réception en limite de terrain", "Si un joueur réceptionne le disque avec un pied in-bounds et l'autre OOB, la réception est OOB. Si le premier contact au sol est in-bounds mais glisse hors des limites, le jeu s'arrête à la ligne. Le lanceur suivant reprend depuis le point brick le plus proche ou le point d'interception.", "out_of_bounds", '["réception ligne","pied hors-limites","sortie","border","limite terrain"]', '["10","11","8"]'),
+        ("11", None, "Reprise du jeu", "La reprise du jeu suit des procédures spécifiques selon la cause de l'arrêt. Après un turnover OOB, le jeu reprend au point brick le plus proche de l'endroit où le disque est sorti. Après un appel accepté, l'équipe non-fautive reprend avec le disque à l'endroit où il était au moment de l'appel.", "restart", '["reprise","brick","restart","reprise du jeu","after call"]', '["10","12","14","15"]'),
+        ("12", None, "Marquer un point", "Un point est marqué lorsqu'un joueur de l'équipe attaquante réceptionne légalement le disque dans la zone d'en-but adverse. La réception doit être complète avant que le joueur touche le sol dans la zone d'en-but. Si un appel est formulé pendant une réception dans la zone d'en-but, le point n'est accordé que si toutes les parties sont d'accord.", "scoring", '["point","but","scoring","en-but","end zone","réception zone","marquer"]', '["12.1","12.2","2.1"]'),
+        ("12.2", "12", "Contestation de point", "Si un appel est formulé pendant la réception d'un point et que les parties ne sont pas d'accord, la possession revient au dernier lanceur incontesté. Si une faute est appelée pendant la réception et non contestée, le point est accordé.", "scoring", '["contestation","point contesté","appel en-but","faute réception"]', '["12","14","16"]'),
+        ("14", None, "Fautes (Fouls)", "Une faute est un contact physique illégal entre adversaires. Le porteur du disque appelle 'Foul'. Si la faute est acceptée (non contestée), le disque revient au porteur. Si la faute est contestée, le disque revient au dernier lanceur incontesté. Types principaux : strip (disque arraché), faute sur réception, faute sur lancer.", "fouls", '["faute","foul","contact","strip","arraché","foul offensif","foul défensif"]', '["14.1","14.2","14.3","15","16"]'),
+        ("14.3", "14", "Faute sur réception (Receiving Foul)", "Si un défenseur commet une faute sur un joueur attaquant pendant la réception et que la faute n'est pas contestée, l'attaquant obtient la possession à l'endroit de la faute. Si la réception était dans la zone d'en-but, le point est accordé.", "fouls", '["faute réception","receiving foul","contact récepteur","défenseur","attaquant"]', '["12","14","16"]'),
+        ("15", None, "Violations", "Une violation est une infraction aux règles autre qu'une faute ou un appel. Les violations courantes incluent : travel (marcher/déplacer le pivot), double-team (deux défenseurs à moins de 3m du porteur), disc space (défenseur trop proche du porteur en line), pick (bloquer un défenseur). L'équipe non-fautive appelle la violation.", "violations", '["violation","travel","double team","disc space","pick","marcher","pivot"]', '["15.1","15.2","15.3","15.4","9"]'),
+        ("15.1", "15", "Travel", "Un travel se produit lorsque le porteur du disque déplace son pied de pivot avant de lâcher le disque, ou avance avec le disque sans avoir établi de point de pivot. L'adversaire peut appeler 'Travel'. Le compte reprend à 'stall 1'. Correction : retour à la position de pivot légale.", "violations", '["travel","marcher","pivot","pied pivot","déplacement"]', '["9","15"]'),
+        ("15.2", "15", "Double Team", "Une situation de double-team se produit lorsque deux défenseurs ou plus se trouvent simultanément à moins de 3 mètres du porteur du disque. Exception : si un autre attaquant se trouve dans cette zone. L'appel 'Double team' réinitialise le compte à 'stall [nombre - 1]'.", "violations", '["double team","deux défenseurs","3 mètres","marqueur","zone porteur"]', '["9","15"]'),
+        ("16", None, "Blessure et Time-out Spirit", "Si un joueur est blessé, le jeu s'arrête immédiatement. L'équipe blessée peut traiter la blessure. L'équipe peut substituer le joueur blessé uniquement si l'équipe adverse substitue aussi (sauf si la blessure est le résultat d'un contact illégal). Un time-out Spirit peut être demandé par n'importe quel joueur pour résoudre un problème d'esprit du jeu.", "timeouts", '["blessure","injury","time-out spirit","spirit timeout","substitution"]', '["1","13"]'),
+    ]
+
+    cursor.executemany("""
+        INSERT OR IGNORE INTO disc_rules
+            (article, parent_article, titre, contenu, categorie, mots_cles, cross_refs)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, seed_rules)
 
     conn.commit()

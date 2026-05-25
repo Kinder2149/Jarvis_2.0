@@ -107,7 +107,7 @@ async def process_message(conversation_id: int, user_message: str, db, force_age
             )
     
     # Routing
-    if force_agent and force_agent in ("JARVIS", "MENTOR", "FORGE", "SENTINELLE", "ATELIER", "MEDIA"):
+    if force_agent and force_agent in ("JARVIS", "MENTOR", "FORGE", "SENTINELLE", "ATELIER", "MEDIA", "DISC"):
         routing_result = {
             "agent": force_agent, "action": "switch" if force_agent != agent_actif else "continue",
             "confidence": 1.0, "clarification_needed": False,
@@ -321,7 +321,9 @@ async def _dispatch(
                 reformulation_prompt = (
                     f"Tu es JARVIS. Reformule ce message de MENTOR en langage fonctionnel "
                     f"humain pour l'utilisateur non-développeur. Garde toutes les questions, "
-                    f"raccourcis de rien, ajoute aucune information. Max 400 mots.\n\n"
+                    f"raccourcis de rien, ajoute aucune information. Max 400 mots.\n"
+                    f"IMPORTANT : commence directement par le contenu. "
+                    f"Pas de 'Bonjour', pas de 'Je suis JARVIS', pas de formule de présentation.\n\n"
                     f"Message MENTOR :\n{content}"
                 )
                 model_id = get_model_id("routing", config)
@@ -382,6 +384,10 @@ async def _dispatch(
     if agent == "MEDIA":
         from backend.services.media_handler import handle as media_handle
         return await media_handle(conversation_id, message, current_instance_ref, db, config)
+
+    if agent == "DISC":
+        from backend.services.disc_handler import handle as disc_handle
+        return await disc_handle(conversation_id, message, current_instance_ref, db, config)
 
     # Fallback pour agents inconnus
     content = (
@@ -471,7 +477,8 @@ async def _jarvis_direct_response(message: str, conversation_id: int,
     system_content = (
         "Tu es JARVIS, la seule interface entre l'utilisateur et les agents spécialistes "
         "(MENTOR pour le cadrage, FORGE pour le code, SENTINELLE pour les investissements, "
-        "ATELIER pour les prospects commerciaux, MEDIA pour les images et vidéos). "
+        "ATELIER pour les prospects commerciaux, MEDIA pour les images et vidéos, "
+        "DISC pour les règles officielles d'Ultimate Frisbee WFDF 2025-2028). "
         "Les agents ne parlent jamais directement à l'utilisateur — tu es leur interprète. "
         "Quand un agent te retourne un résultat, tu le reformules en langage fonctionnel humain "
         "avant de le présenter : pas de jargon technique, pas de balises internes. "

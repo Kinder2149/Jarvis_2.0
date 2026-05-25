@@ -12,7 +12,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from backend.database import init_db, get_connection
-from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle, jarvis, media, orchestrateur, plans
+from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle, jarvis, media, orchestrateur, plans, disc
 
 scheduler = AsyncIOScheduler()
 
@@ -141,6 +141,7 @@ app.include_router(jarvis.router, prefix="/api")
 app.include_router(media.router, prefix="/api")
 app.include_router(orchestrateur.router, prefix="/api")
 app.include_router(plans.router, prefix="/api")
+app.include_router(disc.router, prefix="/api")
 
 frontend_path = Path(__file__).parent.parent / "frontend"
 logger.info(f"Frontend path: {frontend_path}")
