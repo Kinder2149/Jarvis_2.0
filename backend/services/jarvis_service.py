@@ -855,8 +855,15 @@ async def _handle_multi_step(
 
     order_to_step_id: dict[int, int] = {}
     for step in steps:
-        dep_id = order_to_step_id.get(step.get("depends_on_order")) \
-                 if step.get("depends_on_order") else None
+        # depends_on_order peut être un int, une liste [1], ou None selon le LLM
+        raw_dep = step.get("depends_on_order")
+        if isinstance(raw_dep, list):
+            raw_dep = raw_dep[0] if raw_dep else None
+        try:
+            raw_dep = int(raw_dep) if raw_dep is not None else None
+        except (TypeError, ValueError):
+            raw_dep = None
+        dep_id = order_to_step_id.get(raw_dep) if raw_dep else None
         cursor.execute("""
             INSERT INTO jarvis_plan_steps
             (plan_id, step_order, agent, title, input_message, depends_on)
@@ -869,7 +876,7 @@ async def _handle_multi_step(
     # Construire la plan card (markdown)
     agent_icons = {
         "MENTOR": "🧠", "FORGE": "⚙️", "SENTINELLE": "🛡️",
-        "ATELIER": "💼", "MEDIA": "🎨", "JARVIS": "📝"
+        "ATELIER": "💼", "MEDIA": "🎨", "JARVIS": "📝", "DISC": "🥏"
     }
     lines = [f"[JARVIS] J'ai décomposé ta demande en **{len(steps)} étapes** :\n"]
     lines.append(f"📋 **{plan_title}**\n")
