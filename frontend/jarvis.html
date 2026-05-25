@@ -1089,6 +1089,24 @@
     .jm-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
     .jm-btn-danger:hover { color: #f87171; border-color: #f87171; }
     .jm-btn-warn:hover { color: #f59e0b; border-color: #f59e0b; }
+
+    .jplan-confirm-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .jplan-btn {
+      padding: 0.35rem 0.9rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+    .jplan-btn:hover { opacity: 0.85; }
+    .jplan-btn--ok  { background: var(--accent, #6366f1); color: #fff; }
+    .jplan-btn--no  { background: var(--surface-2, #2a2a3a); color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -2163,6 +2181,27 @@
     }
     wrap.appendChild(bubble);
 
+    // Boutons confirmation plan
+    if (role === 'assistant' && instanceRef && instanceRef.type === 'plan_confirm'
+        && instanceRef.plan_id) {
+      const btnRow = document.createElement('div');
+      btnRow.className = 'jplan-confirm-row';
+
+      const btnOk = document.createElement('button');
+      btnOk.className = 'jplan-btn jplan-btn--ok';
+      btnOk.textContent = '✅ Confirmer';
+      btnOk.onclick = () => confirmPlan(instanceRef.plan_id, btnRow);
+
+      const btnNo = document.createElement('button');
+      btnNo.className = 'jplan-btn jplan-btn--no';
+      btnNo.textContent = '✖ Annuler';
+      btnNo.onclick = () => cancelPlan(instanceRef.plan_id, btnRow);
+
+      btnRow.appendChild(btnOk);
+      btnRow.appendChild(btnNo);
+      wrap.appendChild(btnRow);
+    }
+
     div.appendChild(av);
     div.appendChild(wrap);
     c.appendChild(div);
@@ -2187,6 +2226,34 @@
   }
 
   function removeTyping() { const t = document.getElementById('jchat-typing'); if (t) t.remove(); }
+
+  async function confirmPlan(planId, btnRow) {
+    btnRow.innerHTML = '<span style="font-size:0.8rem;opacity:0.7">Confirmation…</span>';
+    try {
+      const r = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' });
+      if (!r.ok) throw new Error(await r.text());
+      btnRow.innerHTML =
+        '<span style="font-size:0.8rem;color:var(--accent)">✅ Plan confirmé — exécution en cours…</span>';
+      // Démarrer polling pour recevoir les mises à jour du plan
+      const initialCount = document.getElementById('jchat-messages')
+        .querySelectorAll('.jmsg').length;
+      startPlanPolling(planId, convId, initialCount);
+    } catch(e) {
+      btnRow.innerHTML =
+        `<span style="font-size:0.8rem;color:#ef4444">Erreur : ${e.message}</span>`;
+    }
+  }
+
+  async function cancelPlan(planId, btnRow) {
+    try {
+      await fetch(`/api/plans/${planId}`, { method: 'DELETE' });
+      btnRow.innerHTML =
+        '<span style="font-size:0.8rem;color:var(--text-muted)">Plan annulé.</span>';
+    } catch(e) {
+      btnRow.innerHTML =
+        `<span style="font-size:0.8rem;color:#ef4444">Erreur : ${e.message}</span>`;
+    }
+  }
 
   // ── Polling pipeline (FORGE + ATELIER) ───────────────────────────────────────
   function checkForgePolling(msgs) {
@@ -2328,6 +2395,69 @@
     }
     toggleDot('dot-MEDIA', false);
     hideForgeBanner();
+  }
+
+  // ── Polling PLAN multi-agents ───────────────────────────────────────────────────────────────────────────
+  let planPollingInterval = null;
+
+  function startPlanPolling(planId, conversationId, initialMessageCount) {
+    if (planPollingInterval) clearInterval(planPollingInterval);
+    let lastMsgCount = initialMessageCount;
+    showForgeBanner('JARVIS');
+
+    planPollingInterval = setInterval(async () => {
+      try {
+        // 1. Vérifier le statut du plan
+        const planRes = await fetch(`/api/plans/${planId}`);
+        if (!planRes.ok) return;
+        const planData = await planRes.json();
+        const plan = planData.plan || planData;
+        const steps = planData.steps || [];
+
+        // 2. Mettre à jour la bannière selon l'état
+        const waitingStep = steps.find(s => s.status === 'EN_ATTENTE_UTILISATEUR');
+        const runningStep = steps.find(s => s.status === 'EN_COURS');
+        const bannerEl = document.getElementById('jforge-banner-text');
+        if (bannerEl) {
+          if (waitingStep) {
+            bannerEl.textContent = `⏸️ En attente de réponse — ${waitingStep.agent} (Étape ${waitingStep.step_order})`;
+          } else if (runningStep) {
+            bannerEl.textContent = `🔄 ${runningStep.agent} en cours — ${runningStep.title}…`;
+          } else {
+            const done = steps.filter(s => s.status === 'TERMINEE').length;
+            bannerEl.textContent = `Plan en cours · ${done}/${steps.length} étapes terminées`;
+          }
+        }
+
+        // 3. Récupérer les nouveaux messages de la conversation
+        const convRes = await fetch(`/api/jarvis/conversations/${conversationId}`);
+        if (!convRes.ok) return;
+        const data = await convRes.json();
+        const msgs = data.messages || [];
+
+        // Afficher les nouveaux messages
+        if (msgs.length > lastMsgCount) {
+          for (let i = lastMsgCount; i < msgs.length; i++) {
+            const m = msgs[i];
+            if (m.role === 'assistant') {
+              appendMsg('assistant', m.content, true,
+                m.agent || 'JARVIS',
+                m.instance_ref ? (typeof m.instance_ref === 'string'
+                  ? JSON.parse(m.instance_ref) : m.instance_ref) : null);
+            }
+          }
+          lastMsgCount = msgs.length;
+          scrollBot();
+        }
+
+        // 4. Arrêter si plan terminé
+        if (['TERMINE', 'ECHEC', 'ANNULE'].includes(plan.status)) {
+          clearInterval(planPollingInterval);
+          planPollingInterval = null;
+          hideForgeBanner();
+        }
+      } catch (e) { /* silencieux */ }
+    }, 3000); // poll toutes les 3s
   }
 
   function stopForgePolling() {

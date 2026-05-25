@@ -24,10 +24,38 @@ _FORGE_LAUNCH_SIGNALS = [
     "ok passe", "c'est bon lance", "lance le code", "exécute",
 ]
 
+_MULTI_STEP_SIGNALS = [
+    # Séquençage explicite
+    "d'abord", "dans un premier temps", "premièrement",
+    "étape 1", "plusieurs étapes", "étape par étape",
+    "plan d'action", "roadmap", "en plusieurs",
+    # Parallélisme
+    "en même temps", "en parallèle", "simultanément",
+    # Combinaisons multi-agents
+    "puis code", "puis forge", "puis génère",
+    "cadre puis", "analyse puis", "prospecte puis",
+    "mentor puis forge", "réfléchis puis code",
+    # Planning explicite
+    "décompose", "plusieurs agents", "multi-missions",
+    "organise les missions", "plan complet",
+    # Langage naturel manquant (ajouts)
+    "chaque agent", "tous les agents", "tester les agents",
+    "chaque mission", "agent par agent", "un par un les agents",
+    "mission par agent", "bilan final",
+]
+
 
 def _is_forge_launch(message: str) -> bool:
     msg_lower = message.lower().strip()
     return any(s in msg_lower for s in _FORGE_LAUNCH_SIGNALS)
+
+
+def _is_multi_step_candidate(message: str) -> bool:
+    """Filtre rapide (sans LLM) : True si le message semble multi-agents."""
+    if len(message.strip()) < 25:
+        return False
+    msg = message.lower()
+    return any(signal in msg for signal in _MULTI_STEP_SIGNALS)
 
 
 # ─── Point d'entrée principal ────────────────────────────────────────────────
@@ -60,6 +88,23 @@ async def process_message(conversation_id: int, user_message: str, db, force_age
     
     # Déterminer l'agent actif depuis le dernier message assistant
     agent_actif = _get_agent_actif(recent)
+    
+    # Relai réponse utilisateur vers étape MENTOR en attente
+    if not force_agent:
+        waiting_step = _find_waiting_plan_step(conversation_id, cursor)
+        if waiting_step:
+            return await _handle_plan_step_reply(
+                conversation_id, user_message, waiting_step, db, cursor, config
+            )
+    
+    # Détection plan multi-étapes (avant routing normal)
+    if not force_agent and _is_multi_step_candidate(user_message):
+        plan_data = await _generate_plan(user_message, config, db)
+        if plan_data:
+            return await _handle_multi_step(
+                conversation_id, user_message, plan_data,
+                project_id, db, cursor
+            )
     
     # Routing
     if force_agent and force_agent in ("JARVIS", "MENTOR", "FORGE", "SENTINELLE", "ATELIER", "MEDIA"):
@@ -260,7 +305,8 @@ async def _dispatch(
 
     if agent == "MENTOR":
         from backend.services import mentor_handler
-        return await mentor_handler.handle(
+        from backend.services.model_router import get_model_id, call_model
+        content, agent_used, instance_ref, suggest_freeze, freeze_reason = await mentor_handler.handle(
             conversation_id=conversation_id,
             project_id=project_id,
             message=message,
@@ -268,6 +314,32 @@ async def _dispatch(
             db=db,
             config=config
         )
+        
+        # Reformulation JARVIS si MENTOR en dialogue (pas livrable final)
+        if not suggest_freeze and agent_used == "MENTOR":
+            try:
+                reformulation_prompt = (
+                    f"Tu es JARVIS. Reformule ce message de MENTOR en langage fonctionnel "
+                    f"humain pour l'utilisateur non-développeur. Garde toutes les questions, "
+                    f"raccourcis de rien, ajoute aucune information. Max 400 mots.\n\n"
+                    f"Message MENTOR :\n{content}"
+                )
+                model_id = get_model_id("routing", config)
+                reformulated = await call_model(
+                    model_id=model_id,
+                    messages=[{"role": "user", "content": reformulation_prompt}],
+                    api_keys=config["api_keys"],
+                    session_id=None,
+                    step_name="jarvis_reformulation_mentor",
+                    model_type="routing",
+                    db_conn=db,
+                    module_name="jarvis"
+                )
+                content = reformulated
+            except Exception:
+                pass  # En cas d'échec reformulation, garder le contenu MENTOR original
+        
+        return content, agent_used, instance_ref, suggest_freeze, freeze_reason
 
     if agent == "FORGE":
         from backend.services import forge_handler
@@ -397,12 +469,20 @@ async def _jarvis_direct_response(message: str, conversation_id: int,
         context_block += f"\n\n## Règles\n{regles}"
 
     system_content = (
-        "Tu es JARVIS, un assistant IA personnel orchestrant plusieurs agents spécialistes "
-        "(MENTOR pour la réflexion, FORGE pour le code, SENTINELLE pour les investissements, "
+        "Tu es JARVIS, la seule interface entre l'utilisateur et les agents spécialistes "
+        "(MENTOR pour le cadrage, FORGE pour le code, SENTINELLE pour les investissements, "
         "ATELIER pour les prospects commerciaux, MEDIA pour les images et vidéos). "
-        "Tu réponds directement aux questions générales et conversations libres. "
-        "Tu es concis, utile, toujours en français."
+        "Les agents ne parlent jamais directement à l'utilisateur — tu es leur interprète. "
+        "Quand un agent te retourne un résultat, tu le reformules en langage fonctionnel humain "
+        "avant de le présenter : pas de jargon technique, pas de balises internes. "
+        "Tu poses tes questions une par une — jamais plusieurs à la fois dans le même message. "
+        "Tu ne codes jamais toi-même : tu délègues à FORGE (via MENTOR pour le cadrage). "
+        "Tu es concis, direct, toujours en français."
         + context_block
+        + "\n\nRÈGLE ABSOLUE : tu n'inventes JAMAIS de balises XML, tags d'orchestration, "
+        "ni simulation de dispatch agents. Si une demande nécessite plusieurs agents, "
+        "réponds : 'Cette demande nécessite plusieurs agents. Reformule-la en précisant "
+        "les étapes (ex: d'abord MENTOR pour X, puis FORGE pour Y) et je créerai un plan automatiquement.'"
     )
     system = {"role": "system", "content": system_content}
 
@@ -543,3 +623,346 @@ def check_sentinelle_alertes(conversation_id: int, db) -> str | None:
         + "\n".join(lignes)
         + "\n\n→ [Ouvrir SENTINELLE](sentinelle.html) pour agir"
     )
+
+
+# ─── Génération et gestion plans multi-étapes ────────────────────────────────
+
+def _find_waiting_plan_step(conversation_id: int, cursor) -> dict | None:
+    """
+    Cherche une étape MENTOR EN_ATTENTE_UTILISATEUR pour cette conversation.
+    Retourne le dict de l'étape ou None.
+    """
+    cursor.execute("""
+        SELECT ps.id, ps.plan_id, ps.step_order, ps.agent, ps.title,
+               ps.sub_conversation_id, ps.depends_on
+        FROM jarvis_plan_steps ps
+        JOIN jarvis_plans p ON ps.plan_id = p.id
+        WHERE p.home_conversation_id = ?
+          AND ps.status = 'EN_ATTENTE_UTILISATEUR'
+          AND ps.agent = 'MENTOR'
+        ORDER BY ps.id DESC LIMIT 1
+    """, (conversation_id,))
+    row = cursor.fetchone()
+    return dict(row) if row else None
+
+
+async def _handle_plan_step_reply(
+    conversation_id: int,
+    user_message: str,
+    waiting_step: dict,
+    db,
+    cursor,
+    config: dict
+) -> dict:
+    """
+    Relaie la réponse de l'utilisateur vers MENTOR dans sa sous-conversation.
+    Si MENTOR produit [MISSION_PRETE] → marque étape TERMINEE, plan reprend.
+    Sinon → MENTOR pose une autre question, reste EN_ATTENTE_UTILISATEUR.
+    """
+    # Persister le message user dans la conversation d'origine
+    cursor.execute("""
+        INSERT INTO messages
+        (conversation_id, role, content, agent, instance_ref, created_at)
+        VALUES (?, 'user', ?, 'JARVIS', NULL, datetime('now'))
+    """, (conversation_id, user_message))
+    db.commit()
+
+    # Relayer vers la sous-conversation MENTOR
+    sub_conv_id = waiting_step["sub_conversation_id"]
+    result_content, suggest_freeze = await dispatch_direct(
+        agent="MENTOR",
+        conversation_id=sub_conv_id,
+        message=user_message,
+        db=db,
+        config=config
+    )
+
+    step_id   = waiting_step["id"]
+    step_num  = waiting_step["step_order"]
+    step_title = waiting_step["title"]
+    plan_id   = waiting_step["plan_id"]
+
+    mentor_done = suggest_freeze or (
+        "[mission_prete]" in result_content.lower()
+        or "[MISSION_PRETE]" in result_content
+    )
+
+    if mentor_done:
+        # MENTOR a terminé → marquer étape TERMINEE
+        db.execute("""
+            UPDATE jarvis_plan_steps
+            SET status = 'TERMINEE', output_text = ?,
+                completed_at = datetime('now'), updated_at = datetime('now')
+            WHERE id = ?
+        """, (result_content, step_id))
+        db.commit()
+        content = (
+            f"[JARVIS] ✅ MENTOR a terminé *(Étape {step_num} — {step_title})*\n\n"
+            f"Suite du plan en cours…"
+        )
+    else:
+        # MENTOR pose encore une question → rester EN_ATTENTE_UTILISATEUR
+        db.execute("""
+            UPDATE jarvis_plan_steps
+            SET output_text = ?, updated_at = datetime('now')
+            WHERE id = ?
+        """, (result_content, step_id))
+        db.commit()
+        preview = result_content[:500]
+        content = (
+            f"[JARVIS] ⏸️ MENTOR *(Étape {step_num})* :\n\n"
+            f"{preview}\n\n"
+            f"*Réponds ici — je transmettrai à MENTOR.*"
+        )
+
+    # Persister la réponse dans la conversation d'origine
+    cursor.execute("""
+        INSERT INTO messages
+        (conversation_id, role, content, agent, instance_ref, created_at)
+        VALUES (?, 'assistant', ?, 'JARVIS', NULL, datetime('now'))
+    """, (conversation_id, content))
+    db.execute(
+        "UPDATE conversations SET updated_at = datetime('now') WHERE id = ?",
+        (conversation_id,)
+    )
+    db.commit()
+    msg_id = cursor.lastrowid
+
+    return {
+        "message_id": msg_id,
+        "role": "assistant",
+        "content": content,
+        "agent": "JARVIS",
+        "instance_ref": None,
+        "suggest_freeze": False,
+        "freeze_reason": None,
+        "routing_info": {
+            "agent": "JARVIS", "action": "direct", "confidence": 1.0,
+            "clarification_needed": False, "clarification_question": None,
+            "reason": f"relay MENTOR étape {step_num}",
+            "clarification_asked": False
+        }
+    }
+
+
+async def _generate_plan(message: str, config: dict, db) -> dict | None:
+    """
+    Appelle Gemini Flash pour générer un plan structuré.
+    Retourne le dict du plan ou None si la demande est finalement mono-agent.
+    """
+    prompt = """Tu analyses une demande utilisateur pour JARVIS (assistant multi-agents).
+Détermine si elle nécessite plusieurs agents distincts.
+
+Agents disponibles :
+- MENTOR : réflexion, cadrage, architecture, décision (single-shot, livrable direct)
+- FORGE : exécution code (nécessite toujours MENTOR avant, depends_on_order obligatoire)
+- SENTINELLE : portefeuille investissement, watchlist, alertes
+- ATELIER : prospection commerciale (seulement si une URL de site est fournie)
+- MEDIA : génération image ou vidéo
+- JARVIS : synthèse finale ou rapport (jamais en 1re étape)
+
+Règles générales :
+- Si la demande ne nécessite qu'un seul agent → retourne {"multi_step": false}
+- Maximum 5 étapes
+- FORGE doit toujours avoir depends_on_order pointant vers MENTOR
+- Les étapes sans lien de dépendance peuvent tourner en parallèle (depends_on_order: null)
+
+Règles STRICTES par agent pour input_message :
+- MENTOR : input_message DOIT commencer EXACTEMENT par "[PLAN_DIRECT] " (avec espace)
+  suivi de la spec complète (contexte, objectif, fichiers si code, critères de succès).
+  Exemple : "[PLAN_DIRECT] Cadre une mission pour ajouter une page de statistiques au
+  dashboard. Fichiers concernés : dashboard.py, stats.html. Critère : graphiques mensuels."
+- SENTINELLE : input_message DOIT être une question de consultation pure, jamais une action.
+  Exemple : "Quel est le budget disponible ce mois ?" ou "Quelles sont les positions actuelles ?"
+  NE PAS formuler comme : "effectue", "teste", "vérifie en simulant", "passe un ordre".
+- ATELIER : N'inclure ATELIER que si le message de l'utilisateur contient explicitement une URL
+  (https://...). Si pas d'URL → ne pas inclure ATELIER dans le plan.
+  input_message DOIT contenir l'URL exacte du message original.
+- MEDIA : input_message = description précise de l'image/vidéo à générer.
+- JARVIS : input_message = "Synthétise les livrables des étapes précédentes en un rapport final."
+
+Format de retour (JSON strict, aucun texte autour) :
+{"multi_step": true, "plan_title": "...", "steps": [
+  {"order": 1, "agent": "...", "title": "...",
+   "input_message": "...", "depends_on_order": null},
+  {"order": 2, "agent": "...", "title": "...",
+   "input_message": "...", "depends_on_order": 1}
+]}
+OU si mono-agent :
+{"multi_step": false}"""
+
+    try:
+        model_id = get_model_id("routing", config)
+        response = await call_model(
+            model_id=model_id,
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": message}
+            ],
+            api_keys=config["api_keys"],
+            session_id=None,
+            step_name="jarvis_plan_generate",
+            model_type="routing",
+            db_conn=db,
+            module_name="jarvis"
+        )
+        data = json.loads(response)
+        if not data.get("multi_step"):
+            return None
+        steps = data.get("steps", [])
+        if len(steps) < 2:
+            return None
+        return data
+    except Exception as e:
+        logger.warning(f"[JARVIS] _generate_plan échoué ({e}), fallback routing normal")
+        return None
+
+
+async def _handle_multi_step(
+    conversation_id: int,
+    user_message: str,
+    plan_data: dict,
+    project_id: int | None,
+    db,
+    cursor
+) -> dict:
+    """
+    Crée le plan en DB, formate la plan card, persiste et retourne la réponse.
+    """
+    plan_title = plan_data["plan_title"]
+    steps = plan_data["steps"]
+
+    # Persister le message utilisateur
+    cursor.execute("""
+        INSERT INTO messages (conversation_id, role, content, agent, instance_ref, created_at)
+        VALUES (?, 'user', ?, 'JARVIS', NULL, datetime('now'))
+    """, (conversation_id, user_message))
+    db.commit()
+
+    # Créer le plan en DB
+    cursor.execute("""
+        INSERT INTO jarvis_plans (home_conversation_id, title, status)
+        VALUES (?, ?, 'EN_ATTENTE_CONFIRM')
+    """, (conversation_id, plan_title))
+    plan_id = cursor.lastrowid
+
+    order_to_step_id: dict[int, int] = {}
+    for step in steps:
+        dep_id = order_to_step_id.get(step.get("depends_on_order")) \
+                 if step.get("depends_on_order") else None
+        cursor.execute("""
+            INSERT INTO jarvis_plan_steps
+            (plan_id, step_order, agent, title, input_message, depends_on)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (plan_id, step["order"], step["agent"],
+              step["title"], step["input_message"], dep_id))
+        order_to_step_id[step["order"]] = cursor.lastrowid
+    db.commit()
+
+    # Construire la plan card (markdown)
+    agent_icons = {
+        "MENTOR": "🧠", "FORGE": "⚙️", "SENTINELLE": "🛡️",
+        "ATELIER": "💼", "MEDIA": "🎨", "JARVIS": "📝"
+    }
+    lines = [f"[JARVIS] J'ai décomposé ta demande en **{len(steps)} étapes** :\n"]
+    lines.append(f"📋 **{plan_title}**\n")
+    for s in steps:
+        icon = agent_icons.get(s["agent"], "•")
+        dep = f" *(↳ Ét.{s['depends_on_order']})*" if s.get("depends_on_order") else ""
+        lines.append(f"- Étape {s['order']} · {icon} **{s['agent']}** — {s['title']}{dep}")
+    lines.append("\nConfirme pour lancer l'exécution automatique.")
+    content = "\n".join(lines)
+
+    # instance_ref portant le plan_id pour les boutons frontend
+    instance_ref = {"type": "plan_confirm", "plan_id": plan_id}
+    instance_ref_json = json.dumps(instance_ref, ensure_ascii=False)
+
+    # Persister la réponse assistant
+    cursor.execute("""
+        INSERT INTO messages (conversation_id, role, content, agent, instance_ref, created_at)
+        VALUES (?, 'assistant', ?, 'JARVIS', ?, datetime('now'))
+    """, (conversation_id, content, instance_ref_json))
+    db.commit()
+    msg_id = cursor.lastrowid
+    cursor.execute(
+        "UPDATE conversations SET updated_at = datetime('now') WHERE id = ?",
+        (conversation_id,)
+    )
+    db.commit()
+
+    return {
+        "message_id": msg_id,
+        "role": "assistant",
+        "content": content,
+        "agent": "JARVIS",
+        "instance_ref": instance_ref,
+        "suggest_freeze": False,
+        "freeze_reason": None,
+        "routing_info": {
+            "agent": "JARVIS", "action": "direct", "confidence": 1.0,
+            "clarification_needed": False, "clarification_question": None,
+            "reason": f"plan multi-étapes généré ({len(steps)} étapes)",
+            "clarification_asked": False
+        }
+    }
+
+
+# ─── Dispatch direct (Plan Executor) ─────────────────────────────────────────
+
+async def dispatch_direct(
+    agent: str,
+    conversation_id: int,
+    message: str,
+    db,
+    config: dict,
+    project_id: int | None = None
+) -> tuple[str, bool]:
+    """
+    Envoie un message directement à un agent sans passer par le routeur LLM.
+    Utilisé par plan_executor pour exécuter les étapes d'un plan.
+    Retourne (response_content, suggest_freeze).
+    """
+    cursor = db.cursor()
+
+    # Persister le message utilisateur dans la sous-conversation
+    cursor.execute("""
+        INSERT INTO messages
+        (conversation_id, role, content, agent, instance_ref, created_at)
+        VALUES (?, 'user', ?, 'JARVIS', NULL, datetime('now'))
+    """, (conversation_id, message))
+    db.commit()
+
+    # Routing synthétique — agent déjà connu
+    routing_result = {
+        "agent": agent,
+        "action": "new_instance",
+        "confidence": 1.0,
+        "clarification_needed": False,
+        "clarification_question": None,
+        "reason": "dispatch_direct — plan executor"
+    }
+
+    # Pas d'instance_ref précédente (étape fraîche)
+    current_instance_ref = None
+
+    # Appel au dispatcher existant
+    response_content, agent_used, instance_ref, suggest_freeze, freeze_reason = \
+        await _dispatch(routing_result, message, conversation_id, project_id,
+                        current_instance_ref, db, config, cursor)
+
+    # Persister la réponse dans la sous-conversation
+    import json as _json
+    instance_ref_json = _json.dumps(instance_ref, ensure_ascii=False) \
+                        if instance_ref else None
+    cursor.execute("""
+        INSERT INTO messages
+        (conversation_id, role, content, agent, instance_ref, created_at)
+        VALUES (?, 'assistant', ?, ?, ?, datetime('now'))
+    """, (conversation_id, response_content, agent_used, instance_ref_json))
+    db.execute(
+        "UPDATE conversations SET updated_at = datetime('now') WHERE id = ?",
+        (conversation_id,)
+    )
+    db.commit()
+
+    return response_content, suggest_freeze

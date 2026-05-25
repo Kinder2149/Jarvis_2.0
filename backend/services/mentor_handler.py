@@ -53,6 +53,57 @@ def _is_forge_validation(message: str) -> bool:
     return msg.startswith("oui") or any(s == msg or msg.startswith(s + " ") for s in _FORGE_CONFIRM_SIGNALS)
 
 
+async def _handle_plan_direct(spec: str, project_id: int | None,
+                               db, config: dict) -> tuple:
+    """
+    Mode plan single-shot : produit directement le livrable complet sans dialogue.
+    Appelé quand l'input commence par '[PLAN_DIRECT] '.
+    Ajoute [MISSION_PRETE] pour que plan_executor détecte la fin.
+    """
+    cursor = db.cursor()
+    if not project_id:
+        cursor.execute(
+            "SELECT id FROM projects WHERE module_type IN ('code','dossier') ORDER BY id LIMIT 1"
+        )
+        row = cursor.fetchone()
+        project_id = row["id"] if row else None
+
+    system_prompt = (
+        "Tu es MENTOR, expert senior en cadrage de missions de développement logiciel. "
+        "Tu dois produire DIRECTEMENT un livrable de cadrage complet en un seul message, "
+        "sans poser de questions et sans demander de confirmation. "
+        "Applique mentalement la checklist 10 points (Backend, Frontend, DB, API, UX, "
+        "Autres agents, Pièges, Dépendances, Critères succès, Documentation) avant de rédiger. "
+        "Utilise EXACTEMENT ce format de sortie :\n\n"
+        "# MISSION CODE — [Titre court]\n\n"
+        "## Objectif\n[1-3 phrases fonctionnelles]\n\n"
+        "## Contexte\n[Décisions figées pertinentes, contraintes projet]\n\n"
+        "## Fichiers concernés\n- `chemin/fichier.ext` — [rôle]\n\n"
+        "## Contraintes\n- [Contrainte 1]\n\n"
+        "## Critères de réussite (test manuel en français)\n"
+        "1. [Action utilisateur]\n2. [Résultat attendu]\n\n"
+        "## Recommandation modèle\n`anthropic/claude-haiku-4.5` — [raison]\n\n"
+        "Termine OBLIGATOIREMENT par la balise exacte sur sa propre ligne : [MISSION_PRETE]"
+    )
+    model_id = get_model_id("analysis", config)
+    result = await call_model(
+        model_id=model_id,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": spec}
+        ],
+        api_keys=config["api_keys"],
+        session_id=None,
+        step_name="mentor_plan_direct",
+        model_type="analysis",
+        db_conn=db,
+        module_name="jarvis"
+    )
+    if "[MISSION_PRETE]" not in result and "[mission_prete]" not in result.lower():
+        result = result.rstrip() + "\n\n[MISSION_PRETE]"
+    return result, "MENTOR", None, True, "Livrable généré directement (mode plan)"
+
+
 async def handle(
     conversation_id: int,
     project_id: int | None,
@@ -65,6 +116,11 @@ async def handle(
     Façade MENTOR. Retourne (content, agent, instance_ref, suggest_freeze, freeze_reason).
     Trouve ou crée une session réflexion OUVERTE, délègue à reflexion_service.
     """
+    # Mode plan direct : bypass total du dialogue reflexion
+    if message.startswith("[PLAN_DIRECT]"):
+        spec = message[len("[PLAN_DIRECT]"):].strip()
+        return await _handle_plan_direct(spec, project_id, db, config)
+
     cursor = db.cursor()
 
     # Confirmation du type de livrable (tour dédié)
@@ -201,15 +257,29 @@ async def handle(
 
     instance_ref = {"type": "reflexion", "id": reflexion_session_id}
 
-    # Si la mission est prête : ajouter une question conversationnelle oui/non
-    # et marquer l'état pour traiter la réponse au prochain tour
+    # Si la mission est prête : vérifier checklist avant figement (mission_code uniquement)
+    session_meta = reflexion_service.get_session(reflexion_session_id, db)
+    is_mission_code = session_meta and session_meta.get("livrable_type") == "mission_code"
+
     if suggest_freeze:
-        content = content.rstrip() + (
-            "\n\n---\n"
-            "**Mission prête.** Réponds **oui** pour passer à FORGE et démarrer l'exécution, "
-            "ou continue à affiner si tu veux ajuster quelque chose."
-        )
-        instance_ref = {"type": "reflexion", "id": reflexion_session_id, "awaiting_forge_confirm": True}
+        all_covered, missing_points = await _verify_mentor_checklist(
+            reflexion_session_id, messages, config, db
+        ) if is_mission_code else (True, [])
+        if not all_covered:
+            missing_str = ", ".join(missing_points)
+            content = content.rstrip() + (
+                f"\n\n---\n⚠️ Avant de figer, ces points n'ont pas été abordés : "
+                f"**{missing_str}**. Veux-tu les couvrir ou les marquer N/A ?"
+            )
+            suggest_freeze = False
+            freeze_reason = None
+        else:
+            content = content.rstrip() + (
+                "\n\n---\n"
+                "**Mission prête.** Réponds **oui** pour passer à FORGE et démarrer l'exécution, "
+                "ou continue à affiner si tu veux ajuster quelque chose."
+            )
+            instance_ref = {"type": "reflexion", "id": reflexion_session_id, "awaiting_forge_confirm": True}
 
     return content, "MENTOR", instance_ref, suggest_freeze, freeze_reason
 
@@ -244,6 +314,52 @@ def _resolve_session(
     return reflexion_service.create_session(
         project_id, livrable_type, db
     )
+
+
+async def _verify_mentor_checklist(session_id: int, messages: list, config: dict, db) -> tuple[bool, list[str]]:
+    """
+    Vérifie si les 10 points de la checklist MENTOR ont été couverts dans la conversation.
+    Retourne (all_covered: bool, missing_points: list[str]).
+    """
+    convo_summary = "\n".join([
+        f"{m['role'].upper()}: {m['content'][:400]}"
+        for m in messages[-12:]
+        if m["role"] in ("user", "assistant")
+    ])
+    
+    prompt = (
+        "Analyse cette conversation MENTOR et détermine quels points de la checklist "
+        "ont été abordés (même brièvement ou marqués N/A).\n\n"
+        "Checklist : 1.Backend 2.Frontend 3.DB 4.API 5.UX "
+        "6.Autres_agents 7.Pièges 8.Dépendances 9.Critères_succès 10.Documentation\n\n"
+        f"Conversation :\n{convo_summary}\n\n"
+        "Réponds UNIQUEMENT en JSON valide :\n"
+        '{"covered": [1,3,5,9], "missing": [2,4,6,7,8,10]}'
+    )
+    
+    try:
+        model_id = get_model_id("routing", config)
+        response = await call_model(
+            model_id=model_id,
+            messages=[{"role": "user", "content": prompt}],
+            api_keys=config["api_keys"],
+            session_id=session_id,
+            step_name="mentor_checklist_verify",
+            model_type="routing",
+            db_conn=db,
+            module_name="jarvis"
+        )
+        result = json.loads(response)
+        missing = result.get("missing", [])
+        point_names = {
+            1: "Backend", 2: "Frontend", 3: "Base de données", 4: "API", 5: "UX",
+            6: "Autres agents", 7: "Pièges", 8: "Dépendances", 9: "Critères de succès", 10: "Documentation"
+        }
+        missing_names = [point_names.get(p, str(p)) for p in missing]
+        return len(missing) == 0, missing_names
+    except Exception as e:
+        logger.warning(f"[MENTOR] _verify_mentor_checklist échoué ({e})")
+        return True, []
 
 
 async def _check_suggest_freeze(

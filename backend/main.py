@@ -12,7 +12,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from backend.database import init_db, get_connection
-from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle, jarvis, media, orchestrateur
+from backend.routers import projects, pipelines, files, chat, atelier, config, reflexions, sentinelle, jarvis, media, orchestrateur, plans
 
 scheduler = AsyncIOScheduler()
 
@@ -53,6 +53,18 @@ async def lifespan(app: FastAPI):
     )
     affected_steps = cursor.rowcount
     
+    # Recovery plans interrompus
+    cursor.execute("""
+        UPDATE jarvis_plan_steps
+        SET status = 'EN_ATTENTE', updated_at = datetime('now')
+        WHERE status = 'EN_COURS'
+    """)
+    cursor.execute("""
+        UPDATE jarvis_plans
+        SET status = 'CONFIRMED', updated_at = datetime('now')
+        WHERE status = 'EN_COURS'
+    """)
+    
     conn.commit()
     conn.close()
     
@@ -79,8 +91,25 @@ async def lifespan(app: FastAPI):
         id='sentinelle_alertes',
         replace_existing=True
     )
+    
+    async def plan_executor_job():
+        from backend.services import plan_executor
+        try:
+            await plan_executor.tick_all_plans()
+        except Exception as e:
+            logger.error(f"Erreur plan_executor_job: {e}")
+    
+    scheduler.add_job(
+        plan_executor_job,
+        'interval',
+        seconds=5,
+        id='plan_executor',
+        replace_existing=True
+    )
+    
     scheduler.start()
     logger.info("Scheduler APScheduler démarré — vérification alertes chaque lundi 8h")
+    logger.info("Plan executor démarré — tick toutes les 5s")
     
     logger.info("JARVIS démarré")
     
@@ -111,6 +140,7 @@ app.include_router(sentinelle.router, prefix="/api")
 app.include_router(jarvis.router, prefix="/api")
 app.include_router(media.router, prefix="/api")
 app.include_router(orchestrateur.router, prefix="/api")
+app.include_router(plans.router, prefix="/api")
 
 frontend_path = Path(__file__).parent.parent / "frontend"
 logger.info(f"Frontend path: {frontend_path}")

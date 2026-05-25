@@ -489,19 +489,169 @@ async def handle_chat_validation(session_id: int, message: str,
         )
 
 
-async def _continue_pipeline_in_background(session_id: int, start_step: int,
-                                            project_path: str, conversation_id: int) -> None:
-    """Continue le pipeline depuis start_step après une validation dans le chat.
-    Injecte un message de progression après chaque step automatique."""
-    from backend.database import get_connection, load_config
-    db = get_connection()
+async def _audit_step_coherence(session_id: int, step_idx: int, step_name: str,
+                                 conversation_id: int, db, config) -> bool:
+    """
+    Audit de cohérence après une étape FORGE complétée.
+    Retourne True si cohérent (continuer), False si divergence majeure (pause).
+    """
+    cursor = db.cursor()
+    
+    # Récupérer le livrable_forge depuis mission_prompts
+    cursor.execute("""
+        SELECT mp.livrable_forge, mp.content
+        FROM mission_prompts mp
+        JOIN sessions s ON s.source_mission_prompt_id = mp.id
+        WHERE s.id = ?
+    """, (session_id,))
+    mp_row = cursor.fetchone()
+    
+    if not mp_row or not mp_row["livrable_forge"]:
+        # Pas de livrable disponible → skip audit
+        return True
+    
+    livrable_forge = json.loads(mp_row["livrable_forge"])
+    perimetre = livrable_forge.get("perimetre", mp_row["content"][:500] if mp_row["content"] else "mission code")
+    
+    # Récupérer le résultat de l'étape
+    cursor.execute("""
+        SELECT output_data, summary_fr FROM pipeline_steps
+        WHERE session_id = ? AND step_index = ?
+          AND (sub_step_index IS NULL OR sub_step_index = -1)
+        LIMIT 1
+    """, (session_id, step_idx))
+    step_row = cursor.fetchone()
+    
+    if not step_row:
+        return True
+    
+    step_output = step_row["output_data"] or step_row["summary_fr"] or "(résultat non disponible)"
+    step_output_extract = step_output[:1000]
+    
+    # Appel LLM pour audit
+    audit_prompt = (
+        f"Tu es JARVIS, auditeur de cohérence. "
+        f"L'étape {step_idx + 1} de FORGE vient de se terminer.\n\n"
+        f"Périmètre attendu de la mission : {perimetre}\n\n"
+        f"Résultat produit par FORGE (extrait) :\n{step_output_extract}\n\n"
+        f"En 1-2 phrases : le résultat est-il cohérent avec le périmètre ? "
+        f"Signale uniquement si une divergence majeure est détectée. "
+        f"Si tout est OK, réponds 'Étape cohérente.'"
+    )
+    
     try:
-        config = load_config()
-        cursor = db.cursor()
-        current_step_idx = start_step
-        result = await pipeline_engine.execute_step(session_id, current_step_idx, project_path, db, config)
+        model_id = get_model_id("routing", config)
+        audit_result = await call_model(
+            model_id=model_id,
+            messages=[{"role": "user", "content": audit_prompt}],
+            api_keys=config["api_keys"],
+            session_id=session_id,
+            step_name="forge_audit_coherence",
+            model_type="routing",
+            db_conn=db,
+            module_name="jarvis"
+        )
+        
+        # Injecter résultat audit dans conversation
+        _inject_jarvis_message(
+            conversation_id=conversation_id,
+            content=f"**JARVIS** — 🔍 Audit étape {step_idx + 1} : {audit_result}",
+            agent="JARVIS",
+            instance_ref={"type": "pipeline", "id": session_id}
+        )
+        
+        # Détecter divergence majeure
+        audit_lower = audit_result.lower()
+        is_coherent = any(word in audit_lower for word in ["cohérent", "coherent", "ok", "conforme", "correct"])
+        
+        if not is_coherent:
+            logger.warning(f"[FORGE] Audit détecte divergence étape {step_idx + 1} (session {session_id})")
+        
+        return is_coherent
+        
+    except Exception as e:
+        logger.warning(f"[FORGE] Audit cohérence échoué (session {session_id}, step {step_idx}): {e}")
+        # En cas d'échec audit, continuer (ne pas bloquer le pipeline)
+        return True
 
-        while result.get("status") == "auto_completed":
+
+async def _execute_pipeline_loop(session_id: int, start_step_idx: int,
+                                  project_path: str, conversation_id: int,
+                                  db, config) -> None:
+    """
+    Boucle d'exécution pipeline avec retry automatique sur échec (max 2 retries).
+    Injecte messages de progression et gère escalade JARVIS après 3 tentatives.
+    """
+    cursor = db.cursor()
+    current_step_idx = start_step_idx
+    result = await pipeline_engine.execute_step(session_id, current_step_idx, project_path, db, config)
+
+    while result.get("status") in ("auto_completed", "failed"):
+        if result.get("status") == "failed":
+            # Récupérer retry_data depuis consultation_data
+            cursor.execute("SELECT consultation_data FROM conversations WHERE id = ?", (conversation_id,))
+            row = cursor.fetchone()
+            retry_data = json.loads(row["consultation_data"]) if row and row["consultation_data"] else {}
+            retries = retry_data.get("forge_retries", {})
+            
+            # Récupérer step_id pour cette étape
+            cursor.execute("""
+                SELECT id, step_display_name FROM pipeline_steps
+                WHERE session_id = ? AND step_index = ?
+                  AND (sub_step_index IS NULL OR sub_step_index = -1)
+                LIMIT 1
+            """, (session_id, current_step_idx))
+            step_row = cursor.fetchone()
+            if not step_row:
+                break
+            
+            step_id = step_row["id"]
+            step_name = step_row["step_display_name"] or f"Étape {current_step_idx + 1}"
+            step_key = str(step_id)
+            attempt = retries.get(step_key, 0)
+            
+            if attempt < 2:
+                # Retry : incrémenter, sauvegarder, remettre step en QUEUED
+                retries[step_key] = attempt + 1
+                retry_data["forge_retries"] = retries
+                db.execute(
+                    "UPDATE conversations SET consultation_data = ? WHERE id = ?",
+                    (json.dumps(retry_data, ensure_ascii=False), conversation_id)
+                )
+                db.execute(
+                    "UPDATE pipeline_steps SET status = 'QUEUED' WHERE id = ?",
+                    (step_id,)
+                )
+                db.commit()
+                
+                _inject_jarvis_message(
+                    conversation_id=conversation_id,
+                    content=f"**FORGE** — 🔄 Retry {attempt + 1}/2 — *{step_name}*...",
+                    instance_ref={"type": "pipeline", "id": session_id}
+                )
+                logger.info(f"[FORGE] Retry {attempt + 1}/2 pour step {step_id} (session {session_id})")
+                
+                # Relancer l'étape
+                result = await pipeline_engine.execute_step(session_id, current_step_idx, project_path, db, config)
+                continue
+            else:
+                # Escalade JARVIS après 3 tentatives
+                error_msg = result.get("error", "erreur inconnue")
+                _inject_jarvis_message(
+                    conversation_id=conversation_id,
+                    content=(
+                        f"**JARVIS** — ⚠️ FORGE bloqué après 3 tentatives — *{step_name}*\n\n"
+                        f"**Erreur :** {error_msg}\n\n"
+                        f"Voir [mission.html](mission.html?session={session_id}&from=jarvis) pour les logs complets."
+                    ),
+                    agent="JARVIS",
+                    instance_ref={"type": "pipeline", "id": session_id}
+                )
+                logger.error(f"[FORGE] Escalade JARVIS après 3 échecs step {step_id} (session {session_id})")
+                return
+        
+        # Step auto_completed : audit cohérence puis continuer
+        if result.get("status") == "auto_completed":
             cursor.execute("""
                 SELECT step_display_name FROM pipeline_steps
                 WHERE session_id = ? AND step_index = ?
@@ -510,53 +660,112 @@ async def _continue_pipeline_in_background(session_id: int, start_step: int,
             """, (session_id, current_step_idx))
             step_row = cursor.fetchone()
             step_name = step_row["step_display_name"] if step_row else f"Étape {current_step_idx + 1}"
+            
+            # Message progression
             _inject_jarvis_message(
                 conversation_id=conversation_id,
                 content=f"**FORGE** — ✓ *{step_name}* terminé — je continue...",
                 instance_ref={"type": "pipeline", "id": session_id}
             )
+            
+            # Audit de cohérence
+            is_coherent = await _audit_step_coherence(
+                session_id, current_step_idx, step_name, conversation_id, db, config
+            )
+            
+            if not is_coherent:
+                # Divergence détectée → passer en WAITING_VALIDATION
+                cursor.execute("""
+                    UPDATE pipeline_steps 
+                    SET status = 'WAITING_VALIDATION'
+                    WHERE session_id = ? AND step_index = ?
+                      AND (sub_step_index IS NULL OR sub_step_index = -1)
+                """, (session_id, current_step_idx))
+                cursor.execute(
+                    "UPDATE sessions SET status = 'WAITING_VALIDATION' WHERE id = ?",
+                    (session_id,)
+                )
+                db.commit()
+                
+                _inject_jarvis_message(
+                    conversation_id=conversation_id,
+                    content=(
+                        f"**JARVIS** — ⚠️ Divergence détectée sur *{step_name}*\n\n"
+                        f"Le résultat ne correspond pas exactement au périmètre attendu. "
+                        f"Vérifie le résultat et réponds **oui** pour continuer malgré tout, "
+                        f"ou décris les ajustements nécessaires."
+                    ),
+                    agent="JARVIS",
+                    instance_ref={"type": "pipeline", "id": session_id}
+                )
+                logger.info(f"[FORGE] Pipeline {session_id} pausé après audit divergent étape {current_step_idx}")
+                return
+            
+            # Cohérent → continuer
             current_step_idx = result["next_step"]
             result = await pipeline_engine.execute_step(session_id, current_step_idx, project_path, db, config)
-
-        if result.get("status") == "waiting_validation":
-            cursor.execute("""
-                SELECT step_display_name, summary_fr FROM pipeline_steps
-                WHERE session_id = ? AND status = 'WAITING_VALIDATION'
-                ORDER BY step_index ASC LIMIT 1
-            """, (session_id,))
-            waiting_step = cursor.fetchone()
-            step_name = waiting_step["step_display_name"] if waiting_step else "prochaine étape"
-            summary = (waiting_step["summary_fr"] + "\n\n") if waiting_step and waiting_step["summary_fr"] else ""
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=(
-                    f"**FORGE** — J'ai besoin de ta validation pour : *{step_name}*\n\n"
-                    f"{summary}"
-                    "Réponds **oui** pour valider et continuer, ou décris ce que tu veux modifier."
-                ),
-                instance_ref={"type": "pipeline", "id": session_id}
-            )
-        elif result.get("status") == "completed":
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=(
-                    f"**FORGE** — Mission accomplie ✅\n\n"
-                    f"Les fichiers sont écrits dans : `{project_path}`\n\n"
-                    "Lance un test manuel pour valider, puis dis-moi ce que tu observes."
+    
+    # Traiter les statuts finaux (waiting_validation, completed)
+    if result.get("status") == "waiting_validation":
+        cursor.execute("""
+            SELECT step_display_name, summary_fr FROM pipeline_steps
+            WHERE session_id = ? AND status = 'WAITING_VALIDATION'
+            ORDER BY step_index ASC LIMIT 1
+        """, (session_id,))
+        waiting_step = cursor.fetchone()
+        step_name = waiting_step["step_display_name"] if waiting_step else "prochaine étape"
+        summary = (waiting_step["summary_fr"] + "\n\n") if waiting_step and waiting_step["summary_fr"] else ""
+        _inject_jarvis_message(
+            conversation_id=conversation_id,
+            content=(
+                f"**FORGE** — J'ai besoin de ta validation pour : *{step_name}*\n\n"
+                f"{summary}"
+                "Réponds **oui** pour valider et continuer, ou décris ce que tu veux modifier."
+            ),
+            instance_ref={"type": "pipeline", "id": session_id}
+        )
+    elif result.get("status") == "completed":
+        # Vérification post-pipeline MENTOR→FORGE
+        try:
+            verify_result = await verify(session_id, db)
+            if verify_result and not verify_result.get("coherent"):
+                warning_msg = verify_result.get("warning", "divergence détectée")
+                _inject_jarvis_message(
+                    conversation_id=conversation_id,
+                    content=f"**JARVIS** — 🔍 Vérification post-FORGE :\n\n⚠️ {warning_msg}",
+                    agent="JARVIS",
+                    instance_ref={"type": "pipeline", "id": session_id}
                 )
+            elif verify_result:
+                _inject_jarvis_message(
+                    conversation_id=conversation_id,
+                    content="**JARVIS** — 🔍 Vérification post-FORGE : ✅ Cohérent avec la mission MENTOR.",
+                    agent="JARVIS",
+                    instance_ref={"type": "pipeline", "id": session_id}
+                )
+        except Exception as e:
+            logger.warning(f"[FORGE] verify() post-pipeline échoué: {e}")
+        
+        # Message de fin de pipeline
+        _inject_jarvis_message(
+            conversation_id=conversation_id,
+            content=(
+                f"**FORGE** — Mission accomplie ✅\n\n"
+                f"Les fichiers sont écrits dans : `{project_path}`\n\n"
+                "Lance un test manuel pour valider, puis dis-moi ce que tu observes."
             )
-        elif result.get("status") == "failed":
-            error_msg = result.get("error", "erreur inconnue")
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=(
-                    f"**FORGE** — Le pipeline a rencontré une erreur ❌\n\n"
-                    f"**Erreur :** {error_msg}\n\n"
-                    f"Pour voir le détail et relancer :\n"
-                    f"→ [Ouvrir dans FORGE](mission.html?session={session_id}&from=jarvis)"
-                ),
-                instance_ref={"type": "pipeline", "id": session_id}
-            )
+        )
+
+
+async def _continue_pipeline_in_background(session_id: int, start_step: int,
+                                            project_path: str, conversation_id: int) -> None:
+    """Continue le pipeline depuis start_step après une validation dans le chat.
+    Utilise _execute_pipeline_loop pour gérer retries automatiques."""
+    from backend.database import get_connection, load_config
+    db = get_connection()
+    try:
+        config = load_config()
+        await _execute_pipeline_loop(session_id, start_step, project_path, conversation_id, db, config)
     except Exception as e:
         logger.error(f"[FORGE] _continue_pipeline_in_background échoué (session={session_id}): {e}")
         try:
@@ -572,82 +781,16 @@ async def _continue_pipeline_in_background(session_id: int, start_step: int,
 
 async def _run_pipeline_in_background(session_id: int, project_path: str, conversation_id: int) -> None:
     """
-    Exécute les steps du pipeline jusqu'au premier WAITING_VALIDATION,
-    puis injecte un message dans la conversation JARVIS pour demander la validation.
-    Injecte un message de progression après chaque step automatique.
+    Exécute les steps du pipeline jusqu'au premier WAITING_VALIDATION.
+    Utilise _execute_pipeline_loop pour gérer retries automatiques.
     S'exécute en arrière-plan via asyncio.create_task.
     """
     from backend.database import get_connection, load_config
     db = get_connection()
     try:
         config = load_config()
-        cursor = db.cursor()
-        current_step_idx = 0
-        result = await pipeline_engine.execute_step(session_id, current_step_idx, project_path, db, config)
-
-        while result.get("status") == "auto_completed":
-            cursor.execute("""
-                SELECT step_display_name FROM pipeline_steps
-                WHERE session_id = ? AND step_index = ?
-                  AND (sub_step_index IS NULL OR sub_step_index = -1)
-                LIMIT 1
-            """, (session_id, current_step_idx))
-            step_row = cursor.fetchone()
-            step_name = step_row["step_display_name"] if step_row else f"Étape {current_step_idx + 1}"
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=f"**FORGE** — ✓ *{step_name}* terminé — je continue...",
-                instance_ref={"type": "pipeline", "id": session_id}
-            )
-            current_step_idx = result["next_step"]
-            result = await pipeline_engine.execute_step(session_id, current_step_idx, project_path, db, config)
-
-        if result.get("status") == "waiting_validation":
-            cursor.execute("""
-                SELECT step_display_name, summary_fr FROM pipeline_steps
-                WHERE session_id = ? AND status = 'WAITING_VALIDATION'
-                ORDER BY step_index ASC LIMIT 1
-            """, (session_id,))
-            _ws = cursor.fetchone()
-            step_name = _ws["step_display_name"] if _ws else "Code généré"
-            summary = (_ws["summary_fr"] + "\n\n") if _ws and _ws["summary_fr"] else ""
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=(
-                    f"**FORGE** — J'ai terminé l'étape *{step_name}* et j'attends ta validation.\n\n"
-                    f"{summary}"
-                    "Réponds **oui** pour valider et continuer, ou décris ce que tu veux modifier."
-                ),
-                instance_ref={"type": "pipeline", "id": session_id}
-            )
-            logger.info(f"[FORGE] Pipeline {session_id} en attente de validation — message FORGE injecté conv {conversation_id}")
-
-        elif result.get("status") == "completed":
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=(
-                    f"**FORGE** — Mission accomplie ✅\n\n"
-                    f"Les fichiers sont écrits dans : `{project_path}`\n\n"
-                    "Lance un test manuel pour valider le résultat. "
-                    "Dis-moi ce que tu observes — on ajuste si besoin ou on passe à la prochaine mission."
-                ),
-                instance_ref={"type": "pipeline", "id": session_id}
-            )
-
-        elif result.get("status") == "failed":
-            error_msg = result.get('error', 'erreur inconnue')
-            _inject_jarvis_message(
-                conversation_id=conversation_id,
-                content=(
-                    f"**FORGE** — Le pipeline a rencontré une erreur ❌\n\n"
-                    f"**Erreur :** {error_msg}\n\n"
-                    f"Pour voir le détail et relancer :\n"
-                    f"→ [Ouvrir dans FORGE](mission.html?session={session_id}&from=jarvis)"
-                ),
-                instance_ref={"type": "pipeline", "id": session_id}
-            )
-            logger.error(f"[FORGE] Pipeline {session_id} échoué: {error_msg}")
-
+        await _execute_pipeline_loop(session_id, 0, project_path, conversation_id, db, config)
+        logger.info(f"[FORGE] Pipeline {session_id} exécuté avec succès")
     except Exception as e:
         logger.error(f"[FORGE] Erreur pipeline background session {session_id}: {e}")
         _inject_jarvis_message(

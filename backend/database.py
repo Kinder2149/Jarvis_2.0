@@ -433,6 +433,43 @@ def init_db():
         )
     """)
     
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jarvis_plans (
+            id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+            home_conversation_id INTEGER NOT NULL,
+            title                TEXT NOT NULL,
+            status               TEXT NOT NULL DEFAULT 'EN_ATTENTE_CONFIRM'
+                CHECK(status IN ('EN_ATTENTE_CONFIRM','CONFIRMED','EN_COURS',
+                                 'TERMINE','ECHEC','ANNULE')),
+            created_at           TEXT DEFAULT (datetime('now')),
+            updated_at           TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (home_conversation_id) REFERENCES conversations(id)
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jarvis_plan_steps (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            plan_id             INTEGER NOT NULL,
+            step_order          INTEGER NOT NULL,
+            agent               TEXT NOT NULL
+                CHECK(agent IN ('MENTOR','FORGE','SENTINELLE','ATELIER','MEDIA','JARVIS')),
+            title               TEXT NOT NULL,
+            input_message       TEXT NOT NULL,
+            output_text         TEXT,
+            error_message       TEXT,
+            sub_conversation_id INTEGER,
+            status              TEXT NOT NULL DEFAULT 'EN_ATTENTE'
+                CHECK(status IN ('EN_ATTENTE','EN_COURS','EN_ATTENTE_UTILISATEUR',
+                                 'TERMINEE','ECHEC','ANNULEE')),
+            depends_on          INTEGER,
+            created_at          TEXT DEFAULT (datetime('now')),
+            updated_at          TEXT DEFAULT (datetime('now')),
+            completed_at        TEXT,
+            FOREIGN KEY (plan_id)    REFERENCES jarvis_plans(id),
+            FOREIGN KEY (depends_on) REFERENCES jarvis_plan_steps(id)
+        )
+    """)
+    
     conn.commit()
     _create_reflexion_tables(conn)
     _migrate_v2(conn)
@@ -441,6 +478,7 @@ def init_db():
     _migrate_reflexion_attachments(conn)
     _migrate_v4_jarvis(conn)
     _migrate_v5_media(conn)
+    _migrate_v6_consultation_state(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
 
@@ -708,6 +746,38 @@ def _migrate_v5_media(conn):
     except Exception:
         pass  # Colonne déjà présente — idempotent
 
+    conn.commit()
+
+
+def _migrate_v6_consultation_state(conn):
+    """Migration v6 : consultation_state machine (conversations directes uniquement).
+    
+    Les plans utilisent jarvis_plans.status + jarvis_plan_steps.status.
+    
+    Valeurs autorisées pour consultation_state :
+    - NULL : conversation normale sans machine d'état
+    - 'parsing' : parsing initial de la demande utilisateur
+    - 'mentor_analysis' : MENTOR analyse et produit un livrable
+    - 'user_questioning' : JARVIS pose des questions de clarification à l'utilisateur
+    - 'mentor_validation' : MENTOR valide/ajuste le livrable après réponses utilisateur
+    - 'forge_running' : FORGE exécute le code
+    - 'jarvis_step_audit' : JARVIS audite le résultat d'une étape
+    - 'completed' : consultation terminée avec succès
+    
+    consultation_data : JSON libre (TEXT) pour stocker métadonnées, ex: {"forge_retries": {"step_0": 1}}
+    """
+    cursor = conn.cursor()
+    
+    # Guard idempotent : vérifier si colonnes existent déjà
+    cursor.execute("PRAGMA table_info(conversations)")
+    conv_cols = {row["name"] for row in cursor.fetchall()}
+    
+    if "consultation_state" not in conv_cols:
+        conn.execute("ALTER TABLE conversations ADD COLUMN consultation_state TEXT DEFAULT NULL")
+    
+    if "consultation_data" not in conv_cols:
+        conn.execute("ALTER TABLE conversations ADD COLUMN consultation_data TEXT DEFAULT NULL")
+    
     conn.commit()
 
 
