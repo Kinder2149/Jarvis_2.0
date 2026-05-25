@@ -1291,6 +1291,7 @@
             <div class="jagent-selector-item" data-agent="SENTINELLE" onclick="selectAgentFromDropdown('SENTINELLE')">🛡️ SENTINELLE</div>
             <div class="jagent-selector-item" data-agent="ATELIER" onclick="selectAgentFromDropdown('ATELIER')">💼 ATELIER</div>
             <div class="jagent-selector-item" data-agent="MEDIA" onclick="selectAgentFromDropdown('MEDIA')">🎨 MEDIA</div>
+            <div class="jagent-selector-item" data-agent="DISC" onclick="selectAgentFromDropdown('DISC')">🥏 DISC</div>
           </div>
         </div>
         <div id="jchat-row">
@@ -1435,7 +1436,7 @@
           <!-- DISC -->
           <div class="jagent-card" id="jcard-DISC"
                style="--ac:#22c55e;--ac-dim:rgba(34,197,94,0.2)"
-               onclick="selectAgent('DISC')">
+               onclick="openTerminal('DISC')">
             <div class="jagent-card-img">
               <img src="assets/agents/Disc1.svg" alt="DISC"
                    onerror="this.style.display='none'">
@@ -1576,15 +1577,17 @@
       FORGE: '⚙️ FORGE',
       SENTINELLE: '🛡️ SENTINELLE',
       ATELIER: '💼 ATELIER',
-      MEDIA: '🎨 MEDIA'
+      MEDIA: '🎨 MEDIA',
+      DISC: '🥏 DISC'
     };
-    
+
     const titles = {
       MENTOR: 'Réflexions ouvertes',
       FORGE: 'Pipelines en cours',
       SENTINELLE: 'Veille active',
       ATELIER: 'Prospects en pipeline',
-      MEDIA: 'Générations Media'
+      MEDIA: 'Générations Media',
+      DISC: 'Règles WFDF 2025-2028'
     };
     
     terminal.innerHTML = `
@@ -1652,6 +1655,9 @@
           break;
         case 'MEDIA':
           await loadMediaTerminal(body);
+          break;
+        case 'DISC':
+          await loadDiscTerminal(body);
           break;
         default:
           body.innerHTML = '<div class="jterm-empty">Terminal non disponible</div>';
@@ -2088,6 +2094,46 @@
       `;
     } else {
       body.innerHTML = '<div class="jterm-empty">Aucune génération active</div>';
+    }
+  }
+
+  // ── TERMINAL DISC ────────────────────────────────────────────────────────
+  async function loadDiscTerminal(body) {
+    try {
+      const stats = await fetch('/api/disc/stats').then(r => r.json());
+      const rulesLoaded = stats.rules_loaded || 0;
+      const totalQ = stats.total_questions || 0;
+      const lastAt = stats.last_at ? new Date(stats.last_at).toLocaleDateString('fr-FR') : null;
+
+      if (rulesLoaded === 0) {
+        body.innerHTML = '<div class="jterm-empty">Base de règles vide — lance le script d\'ingestion PDF</div>';
+        return;
+      }
+
+      body.innerHTML = `
+        <div class="jterm-item">
+          <div class="jterm-item-title">Base WFDF 2025-2028</div>
+          <div class="jterm-item-meta">
+            ${rulesLoaded} règle${rulesLoaded > 1 ? 's' : ''} chargée${rulesLoaded > 1 ? 's' : ''}
+            · ${totalQ} question${totalQ > 1 ? 's' : ''} traitée${totalQ > 1 ? 's' : ''}
+            ${lastAt ? '· Dernière : ' + lastAt : ''}
+          </div>
+          <div class="jterm-item-actions">
+            <a href="/api/disc/rules" target="_blank" class="jterm-btn">→ Voir les règles</a>
+          </div>
+        </div>
+        <div class="jterm-item" style="margin-top:0.5rem">
+          <div class="jterm-item-title" style="font-size:0.75rem;opacity:0.7">Ingestion PDF</div>
+          <div class="jterm-item-meta">
+            Pour charger les règles officielles complètes :
+            <code style="display:block;margin-top:0.3rem;font-size:0.7rem;opacity:0.8">
+              python3 backend/scripts/ingest_disc_rules.py
+            </code>
+          </div>
+        </div>
+      `;
+    } catch(e) {
+      body.innerHTML = '<div class="jterm-empty" style="color:#f87171">Erreur chargement DISC : ' + e.message + '</div>';
     }
   }
 
