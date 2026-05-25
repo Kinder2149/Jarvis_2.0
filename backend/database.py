@@ -866,26 +866,465 @@ def _migrate_v7_disc(conn):
         )
     """)
 
-    # Seed 15+ règles fondamentales WFDF 2025-2028 (numéros approximatifs)
+    # Seed règles fondamentales WFDF 2025-2028 — numéros approx., seront corrigés par PDF
+    # Format : (article, parent_article, titre, contenu, categorie, mots_cles, cross_refs)
     seed_rules = [
-        ("1", None, "Spirit of the Game", "Ultimate repose sur le Spirit of the Game, qui place la responsabilité du fair-play sur chaque joueur. Un jeu compétitif peut et doit se dérouler dans un esprit de respect mutuel entre joueurs. Les règles du jeu sont conçues de sorte qu'il soit possible de résoudre toutes les situations sans un arbitre officiel. Les joueurs doivent toujours tenter de jouer dans les limites de l'esprit du jeu, même lorsque l'adversaire ne le fait pas.", "spirit", '["spirit","SOTG","fair play","respect","self-officiating","esprit"]', '["1.1","1.2"]'),
-        ("2.1", "2", "Terrain", "Le terrain est un rectangle de 100 mètres de long sur 37 mètres de large, avec deux zones d'en-but aux deux extrémités de 18 mètres chacune. Les lignes délimitant le terrain ne font pas partie du terrain de jeu (in-bounds). Un joueur dont les deux pieds sont à l'intérieur des lignes est considéré comme in-bounds.", "field", '["terrain","field","dimensions","ligne","end zone","zone en-but"]', '["11","12"]'),
-        ("2.2", "2", "Définitions — Disque vivant et mort", "Le disque est vivant (live) dès que le lanceur établit son point de pivot. Le disque est mort (dead) dans les cas suivants : a) il touche le sol ; b) il est intercepté ou capturé par la défense ; c) il sort des limites du terrain ; d) un appel (call) est formulé et accepté.", "definitions", '["disque vivant","disque mort","live","dead","pivot","point de pivot"]', '["9","10","11"]'),
-        ("2.3", "2", "Définitions — Possession et réception", "La possession du disque signifie qu'un joueur tient fermement le disque. Une réception (catch) est établie lorsqu'un joueur attrapant saisit le disque et maintient cette saisie suffisamment longtemps pour établir le contrôle sur le disque. Un joueur ne contrôle pas le disque s'il rebondit sur sa main ou si le premier contact avec le sol (sol ou obstacle) modifie sa trajectoire.", "definitions", '["possession","réception","catch","attraper","contrôle","saisie"]', '["9","10","14"]'),
-        ("2.4", "2", "Définitions — Turnover", "Un turnover se produit lorsque la possession du disque change d'équipe. Cela survient dans les cas suivants : a) le disque touche le sol sans être contrôlé ; b) le disque est intercepté par un défenseur ; c) le disque sort des limites du terrain ; d) le stall count atteint 10 (stall-out) ; e) une violation de lancer est commise.", "definitions", '["turnover","changement possession","stall-out","interception","sol"]', '["9","10","11","12"]'),
-        ("9", None, "Stall Count", "Le stall count est le décompte de 1 à 10 effectué par le défenseur marquant le porteur du disque. Le décompte doit être audible. Si le stall count atteint 10 avant que le disque soit lancé (stall-out), c'est un turnover. Le décompte recommence à 1 : a) après un appel ; b) si le marqueur s'éloigne de plus de 3 mètres du porteur ; c) sur reprise de jeu après time-out. Le décompte reprend à 'stall [nombre+1]' dans certaines situations de contestation.", "stall", '["stall","décompte","marqueur","10","stall-out","stalling","compte"]', '["9.1","9.2","9.3","9.4","9.5"]'),
-        ("9.3", "9", "Décompte rapide (Fast Count)", "Si le décompte est trop rapide (moins d'une seconde entre chaque nombre), le porteur peut appeler 'Fast count'. Le décompte reprend à 'stall [nombre actuel - 1]' si le compte était à 2 ou plus, ou à 'stall 1' si en début de compte.", "stall", '["fast count","décompte rapide","stalling","compte trop rapide"]', '["9","17"]'),
-        ("10", None, "Hors-limites — Out of Bounds", "Le disque est hors-limites (out of bounds, OOB) lorsqu'il touche le sol, un objet ou une personne hors des lignes. La ligne elle-même n'est pas in-bounds. Pour une réception OOB, ce qui compte est le premier point de contact avec le sol ou un objet fixe. Un joueur dans les airs peut réceptionner in-bounds tant qu'aucune partie de son corps ne touche OOB pendant la réception.", "out_of_bounds", '["out of bounds","hors-limites","OOB","ligne","réception","sol","limites"]', '["10.1","10.2","10.3","11"]'),
-        ("10.2", "10", "Réception en limite de terrain", "Si un joueur réceptionne le disque avec un pied in-bounds et l'autre OOB, la réception est OOB. Si le premier contact au sol est in-bounds mais glisse hors des limites, le jeu s'arrête à la ligne. Le lanceur suivant reprend depuis le point brick le plus proche ou le point d'interception.", "out_of_bounds", '["réception ligne","pied hors-limites","sortie","border","limite terrain"]', '["10","11","8"]'),
-        ("11", None, "Reprise du jeu", "La reprise du jeu suit des procédures spécifiques selon la cause de l'arrêt. Après un turnover OOB, le jeu reprend au point brick le plus proche de l'endroit où le disque est sorti. Après un appel accepté, l'équipe non-fautive reprend avec le disque à l'endroit où il était au moment de l'appel.", "restart", '["reprise","brick","restart","reprise du jeu","after call"]', '["10","12","14","15"]'),
-        ("12", None, "Marquer un point", "Un point est marqué lorsqu'un joueur de l'équipe attaquante réceptionne légalement le disque dans la zone d'en-but adverse. La réception doit être complète avant que le joueur touche le sol dans la zone d'en-but. Si un appel est formulé pendant une réception dans la zone d'en-but, le point n'est accordé que si toutes les parties sont d'accord.", "scoring", '["point","but","scoring","en-but","end zone","réception zone","marquer"]', '["12.1","12.2","2.1"]'),
-        ("12.2", "12", "Contestation de point", "Si un appel est formulé pendant la réception d'un point et que les parties ne sont pas d'accord, la possession revient au dernier lanceur incontesté. Si une faute est appelée pendant la réception et non contestée, le point est accordé.", "scoring", '["contestation","point contesté","appel en-but","faute réception"]', '["12","14","16"]'),
-        ("14", None, "Fautes (Fouls)", "Une faute est un contact physique illégal entre adversaires. Le porteur du disque appelle 'Foul'. Si la faute est acceptée (non contestée), le disque revient au porteur. Si la faute est contestée, le disque revient au dernier lanceur incontesté. Types principaux : strip (disque arraché), faute sur réception, faute sur lancer.", "fouls", '["faute","foul","contact","strip","arraché","foul offensif","foul défensif"]', '["14.1","14.2","14.3","15","16"]'),
-        ("14.3", "14", "Faute sur réception (Receiving Foul)", "Si un défenseur commet une faute sur un joueur attaquant pendant la réception et que la faute n'est pas contestée, l'attaquant obtient la possession à l'endroit de la faute. Si la réception était dans la zone d'en-but, le point est accordé.", "fouls", '["faute réception","receiving foul","contact récepteur","défenseur","attaquant"]', '["12","14","16"]'),
-        ("15", None, "Violations", "Une violation est une infraction aux règles autre qu'une faute ou un appel. Les violations courantes incluent : travel (marcher/déplacer le pivot), double-team (deux défenseurs à moins de 3m du porteur), disc space (défenseur trop proche du porteur en line), pick (bloquer un défenseur). L'équipe non-fautive appelle la violation.", "violations", '["violation","travel","double team","disc space","pick","marcher","pivot"]', '["15.1","15.2","15.3","15.4","9"]'),
-        ("15.1", "15", "Travel", "Un travel se produit lorsque le porteur du disque déplace son pied de pivot avant de lâcher le disque, ou avance avec le disque sans avoir établi de point de pivot. L'adversaire peut appeler 'Travel'. Le compte reprend à 'stall 1'. Correction : retour à la position de pivot légale.", "violations", '["travel","marcher","pivot","pied pivot","déplacement"]', '["9","15"]'),
-        ("15.2", "15", "Double Team", "Une situation de double-team se produit lorsque deux défenseurs ou plus se trouvent simultanément à moins de 3 mètres du porteur du disque. Exception : si un autre attaquant se trouve dans cette zone. L'appel 'Double team' réinitialise le compte à 'stall [nombre - 1]'.", "violations", '["double team","deux défenseurs","3 mètres","marqueur","zone porteur"]', '["9","15"]'),
-        ("16", None, "Blessure et Time-out Spirit", "Si un joueur est blessé, le jeu s'arrête immédiatement. L'équipe blessée peut traiter la blessure. L'équipe peut substituer le joueur blessé uniquement si l'équipe adverse substitue aussi (sauf si la blessure est le résultat d'un contact illégal). Un time-out Spirit peut être demandé par n'importe quel joueur pour résoudre un problème d'esprit du jeu.", "timeouts", '["blessure","injury","time-out spirit","spirit timeout","substitution"]', '["1","13"]'),
+        # ── Spirit of the Game ────────────────────────────────────────────────
+        (
+            "1", None,
+            "Spirit of the Game (SOTG)",
+            "Ultimate repose sur le Spirit of the Game, qui place la responsabilité du fair-play "
+            "sur chaque joueur. Un jeu compétitif peut et doit se dérouler dans un esprit de respect "
+            "mutuel entre joueurs. Les règles du jeu sont conçues de sorte qu'il soit possible de "
+            "résoudre toutes les situations sans arbitre officiel. Les joueurs doivent toujours tenter "
+            "de jouer dans les limites de l'esprit du jeu, même lorsque l'adversaire ne le fait pas. "
+            "Les actes de triche délibérée, d'intimidation ou de comportement agressif sont contraires "
+            "au Spirit of the Game et ne sont pas tolérés.",
+            "spirit",
+            '["spirit","SOTG","fair play","respect","self-officiating","esprit","fair-play","comportement","intimidation","triche"]',
+            '["1.1","1.2","1.3","16"]'
+        ),
+        (
+            "1.1", "1",
+            "Connaissance des règles",
+            "Les joueurs sont responsables de connaître et d'appliquer les règles. Un joueur qui "
+            "commet une violation involontaire doit l'accepter sans contester. La règle d'or : "
+            "si un joueur n'est pas certain qu'une violation a eu lieu, il ne doit pas appeler. "
+            "Le doute profite à l'adversaire.",
+            "spirit",
+            '["connaissance règles","violation involontaire","doute","bonne foi","responsabilité"]',
+            '["1","14","15"]'
+        ),
+        # ── Terrain & définitions ──────────────────────────────────────────────
+        (
+            "2", None,
+            "Terrain — Dimensions officielles",
+            "Le terrain de jeu est un rectangle de 100 mètres de long sur 37 mètres de large. "
+            "Deux zones d'en-but (end zones) de 18 mètres chacune se situent aux deux extrémités. "
+            "La zone centrale de jeu mesure donc 64 mètres. Les lignes de périmètre appartiennent "
+            "à la zone hors-limites (out of bounds). Les lignes de but font partie de la zone d'en-but.",
+            "field",
+            '["terrain","dimensions","100 mètres","37 mètres","18 mètres","end zone","en-but","ligne","périmètre"]',
+            '["10","12"]'
+        ),
+        (
+            "2.A", "2",
+            "Définitions — Disque vivant (live) et mort (dead)",
+            "Le disque est VIVANT (live) dès que le lanceur établit son point de pivot après une "
+            "reprise de jeu. Le disque est MORT (dead) dans les cas suivants : a) il touche le sol ; "
+            "b) il sort hors-limites ; c) un appel (call) est formulé et reconnu ; d) le stall count "
+            "atteint 10. Quand le disque est mort, le jeu s'arrête immédiatement — aucun déplacement "
+            "ni lancer n'est valide.",
+            "definitions",
+            '["disque vivant","disque mort","live","dead","pivot","arrêt de jeu","call"]',
+            '["8","9","10","15"]'
+        ),
+        (
+            "2.B", "2",
+            "Définitions — Possession et réception valide",
+            "La possession est établie lorsqu'un joueur tient fermement le disque avec une ou deux "
+            "mains. Une réception est valide (catch) lorsque le joueur : a) contrôle le disque avec "
+            "au moins une main sans que le disque ne rebondisse ; b) maintient ce contrôle jusqu'à "
+            "ce qu'il établisse son point de pivot. Si le disque touche le sol lors de la réception, "
+            "c'est un turnover (possession perdue). La réception est aussi invalide si le joueur perd "
+            "le contrôle en entrant en contact avec le sol (sauf s'il avait établi le contrôle avant).",
+            "definitions",
+            '["possession","réception","catch","contrôle","saisie","tenir","rebond"]',
+            '["9","10","12","14"]'
+        ),
+        (
+            "2.C", "2",
+            "Définitions — Turnover (changement de possession)",
+            "Un turnover se produit quand la possession change d'équipe. Causes de turnover : "
+            "a) le disque touche le sol non contrôlé (drop) ; b) le disque est intercepté par un "
+            "défenseur (interception) ; c) le disque sort hors-limites (OOB) ; d) le stall count "
+            "atteint 10 (stall-out) ; e) le lanceur commet un travel ou une autre violation de lancer. "
+            "Après un turnover, l'ancienne défense devient attaque et doit jouer depuis le point où "
+            "s'est produit le turnover.",
+            "definitions",
+            '["turnover","changement possession","stall-out","interception","drop","sol","OOB","hors-limites"]',
+            '["9","10","11","15"]'
+        ),
+        (
+            "2.D", "2",
+            "Définitions — Appel, Contest, Accept, Retract",
+            "APPEL (call) : annonce verbale d'une infraction par un joueur concerné. "
+            "CONTEST (contestation) : l'adversaire ne reconnaît pas la faute/violation appelée — "
+            "le jeu revient alors à la dernière position incontestée. "
+            "ACCEPT (acceptation) : l'adversaire reconnaît la faute/violation — la correction "
+            "s'applique immédiatement. "
+            "RETRACT (retrait) : le joueur qui a appelé retire son appel — le jeu reprend comme "
+            "si la faute n'avait pas eu lieu. "
+            "Règle fondamentale : en cas de désaccord non résolu, le disque revient au dernier "
+            "lanceur avec un stall count de 'stall 1'.",
+            "definitions",
+            '["appel","call","contest","contestation","accept","accepter","retract","retirer","désaccord","procédure"]',
+            '["1","14","15","9"]'
+        ),
+        # ── Pull — Engagement ─────────────────────────────────────────────────
+        (
+            "7", None,
+            "Le Pull — Engagement initial",
+            "Chaque point commence par un pull (engagement). L'équipe défendant l'en-but "
+            "d'un côté lance le disque vers l'équipe attaquante positionnée à l'extrémité opposée. "
+            "Le pull est valide si : a) le lanceur reste dans sa zone d'en-but au moment du lancer ; "
+            "b) tous les joueurs restent dans leur propre zone d'en-but jusqu'au lancer. "
+            "Si le pull sort OOB avant d'être touché par l'équipe attaquante, cette équipe peut : "
+            "i) reprendre le jeu depuis son propre en-but, ou ii) depuis le point brick (20 mètres "
+            "de son en-but). Si le pull est attrapé dans l'en-but de l'attaque, le porteur peut "
+            "soit jouer depuis là, soit reculer au point brick.",
+            "restart",
+            '["pull","engagement","lancer initial","départ","brick","début de point","zone départ"]',
+            '["7.1","7.2","8","10","11"]'
+        ),
+        (
+            "7.1", "7",
+            "Pull — Faux-départ (offside)",
+            "Si un joueur quitte sa zone d'en-but avant que le pull soit lancé, l'équipe adverse "
+            "peut appeler 'Offside'. Si l'appel est accepté : l'équipe attaquante peut ignorer le "
+            "résultat du pull et recommencer depuis son en-but. "
+            "Esprit du jeu : prévenir verbalement avant d'appeler offside.",
+            "restart",
+            '["offside","faux départ","pull","avant lancer","zone"]',
+            '["7","1"]'
+        ),
+        # ── Reprise de jeu ────────────────────────────────────────────────────
+        (
+            "8", None,
+            "Reprise du jeu — Check",
+            "Le jeu ne reprend que lorsque le porteur du disque crie 'Disc in' après avoir "
+            "obtenu l'accord de l'adversaire le plus proche. Procédure après un appel : "
+            "1) Les deux équipes se positionnent comme au moment de l'appel ; "
+            "2) Le défenseur désigné touche le disque ou dit 'OK' (check disc) ; "
+            "3) Le porteur dit 'Disc in' — le jeu reprend. "
+            "Si le porteur lance avant le check, le lancer est nul et le disque revient.",
+            "restart",
+            '["check","disc in","reprise","jeu","check disc","après appel","positionner"]',
+            '["9","14","15"]'
+        ),
+        (
+            "8.1", "8",
+            "Reprise après turnover OOB",
+            "Si le disque sort hors-limites, l'équipe qui récupère la possession reprend depuis "
+            "le point brick le plus proche de l'endroit où le disque est sorti. "
+            "Point brick : marquage au sol à 20 mètres de chaque zone d'en-but. "
+            "Le jeu reprend avec la procédure de check standard.",
+            "out_of_bounds",
+            '["brick","OOB","hors-limites","reprise turnover","point brick","20 mètres","sortie terrain"]',
+            '["7","8","10"]'
+        ),
+        # ── Stall Count ───────────────────────────────────────────────────────
+        (
+            "9", None,
+            "Stall Count — Règle principale",
+            "Le stall count est le décompte verbal de 1 à 10 effectué par le défenseur qui marque "
+            "(garde) le porteur du disque. Règles du stall count : "
+            "a) Le décompte doit être audible et clairement énoncé ('stall 1, stall 2...' ou '1,2...'). "
+            "b) Une seconde minimum doit s'écouler entre chaque nombre. "
+            "c) Si le stall count atteint 10 avant le lancer (stall-out), c'est un turnover. "
+            "d) Le défenseur qui compte doit être le seul à marquer le porteur. "
+            "e) Si le marqueur change pendant le décompte, le nouveau marqueur reprend à 'stall 1'.",
+            "stall",
+            '["stall","décompte","compte","10","stall-out","marqueur","audible","marquer porteur"]',
+            '["9.1","9.2","9.3","9.4","9.5","15.2"]'
+        ),
+        (
+            "9.1", "9",
+            "Stall Count — Interruptions légales",
+            "Le stall count est légalement interrompu (reprend à 1) dans les cas suivants : "
+            "a) Le marqueur s'éloigne à plus de 3 mètres du porteur ; "
+            "b) Un appel (call) est formulé et reconnu ; "
+            "c) Un time-out est accordé ; "
+            "d) Le porteur reçoit le disque après un check. "
+            "Après résolution d'un appel ACCEPTÉ par le marqueur : le décompte reprend à 'stall 1'. "
+            "Après résolution d'un appel CONTESTÉ : le décompte reprend au nombre où il était "
+            "au moment de l'appel, plus 1 (ex : si l'appel était à 'stall 6', reprise à 'stall 7').",
+            "stall",
+            '["interruption stall","reprend à 1","appel","3 mètres","time-out","after call","stall après appel"]',
+            '["9","8","13","15"]'
+        ),
+        (
+            "9.2", "9",
+            "Fast Count — Décompte trop rapide",
+            "Si le marqueur compte plus vite qu'une seconde par nombre (fast count), le porteur peut "
+            "appeler 'Fast count'. "
+            "Si la faute est acceptée : le décompte reprend à 'stall [nombre actuel - 2]' (minimum 1). "
+            "Si contestée : le jeu revient à la position précédente avec 'stall 1'. "
+            "Exemple : si fast count est appelé à 'stall 7', reprise à 'stall 5'.",
+            "stall",
+            '["fast count","décompte rapide","trop vite","compte rapide","stalling","rythme"]',
+            '["9","9.1"]'
+        ),
+        (
+            "9.3", "9",
+            "Stalling — Décompte sans être le marqueur",
+            "Seul le défenseur qui marque directement le porteur peut effectuer le stall count. "
+            "Si un autre défenseur commence à compter, c'est une violation 'Stalling'. "
+            "Le porteur appelle 'Stalling' et le décompte reprend à 'stall 1'.",
+            "stall",
+            '["stalling","marqueur","seul défenseur","compter","qui peut compter"]',
+            '["9","15.2"]'
+        ),
+        # ── Hors-limites (Out of Bounds) ───────────────────────────────────────
+        (
+            "10", None,
+            "Hors-limites (Out of Bounds) — Règle principale",
+            "Le terrain est délimité par des lignes. Ces lignes appartiennent à la zone hors-limites "
+            "(OOB) — elles ne font PAS partie du terrain de jeu. "
+            "Le disque est OOB si : a) il touche le sol, un objet ou une personne situés OOB ; "
+            "b) il est en contact avec la ligne de périmètre. "
+            "Un joueur est OOB si une partie de son corps touche la ligne ou l'extérieur du terrain, "
+            "SAUF s'il est en l'air et que ses pieds sont in-bounds au moment de la réception.",
+            "out_of_bounds",
+            '["out of bounds","hors-limites","OOB","ligne","terrain","périmètre","touche la ligne"]',
+            '["10.1","10.2","10.3","2","8"]'
+        ),
+        (
+            "10.1", "10",
+            "Réception in-bounds par un joueur en l'air",
+            "Un joueur en l'air peut réceptionner in-bounds même si son élan le porte hors du terrain, "
+            "à condition que : a) aucune partie de son corps ne touche OOB au moment où il contrôle "
+            "le disque ; b) le premier contact avec le sol après la réception doit être in-bounds. "
+            "Si le joueur atterrit OOB après avoir contrôlé le disque in-bounds : "
+            "— la réception EST valide si les deux conditions ci-dessus sont remplies. "
+            "— la réception N'EST PAS valide si son pied touche OOB pendant la réception.",
+            "out_of_bounds",
+            '["saut","en l air","réception en l air","atterrissage","pied in-bounds","momentum","joueur volant"]',
+            '["10","12"]'
+        ),
+        (
+            "10.2", "10",
+            "Réception OOB — Procédure après sortie",
+            "Si le disque sort OOB, le jeu s'arrête. La possession revient à l'équipe qui n'a PAS "
+            "lancé le disque OOB (l'adversaire du dernier lanceur). "
+            "Reprise : depuis le point de la ligne le plus proche de là où le disque est sorti, "
+            "ou depuis le point brick le plus proche si cela est plus avantageux. "
+            "Si le disque sort après avoir été touché en dernier par l'attaque : turnover. "
+            "Si par la défense : retour au lanceur.",
+            "out_of_bounds",
+            '["disque sort","reprise OOB","qui reprend","après sortie","possession","brick","ligne"]',
+            '["8","8.1","7","10"]'
+        ),
+        (
+            "10.3", "10",
+            "Disque ou joueur touchant la ligne de fond (end zone)",
+            "La ligne de fond (end zone line) fait partie de la zone d'en-but, PAS de la zone OOB. "
+            "Si le disque est réceptionné sur ou derrière la ligne de fond de l'adversaire : "
+            "c'est un point marqué, SAUF si le récepteur est OOB. "
+            "Si le récepteur saute depuis in-bounds et attrape dans la zone d'en-but : point valide "
+            "si ses pieds restent in-bounds ou s'il n'a pas encore touché le sol OOB.",
+            "out_of_bounds",
+            '["ligne fond","end zone line","en-but","ligne derrière","réception end zone","point ligne"]',
+            '["10","12","12.1"]'
+        ),
+        # ── Marquer un point ──────────────────────────────────────────────────
+        (
+            "12", None,
+            "Marquer un point — Règle principale",
+            "Un point est marqué lorsqu'un joueur de l'équipe attaquante réceptionne légalement "
+            "le disque dans la zone d'en-but adverse. Conditions obligatoires : "
+            "a) Le joueur doit avoir les deux pieds dans la zone d'en-but au moment de la réception ; "
+            "b) La réception doit être complète (contrôle total du disque) ; "
+            "c) Le joueur ne doit pas être OOB. "
+            "Si un appel est formulé PENDANT la réception du point : le point n'est valide que si "
+            "toutes les parties reconnaissent que la réception était complète et in-bounds.",
+            "scoring",
+            '["point","but","marquer","scoring","end zone","en-but","réception zone","gagner point"]',
+            '["12.1","12.2","10","14.3"]'
+        ),
+        (
+            "12.1", "12",
+            "Point contesté",
+            "Si une faute ou une violation est appelée pendant la réception qui marque un point, "
+            "et que cet appel est contesté par l'adversaire : "
+            "— La possession revient au porteur avant le lancer (pas de point). "
+            "— Le stall count reprend à 'stall 1'. "
+            "Si la faute est acceptée et aurait empêché la réception : le point est accordé. "
+            "Si la faute est acceptée mais n'aurait pas changé l'issue : le point est accordé si "
+            "le récepteur était clairement in-bounds.",
+            "scoring",
+            '["point contesté","appel pendant réception","faute point","scoring contest","but refusé"]',
+            '["12","14","14.3","2.D"]'
+        ),
+        # ── Procédure d'appel ─────────────────────────────────────────────────
+        (
+            "13", None,
+            "Procédure d'appel — Règle universelle",
+            "Tout appel (call) doit être : a) formulé clairement et audiblement ; "
+            "b) formulé IMMÉDIATEMENT (pas après plusieurs échanges) ; "
+            "c) formulé par le joueur directement concerné (sauf en cas d'OOB visible). "
+            "Quand un appel est formulé : 1) le jeu s'arrête immédiatement ; "
+            "2) les deux parties discutent calmement ; 3) si accord → correction et reprise ; "
+            "4) si désaccord (contest) → retour à la dernière position incontestée avec stall 1. "
+            "Un appel tardif ou formulé par un mauvais joueur peut être refusé.",
+            "restart",
+            '["appel","call","procédure","formuler appel","accord","désaccord","contest","accept","retract"]',
+            '["2.D","14","15","9.1"]'
+        ),
+        (
+            "13.1", "13",
+            "Time-out d'équipe",
+            "Chaque équipe dispose d'un nombre limité de time-outs par mi-temps (généralement 2). "
+            "Un time-out peut être demandé uniquement par le porteur du disque (attaque) ou "
+            "par n'importe quel défenseur (défense) lorsque le disque est mort. "
+            "Durée : 70 secondes maximum. "
+            "Après le time-out : reprise avec check depuis la position où le disque se trouvait.",
+            "timeouts",
+            '["time-out","timeout","équipe","pause","70 secondes","reprise après time-out"]',
+            '["8","9.1","16"]'
+        ),
+        # ── Fautes ────────────────────────────────────────────────────────────
+        (
+            "14", None,
+            "Fautes (Fouls) — Règle principale",
+            "Une faute est un contact physique illégal entre adversaires qui affecte le jeu. "
+            "Seul le joueur fauté peut appeler 'Foul'. Procédure : "
+            "1) Le joueur fauté appelle 'Foul' ; 2) le jeu s'arrête immédiatement ; "
+            "3) si la faute est ACCEPTÉE (non contestée) → correction selon le type de faute ; "
+            "4) si la faute est CONTESTÉE → retour à la dernière position avant la faute, stall 1. "
+            "Important : un contact minimal et involontaire (non significatif) ne constitue PAS une faute.",
+            "fouls",
+            '["faute","foul","contact","illégal","physique","appel foul","correction faute"]',
+            '["14.1","14.2","14.3","14.4","15","2.D"]'
+        ),
+        (
+            "14.1", "14",
+            "Strip — Faute sur le porteur (disque arraché)",
+            "Un strip se produit lorsqu'un défenseur frappe ou touche le disque alors que le porteur "
+            "en a déjà le contrôle, lui faisant perdre la possession. "
+            "Si la faute est ACCEPTÉE : le porteur récupère la possession au point du strip, "
+            "stall count reprend à 'stall 1'. "
+            "Si CONTESTÉE : retour au lanceur avant le strip.",
+            "fouls",
+            '["strip","arraché","disque arraché","porteur","contrôle","défenseur frappe","perte possession"]',
+            '["14","2.B"]'
+        ),
+        (
+            "14.2", "14",
+            "Faute sur le lancer (Throwing Foul)",
+            "Une faute sur le lancer se produit quand un défenseur entre en contact physique avec "
+            "le bras ou le corps du lanceur pendant ou juste avant le lancer. "
+            "Si la faute est ACCEPTÉE : le porteur relance depuis le même endroit, stall 1. "
+            "Si CONTESTÉE : si le lancer aboutit à une réception valide, la réception est maintenue. "
+            "Si le lancer aboutit à un turnover, retour au lanceur, stall 1.",
+            "fouls",
+            '["throwing foul","faute lancer","bras","contact bras","lanceur","pendant lancer"]',
+            '["14","9.1"]'
+        ),
+        (
+            "14.3", "14",
+            "Faute sur réception (Receiving Foul)",
+            "Une faute sur réception se produit quand un défenseur entre en contact avec un joueur "
+            "attaquant qui tente de réceptionner le disque, affectant la réception. "
+            "Si la faute est ACCEPTÉE : l'attaquant obtient la possession à l'endroit de la faute. "
+            "Si la réception était dans la zone d'en-but : le point est accordé. "
+            "Si CONTESTÉE : retour au lanceur, stall 1.",
+            "fouls",
+            '["receiving foul","faute réception","contact récepteur","réception perturbée","défenseur attaquant"]',
+            '["14","12","12.1"]'
+        ),
+        (
+            "14.4", "14",
+            "Faute défensive sur coupé (Guarding Foul)",
+            "Un défenseur ne peut pas entrer en contact physique significatif avec un attaquant "
+            "qui court (coupe), même si le disque n'est pas encore lancé dans sa direction. "
+            "Le joueur fauté appelle 'Foul'. Si acceptée : l'attaquant reprend sa course depuis "
+            "le point de la faute. Si contestée : retour à la dernière position.",
+            "fouls",
+            '["guarding foul","faute marquage","couper","coupé","attaquant qui court","défenseur"]',
+            '["14","15.4"]'
+        ),
+        # ── Violations ────────────────────────────────────────────────────────
+        (
+            "15", None,
+            "Violations — Règle principale",
+            "Une violation est une infraction non physique aux règles du jeu. "
+            "Elle est appelée par l'équipe non-fautive. Procédure identique aux fautes : "
+            "appel, arrêt du jeu, discussion, accept ou contest. "
+            "Différence clé avec les fautes : les violations impliquent rarement un contact physique. "
+            "Types principaux : travel, double team, disc space, pick, stalling, fast count.",
+            "violations",
+            '["violation","infraction","règle","non physique","double team","disc space","pick","travel","stalling"]',
+            '["15.1","15.2","15.3","15.4","15.5","9"]'
+        ),
+        (
+            "15.1", "15",
+            "Travel (marcher)",
+            "Un travel se produit quand : a) le porteur déplace son pied de pivot avant de lâcher "
+            "le disque ; b) le porteur avance avec le disque sans établir de pivot ; "
+            "c) le porteur récupère le disque en courant et ne s'arrête pas correctement. "
+            "L'adversaire (ou tout joueur) peut appeler 'Travel'. "
+            "Si accepté : le porteur retourne à sa position de pivot légale, stall 1. "
+            "Si contesté : stall 1, jeu reprend depuis la position actuelle.",
+            "violations",
+            '["travel","marcher","pivot","pied pivot","déplacer pivot","avancer disque","établir pivot"]',
+            '["15","9.1","2.B"]'
+        ),
+        (
+            "15.2", "15",
+            "Double Team",
+            "Double team : deux défenseurs ou plus à moins de 3 mètres du porteur simultanément, "
+            "sans qu'un attaquant ne se trouve dans cette même zone. "
+            "L'un des défenseurs doit s'éloigner. Si l'appel 'Double team' est formulé : "
+            "Si accepté : stall count réduit de 2 ('stall [N-2]', minimum 1). "
+            "Si contesté : stall count reprend à 'stall [N-1]'.",
+            "violations",
+            '["double team","deux défenseurs","3 mètres","zone porteur","plusieurs marqueurs"]',
+            '["15","9","9.1"]'
+        ),
+        (
+            "15.3", "15",
+            "Disc Space",
+            "Le marqueur doit maintenir une distance d'au moins un disque de diamètre entre lui "
+            "et le porteur (disc space). Si le marqueur est trop proche (moins d'un disque), "
+            "le porteur appelle 'Disc space'. "
+            "Si accepté : le marqueur recule immédiatement. "
+            "Si l'appel survient pendant le stall count : stall réduit de 2 (minimum 1). "
+            "Disc space s'applique aussi si le marqueur bloque activement le mouvement du bras du lanceur.",
+            "violations",
+            '["disc space","espace","trop proche","marqueur","distance","un disque","diamètre","bloquer bras"]',
+            '["15","9","14.2"]'
+        ),
+        (
+            "15.4", "15",
+            "Pick",
+            "Un pick se produit quand un joueur attaquant bloque involontairement ou volontairement "
+            "le chemin d'un défenseur qui marque un autre attaquant, l'empêchant de suivre sa cible. "
+            "Le défenseur gêné appelle 'Pick'. "
+            "Si accepté : le défenseur reprend sa position relative par rapport à sa cible (comme si "
+            "le pick n'avait pas eu lieu). Le jeu reprend depuis la position au moment du pick.",
+            "violations",
+            '["pick","bloquer défenseur","chemin","écran","gêner marquage","bloquer route"]',
+            '["15","14.4"]'
+        ),
+        # ── Blessure & Spirit timeout ─────────────────────────────────────────
+        (
+            "16", None,
+            "Blessure — Arrêt de jeu",
+            "Si un joueur est blessé pendant le jeu, le jeu s'arrête IMMÉDIATEMENT. "
+            "Tous les joueurs maintiennent leur position. Procédure : "
+            "1) Le jeu s'arrête ; 2) le joueur blessé est soigné ; "
+            "3) Si le joueur peut reprendre rapidement : reprise avec check depuis la position au moment "
+            "de la blessure ; "
+            "4) Si remplacement nécessaire : l'équipe adverse peut aussi effectuer un remplacement. "
+            "Exception : si la blessure résulte d'un contact illégal, l'adversaire ne peut pas substituer.",
+            "timeouts",
+            '["blessure","injury","joueur blessé","arrêt de jeu","soins","remplacement","substitution"]',
+            '["16.1","13.1","1"]'
+        ),
+        (
+            "16.1", "16",
+            "Spirit Timeout (Time-out Esprit)",
+            "N'importe quel joueur peut demander un spirit timeout pour résoudre un conflit ou "
+            "améliorer l'atmosphère du jeu. Le spirit timeout dure au maximum 5 minutes. "
+            "Il ne compte pas dans les time-outs d'équipe réglementaires. "
+            "Les capitaines des deux équipes doivent être présents pour la discussion. "
+            "Objectif : résoudre un problème de comportement ou d'interprétation des règles "
+            "avant que la situation ne s'aggrave.",
+            "timeouts",
+            '["spirit timeout","time-out esprit","conflit","capitaine","5 minutes","comportement","résoudre"]',
+            '["1","16","13.1"]'
+        ),
     ]
 
     cursor.executemany("""
