@@ -6,6 +6,12 @@ from backend.services.model_router import get_model_id, call_model
 
 logger = logging.getLogger("jarvis")
 
+_MSG_MISSION_PRETE = (
+    "\n\n---\n"
+    "**Mission prête.** Réponds **oui** pour recevoir tes prompts Cascade, "
+    "ou continue à affiner si tu veux ajuster quelque chose."
+)
+
 _FORGE_CONFIRM_SIGNALS = [
     "oui", "ok", "go", "vas-y", "yes", "valide", "validé",
     "je valide", "c'est bon", "parfait", "yep", "ouais",
@@ -25,7 +31,7 @@ def _detect_livrable_type(message: str) -> LivrableType:
     return LivrableType.MISSION_CODE
 
 _TYPE_LABELS = {
-    LivrableType.MISSION_CODE:         "Mission Code *(exécutable par FORGE)*",
+    LivrableType.MISSION_CODE:         "Mission Code *(exécutable par Cascade)*",
     LivrableType.DECISION_FIGEE:       "Décision Architecture *(figée, non exécutable)*",
     LivrableType.PLAN_MULTI_MISSIONS:  "Plan Multi-missions *(plusieurs étapes)*",
 }
@@ -82,7 +88,7 @@ async def _handle_plan_direct(spec: str, project_id: int | None,
         "## Contraintes\n- [Contrainte 1]\n\n"
         "## Critères de réussite (test manuel en français)\n"
         "1. [Action utilisateur]\n2. [Résultat attendu]\n\n"
-        "## Recommandation modèle\n`anthropic/claude-haiku-4.5` — [raison]\n\n"
+        "## Complexité estimée\n[légère / moyenne / lourde] — [raison]\n\n"
         "Termine OBLIGATOIREMENT par la balise exacte sur sa propre ligne : [MISSION_PRETE]"
     )
     model_id = get_model_id("analysis", config)
@@ -121,6 +127,13 @@ async def handle(
         spec = message[len("[PLAN_DIRECT]"):].strip()
         return await _handle_plan_direct(spec, project_id, db, config)
 
+    # Déléguer si mission Cascade en cours
+    if current_instance_ref and current_instance_ref.get("type") == "cascade_mission":
+        from backend.services import cascade_handler
+        return await cascade_handler.handle(
+            conversation_id, message, current_instance_ref, db, config
+        )
+
     cursor = db.cursor()
 
     # Confirmation du type de livrable (tour dédié)
@@ -150,24 +163,56 @@ async def handle(
         instance_ref = {"type": "reflexion", "id": session_id}
         suggest_freeze, freeze_reason = await _check_suggest_freeze(session_id, messages, config, db)
         if suggest_freeze:
-            content = content.rstrip() + (
-                "\n\n---\n**Mission prête.** Réponds **oui** pour passer à FORGE, "
-                "ou continue à affiner."
-            )
+            content = content.rstrip() + _MSG_MISSION_PRETE
             instance_ref = {"type": "reflexion", "id": session_id, "awaiting_forge_confirm": True}
         return content, "MENTOR", instance_ref, suggest_freeze, freeze_reason
 
-    # Détection : l'utilisateur répond "oui" à la question de démarrage FORGE
+    # Détection : l'utilisateur répond "oui" à la question de démarrage FORGE/Cascade
     # (current_instance_ref de type "reflexion" + instance précédente avait suggest_freeze)
     if current_instance_ref and current_instance_ref.get("type") == "reflexion":
         if current_instance_ref.get("awaiting_forge_confirm") and _is_forge_validation(message):
-            from backend.services import forge_handler
-            return await forge_handler.handle_launch_chat(
-                conversation_id=conversation_id,
-                project_id=project_id,
-                db=db,
-                config=config
-            )
+            # Fork : Cascade vs FORGE selon config
+            from backend.database import load_config as _load_cfg
+            _cfg = _load_cfg()
+            
+            if _cfg.get("cascade_mode", True):
+                # Mode Cascade : figer la session et lancer cascade_handler
+                from backend.services import cascade_handler
+                session_id = current_instance_ref["id"]
+                
+                try:
+                    freeze_result = await reflexion_service.freeze_session(session_id, db)
+                    mp_id = freeze_result.get("id") if freeze_result else None
+                    
+                    if not mp_id:
+                        return (
+                            "[MENTOR] Impossible de figer la session.",
+                            "MENTOR",
+                            None,
+                            False,
+                            None
+                        )
+                    
+                    return await cascade_handler.handle_launch(mp_id, conversation_id, db, config)
+                    
+                except Exception as e:
+                    logger.error(f"[MENTOR] Erreur freeze/cascade: {e}")
+                    return (
+                        f"[MENTOR] Erreur lors du lancement Cascade : {str(e)}",
+                        "MENTOR",
+                        None,
+                        False,
+                        None
+                    )
+            else:
+                # Mode FORGE classique
+                from backend.services import forge_handler
+                return await forge_handler.handle_launch_chat(
+                    conversation_id=conversation_id,
+                    project_id=project_id,
+                    db=db,
+                    config=config
+                )
 
     # Pas de projet → prendre le premier projet code disponible
     fallback_note = None
@@ -274,11 +319,7 @@ async def handle(
             suggest_freeze = False
             freeze_reason = None
         else:
-            content = content.rstrip() + (
-                "\n\n---\n"
-                "**Mission prête.** Réponds **oui** pour passer à FORGE et démarrer l'exécution, "
-                "ou continue à affiner si tu veux ajuster quelque chose."
-            )
+            content = content.rstrip() + _MSG_MISSION_PRETE
             instance_ref = {"type": "reflexion", "id": reflexion_session_id, "awaiting_forge_confirm": True}
 
     return content, "MENTOR", instance_ref, suggest_freeze, freeze_reason

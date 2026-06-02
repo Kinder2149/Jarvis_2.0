@@ -155,6 +155,7 @@ window.API = {
   getJarvisConversation: (id) => _get(`/jarvis/conversations/${id}`),
   sendJarvisMessage: (id, content, forceAgent = null) => _post(`/jarvis/conversations/${id}/chat`, { message: content, force_agent: forceAgent }),
   deleteJarvisConversation: (id) => _del(`/jarvis/conversations/${id}`),
+  renameConversation: (id, title) => _patch(`/jarvis/conversations/${id}/title`, { title }),
   startJarvisForge: (missionPromptId, conversationId) => _post('/jarvis/forge/start', { mission_prompt_id: missionPromptId, conversation_id: conversationId }),
   getJarvisPipelineProgress: (sessionId) => _get(`/jarvis/pipeline/${sessionId}/progress`),
   resetJarvisForge: (projectId) => _post(`/jarvis/project/${projectId}/reset-forge`, {}),

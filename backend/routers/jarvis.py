@@ -175,6 +175,24 @@ def update_conversation_project(conversation_id: int, body: ConversationProjectU
     return row
 
 
+@router.patch("/conversations/{conversation_id}/title", status_code=200)
+def rename_conversation(conversation_id: int, body: dict):
+    """Renomme une conversation JARVIS."""
+    title = (body.get("title") or "").strip()[:120]
+    db = get_connection()
+    cursor = db.cursor()
+    cursor.execute(
+        "UPDATE conversations SET title = ?, updated_at = datetime('now') WHERE id = ?",
+        (title or None, conversation_id)
+    )
+    if cursor.rowcount == 0:
+        db.close()
+        raise HTTPException(status_code=404, detail="Conversation introuvable")
+    db.commit()
+    db.close()
+    return {"id": conversation_id, "title": title}
+
+
 @router.post("/forge/launch-from-mentor")
 async def forge_launch_from_mentor(body: ForgeLaunchFromMentorRequest):
     """

@@ -286,21 +286,34 @@ async def handle_status_query(
     return content, "FORGE", None, False, None
 
 
-async def verify(session_id: int, db) -> dict:
+async def verify(session_id: int, db) -> dict | None:
     """
     Vérification cohérence MENTOR→FORGE post-exécution (niveau 2).
-    Retourne {"coherent": bool, "warning": str | None}.
+    Retourne dict enrichi ou None si pas de données exploitables.
     """
     config = load_config()
     cursor = db.cursor()
 
     # Récupérer le mission_prompt source via forge_session_id
     cursor.execute("""
-        SELECT content FROM mission_prompts WHERE forge_session_id = ?
+        SELECT content, livrable_forge FROM mission_prompts WHERE forge_session_id = ?
     """, (session_id,))
     mp_row = cursor.fetchone()
     if not mp_row:
-        return {"coherent": True, "warning": None}
+        return None
+
+    # Parser livrable_forge
+    try:
+        livrable_forge = json.loads(mp_row["livrable_forge"]) if mp_row["livrable_forge"] else {}
+    except Exception:
+        livrable_forge = {}
+    
+    if not livrable_forge:
+        return None
+    
+    perimetre = livrable_forge.get("perimetre", "")
+    fichiers_concernes = livrable_forge.get("fichiers_concernes", [])
+    criteres_succes = livrable_forge.get("criteres_succes", [])
 
     # Récupérer les summaries des steps COMPLETED
     cursor.execute("""
@@ -313,26 +326,39 @@ async def verify(session_id: int, db) -> dict:
     steps = cursor.fetchall()
 
     if not steps:
-        return {"coherent": True, "warning": None}
+        return None
 
     summaries = "\n".join([
         f"- {s['step_display_name']}: {s['summary_fr'] or '(résumé non disponible)'}"
         for s in steps
     ])
-    intention = (mp_row["content"] or "")[:1000]
 
-    prompt = f"""Vérifie la cohérence entre cette intention de mission et ce qui a été exécuté.
-
-Intention :
-{intention}
-
-Exécution :
-{summaries}
-
-Réponds UNIQUEMENT en JSON valide :
-{{"coherent": true, "warning": null}}
-Si incohérent :
-{{"coherent": false, "warning": "explication de la divergence en 30 mots max"}}"""
+    # Construire le prompt LLM selon si critères présents ou non
+    if criteres_succes:
+        criteres_text = "\n".join(f"- {c}" for c in criteres_succes)
+        prompt = (
+            "Tu es un auditeur de mission.\n\n"
+            f"Périmètre prévu : {perimetre}\n\n"
+            "Critères de succès attendus :\n"
+            f"{criteres_text}\n\n"
+            "Ce que FORGE a exécuté :\n"
+            f"{summaries}\n\n"
+            "Réponds UNIQUEMENT en JSON valide :\n"
+            '{"coherent": true, "criteres_non_couverts": [], "warning": null}\n'
+            "Si des critères ne sont clairement pas couverts :\n"
+            '{"coherent": false, "criteres_non_couverts": ["..."], "warning": "explication 30 mots max"}'
+        )
+    else:
+        prompt = (
+            "Tu es un auditeur de mission.\n\n"
+            f"Périmètre prévu : {perimetre}\n\n"
+            "Ce que FORGE a exécuté :\n"
+            f"{summaries}\n\n"
+            "Réponds UNIQUEMENT en JSON valide :\n"
+            '{"coherent": true, "criteres_non_couverts": [], "warning": null}\n'
+            "Si divergence détectée avec le périmètre :\n"
+            '{"coherent": false, "criteres_non_couverts": [], "warning": "explication 30 mots max"}'
+        )
 
     try:
         model_id = get_model_id("routing", config)
@@ -349,11 +375,14 @@ Si incohérent :
         result = json.loads(response)
         return {
             "coherent": bool(result.get("coherent", True)),
+            "criteres_non_couverts": result.get("criteres_non_couverts", []),
+            "perimetre": perimetre,
+            "fichiers_concernes": fichiers_concernes,
             "warning": result.get("warning")
         }
     except Exception as e:
         logger.warning(f"[FORGE] Vérification échouée ({e})")
-        return {"coherent": True, "warning": None}
+        return None
 
 
 def _check_files_exist(livrable_forge: dict, project_path: Path) -> list[str]:
@@ -725,26 +754,50 @@ async def _execute_pipeline_loop(session_id: int, start_step_idx: int,
             instance_ref={"type": "pipeline", "id": session_id}
         )
     elif result.get("status") == "completed":
-        # Vérification post-pipeline MENTOR→FORGE
-        try:
-            verify_result = await verify(session_id, db)
-            if verify_result and not verify_result.get("coherent"):
-                warning_msg = verify_result.get("warning", "divergence détectée")
-                _inject_jarvis_message(
-                    conversation_id=conversation_id,
-                    content=f"**JARVIS** — 🔍 Vérification post-FORGE :\n\n⚠️ {warning_msg}",
-                    agent="JARVIS",
-                    instance_ref={"type": "pipeline", "id": session_id}
+        # Vérification post-pipeline MENTOR→FORGE avec rapport structuré
+        verify_result = await verify(session_id, db)
+
+        if verify_result is not None:
+            perimetre = verify_result.get("perimetre", "")
+            fichiers = verify_result.get("fichiers_concernes", [])
+            criteres_ko = verify_result.get("criteres_non_couverts", [])
+            warning = verify_result.get("warning")
+            coherent = verify_result.get("coherent", True)
+
+            # Ligne fichiers (affichage informatif, toujours présent si non vide)
+            fichiers_line = ""
+            if fichiers:
+                fichiers_line = "Fichiers : " + ", ".join(f"`{f}`" for f in fichiers) + "\n"
+
+            if coherent:
+                criteres_line = ""
+                if not criteres_ko:
+                    # on ne liste pas les critères couverts, trop verbeux
+                    criteres_line = "Critères de succès : ✅ tous couverts\n" if verify_result.get("criteres_non_couverts") is not None else ""
+                content = (
+                    f"**JARVIS** — Rapport de mission\n\n"
+                    f"Périmètre : {perimetre}\n"
+                    f"{fichiers_line}"
+                    f"Verdict : ✅ Mission conforme."
                 )
-            elif verify_result:
-                _inject_jarvis_message(
-                    conversation_id=conversation_id,
-                    content="**JARVIS** — 🔍 Vérification post-FORGE : ✅ Cohérent avec la mission MENTOR.",
-                    agent="JARVIS",
-                    instance_ref={"type": "pipeline", "id": session_id}
+            else:
+                criteres_block = ""
+                if criteres_ko:
+                    criteres_block = "Critères non couverts :\n" + "\n".join(f"• {c}" for c in criteres_ko) + "\n\n"
+                content = (
+                    f"**JARVIS** — Rapport de mission\n\n"
+                    f"Périmètre : {perimetre}\n"
+                    f"{fichiers_line}"
+                    f"\n⚠️ {criteres_block}"
+                    f"{warning or 'Divergence détectée — vérifier manuellement.'}"
                 )
-        except Exception as e:
-            logger.warning(f"[FORGE] verify() post-pipeline échoué: {e}")
+
+            _inject_jarvis_message(
+                conversation_id=conversation_id,
+                content=content,
+                agent="JARVIS",
+                instance_ref={"type": "pipeline", "id": session_id}
+            )
         
         # Message de fin de pipeline
         _inject_jarvis_message(

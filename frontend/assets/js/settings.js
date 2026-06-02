@@ -52,6 +52,7 @@
       renderApiKeys();
       renderModelSelects();
       renderChatConfig();
+      renderCascadeMode();
       loadGlobalContext();
       setupProfilsModulesHandlers();
       await loadExportPaths();
@@ -280,6 +281,11 @@
       btnBackupDatabase.addEventListener('click', backupDatabase);
     }
 
+    const btnSaveCascadeMode = document.getElementById('btn-save-cascade-mode');
+    if (btnSaveCascadeMode) {
+      btnSaveCascadeMode.addEventListener('click', saveCascadeMode);
+    }
+
     const btnSaveExportPaths = document.getElementById('btn-save-export-paths');
     if (btnSaveExportPaths) {
       btnSaveExportPaths.addEventListener('click', saveExportPaths);
@@ -421,6 +427,14 @@
   }
 
   // ── Onglet Chat & Présets ──────────────────────────────────────────
+  function renderCascadeMode() {
+    const cascadeMode = currentConfig.cascade_mode !== undefined ? currentConfig.cascade_mode : true;
+    const checkbox = document.getElementById('cascade-mode-checkbox');
+    if (checkbox) {
+      checkbox.checked = cascadeMode;
+    }
+  }
+
   function renderChatConfig() {
     const chatConfig = currentConfig.chat || {};
     
@@ -799,6 +813,49 @@
 
     } catch (error) {
       console.error('Erreur sauvegarde clients_export_path:', error);
+      
+      if (statusSpan) {
+        statusSpan.textContent = '❌ Erreur';
+        statusSpan.style.color = '#f44336';
+      }
+      
+      if (window.showToast) window.showToast('Erreur de sauvegarde', 'error');
+    }
+  }
+
+  async function saveCascadeMode() {
+    const checkbox = document.getElementById('cascade-mode-checkbox');
+    const statusSpan = document.getElementById('cascade-mode-status');
+    
+    if (!checkbox) return;
+    
+    const cascadeMode = checkbox.checked;
+    
+    try {
+      const payload = {
+        api_keys: currentConfig.api_keys,
+        model_preferences: currentConfig.model_preferences,
+        chat: currentConfig.chat,
+        cascade_mode: cascadeMode
+      };
+      
+      await window.API.saveConfig(payload);
+      
+      // Mettre à jour la config locale
+      currentConfig.cascade_mode = cascadeMode;
+      
+      if (statusSpan) {
+        statusSpan.textContent = '✅ Sauvegardé';
+        statusSpan.style.color = '#4caf50';
+        setTimeout(() => {
+          statusSpan.textContent = '';
+        }, 3000);
+      }
+      
+      if (window.showToast) window.showToast('Configuration sauvegardée', 'success');
+      
+    } catch (error) {
+      console.error('Erreur sauvegarde cascade_mode:', error);
       
       if (statusSpan) {
         statusSpan.textContent = '❌ Erreur';

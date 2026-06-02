@@ -176,22 +176,25 @@ def delete_session(session_id: int, db_conn: sqlite3.Connection) -> None:
 def abandon_session(session_id: int, db_conn: sqlite3.Connection) -> None:
     """Passe une session en statut ABANDONNEE."""
     cursor = db_conn.cursor()
-    
-    # Vérifier que la session existe et n'est pas FIGEE
+
     cursor.execute("SELECT statut FROM reflexion_sessions WHERE id = ?", (session_id,))
     row = cursor.fetchone()
     if not row:
         raise ValueError(f"Session {session_id} introuvable")
-    
+
+    # Si FIGEE : marquer aussi le mission_prompt comme consommé (nettoyage queue Cascade)
     if row["statut"] == ReflexionStatut.FIGEE.value:
-        raise ValueError("Impossible d'abandonner une session figée")
-    
+        cursor.execute("""
+            UPDATE mission_prompts SET consumed_at = ?
+            WHERE reflexion_session_id = ? AND consumed_at IS NULL
+        """, (datetime.now().isoformat(), session_id))
+
     cursor.execute("""
         UPDATE reflexion_sessions
         SET statut = ?, updated_at = ?
         WHERE id = ?
     """, (ReflexionStatut.ABANDONNEE.value, datetime.now().isoformat(), session_id))
-    
+
     db_conn.commit()
 
 

@@ -310,6 +310,28 @@
         <!-- Onglet 5 : Avancé -->
         <div class="settings-tab-content" id="tab-advanced">
           <div class="settings-section card">
+            <h2 class="settings-section-title">Mode d'exécution MENTOR</h2>
+            <p class="text-muted settings-section-desc">
+              Contrôle comment MENTOR transmet les missions de code après cadrage.
+            </p>
+            <div class="chat-config-row">
+              <label class="chat-config-label">Mode Cascade (Windsurf)</label>
+              <label class="toggle-switch" id="toggle-cascade-mode">
+                <input type="checkbox" id="cascade-mode-checkbox" checked>
+                <span class="toggle-knob"></span>
+              </label>
+              <span class="text-muted chat-config-hint">
+                Activé : MENTOR génère des prompts à copier dans Cascade.
+                Désactivé : MENTOR lance FORGE directement (pipeline interne).
+              </span>
+            </div>
+            <div class="settings-actions">
+              <button id="btn-save-cascade-mode" class="btn-primary">💾 Sauvegarder</button>
+              <span id="cascade-mode-status" class="save-status"></span>
+            </div>
+          </div>
+
+          <div class="settings-section card">
             <h2 class="settings-section-title">Informations système</h2>
             <div class="advanced-info-grid">
               <div class="advanced-info-item">

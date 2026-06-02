@@ -71,6 +71,8 @@ def get_full_config():
         "system_prompt_preset": ""
     }
     
+    cascade_mode = True
+    
     if CONFIG_PATH.exists():
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
             config_file = json.load(f)
@@ -78,11 +80,13 @@ def get_full_config():
                 model_preferences = config_file["model_preferences"]
             if "chat" in config_file:
                 chat_config = config_file["chat"]
+            cascade_mode = config_file.get("cascade_mode", True)
     
     return {
         "api_keys": api_keys,
         "model_preferences": model_preferences,
-        "chat": chat_config
+        "chat": chat_config,
+        "cascade_mode": cascade_mode
     }
 
 @router.post("")
@@ -121,7 +125,8 @@ def save_config(config: Config):
     
     config_file = {
         "model_preferences": config_dict.get("model_preferences", {}),
-        "chat": chat_to_save
+        "chat": chat_to_save,
+        "cascade_mode": config_dict.get("cascade_mode", True)
     }
     
     with open(CONFIG_PATH, "w", encoding="utf-8") as f:

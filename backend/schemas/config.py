@@ -25,3 +25,4 @@ class Config(BaseModel):
     api_keys: ApiKeys
     model_preferences: ModelPreferences
     chat: Optional[ChatConfig] = None
+    cascade_mode: bool = True
