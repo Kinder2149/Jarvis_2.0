@@ -1,11 +1,25 @@
 import json
 import logging
 from datetime import datetime
+from pathlib import Path
 import httpx
 from backend.database import load_config
 from backend.services.model_router import get_model_id, call_model
 
 logger = logging.getLogger("jarvis")
+
+
+def _load_user_context() -> dict:
+    """Charge les contextes utilisateur depuis contexts/*.md (source de vérité runtime)."""
+    contexts_dir = Path(__file__).parent.parent / "data" / "contexts"
+    def _read(filename: str) -> str:
+        f = contexts_dir / filename
+        return f.read_text(encoding="utf-8").strip() if f.exists() else ""
+    return {
+        "profil": _read("profil_utilisateur.md"),
+        "regles": _read("regles_globales.md"),
+        "global": _read("global_context.md"),
+    }
 
 # Signaux indiquant un changement de sujet (skip routing si absent)
 _CHANGEMENT_SUJET = [
@@ -318,7 +332,10 @@ async def _dispatch(
         # Reformulation JARVIS si MENTOR en dialogue (pas livrable final)
         if not suggest_freeze and agent_used == "MENTOR":
             try:
+                _regles = _load_user_context()["regles"]
+                _regles_block = f"Règles de communication à respecter :\n{_regles}\n\n---\n\n" if _regles else ""
                 reformulation_prompt = (
+                    _regles_block +
                     f"Tu es JARVIS. Reformule ce message de MENTOR en langage fonctionnel "
                     f"humain pour l'utilisateur non-développeur. Garde toutes les questions, "
                     f"raccourcis de rien, ajoute aucune information. Max 400 mots.\n"
@@ -460,21 +477,21 @@ async def _jarvis_direct_response(message: str, conversation_id: int,
                 web_blocks.append(bloc)
     web_context = "\n\n".join(web_blocks)
 
-    # Injection du contexte utilisateur depuis app_config
-    ctx = config.get("context", {})
-    profil = ctx.get("profil_utilisateur", "").strip()
-    global_ctx = ctx.get("global_context", "").strip()
-    regles = ctx.get("regles_globales", "").strip()
+    # Injection du contexte utilisateur depuis contexts/*.md (source de vérité runtime)
+    ctx = _load_user_context()
+    profil = ctx["profil"]
+    global_ctx = ctx["global"]
+    regles = ctx["regles"]
 
     context_block = ""
     if profil:
-        context_block += f"\n\n## Profil utilisateur\n{profil}"
+        context_block += f"## Profil utilisateur\n{profil}"
     if global_ctx:
-        context_block += f"\n\n## Contexte global\n{global_ctx}"
+        context_block += f"\n\n## Contexte actif\n{global_ctx}"
     if regles:
-        context_block += f"\n\n## Règles\n{regles}"
+        context_block += f"\n\n## Règles de communication\n{regles}"
 
-    system_content = (
+    identity_content = (
         "Tu es JARVIS, la seule interface entre l'utilisateur et les agents spécialistes "
         "(MENTOR pour le cadrage, FORGE pour le code, SENTINELLE pour les investissements, "
         "ATELIER pour les prospects commerciaux, MEDIA pour les images et vidéos, "
@@ -485,12 +502,13 @@ async def _jarvis_direct_response(message: str, conversation_id: int,
         "Tu poses tes questions une par une — jamais plusieurs à la fois dans le même message. "
         "Tu ne codes jamais toi-même : tu délègues à FORGE (via MENTOR pour le cadrage). "
         "Tu es concis, direct, toujours en français."
-        + context_block
-        + "\n\nRÈGLE ABSOLUE : tu n'inventes JAMAIS de balises XML, tags d'orchestration, "
+        "\n\nRÈGLE ABSOLUE : tu n'inventes JAMAIS de balises XML, tags d'orchestration, "
         "ni simulation de dispatch agents. Si une demande nécessite plusieurs agents, "
         "réponds : 'Cette demande nécessite plusieurs agents. Reformule-la en précisant "
         "les étapes (ex: d'abord MENTOR pour X, puis FORGE pour Y) et je créerai un plan automatiquement.'"
     )
+    separator = "\n\n---\n\n" if context_block else ""
+    system_content = context_block + separator + identity_content
     system = {"role": "system", "content": system_content}
 
     # Si enrichissement web : l'ajouter en contexte avant le message utilisateur

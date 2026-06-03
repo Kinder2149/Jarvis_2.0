@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from pathlib import Path
 from backend.database import load_config
 from backend.services.model_router import get_model_id, call_model
 from backend.services import sentinelle_service
@@ -94,8 +95,12 @@ async def _handle_consulter(message: str, config: dict, db) -> str:
             "- Configure ta watchlist\n"
             "- Définis tes thèses d'investissement"
         )
-    
-    prompt_system = f"""Tu es SENTINELLE, l'assistant investissement de Kinder.
+
+    _profil_file = Path(__file__).parent.parent / "data" / "contexts" / "sentinelle_profil.md"
+    _sentinelle_profil = _profil_file.read_text(encoding="utf-8").strip() if _profil_file.exists() else ""
+    _profil_block = f"{_sentinelle_profil}\n\n---\n\n" if _sentinelle_profil else ""
+
+    prompt_system = _profil_block + f"""Tu es SENTINELLE, l'assistant investissement de Kinder.
 Tu réponds à ses questions sur son portefeuille de façon concise et précise.
 Données disponibles (JSON) :
 - Budget mois {mois_actuel} : {budget}
