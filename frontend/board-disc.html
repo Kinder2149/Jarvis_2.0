@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DISC — Board JARVIS</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/board.css">
+</head>
+<body>
+<div class="board-app" style="--board-accent:#22c55e">
+
+  <nav class="board-nav">
+    <a href="jarvis.html" class="board-back">← JARVIS</a>
+    <div class="board-identity">
+      <img src="assets/agents/Disc1.svg" alt="DISC" class="board-avatar"
+           onerror="this.style.display='none'">
+      <div>
+        <div class="board-agent-name">DISC</div>
+        <div class="board-agent-role">Expert Règles Ultimate</div>
+      </div>
+    </div>
+    <button id="btn-refresh">↺ Rafraîchir</button>
+  </nav>
+
+  <div class="board-body">
+    <div class="board-kpis" id="kpis"></div>
+    <div class="board-alert" id="alert-zone" hidden></div>
+    <div id="content"></div>
+    <footer class="board-footer">
+      <span style="font-size:0.72rem;color:var(--text-muted)">
+        Base WFDF 2025-2028 —
+        <a href="/api/disc/rules" target="_blank"
+           style="color:var(--text-muted);text-decoration:underline">
+          Voir toutes les règles (JSON)
+        </a>
+      </span>
+    </footer>
+  </div>
+
+</div>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/board.js"></script>
+<script>
+
+async function loadBoard() {
+  document.getElementById('kpis').innerHTML =
+    '<div style="color:var(--text-muted);font-size:0.8rem">Chargement…</div>';
+  document.getElementById('content').innerHTML = '';
+  document.getElementById('alert-zone').hidden = true;
+
+  try {
+    const stats = await fetch('/api/disc/stats').then(r => r.json());
+
+    // KPIs
+    document.getElementById('kpis').innerHTML = [
+      statCard(stats.total_rules ?? stats.rules_loaded ?? 0, 'Règles chargées',
+               { color: '#22c55e' }),
+      statCard(stats.total_sessions ?? stats.total_questions ?? 0, 'Questions traitées'),
+      statCard(stats.total_categories ?? 0, 'Catégories'),
+    ].join('');
+
+    let html = '';
+
+    // Questions récentes
+    const recent = stats.recent_sessions ?? [];
+    if (recent.length > 0) {
+      html += `<div class="board-section-title">Questions récentes</div>`;
+      for (const s of recent) {
+        html += `
+          <div class="board-card">
+            <div class="board-card-header">
+              ${badge('WFDF', 'completed')}
+              <span class="board-card-sub" style="margin-left:auto">${ago(s.created_at)}</span>
+            </div>
+            <div class="board-card-meta">"${_esc((s.question || '').slice(0, 120))}${(s.question || '').length > 120 ? '…' : ''}"</div>
+            <div class="board-card-meta" style="font-size:0.72rem;color:var(--text-muted);margin-top:0.2rem">
+              ${s.articles_count ?? 0} article${(s.articles_count ?? 0) > 1 ? 's' : ''} cité${(s.articles_count ?? 0) > 1 ? 's' : ''}
+            </div>
+          </div>`;
+      }
+    }
+
+    if (!html) {
+      html = emptyState(
+        'Aucune question posée à DISC.',
+        'Demandez à JARVIS de consulter l\'expert règles Ultimate WFDF via le chat.'
+      );
+    }
+
+    document.getElementById('content').innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('content').innerHTML = `
+      <div class="board-empty">
+        <div class="board-empty-msg" style="color:#f87171">Erreur de chargement</div>
+        <div class="board-empty-hint">${_esc(e.message)}</div>
+      </div>`;
+    console.error('[DISC Board]', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadBoard);
+document.getElementById('btn-refresh').onclick = loadBoard;
+
+</script>
+</body>
+</html>

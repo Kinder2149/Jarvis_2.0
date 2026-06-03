@@ -24,14 +24,30 @@ def get_stats():
         cur.execute("SELECT COUNT(*) as total FROM disc_rules")
         rules_loaded = cur.fetchone()["total"]
 
+        cur.execute("SELECT COUNT(DISTINCT categorie) as total FROM disc_rules WHERE categorie IS NOT NULL")
+        total_categories = cur.fetchone()["total"]
+
         cur.execute("SELECT MAX(created_at) as last_at FROM disc_sessions")
         row = cur.fetchone()
         last_at = row["last_at"] if row else None
 
+        cur.execute("""
+            SELECT question, created_at,
+                   CAST((LENGTH(COALESCE(articles_utilises,'')) - LENGTH(REPLACE(COALESCE(articles_utilises,''), ',', ''))) + 1 AS INTEGER) as articles_count
+            FROM disc_sessions
+            ORDER BY created_at DESC
+            LIMIT 5
+        """)
+        recent_sessions = [dict(r) for r in cur.fetchall()] if total_questions > 0 else []
+
         return {
             "total_questions": total_questions,
+            "total_sessions": total_questions,
+            "total_rules": rules_loaded,
             "rules_loaded": rules_loaded,
-            "last_at": last_at
+            "total_categories": total_categories,
+            "last_at": last_at,
+            "recent_sessions": recent_sessions,
         }
     finally:
         db.close()

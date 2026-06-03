@@ -1333,4 +1333,14 @@ def _migrate_v7_disc(conn):
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, seed_rules)
 
+    # Index performances — messages
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_messages_conversation
+        ON messages(conversation_id)
+    """)
+    conn.execute("""
+        CREATE INDEX IF NOT EXISTS idx_messages_conversation_date
+        ON messages(conversation_id, created_at)
+    """)
+
     conn.commit()

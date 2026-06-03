@@ -1277,8 +1277,8 @@
       </div>
 
       <div id="forge-pause-banner" class="forge-pause-banner" style="display:none">
-        ⏸️ <strong>FORGE en pause</strong> — Les missions code sont exécutées via Cascade (Windsurf).
-        Les plans multi-agents continuent de fonctionner normalement.
+        ⚡ <strong>Mode Cascade actif</strong> — Les prompts mission sont générés pour Windsurf.
+        <a href="settings.html" style="color:inherit;text-decoration:underline">Paramètres › Avancé</a> pour activer FORGE direct.
       </div>
 
       <div id="jchat-messages">
@@ -1467,6 +1467,7 @@
               <span class="jstat-dot idle" id="dot-DISC"></span>
               <span id="stat-DISC">Chargement…</span>
             </div>
+            <a href="board-disc.html" class="jagent-card-link" onclick="event.stopPropagation()">→ Board</a>
           </div>
 
         </div><!-- /#jagents-grid -->
@@ -2616,8 +2617,7 @@
   async function confirmPlan(planId, btnRow) {
     btnRow.innerHTML = '<span style="font-size:0.8rem;opacity:0.7">Confirmation…</span>';
     try {
-      const r = await fetch(`/api/plans/${planId}/confirm`, { method: 'POST' });
-      if (!r.ok) throw new Error(await r.text());
+      await window.API.confirmPlan(planId);
       btnRow.innerHTML =
         '<span style="font-size:0.8rem;color:var(--accent)">✅ Plan confirmé — exécution en cours…</span>';
       // Démarrer polling pour recevoir les mises à jour du plan
@@ -2632,7 +2632,7 @@
 
   async function cancelPlan(planId, btnRow) {
     try {
-      await fetch(`/api/plans/${planId}`, { method: 'DELETE' });
+      await window.API.cancelPlan(planId);
       btnRow.innerHTML =
         '<span style="font-size:0.8rem;color:var(--text-muted)">Plan annulé.</span>';
     } catch(e) {
@@ -2794,9 +2794,8 @@
     planPollingInterval = setInterval(async () => {
       try {
         // 1. Vérifier le statut du plan
-        const planRes = await fetch(`/api/plans/${planId}`);
-        if (!planRes.ok) return;
-        const planData = await planRes.json();
+        const planData = await window.API.getPlan(planId);
+        if (!planData) return;
         const plan = planData.plan || planData;
         const steps = planData.steps || [];
 

@@ -481,8 +481,7 @@
     }
     
     // Charger le contenu du profil utilisateur
-    fetch('/api/config/profil_utilisateur')
-      .then(r => r.json())
+    window.API.getProfilUtilisateur()
       .then(data => {
         const ta = document.getElementById('chat-profil-utilisateur');
         if (ta) ta.value = data.content || '';
@@ -552,12 +551,7 @@
       
       // Sauvegarder le profil utilisateur
       const profilContent = document.getElementById('chat-profil-utilisateur')?.value || '';
-      fetch('/api/config/profil_utilisateur', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({value: profilContent})
-      })
-      .then(r => r.json())
+      window.API.saveProfilUtilisateur(profilContent)
       .then(() => {
         // Silencieux — la confirmation globale de sauvegarde suffit
       })

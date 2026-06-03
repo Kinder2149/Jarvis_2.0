@@ -164,4 +164,13 @@ window.API = {
     _get(`/jarvis/pipelines/overview${activeOnly ? '?active_only=true' : ''}`),
   getMediaStats: () => _get('/media/stats'),
   getMediaHistory: (limit = 20) => _get('/media/history?limit=' + limit),
+
+  // Plans
+  confirmPlan: (planId) => _post(`/plans/${planId}/confirm`, {}),
+  cancelPlan: (planId) => _del(`/plans/${planId}`),
+  getPlan: (planId) => _get(`/plans/${planId}`),
+
+  // Config profil
+  getProfilUtilisateur: () => _get('/config/profil_utilisateur'),
+  saveProfilUtilisateur: (value) => _post('/config/profil_utilisateur', { value }),
 };
