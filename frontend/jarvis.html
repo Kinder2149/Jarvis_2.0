@@ -765,6 +765,15 @@
       color: var(--accent);
       letter-spacing: 0.1em;
     }
+    .jsit-item {
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.4rem;
+      border-radius: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
 
     /* Input zone */
     #jchat-input-zone {
@@ -1275,7 +1284,18 @@
       <div id="jchat-messages">
         <div id="jchat-empty">
           <div class="jchat-empty-icon">JARVIS</div>
-          <span>Parlez à JARVIS ou choisissez un agent via le sélecteur ci-dessous</span>
+          <div id="jsituation-loading" style="color:var(--text-muted);font-size:0.85rem">Chargement…</div>
+          <div id="jsituation-content" style="display:none;width:100%;max-width:600px;text-align:left">
+            <div id="jsituation-actions" style="margin-bottom:1.5rem"></div>
+            <div id="jsituation-projet" style="display:none;margin-top:1rem;
+                 font-size:0.78rem;color:var(--text-muted)"></div>
+            <button onclick="loadSituation()"
+              style="margin-top:1.5rem;font-size:0.72rem;padding:0.2rem 0.6rem;
+                     border:1px solid var(--border);border-radius:4px;
+                     background:transparent;color:var(--text-muted);cursor:pointer">
+              ↺ Rafraîchir
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1483,6 +1503,7 @@
     attachEvents();
     initSidebars();
     await checkCascadeMode();
+    loadSituation();
   });
 
   // ── Sidebars collapsibles ────────────────────────────────────────────────
@@ -2338,6 +2359,78 @@
   window._switchConv = (id) => switchConversation(id);
   window._delConv    = (id, e) => deleteConversation(id, e);
 
+  // ── Tableau de bord situation ────────────────────────────────────────────
+  async function loadSituation() {
+    const loading = document.getElementById('jsituation-loading');
+    const content = document.getElementById('jsituation-content');
+    const actions = document.getElementById('jsituation-actions');
+    const projetEl = document.getElementById('jsituation-projet');
+    if (!loading || !actions) return;
+    loading.style.display = 'block';
+    content.style.display = 'none';
+    try {
+      const res = await fetch('/api/jarvis/situation');
+      const d = await res.json();
+      const items = [];
+      if (d.cascade_missions?.length) {
+        d.cascade_missions.forEach(m => {
+          items.push(`<div class="jsit-item">
+            🔄 <strong>Mission Cascade</strong> — ${_esc(m.title)}
+            <span style="color:var(--text-muted);font-size:0.78rem"> étape ${m.step}/${m.total}</span>
+            <a href="jarvis.html?conv=${m.conversation_id}"
+               style="margin-left:0.5rem;font-size:0.78rem">→ Continuer</a>
+          </div>`);
+        });
+      }
+      if (d.reflexions_pretes?.length) {
+        d.reflexions_pretes.forEach(r => {
+          items.push(`<div class="jsit-item">
+            📋 <strong>Mission prête</strong> — ${_esc(r.titre)}
+            <span style="color:var(--text-muted);font-size:0.78rem"> figée, non lancée</span>
+            <a href="mission.html?session=${r.session_id}"
+               style="margin-left:0.5rem;font-size:0.78rem">→ Voir</a>
+          </div>`);
+        });
+      }
+      if (d.plans_en_attente?.length) {
+        d.plans_en_attente.forEach(p => {
+          items.push(`<div class="jsit-item">
+            ⏸️ <strong>Plan en attente</strong> — ${_esc(p.title)}
+            <span style="color:var(--text-muted);font-size:0.78rem"> ${p.agent} attend ta réponse</span>
+            <a href="jarvis.html?conv=${p.conversation_id}"
+               style="margin-left:0.5rem;font-size:0.78rem">→ Répondre</a>
+          </div>`);
+        });
+      }
+      if (d.alertes_sentinelle > 0) {
+        items.push(`<div class="jsit-item">
+          🔔 <strong>${d.alertes_sentinelle} alerte${d.alertes_sentinelle > 1 ? 's' : ''} Sentinelle</strong>
+          non lue${d.alertes_sentinelle > 1 ? 's' : ''}
+          <a href="sentinelle.html" style="margin-left:0.5rem;font-size:0.78rem">→ Voir</a>
+        </div>`);
+      }
+      if (items.length === 0) {
+        actions.innerHTML = `<div style="color:var(--text-muted);font-size:0.9rem">
+          ✅ Tout est à jour. Par où commences-tu ?</div>`;
+      } else {
+        actions.innerHTML = `<div style="font-size:0.8rem;font-weight:600;
+          color:var(--text-muted);margin-bottom:0.75rem;text-transform:uppercase;
+          letter-spacing:0.05em">⏳ Ce qui t'attend</div>` + items.join('');
+      }
+      if (d.dernier_projet) {
+        projetEl.style.display = 'block';
+        projetEl.innerHTML = `📌 Dernier projet : <a href="dossier.html?id=${d.dernier_projet.id}">${_esc(d.dernier_projet.name)}</a>`;
+      }
+      loading.style.display = 'none';
+      content.style.display = 'flex';
+      content.style.flexDirection = 'column';
+      content.style.alignItems = 'center';
+    } catch(e) {
+      loading.textContent = 'Impossible de charger la situation.';
+    }
+  }
+  window.loadSituation = loadSituation;
+
   // ── Markdown simple ──────────────────────────────────────────────────────
   function renderMd(text) {
     if (!text) return '';
@@ -2392,8 +2485,20 @@
     document.getElementById('jchat-messages').innerHTML = `
       <div id="jchat-empty">
         <div class="jchat-empty-icon">JARVIS</div>
-        <span>Sélectionnez un agent à gauche et posez votre première question</span>
+        <div id="jsituation-loading" style="color:var(--text-muted);font-size:0.85rem">Chargement…</div>
+        <div id="jsituation-content" style="display:none;width:100%;max-width:600px;text-align:left">
+          <div id="jsituation-actions" style="margin-bottom:1.5rem"></div>
+          <div id="jsituation-projet" style="display:none;margin-top:1rem;
+               font-size:0.78rem;color:var(--text-muted)"></div>
+          <button onclick="loadSituation()"
+            style="margin-top:1.5rem;font-size:0.72rem;padding:0.2rem 0.6rem;
+                   border:1px solid var(--border);border-radius:4px;
+                   background:transparent;color:var(--text-muted);cursor:pointer">
+            ↺ Rafraîchir
+          </button>
+        </div>
       </div>`;
+    loadSituation();
   }
 
   function appendMsg(role, content, scroll = true, agent = null, instanceRef = null) {

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
+import json
 import logging
 
 from backend.database import get_connection, load_config
@@ -299,6 +300,106 @@ def delete_conversation(conversation_id: int):
         db.close()
         raise HTTPException(status_code=404, detail="Conversation introuvable")
     db.close()
+
+
+@router.get("/situation")
+def get_situation():
+    """Retourne l'état actionnable de JARVIS pour le tableau de bord."""
+    db = get_connection()
+    cursor = db.cursor()
+
+    # 1. Missions CASCADE en cours
+    cursor.execute("""
+        SELECT c.id, c.title, m.instance_ref, m.created_at
+        FROM conversations c
+        JOIN messages m ON m.id = (
+            SELECT id FROM messages
+            WHERE conversation_id = c.id AND role = 'assistant'
+            ORDER BY created_at DESC LIMIT 1
+        )
+        WHERE json_extract(m.instance_ref, '$.type') = 'cascade_mission'
+        ORDER BY m.created_at DESC
+        LIMIT 5
+    """)
+    cascade_missions = []
+    for row in cursor.fetchall():
+        ref = json.loads(row["instance_ref"]) if row["instance_ref"] else {}
+        cascade_missions.append({
+            "conversation_id": row["id"],
+            "title": row["title"] or f"Mission #{row['id']}",
+            "step": ref.get("step", 1),
+            "total": ref.get("total", 1),
+            "updated_at": row["created_at"],
+        })
+
+    # 2. Réflexions figées non consommées (prêtes à lancer dans Cascade)
+    try:
+        cursor.execute("""
+            SELECT rs.id, rs.titre, rs.created_at, mp.id as mp_id
+            FROM reflexion_sessions rs
+            JOIN mission_prompts mp ON mp.reflexion_session_id = rs.id
+            WHERE rs.statut = 'FIGEE'
+              AND mp.forge_session_id IS NULL
+              AND mp.consumed_at IS NULL
+            ORDER BY rs.created_at DESC
+        """)
+        reflexions_pretes = [
+            {"session_id": r["id"], "titre": r["titre"] or "Sans titre",
+             "mp_id": r["mp_id"], "created_at": r["created_at"]}
+            for r in cursor.fetchall()
+        ]
+    except Exception:
+        reflexions_pretes = []
+
+    # 3. Plans en attente de réponse utilisateur
+    try:
+        cursor.execute("""
+            SELECT jp.id, jp.title, jp.home_conversation_id,
+                   jps.agent, jps.title as step_title
+            FROM jarvis_plans jp
+            JOIN jarvis_plan_steps jps ON jps.plan_id = jp.id
+            WHERE jps.status = 'EN_ATTENTE_UTILISATEUR'
+              AND jp.status = 'EN_COURS'
+            ORDER BY jp.updated_at DESC
+        """)
+        plans_en_attente = [
+            {"plan_id": r["id"], "title": r["title"],
+             "conversation_id": r["home_conversation_id"],
+             "agent": r["agent"], "step_title": r["step_title"]}
+            for r in cursor.fetchall()
+        ]
+    except Exception:
+        plans_en_attente = []
+
+    # 4. Alertes Sentinelle non lues
+    try:
+        cursor.execute("SELECT COUNT(*) as nb FROM sentinelle_alertes WHERE lu = 0")
+        alertes_count = cursor.fetchone()["nb"]
+    except Exception:
+        alertes_count = 0
+
+    # 5. Dernier projet touché
+    try:
+        cursor.execute("""
+            SELECT p.id, p.name, MAX(rs.updated_at) as last_activity
+            FROM projects p
+            JOIN reflexion_sessions rs ON rs.project_id = p.id
+            GROUP BY p.id ORDER BY last_activity DESC LIMIT 1
+        """)
+        row = cursor.fetchone()
+        dernier_projet = {"id": row["id"], "name": row["name"],
+                          "last_activity": row["last_activity"]} if row else None
+    except Exception:
+        dernier_projet = None
+
+    db.close()
+    return {
+        "cascade_missions": cascade_missions,
+        "reflexions_pretes": reflexions_pretes,
+        "plans_en_attente": plans_en_attente,
+        "alertes_sentinelle": alertes_count,
+        "dernier_projet": dernier_projet,
+    }
 
 
 @router.get("/pipelines/overview")
