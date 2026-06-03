@@ -3280,15 +3280,8 @@ window.monitorDelete = async function(id) {
 
   // ── Mode Cascade ──────────────────────────────────────────────────────────
   async function checkCascadeMode() {
-    try {
-      const config = await window.API.getConfig();
-      if (config.cascade_mode === true) {
-        const banner = document.getElementById('forge-pause-banner');
-        if (banner) banner.style.display = 'block';
-      }
-    } catch (e) {
-      console.error('Erreur chargement cascade_mode:', e);
-    }
+    // CASCADE est le mode normal — pas de bandeau
+    document.getElementById('forge-pause-banner').style.display = 'none';
   }
 
   function renderCascadeCard(content, instanceRef) {
