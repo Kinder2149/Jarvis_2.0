@@ -148,44 +148,91 @@ def _handle_status_query(message: str, current_instance_ref: dict) -> tuple:
     )
 
 
-def _build_pollinations_url(prompt: str, no_background: bool = False) -> str:
-    prompt_lower = prompt.lower()
+# Legacy Pollinations — remplacé par GPT-Image-1
+# def _build_pollinations_url(prompt: str, no_background: bool = False) -> str:
+#     prompt_lower = prompt.lower()
+#
+#     if any(w in prompt_lower for w in ["anime", "manga", "illustration", "cartoon", "concept art"]):
+#         model = "flux-anime"
+#     elif any(w in prompt_lower for w in ["photo", "realistic", "portrait", "photorealistic"]):
+#         model = "flux-realism"
+#     else:
+#         model = "flux"
+#
+#     is_character = any(w in prompt_lower for w in
+#         ["character", "portrait", "figure", "half-body", "full-body", "person"])
+#     width, height = (768, 1024) if is_character else (1024, 768)
+#
+#     # Prompt enrichi selon le contexte
+#     final_prompt = prompt
+#     if no_background and is_character:
+#         final_prompt = (
+#             "centered composition, waist-up shot, plain white background, clean cutout edges, "
+#             + prompt
+#         )
+#
+#     negative = ""
+#     if no_background:
+#         negative = urllib.parse.quote(
+#             "dark background, black background, atmospheric background, gradient, moody, fog, "
+#             "smoke, bokeh background, environmental lighting, scene, landscape", safe=""
+#         )
+#
+#     seed = random.randint(1, 999999)
+#     encoded = urllib.parse.quote(final_prompt, safe="")
+#     url = (
+#         f"https://image.pollinations.ai/prompt/{encoded}"
+#         f"?width={width}&height={height}&seed={seed}&nologo=true&enhance=true&model={model}"
+#     )
+#     if negative:
+#         url += f"&negative={negative}"
+#     return url
 
-    if any(w in prompt_lower for w in ["anime", "manga", "illustration", "cartoon", "concept art"]):
-        model = "flux-anime"
-    elif any(w in prompt_lower for w in ["photo", "realistic", "portrait", "photorealistic"]):
-        model = "flux-realism"
-    else:
-        model = "flux"
 
-    is_character = any(w in prompt_lower for w in
-        ["character", "portrait", "figure", "half-body", "full-body", "person"])
-    width, height = (768, 1024) if is_character else (1024, 768)
+async def _generate_image_openai(prompt: str, openai_key: str) -> str:
+    """
+    Génère une image via GPT-Image-1 (OpenAI API).
+    Retourne l'URL de l'image générée.
+    Lève une exception en cas d'erreur.
+    """
+    url = "https://api.openai.com/v1/images/generations"
+    headers = {
+        "Authorization": f"Bearer {openai_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "gpt-image-1",
+        "prompt": prompt,
+        "n": 1,
+        "size": "1024x1024"
+    }
 
-    # Prompt enrichi selon le contexte
-    final_prompt = prompt
-    if no_background and is_character:
-        final_prompt = (
-            "centered composition, waist-up shot, plain white background, clean cutout edges, "
-            + prompt
-        )
-
-    negative = ""
-    if no_background:
-        negative = urllib.parse.quote(
-            "dark background, black background, atmospheric background, gradient, moody, fog, "
-            "smoke, bokeh background, environmental lighting, scene, landscape", safe=""
-        )
-
-    seed = random.randint(1, 999999)
-    encoded = urllib.parse.quote(final_prompt, safe="")
-    url = (
-        f"https://image.pollinations.ai/prompt/{encoded}"
-        f"?width={width}&height={height}&seed={seed}&nologo=true&enhance=true&model={model}"
-    )
-    if negative:
-        url += f"&negative={negative}"
-    return url
+    async with httpx.AsyncClient(timeout=60) as client:
+        resp = await client.post(url, headers=headers, json=payload)
+        
+        if resp.status_code == 401:
+            raise ValueError("Clé OpenAI invalide")
+        elif resp.status_code == 429:
+            raise ValueError("Quota OpenAI dépassé")
+        elif resp.status_code >= 400:
+            try:
+                error_data = resp.json()
+                error_msg = error_data.get("error", {}).get("message", resp.text)
+            except Exception:
+                error_msg = resp.text
+            raise ValueError(f"Erreur OpenAI ({resp.status_code}): {error_msg}")
+        
+        resp.raise_for_status()
+        data = resp.json()
+        
+        if "data" not in data or not data["data"]:
+            raise ValueError("Réponse OpenAI invalide : aucune image générée")
+        
+        image_url = data["data"][0].get("url")
+        if not image_url:
+            raise ValueError("Réponse OpenAI invalide : URL manquante")
+        
+        return image_url
 
 
 async def _run_generation(conversation_id: int, state: dict, config: dict) -> None:
@@ -195,46 +242,62 @@ async def _run_generation(conversation_id: int, state: dict, config: dict) -> No
         prompt = state["prompt"]
 
         if media_type == "image":
-            no_bg = any(w in prompt.lower() for w in
-                ["white background", "plain white", "no background", "sans fond", "détouré"])
-            result_url = _build_pollinations_url(prompt, no_background=no_bg)
-            
-            prefetch_ok = False
-            try:
-                async with httpx.AsyncClient(timeout=60) as client:
-                    resp = await client.get(result_url, follow_redirects=True)
-                    prefetch_ok = resp.status_code < 400
-            except Exception as poll_err:
-                logger.warning(f"[MEDIA] Pollinations prefetch warning: {poll_err}")
-            
-            if not prefetch_ok:
+            openai_key = config.get("api_keys", {}).get("openai_key", "")
+            if not openai_key:
                 db.execute("""
                     INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
-                    VALUES (?, ?, ?, ?, 'error', datetime('now'))
-                """, (conversation_id, media_type, prompt, result_url))
+                    VALUES (?, ?, ?, NULL, 'error', datetime('now'))
+                """, (conversation_id, media_type, prompt))
                 db.commit()
                 _inject_message(
                     conversation_id, db,
-                    "[MEDIA] ⚠️ Pollinations est inaccessible ou la génération a échoué.\n\n"
-                    "Réessaie dans quelques instants ou décris une image différente."
+                    "[MEDIA] ⚠️ Clé OpenAI manquante — à configurer dans les paramètres JARVIS.\n\n"
+                    "Va dans **Paramètres → Clés API** pour ajouter ta clé OpenAI."
                 )
                 return
             
-            db.execute("""
-                INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
-                VALUES (?, ?, ?, ?, 'done', datetime('now'))
-            """, (conversation_id, media_type, prompt, result_url))
-            db.commit()
-            bg_tip = (
-                "\n\n💡 Fond blanc généré — supprime-le gratuitement sur [remove.bg](https://www.remove.bg) pour obtenir un PNG transparent."
-            ) if no_bg else ""
-            content = (
-                f"[MEDIA] Image générée ✅\n\n"
-                f"![Image générée]({result_url})\n\n"
-                f"[Télécharger / ouvrir en plein écran]({result_url}){bg_tip}\n\n"
-                f"Dis-moi si tu veux en générer une autre ou modifier quelque chose."
-            )
-            _inject_message(conversation_id, db, content)
+            try:
+                result_url = await _generate_image_openai(prompt, openai_key)
+                
+                db.execute("""
+                    INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
+                    VALUES (?, ?, ?, ?, 'done', datetime('now'))
+                """, (conversation_id, media_type, prompt, result_url))
+                db.commit()
+                
+                content = (
+                    f"[MEDIA] Image générée ✅\n\n"
+                    f"![Image générée]({result_url})\n\n"
+                    f"[Télécharger / ouvrir en plein écran]({result_url})\n\n"
+                    f"Dis-moi si tu veux en générer une autre ou modifier quelque chose."
+                )
+                _inject_message(conversation_id, db, content)
+                
+            except ValueError as ve:
+                db.execute("""
+                    INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
+                    VALUES (?, ?, ?, NULL, 'error', datetime('now'))
+                """, (conversation_id, media_type, prompt))
+                db.commit()
+                _inject_message(
+                    conversation_id, db,
+                    f"[MEDIA] ⚠️ {str(ve)}\n\n"
+                    "Vérifie ta clé OpenAI dans les paramètres ou réessaie plus tard."
+                )
+                return
+            except Exception as e:
+                logger.error(f"[MEDIA] Erreur génération OpenAI: {e}")
+                db.execute("""
+                    INSERT INTO media_jobs (conversation_id, media_type, prompt, result_url, status, created_at)
+                    VALUES (?, ?, ?, NULL, 'error', datetime('now'))
+                """, (conversation_id, media_type, prompt))
+                db.commit()
+                _inject_message(
+                    conversation_id, db,
+                    f"[MEDIA] ⚠️ Erreur lors de la génération : {str(e)}\n\n"
+                    "Réessaie dans quelques instants."
+                )
+                return
 
         else:
             await _run_fal_video(conversation_id, prompt, config, db)

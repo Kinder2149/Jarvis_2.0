@@ -374,3 +374,221 @@ def get_logs(lines: int = Query(default=100), project_id: int | None = None):
     
     except Exception:
         return {"lines": []}
+
+
+class WriteFileRequest(BaseModel):
+    path: str
+    content: str
+
+
+@router.post("/write-file")
+def write_file(request: WriteFileRequest):
+    """Écrit le contenu dans un fichier (sécurisé pour PROJET_CONTEXTE.md uniquement)."""
+    file_path = Path(request.path)
+    
+    # Sécurité : vérifier que le chemin est dans C:\DEV\PROJETS\ et que c'est PROJET_CONTEXTE.md
+    if not str(file_path).startswith("C:\\DEV\\PROJETS\\"):
+        raise HTTPException(status_code=403, detail="Chemin non autorisé")
+    
+    if file_path.name != "PROJET_CONTEXTE.md":
+        raise HTTPException(status_code=403, detail="Seul PROJET_CONTEXTE.md peut être modifié via cet endpoint")
+    
+    if not file_path.parent.exists():
+        raise HTTPException(status_code=404, detail="Répertoire parent introuvable")
+    
+    try:
+        file_path.write_text(request.content, encoding="utf-8")
+        logger.info(f"✅ Fichier écrit : {file_path}")
+        return {"status": "written", "path": str(file_path)}
+    except Exception as e:
+        logger.error(f"❌ Erreur écriture fichier {file_path}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{session_id}/propose-contexte")
+async def propose_projet_contexte_update(session_id: int):
+    """Génère une proposition de mise à jour des sections 8 et 9 du PROJET_CONTEXTE.md."""
+    db = get_connection()
+    cursor = db.cursor()
+    
+    try:
+        # 1. Vérifier que la session existe et est terminée
+        cursor.execute("SELECT status, workflow_type FROM sessions WHERE id = ?", (session_id,))
+        session_row = cursor.fetchone()
+        
+        if not session_row:
+            raise HTTPException(status_code=404, detail="Session non trouvée")
+        
+        if session_row["status"] != "COMPLETED":
+            raise HTTPException(status_code=400, detail="Pipeline non terminé")
+        
+        # 2. Récupérer les steps complétés avec leurs résumés
+        cursor.execute("""
+            SELECT step_display_name, summary_fr, step_index
+            FROM pipeline_steps
+            WHERE session_id = ? AND status = 'COMPLETED'
+            ORDER BY step_index ASC
+        """, (session_id,))
+        steps = cursor.fetchall()
+        
+        summaries = []
+        for step in steps:
+            if step["summary_fr"]:
+                summaries.append(f"- {step['step_display_name']}: {step['summary_fr']}")
+        
+        summaries_text = "\n".join(summaries) if summaries else "Aucun résumé disponible"
+        
+        # 3. Récupérer le titre de la mission
+        cursor.execute("""
+            SELECT mp.titre 
+            FROM mission_prompts mp 
+            WHERE mp.forge_session_id = ?
+        """, (session_id,))
+        mission_row = cursor.fetchone()
+        titre = mission_row["titre"] if mission_row and mission_row["titre"] else "Mission sans titre"
+        
+        # 4. Récupérer le chemin du projet
+        cursor.execute("""
+            SELECT p.path 
+            FROM sessions s 
+            JOIN projects p ON p.id = s.project_id 
+            WHERE s.id = ?
+        """, (session_id,))
+        project_row = cursor.fetchone()
+        
+        if not project_row or not project_row["path"]:
+            raise HTTPException(status_code=404, detail="Projet non trouvé")
+        
+        project_path = Path(project_row["path"])
+        projet_contexte_path = project_path / "PROJET_CONTEXTE.md"
+        
+        # 5. Lire le fichier PROJET_CONTEXTE.md
+        if not projet_contexte_path.exists():
+            raise HTTPException(status_code=404, detail="PROJET_CONTEXTE.md introuvable")
+        
+        full_content = projet_contexte_path.read_text(encoding="utf-8")
+        lines = full_content.split("\n")
+        
+        # 6. Extraire les sections 8 et 9
+        section_8_start = None
+        section_9_start = None
+        next_section_after_8 = None
+        next_section_after_9 = None
+        
+        for i, line in enumerate(lines):
+            if line.startswith("## 8."):
+                section_8_start = i
+            elif line.startswith("## 9."):
+                section_9_start = i
+            elif section_8_start is not None and next_section_after_8 is None and line.startswith("##") and i > section_8_start:
+                next_section_after_8 = i
+            elif section_9_start is not None and next_section_after_9 is None and line.startswith("##") and i > section_9_start:
+                next_section_after_9 = i
+        
+        if section_8_start is None or section_9_start is None:
+            raise HTTPException(status_code=404, detail="Sections 8 ou 9 introuvables dans PROJET_CONTEXTE.md")
+        
+        # Extraire le contenu actuel des sections
+        section_8_end = next_section_after_8 if next_section_after_8 else section_9_start
+        section_9_end = next_section_after_9 if next_section_after_9 else len(lines)
+        
+        current_section_8 = "\n".join(lines[section_8_start:section_8_end]).strip()
+        current_section_9 = "\n".join(lines[section_9_start:section_9_end]).strip()
+        
+        # 7. Appeler le LLM pour générer la proposition
+        from backend.services.model_router import call_model, get_model_id
+        
+        config = load_config()
+        model_id = get_model_id("routing", config)
+        
+        system_prompt = """Tu es un assistant qui met à jour la documentation d'un projet de développement.
+Tu dois proposer une mise à jour des sections 8 et 9 d'un PROJET_CONTEXTE.md
+basée sur ce qui vient d'être accompli dans une mission de code.
+Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication.
+Format exact :
+{
+  "section_8": "## 8. SESSION EN COURS\\n\\n[contenu complet de la nouvelle section 8]",
+  "section_9": "## 9. BACKLOG\\n\\n[contenu complet de la nouvelle section 9]"
+}"""
+        
+        user_prompt = f"""Mission terminée : {titre}
+
+Ce qui a été accompli (résumés des étapes) :
+{summaries_text}
+
+Section 8 actuelle :
+{current_section_8}
+
+Section 9 actuelle :
+{current_section_9}
+
+Règles :
+- Section 8 : mettre à jour avec ce qui a été fait dans cette mission.
+  Garder le format existant si présent (Graphify, Objectif, Fichiers concernés, Résultat).
+- Section 9 : si la mission correspond à un item du backlog, le marquer ✅ et le déplacer 
+  en bas avec la date. Ne pas supprimer les autres items. Conserver la numérotation.
+- Ne pas inventer de nouvelles missions backlog sauf si clairement détectable 
+  depuis les résumés."""
+        
+        response = await call_model(
+            model_id=model_id,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            api_keys=config["api_keys"],
+            session_id=session_id,
+            step_name="propose_contexte",
+            model_type="routing",
+            db_conn=db,
+            module_name="pipeline"
+        )
+        
+        # 8. Parser le JSON retourné
+        try:
+            # Nettoyer la réponse (enlever les markdown code blocks si présents)
+            cleaned_response = response.strip()
+            if cleaned_response.startswith("```"):
+                # Enlever les délimiteurs markdown
+                cleaned_response = "\n".join([
+                    line for line in cleaned_response.split("\n")
+                    if not line.strip().startswith("```")
+                ])
+            
+            proposal = json.loads(cleaned_response)
+            new_section_8 = proposal["section_8"]
+            new_section_9 = proposal["section_9"]
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.error(f"Erreur parsing JSON LLM: {e}\nRéponse brute: {response}")
+            raise HTTPException(status_code=500, detail=f"Erreur parsing réponse LLM: {str(e)}")
+        
+        # 9. Reconstituer le nouveau PROJET_CONTEXTE.md complet
+        new_lines = lines[:section_8_start]
+        new_lines.append(new_section_8)
+        new_lines.append("")
+        new_lines.append(new_section_9)
+        
+        if next_section_after_9:
+            new_lines.append("")
+            new_lines.extend(lines[next_section_after_9:])
+        
+        full_updated_content = "\n".join(new_lines)
+        
+        # 10. Retourner la proposition
+        current_content = f"{current_section_8}\n\n{current_section_9}"
+        proposed_content = f"{new_section_8}\n\n{new_section_9}"
+        
+        return {
+            "current_content": current_content,
+            "proposed_content": proposed_content,
+            "full_updated_content": full_updated_content,
+            "projet_contexte_path": str(projet_contexte_path)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Erreur propose_projet_contexte_update session={session_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()

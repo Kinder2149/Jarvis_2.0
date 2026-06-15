@@ -84,58 +84,80 @@ JARVIS/
 │   │   ├── files.py           ← read, write, diff, apply, archive docs, local-list
 │   │   ├── chat.py            ← conversations, messages, titrage auto, résumé, folder_path
 │   │   ├── atelier.py         ← CRUD prospects, start pipeline atelier, export ZIP
-│   │   └── config.py          ← clés API (SQLite), test connexion, modèles, profil utilisateur
+│   │   ├── config.py          ← clés API (SQLite), test connexion, modèles, profil utilisateur, couche1
+│   │   ├── jarvis.py          ← conversations JARVIS multi-agents, situation dashboard, pipeline monitor
+│   │   ├── plans.py           ← CRUD plans multi-agents, confirm, retry, statut
+│   │   ├── sentinelle.py      ← positions, watchlist, cycles, transactions, alertes
+│   │   ├── media.py           ← stats et historique jobs media
+│   │   ├── disc.py            ← stats règles WFDF, sessions questions
+│   │   └── orchestrateur.py   ← GET /agents (lecture registre agent_registry)
 │   ├── services/
-│   │   ├── pipeline_engine.py ← state machine, orchestration, chunking, persistance
-│   │   ├── model_router.py    ← sélection modèle, appel API, log décisions
-│   │   ├── context_manager.py ← construction context envelopes par étape
-│   │   ├── file_service.py    ← pathlib, diff, rollback all-or-nothing
-│   │   ├── chat_service.py    ← historique messages, titrage auto, lecture dossier local, web search
-│   │   ├── atelier_service.py ← logique pipeline atelier, export ZIP fichiers démo
-│   │   ├── reflexion_service.py ← session réflexion, messages IA, figement, livrables, propose/apply edit
-│   │   ├── cadrage.py         ← 7 checks santé cadrage (PROJET_CONTEXTE, graphify, section 8…)
-│   │   ├── chunking.py        ← découpage automatique missions par fichier (single_call / chunk_by_file)
-│   │   └── mission_parser.py  ← parsing prompt mission → titre, fichiers, modèle recommandé
+│   │   ├── pipeline_engine.py    ← state machine FORGE/ATELIER, orchestration steps, appels LLM directs
+│   │   ├── model_router.py       ← sélection modèle, appel API OpenRouter/Anthropic, log décisions
+│   │   ├── context_manager.py    ← construction context envelopes par étape pipeline
+│   │   ├── file_service.py       ← pathlib, diff, rollback all-or-nothing, conflit détection
+│   │   ├── chat_service.py       ← historique messages, titrage auto, lecture dossier local, web search
+│   │   ├── atelier_service.py    ← logique pipeline atelier, scraping, export ZIP démo
+│   │   ├── reflexion_service.py  ← session réflexion, messages IA, figement, livrables, propose/apply edit
+│   │   ├── cadrage.py            ← 7 checks santé cadrage
+│   │   ├── chunking.py           ← découpage missions par fichier (single_call / chunk_by_file)
+│   │   ├── mission_parser.py     ← parsing prompt mission → titre, fichiers, modèle recommandé
+│   │   ├── jarvis_service.py     ← orchestrateur central : routing LLM, dispatch agents, plans multi-step
+│   │   ├── mentor_handler.py     ← agent MENTOR : réflexion, figement, fork cascade/FORGE
+│   │   ├── forge_handler.py      ← agent FORGE : pipeline code, verify, audit cohérence
+│   │   ├── cascade_handler.py    ← flux CASCADE : prompts copiables, validation retour, clôture
+│   │   ├── sentinelle_handler.py ← agent SENTINELLE : consultation portefeuille, watchlist
+│   │   ├── atelier_handler.py    ← agent ATELIER : collecte prospect, pipeline démo
+│   │   ├── media_handler.py      ← agent MEDIA : génération image (Pollinations) / vidéo (fal.ai)
+│   │   ├── disc_handler.py       ← agent DISC : expert règles WFDF Ultimate 2025-2028
+│   │   ├── plan_executor.py      ← exécuteur plans multi-agents (APScheduler 5s tick)
+│   │   └── sentinelle_service.py ← calculs budget, valorisation portefeuille
 │   ├── schemas/
 │   │   ├── project.py
 │   │   ├── pipeline.py
 │   │   ├── reflexion.py
-│   │   └── config.py
+│   │   └── config.py             ← inclut cascade_mode: bool = True
 │   └── data/
-│       ├── jarvis.db          ← SQLite (tables: projects, sessions, pipeline_steps, conversations, messages, app_config, prospects, reflexion_sessions, reflexion_messages, mission_prompts)
-│       ├── config.json        ← model_preferences + methodo_path (clés API dans jarvis.db)
-│       ├── pipelines.json     ← workflow code_mission (4 steps) + atelier_restauration (13 steps)
-│       └── prompts.json       ← templates prompts par step (execution, verification, cloture, atelier_*, reflexion_*)
+│       ├── jarvis.db             ← SQLite 23 tables (voir liste complète section 5)
+│       ├── config.json           ← model_preferences uniquement (clés API dans jarvis.db)
+│       ├── pipelines.json        ← workflow code_mission (4 steps) + atelier_restauration (13 steps)
+│       ├── prompts.json          ← 20 templates prompts (reflexion_*, atelier_*, execution, cloture, mentor_cascade_validate)
+│       ├── agents_registry.json  ← référence statique agents (source runtime = table agent_registry SQLite)
+│       └── contexts/             ← profil_utilisateur.md, regles_globales.md, global_context.md, *_profil.md
 └── frontend/
-    ├── index.html             ← dashboard (timeline activité, sessions actives/bloquées, stats)
-    ├── dossier.html           ← hub projet/dossier (remplace project.html)
-    ├── code-projects.html     ← liste projets Module Code (bouton Nouvelle Mission par projet)
-    ├── mission.html           ← page unique Mission : Zone 1 Réflexion + Zone 2 Livrable + Zone 3 Pipeline
-    ├── chat.html              ← conversation IA (markdown, folder_path, web search, sélecteur modèle)
-    ├── conversations.html     ← liste de toutes les conversations (hub d'accès depuis sidebar btn 💬)
-    ├── atelier.html           ← Atelier Connecté (kanban 6 colonnes + vue pipeline prospect)
-    ├── sentinelle.html        ← Module Sentinelle (cycle investissement PHASE_1 à PHASE_6, portefeuille, watchlist)
-    └── settings.html          ← config clés API 3 providers + sélecteurs modèles par type
+    ├── jarvis.html          ← interface principale (3 022 lignes) — routing, agents, plans, situation dashboard
+    ├── mission.html         ← page Mission : Réflexion → Validation → Exécution → Suivi
+    ├── chat.html            ← conversation IA libre (markdown, folder_path, web search)
+    ├── sentinelle.html      ← Module Sentinelle (cycles, portefeuille, watchlist)
+    ├── atelier.html         ← Atelier Connecté (kanban 6 colonnes + pipeline prospect)
+    ├── dossier.html         ← hub projet/dossier (instructions, activité)
+    ├── conversations.html   ← liste conversations chat
+    ├── settings.html        ← clés API, modèles, profil, contextes, cascade_mode toggle
+    ├── board-mentor.html    ← board agent MENTOR (réflexions ouvertes)
+    ├── board-forge.html     ← board agent FORGE (pipelines actifs)
+    ├── board-sentinelle.html ← board agent SENTINELLE (valorisation, alertes, cycle)
+    ├── board-atelier.html   ← board agent ATELIER (prospects actifs)
+    ├── board-media.html     ← board agent MEDIA (stats générations)
+    └── board-disc.html      ← board agent DISC (règles WFDF, questions traitées)
     └── assets/
-        ├── style.css          ← thème sombre, variables CSS, layout 3 panneaux, composants
+        ├── style.css           ← thème sombre, variables CSS, layout 3 panneaux, composants
         └── js/
-            ├── api.js            ← toutes les routes API (BASE_URL = window.location.origin)
+            ├── api.js            ← toutes les routes API centralisées (BASE_URL = window.location.origin)
             ├── shared.js         ← renderMarkdown, formatDate, statusBadge, costBadge, initLayout
-            ├── sidebar.js        ← sidebar collapsible, modals nouveau chat/module/projet/reflexion
+            ├── board.js          ← utilitaires partagés boards (ago, badge, statCard, emptyState, progressBar)
+            ├── sidebar.js        ← sidebar collapsible, modals nouveau chat/mission/projet
             ├── ui.js             ← showModal, closeModal, showToast
-            ├── dashboard.js      ← timeline, sessions actives/bloquées, stats semaine
-            ├── project.js        ← hub projet, instructions éditables, liste unifiée sessions+chats
-            ├── code-projects.js  ← liste projets Module Code (bouton Nouvelle Mission)
-            ├── mission.js        ← orchestrateur unique Mission (réflexion + figement + pipeline en une page)
+            ├── mission.js        ← orchestrateur Mission (réflexion + figement + pipeline)
             ├── chat.js           ← messages, optimistic UI, sélecteur modèle, suppression
-            ├── conversations.js  ← liste conversations, suppression, redirection chat.html
+            ├── conversations.js  ← liste conversations, suppression, redirection
             ├── explorer.js       ← arborescence fichiers locaux, preview, collapse
-            ├── atelier.js        ← kanban prospects, vue pipeline atelier, zones saisie/checkpoint/export
-            ├── sentinelle.js     ← Module Sentinelle — cycle investissement, portefeuille, watchlist
-            └── settings.js       ← clés API (états visuels), test connexion, dropdowns modèles
+            ├── atelier.js        ← kanban prospects, vue pipeline atelier
+            ├── sentinelle.js     ← Module Sentinelle — cycles, portefeuille, watchlist
+            ├── project.js        ← hub projet, instructions éditables, liste unifiée
+            └── settings.js       ← clés API, test connexion, dropdowns modèles, cascade_mode toggle
 
-**Services backend actifs :** 11 / 20 maximum
-**Pages frontend :** 9 / illimité (mission.html a remplacé reflexion.html + module-code.html + code-project-detail.html — conversations.html et sentinelle.html ajoutées)
+**Services backend actifs :** 20 / 20 maximum (limite atteinte — supprimer avant d'ajouter)
+**Pages frontend :** 13 (jarvis.html principale + mission/chat/sentinelle/atelier/dossier/conversations/settings + 5 boards agents + 1 redirect) — index.html supprimé, jarvis.html est l'entrée via redirect `/`
 
 ---
 
@@ -146,26 +168,25 @@ JARVIS/
 - Pipeline engine complet (workflow code_mission + atelier_restauration, state machine, persistance SQLite)
 - Chunking automatique par fichier pour les missions code (single_call / chunk_by_file selon budget tokens)
 - Routing modèles par type de tâche (routing/structuring/code/analysis) — configurable depuis Paramètres
-- `load_config()` centralisé dans database.py — source unique pour tous les routers
+- `load_config()` centralisé dans database.py — ⚠️ duplication résiduelle dans `routers/config.py` lignes 74-90 (à corriger Sprint 3)
 - Clés API dans SQLite (table app_config), seed auto depuis .env au démarrage
 - Rollback atomique apply_files (3 phases), parsing diff 3 fallbacks
-- Clôture auto PROJET_CONTEXTE.md section 8 + CHANGELOG.md à chaque mission
+- Clôture auto section 8 + CHANGELOG : automatique en mode FORGE, **3 blocs copiables manuellement en mode CASCADE**
 - Logs applicatifs : jarvis.log + GET /pipelines/logs
-- **Frontend V2 complet** : layout 3 panneaux (sidebar collapsible, main, explorer), 7 pages, 12 modules JS
+- **Interface principale JARVIS** (jarvis.html) : orchestrateur multi-agents, routing LLM, 5 boards agents, pipeline monitor, plans multi-agents
 - **Page Mission unique** (mission.html) : flow 4 étapes progressives (Réflexion → Validation → Exécution → Suivi), polling 5s, validation diff/generic, complétion decision_figee avec retour projet
-- **Module Réflexion** : session conversationnelle Claude Sonnet 4.5 → figement → 3 types de livrables (mission_code / decision_figee / plan_multi_missions). Modèle configurable depuis app_config.
-- **Module Code** : pipeline code_mission depuis mission.html Zone 3, preview parsing, chunking auto, retry step
+- **Module Réflexion / MENTOR** : session conversationnelle → figement → 3 types de livrables (mission_code / decision_figee / plan_multi_missions). Profil utilisateur + règles globales injectés depuis `contexts/*.md`
+- **Flux CASCADE** (mode par défaut) : MENTOR freeze → prompts copiables Cascade → validation retour utilisateur → clôture automatique
+- **Module Code / FORGE** : pipeline code_mission, chunking auto, retry step — désactivé par défaut (cascade_mode=True), activable via Paramètres > Avancé
 - **Module Chat** : lecture dossier local (GRAPH_REPORT prioritaire), web search Brave API, sélecteur modèle, résumé contextuel
 - **Module Projet** : hub conteneur (instructions, local_path, liste unifiée sessions+chats)
 - **Atelier Connecté** : kanban 6 colonnes, pipeline 13 steps pour prospects restauration, export ZIP démo HTML
-- **Atelier pipeline** : 3 moments humains (form saisie terrain → checkpoint validation → export ZIP)
+- **Plans multi-agents** : détection auto multi-step, génération plan Gemini Flash, exécution séquentielle APScheduler 5s, Phase 3 EN_ATTENTE_UTILISATEUR
 - Cadrage health check : 7 points de contrôle (PROJET_CONTEXTE, graphify, section 8, décisions figées, fichiers méthode, backlog, fraîcheur)
-- Sources METHODO unifiées : reflexion_service et cadrage lisent depuis methodo_path (config.json), fallback interne avec warning
-- Startup recovery : sessions RUNNING → FAILED au démarrage (crash server)
-- Toast system, modales confirmation, états vides, dashboard timeline réflexions + pipelines
-- Badges statut complets : PENDING / RUNNING / WAITING_VALIDATION / COMPLETED / FAILED 💀 / ABORTED ⛔
-- Paramètres : distinction claire Contexte Global (tous modules) vs Profil utilisateur (Chat uniquement)
-- health_check.py : vérification rapide 3 modules en < 60s
+- Contextes utilisateur : `backend/data/contexts/*.md` — source de vérité runtime (profil_utilisateur, regles_globales, global_context, 5 profils modules). Entrées DB app_config non utilisées à l'exécution.
+- Startup recovery : sessions RUNNING → FAILED, plans EN_COURS → CONFIRMED au démarrage
+- Toast system, modales confirmation, états vides, boards par agent
+- Paramètres > Avancé : toggle cascade_mode, backup DB, chemin export clients
 
 **🚧 En cours**
 - Aucun — audit 2026-05-03 soldé (Sprint 1 + 2 + 3 terminés). JARVIS prêt pour usage.
@@ -280,6 +301,8 @@ JARVIS/
 | 2026-05-01 | Pas de migration des sessions pipeline historiques | Ménage des sessions inactives en BDD à la place — la dette est faible, valeur utilisateur nulle, risque de migration évité |
 | 2026-05-01 | Migration Gemini 2.0 Flash → 2.5 Flash effectuée | OpenRouter retire Gemini 2.0 Flash le 2026-06-01 — migration faite AVANT refonte pipeline pour éviter double chantier |
 | 2026-05-15 | SENTINELLE via JARVIS : thèses hors scope conversation | Thèses = interface dédiée sentinelle.html. Depuis JARVIS : consultation et watchlist uniquement. Agir (transactions) : jamais. |
+| 2026-06-02 | CASCADE = flux officiel de livraison code (remplace la décision 2026-05-01 "copier-coller manuel") | cascade_handler.py implémente le pont MENTOR→Cascade : prompts copiables générés automatiquement, validation retour utilisateur, clôture auto. FORGE reste disponible via toggle cascade_mode=False dans Paramètres > Avancé mais n'a pas encore été validé sur cet environnement. |
+| 2026-06-02 | Contextes utilisateur stockés dans contexts/*.md (pas dans app_config DB) | Les endpoints `/api/config/profil_utilisateur`, `/api/config/regles_globales`, `/api/config/couche1/{key}` lisent et écrivent les fichiers .md. Les entrées correspondantes dans app_config sont vides et non utilisées à l'exécution. Ne pas migrer vers DB. |
 
 ---
 
@@ -297,17 +320,32 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ✅ Mis à jour (hook post-commit)
-**Objectif :** 5 corrections robustesse + 1 UX
-**Mission terminée :** 2026-05-24 — ROBUSTESSE-UX
-**Fichiers modifiés :**
-- backend/services/media_handler.py : détection image cassée Pollinations
-- backend/services/sentinelle_handler.py : retour direct portefeuille vide
-- backend/services/file_service.py : détection conflit fichiers modifiés
-- backend/routers/files.py : ajout pipeline_started_at
-- backend/services/mentor_handler.py : vérification projet supprimé
-- frontend/jarvis.html : texte statique "Multi-agents · IA"
-- CHANGELOG.md : ajout ligne mission ROBUSTESSE-UX
-- PROJET_CONTEXTE.md : mise à jour section 8
+**Session :** Ajout fonctionnalité mise à jour automatique PROJET_CONTEXTE (2026-06-05)
+**Objectif :** Permettre la mise à jour automatique des sections 8 et 9 du PROJET_CONTEXTE.md après un pipeline FORGE terminé
+**Fichiers concernés :**
+- backend/routers/pipelines.py : endpoints propose-contexte + write-file
+- frontend/mission.html : bouton mise à jour PROJET_CONTEXTE
+- frontend/assets/js/mission.js : logique proposition + application diff
+- backend/data/contexts/media_profil.md : profil agent MEDIA (créé)
+- CHANGELOG.md : ligne ajoutée
+
+**Hors scope :**
+- Modification du comportement existant du modal diff (decision_figee)
+- Ajout de dépendances npm ou Python
+
+**Résultat :**
+✅ Endpoint POST /api/pipelines/{session_id}/propose-contexte fonctionnel (extraction sections, appel LLM, parsing JSON)
+✅ Endpoint POST /api/pipelines/write-file sécurisé (vérification chemin + nom fichier)
+✅ Bouton "📝 Mettre à jour PROJET_CONTEXTE" affiché uniquement pour code_mission COMPLETED
+✅ Modal diff réutilisé avec gestion 2 cas (decision_figee + projet_contexte)
+✅ Application écrit fichier sur disque + masque bouton après validation
+✅ Build Python passe sans erreur
+
+**Backlog technique :**
+- sentinelle_theses : table active, aucun CRUD UI (INCOMPLET-01)
+- load_config() duplication résiduelle dans routers/config.py lignes 74-90
+- Validation Cascade : comptage mots négatifs (heuristique fragile — améliorer si KO fréquents)
+- Retry 429 : 60s+120s+240s = UX figée — réduire ou ajouter feedback visuel
 
 **Corrections appliquées :**
 

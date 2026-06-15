@@ -954,6 +954,12 @@
         const footerEl = document.getElementById('step-4-footer');
         if (footerEl) footerEl.style.display = 'block';
 
+        // Bouton mise à jour PROJET_CONTEXTE (seulement pour code_mission)
+        const btnUpdateContexte = document.getElementById('btn-update-projet-contexte');
+        if (btnUpdateContexte && session.workflow_type === 'code_mission') {
+          btnUpdateContexte.style.display = 'block';
+        }
+
         actionZone.style.display = 'none';
         return;
       }
@@ -1283,6 +1289,7 @@
       pendingEdit = null;
     });
     document.getElementById('modal-diff-apply')?.addEventListener('click', async () => {
+      // Cas 1 : édition decision_figee (existant)
       if (pendingEdit && reflexionSessionId) {
         try {
           await window.API.applyEdit(reflexionSessionId, pendingEdit.file_path, pendingEdit.new_content);
@@ -1317,13 +1324,108 @@
           window.showToast('Erreur application : ' + error.message, 'error');
         }
       }
+      // Cas 2 : mise à jour PROJET_CONTEXTE (nouveau)
+      else if (window._pendingProjetContexte) {
+        try {
+          const resp = await fetch('/api/pipelines/write-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              path: window._pendingProjetContexte.path,
+              content: window._pendingProjetContexte.content
+            })
+          });
+          
+          if (!resp.ok) {
+            const err = await resp.json();
+            throw new Error(err.detail || 'Erreur écriture fichier');
+          }
+          
+          window.showToast('PROJET_CONTEXTE.md mis à jour ✅', 'success');
+          document.getElementById('modal-diff').style.display = 'none';
+          window._pendingProjetContexte = null;
+          
+          // Masquer le bouton après application
+          const btnUpdate = document.getElementById('btn-update-projet-contexte');
+          if (btnUpdate) btnUpdate.style.display = 'none';
+          
+        } catch (error) {
+          window.showToast('Erreur : ' + error.message, 'error');
+        }
+      }
     });
+
+    // Bouton mise à jour PROJET_CONTEXTE
+    document.getElementById('btn-update-projet-contexte')?.addEventListener('click', proposeProjetContexteUpdate);
 
     // Zone 3 : abandonner pipeline
     document.getElementById('btn-abort-pipeline')?.addEventListener('click', handleAbortPipeline);
 
     // Nettoyage polling au déchargement
     window.addEventListener('beforeunload', stopPolling);
+  }
+
+  // ── Mise à jour PROJET_CONTEXTE ───────────────────────────────────
+  async function proposeProjetContexteUpdate() {
+    const btn = document.getElementById('btn-update-projet-contexte');
+    if (!btn || !pipelineSessionId) return;
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ Génération de la proposition…';
+    
+    try {
+      const resp = await fetch(`/api/pipelines/${pipelineSessionId}/propose-contexte`, {
+        method: 'POST'
+      });
+      
+      if (!resp.ok) {
+        const err = await resp.json();
+        window.showToast(err.detail || 'Erreur lors de la génération', 'error');
+        return;
+      }
+      
+      const data = await resp.json();
+      
+      // Afficher le diff dans le modal existant
+      document.getElementById('diff-file-name').textContent = 'PROJET_CONTEXTE.md';
+      const diffContent = document.getElementById('diff-content');
+      
+      // Construire un diff simple ligne par ligne
+      const currentLines = data.current_content.split('\n');
+      const proposedLines = data.proposed_content.split('\n');
+      let diffHtml = '';
+      
+      // Afficher les lignes supprimées (current)
+      currentLines.forEach(line => {
+        diffHtml += `<div style="background:#f8514933;color:#f85149;padding:2px 4px;font-family:monospace;font-size:0.85rem">- ${escapeHtml(line)}</div>`;
+      });
+      
+      // Afficher les lignes ajoutées (proposed)
+      proposedLines.forEach(line => {
+        diffHtml += `<div style="background:#3fb95033;color:#3fb950;padding:2px 4px;font-family:monospace;font-size:0.85rem">+ ${escapeHtml(line)}</div>`;
+      });
+      
+      diffContent.innerHTML = diffHtml;
+      document.getElementById('modal-diff').style.display = 'flex';
+      
+      // Stocker le contenu final pour application
+      window._pendingProjetContexte = {
+        path: data.projet_contexte_path,
+        content: data.full_updated_content
+      };
+      
+    } catch(e) {
+      window.showToast('Erreur réseau', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📝 Mettre à jour PROJET_CONTEXTE';
+    }
+  }
+  
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   // ── Bouton retour JARVIS ──────────────────────────────────────────

@@ -99,7 +99,14 @@
       "Bash(git merge --no-ff claude/ultimate-frisbee-agent-cUS2o -m 'Merge : agent DISC — expert règles WFDF Ultimate Frisbee 2025-2028 *)",
       "Bash(git push *)",
       "WebFetch(domain:rules.wfdf.sport)",
-      "PowerShell(Get-ChildItem C:\\\\DEV\\\\PROJETS\\\\intelligence_artificielle\\\\Jarvis-2.0\\\\backend\\\\routers\\\\ | ForEach-Object { $lines = \\(Get-Content $_.FullName | Measure-Object -Line\\).Lines; \"$\\($_.Name\\) — $lines lignes\" })"
+      "PowerShell(Get-ChildItem C:\\\\DEV\\\\PROJETS\\\\intelligence_artificielle\\\\Jarvis-2.0\\\\backend\\\\routers\\\\ | ForEach-Object { $lines = \\(Get-Content $_.FullName | Measure-Object -Line\\).Lines; \"$\\($_.Name\\) — $lines lignes\" })",
+      "Bash(git commit -m 'SPRINT-1 : injection profil utilisateur dans JARVIS direct + SENTINELLE *)",
+      "Bash(git commit -m 'SPRINT-2 : tableau de bord Où en suis-je ? sur jarvis.html *)",
+      "Bash(sqlite3 backend/data/jarvis.db \"SELECT id, status FROM jarvis_plans WHERE id = 2;\")",
+      "Bash(sqlite3 backend/data/jarvis.db \"SELECT id, status FROM jarvis_plan_steps WHERE plan_id = 2;\")",
+      "Bash(git commit -m 'SPRINT-3 : dette technique — index DB, bandeau Cascade, api.js, board DISC *)",
+      "Bash(git commit *)",
+      "PowerShell(for \\($i = 2; $i -le 11; $i++\\) { Get-Content \"C:\\\\DEV\\\\PROJETS\\\\applications_web\\\\Ultimate-frisbee-manager\\\\.graphify_chunk_files_$i.txt\" | Out-String | Write-Host \"=== CHUNK $i ===\" -NoNewline; Get-Content \"C:\\\\DEV\\\\PROJETS\\\\applications_web\\\\Ultimate-frisbee-manager\\\\.graphify_chunk_files_$i.txt\" })"
     ]
   }
 }
