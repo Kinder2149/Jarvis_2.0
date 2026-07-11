@@ -156,7 +156,7 @@ JARVIS/
             ├── project.js        ← hub projet, instructions éditables, liste unifiée
             └── settings.js       ← clés API, test connexion, dropdowns modèles, cascade_mode toggle
 
-**Services backend actifs :** 20 / 20 maximum (limite atteinte — supprimer avant d'ajouter)
+**Services backend actifs :** 20 / 20 — limite standard atteinte. Dépassement autorisé pour l'outil DISQUAIRE (décision 2026-07-11, voir §6).
 **Pages frontend :** 13 (jarvis.html principale + mission/chat/sentinelle/atelier/dossier/conversations/settings + 5 boards agents + 1 redirect) — index.html supprimé, jarvis.html est l'entrée via redirect `/`
 
 ---
@@ -303,6 +303,8 @@ JARVIS/
 | 2026-05-15 | SENTINELLE via JARVIS : thèses hors scope conversation | Thèses = interface dédiée sentinelle.html. Depuis JARVIS : consultation et watchlist uniquement. Agir (transactions) : jamais. |
 | 2026-06-02 | CASCADE = flux officiel de livraison code (remplace la décision 2026-05-01 "copier-coller manuel") | cascade_handler.py implémente le pont MENTOR→Cascade : prompts copiables générés automatiquement, validation retour utilisateur, clôture auto. FORGE reste disponible via toggle cascade_mode=False dans Paramètres > Avancé mais n'a pas encore été validé sur cet environnement. |
 | 2026-06-02 | Contextes utilisateur stockés dans contexts/*.md (pas dans app_config DB) | Les endpoints `/api/config/profil_utilisateur`, `/api/config/regles_globales`, `/api/config/couche1/{key}` lisent et écrivent les fichiers .md. Les entrées correspondantes dans app_config sont vides et non utilisées à l'exécution. Ne pas migrer vers DB. |
+| 2026-06-17 | MEDIA image reste sur Pollinations (fal.ai / OpenAI abandonnés) | Migrations de l'image vers OpenAI GPT-Image-1 puis fal.ai tentées puis annulées (commit b0784c0). État stable : image = Pollinations, vidéo = fal.ai. |
+| 2026-07-11 | Nouvel outil DISQUAIRE validé — agent de rangement musical Spotify | Cadrage figé dans docs/CADRAGE_DISQUAIRE.md. Un seul agent + connecteur Spotify. La limite de 20 services est dépassée pour ce projet (validé par Kinder). |
 
 ---
 
@@ -320,26 +322,13 @@ JARVIS/
 ## 8. SESSION EN COURS
 
 **Graphify :** ✅ Mis à jour (hook post-commit)
-**Session :** Ajout fonctionnalité mise à jour automatique PROJET_CONTEXTE (2026-06-05)
-**Objectif :** Permettre la mise à jour automatique des sections 8 et 9 du PROJET_CONTEXTE.md après un pipeline FORGE terminé
-**Fichiers concernés :**
-- backend/routers/pipelines.py : endpoints propose-contexte + write-file
-- frontend/mission.html : bouton mise à jour PROJET_CONTEXTE
-- frontend/assets/js/mission.js : logique proposition + application diff
-- backend/data/contexts/media_profil.md : profil agent MEDIA (créé)
-- CHANGELOG.md : ligne ajoutée
-
-**Hors scope :**
-- Modification du comportement existant du modal diff (decision_figee)
-- Ajout de dépendances npm ou Python
-
+**Session :** Cadrage nouvel outil DISQUAIRE + réalignement doc MEDIA (2026-07-11)
+**État MEDIA (réaligné sur le code réel) :** génération d'image = **Pollinations** (`_build_pollinations_url`), génération vidéo = **fal.ai** (`_run_fal_video`). Les tentatives de migration de l'image vers OpenAI GPT-Image-1 puis fal.ai ont été **abandonnées** — retour à Pollinations acté au commit b0784c0. Aucune référence openai/fal pour l'image dans media_handler.py (vérifié).
+**Objectif de session :** Figer le cadrage du nouvel agent DISQUAIRE (rangement musical Spotify) avant construction. Voir docs/CADRAGE_DISQUAIRE.md.
 **Résultat :**
-✅ Endpoint POST /api/pipelines/{session_id}/propose-contexte fonctionnel (extraction sections, appel LLM, parsing JSON)
-✅ Endpoint POST /api/pipelines/write-file sécurisé (vérification chemin + nom fichier)
-✅ Bouton "📝 Mettre à jour PROJET_CONTEXTE" affiché uniquement pour code_mission COMPLETED
-✅ Modal diff réutilisé avec gestion 2 cas (decision_figee + projet_contexte)
-✅ Application écrit fichier sur disque + masque bouton après validation
-✅ Build Python passe sans erreur
+✅ Cadrage DISQUAIRE figé (docs/CADRAGE_DISQUAIRE.md) — faisabilité vérifiée, étape 1 = Genre seul
+✅ Doc MEDIA réalignée sur la réalité du code (Pollinations image / fal.ai vidéo)
+✅ Base JARVIS vérifiée : l'app démarre proprement (140 routes, DB présente)
 
 **Backlog technique :**
 - sentinelle_theses : table active, aucun CRUD UI (INCOMPLET-01)
@@ -382,7 +371,7 @@ JARVIS/
 **Backlog technique (audit) :**
 - INCOMPLET-01 : sentinelle_theses sans interface (table active, service la lit, aucun CRUD UI)
 
-**Prochain objectif :** Tests manuels — (R-1) MEDIA demande image avec réseau coupé → message "Pollinations inaccessible". (R-2) SENTINELLE question avec portefeuille vide → message "portefeuille vide". (R-3) Modifier fichier pendant pipeline FORGE → Exception conflit. (R-5) MENTOR avec projet supprimé → message "projet supprimé". (UX-1) Vérifier span affiche "Multi-agents · IA"
+**Prochain objectif :** Construction de l'outil DISQUAIRE (étape 1 — Genre). Pré-requis avant code : acter les nouveaux services (voir §6) — fait. Tests manuels robustesse antérieurs (R-1 Pollinations inaccessible, R-2 portefeuille vide, R-3 conflit fichiers FORGE, R-5 projet supprimé, UX-1) restent à repasser si besoin.
 
 ---
 
