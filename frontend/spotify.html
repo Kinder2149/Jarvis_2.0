@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DISQUAIRE — Connexion Spotify</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/board.css">
+  <style>
+    .sp-wrap { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    .sp-card { background: var(--surface, #1b1f2a); border: 1px solid var(--border, #2a2f3a);
+               border-radius: 12px; padding: 1.25rem 1.25rem; margin-bottom: 1.1rem; }
+    .sp-card h2 { font-size: 0.95rem; margin: 0 0 0.2rem; }
+    .sp-hint { font-size: 0.78rem; color: var(--text-muted, #94a3b8); margin: 0 0 0.9rem; }
+    .sp-field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.7rem; }
+    .sp-field label { font-size: 0.74rem; color: var(--text-muted, #94a3b8); }
+    .sp-field input { padding: 0.55rem 0.7rem; border-radius: 8px; border: 1px solid var(--border, #2a2f3a);
+                      background: var(--bg, #11141b); color: var(--text, #e5e7eb); font-size: 0.85rem; }
+    .sp-btn { padding: 0.55rem 1rem; border-radius: 8px; border: none; cursor: pointer;
+              font-size: 0.82rem; font-weight: 600; background: #1db954; color: #06210f; }
+    .sp-btn:hover { filter: brightness(1.08); }
+    .sp-btn--ghost { background: transparent; border: 1px solid var(--border, #2a2f3a); color: var(--text-muted, #94a3b8); }
+    .sp-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; margin-bottom: 0.8rem; }
+    .sp-dot { width: 10px; height: 10px; border-radius: 50%; background: #64748b; flex: none; }
+    .sp-dot.ok { background: #1db954; }
+    .sp-dot.off { background: #f87171; }
+    .sp-banner { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.82rem; margin-bottom: 1rem; }
+    .sp-banner.ok { background: rgba(29,185,84,0.12); color: #4ade80; }
+    .sp-banner.err { background: rgba(248,113,113,0.12); color: #f87171; }
+    .sp-pl { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.2rem;
+             border-bottom: 1px solid var(--border, #2a2f3a); font-size: 0.85rem; }
+    .sp-pl:last-child { border-bottom: none; }
+    .sp-tag { font-size: 0.62rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 20px; flex: none; }
+    .sp-tag.g { background: rgba(56,189,248,0.15); color: #38bdf8; }
+    .sp-tag.m { background: rgba(167,139,250,0.15); color: #a78bfa; }
+    .sp-pl-count { margin-left: auto; color: var(--text-muted, #94a3b8); font-size: 0.75rem; flex: none; }
+    .sp-summary { font-size: 0.78rem; color: var(--text-muted, #94a3b8); margin: 0.2rem 0 0.9rem; }
+  </style>
+</head>
+<body>
+<div class="board-app" style="--board-accent:#1db954">
+
+  <nav class="board-nav">
+    <a href="jarvis.html" class="board-back">← JARVIS</a>
+    <div class="board-identity">
+      <div>
+        <div class="board-agent-name">DISQUAIRE</div>
+        <div class="board-agent-role">Connexion Spotify</div>
+      </div>
+    </div>
+    <button id="btn-refresh" class="sp-btn sp-btn--ghost">↺ Rafraîchir</button>
+  </nav>
+
+  <div class="sp-wrap">
+    <div id="banner"></div>
+
+    <!-- 1. Identifiants -->
+    <div class="sp-card">
+      <h2>1 · Tes identifiants Spotify</h2>
+      <p class="sp-hint">Colle ici les 2 codes de ta fiche Spotify. Le secret reste dans JARVIS, il n'est jamais partagé.</p>
+      <div class="sp-field">
+        <label for="client_id">Client ID</label>
+        <input id="client_id" type="text" placeholder="ex : 3f9a...">
+      </div>
+      <div class="sp-field">
+        <label for="client_secret">Client Secret</label>
+        <input id="client_secret" type="password" placeholder="colle le secret ici">
+      </div>
+      <button id="btn-save-creds" class="sp-btn">Enregistrer</button>
+    </div>
+
+    <!-- 2. Connexion -->
+    <div class="sp-card">
+      <h2>2 · Connexion au compte</h2>
+      <div class="sp-status">
+        <span id="status-dot" class="sp-dot"></span>
+        <span id="status-text">Vérification…</span>
+      </div>
+      <button id="btn-connect" class="sp-btn">Connecter Spotify</button>
+      <button id="btn-disconnect" class="sp-btn sp-btn--ghost" style="display:none">Déconnecter</button>
+    </div>
+
+    <!-- 3. Playlists -->
+    <div class="sp-card">
+      <h2>3 · Tes playlists</h2>
+      <p class="sp-hint">La preuve que ça marche : JARVIS lit tes playlists. Les <b>g.</b> (Genre) et <b>m.</b> (Mood) sont repérées.</p>
+      <button id="btn-playlists" class="sp-btn sp-btn--ghost">Voir mes playlists</button>
+      <div id="pl-summary" class="sp-summary"></div>
+      <div id="pl-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = window.location.origin + "/api/spotify";
+
+function banner(msg, kind) {
+  document.getElementById("banner").innerHTML =
+    msg ? `<div class="sp-banner ${kind}">${msg}</div>` : "";
+}
+
+async function loadStatus() {
+  const dot = document.getElementById("status-dot");
+  const txt = document.getElementById("status-text");
+  const btnConnect = document.getElementById("btn-connect");
+  const btnDisconnect = document.getElementById("btn-disconnect");
+  try {
+    const r = await fetch(`${API}/status`);
+    const s = await r.json();
+    if (!s.configured) {
+      dot.className = "sp-dot off";
+      txt.textContent = "Enregistre d'abord tes identifiants (étape 1).";
+      btnConnect.style.display = "none";
+      btnDisconnect.style.display = "none";
+    } else if (!s.connected) {
+      dot.className = "sp-dot off";
+      txt.textContent = "Identifiants OK — pas encore connecté.";
+      btnConnect.style.display = "";
+      btnDisconnect.style.display = "none";
+    } else {
+      dot.className = "sp-dot ok";
+      txt.textContent = s.display_name
+        ? `Connecté en tant que ${s.display_name}.`
+        : "Connecté à Spotify.";
+      btnConnect.style.display = "none";
+      btnDisconnect.style.display = "";
+    }
+  } catch (e) {
+    dot.className = "sp-dot off";
+    txt.textContent = "Impossible de joindre JARVIS.";
+  }
+}
+
+document.getElementById("btn-save-creds").onclick = async () => {
+  const client_id = document.getElementById("client_id").value.trim();
+  const client_secret = document.getElementById("client_secret").value.trim();
+  if (!client_id || !client_secret) {
+    banner("Renseigne les deux codes avant d'enregistrer.", "err");
+    return;
+  }
+  const r = await fetch(`${API}/credentials`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ client_id, client_secret }),
+  });
+  if (r.ok) {
+    banner("Identifiants enregistrés ✅ — tu peux maintenant connecter ton compte.", "ok");
+    document.getElementById("client_secret").value = "";
+    loadStatus();
+  } else {
+    const err = await r.json().catch(() => ({}));
+    banner("Erreur : " + (err.detail || "enregistrement impossible"), "err");
+  }
+};
+
+document.getElementById("btn-connect").onclick = () => {
+  window.location.href = `${API}/login`;
+};
+
+document.getElementById("btn-disconnect").onclick = async () => {
+  await fetch(`${API}/disconnect`, { method: "POST" });
+  banner("Déconnecté.", "ok");
+  document.getElementById("pl-list").innerHTML = "";
+  document.getElementById("pl-summary").textContent = "";
+  loadStatus();
+};
+
+document.getElementById("btn-playlists").onclick = async () => {
+  const list = document.getElementById("pl-list");
+  const summary = document.getElementById("pl-summary");
+  list.innerHTML = "";
+  summary.textContent = "Chargement…";
+  try {
+    const r = await fetch(`${API}/playlists`);
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      summary.textContent = "";
+      banner("Erreur : " + (err.detail || "impossible de lire les playlists"), "err");
+      return;
+    }
+    const data = await r.json();
+    const nbG = data.playlists.filter(p => (p.name || "").startsWith("g.")).length;
+    const nbM = data.playlists.filter(p => (p.name || "").startsWith("m.")).length;
+    summary.textContent = `${data.count} playlists — dont ${nbG} Genre (g.) et ${nbM} Mood (m.)`;
+    list.innerHTML = data.playlists.map(p => {
+      const name = p.name || "(sans nom)";
+      let tag = "";
+      if (name.startsWith("g.")) tag = `<span class="sp-tag g">GENRE</span>`;
+      else if (name.startsWith("m.")) tag = `<span class="sp-tag m">MOOD</span>`;
+      return `<div class="sp-pl">${tag}<span>${escapeHtml(name)}</span>
+        <span class="sp-pl-count">${p.tracks_total} titres</span></div>`;
+    }).join("");
+  } catch (e) {
+    summary.textContent = "";
+    banner("Erreur : " + e.message, "err");
+  }
+};
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+document.getElementById("btn-refresh").onclick = loadStatus;
+
+// Au chargement : traiter le retour d'autorisation
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("connected") === "1") {
+    banner("Connexion Spotify réussie ✅", "ok");
+    history.replaceState({}, "", "spotify.html");
+  } else if (params.get("error")) {
+    banner("L'autorisation a échoué (" + params.get("error") + "). Réessaie.", "err");
+    history.replaceState({}, "", "spotify.html");
+  }
+  loadStatus();
+})();
+</script>
+</body>
+</html>
