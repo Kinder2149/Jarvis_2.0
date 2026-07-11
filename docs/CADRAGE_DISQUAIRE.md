@@ -137,6 +137,7 @@ d'inscription Spotify** (un formulaire, pas un logiciel).
 | 2026-07-11 | Repérage des playlists cibles par **préfixes `g.` / `m.`** (dossiers Spotify invisibles via l'API) |
 | 2026-07-11 | Étape 1 **sans Last.fm** — une seule connexion externe (Spotify) |
 | 2026-07-11 | Autorisation Spotify donnée à JARVIS via l'écran officiel, jeton renouvelable — jamais de mot de passe saisi par l'outil |
+| 2026-07-11 | Adresse de retour Spotify (redirect URI) figée : `http://127.0.0.1:8000/api/spotify/callback` — identique côté app Spotify et côté JARVIS. Loopback `127.0.0.1` obligatoire (Spotify refuse « localhost ») |
 
 ---
 
