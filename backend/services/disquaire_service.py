@@ -14,7 +14,7 @@ import json
 import logging
 import re
 
-from backend.database import load_config
+from backend.database import load_config, get_connection
 from backend.services import spotify_service, model_router
 
 logger = logging.getLogger("uvicorn")
@@ -234,3 +234,134 @@ async def apply(assignments: list[dict], pile_id: str) -> dict:
 
     logger.info(f"[DISQUAIRE] Rangement : {added} ajouts, {removed} retirés de la pile.")
     return {"added": added, "filed": len(filed_uris), "removed_from_pile": removed}
+
+
+# ─── Phase « Recenser » : base locale de la bibliothèque ─────────────────────
+
+_MOOD_RE = re.compile(r"^m\.\s*", re.IGNORECASE)
+
+_recenser_state: dict = {
+    "running": False, "phase": "", "playlists_done": 0, "playlists_total": 0,
+    "tracks_seen": 0, "finished": False, "error": None, "summary": None,
+}
+
+
+def get_recenser_state() -> dict:
+    return dict(_recenser_state)
+
+
+def _classify_kind(name: str) -> str:
+    n = (name or "").strip()
+    if n.lower() == "megacompil":
+        return "megacompil"
+    if n.lower() == PILE_NAME.lower():
+        return "pile"
+    if _GENRE_RE.match(n):
+        return "genre"
+    if _MOOD_RE.match(n):
+        return "mood"
+    return "other"
+
+
+async def run_recenser() -> None:
+    """Aspire la bibliothèque (megacompil + genres + moods + pile) dans la base locale.
+
+    Incrémental : une playlist dont le snapshot_id est inchangé n'est pas relue.
+    L'état de progression est exposé via get_recenser_state().
+    """
+    global _recenser_state
+    if _recenser_state["running"]:
+        return
+    _recenser_state = {
+        "running": True, "phase": "Lecture de tes playlists…", "playlists_done": 0,
+        "playlists_total": 0, "tracks_seen": 0, "finished": False, "error": None, "summary": None,
+    }
+    try:
+        all_playlists = await spotify_service.get_all_playlists()
+        relevant = [
+            (p, _classify_kind(p.get("name")))
+            for p in all_playlists
+        ]
+        relevant = [(p, k) for (p, k) in relevant if k in ("megacompil", "genre", "mood", "pile")]
+        _recenser_state["playlists_total"] = len(relevant)
+
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, snapshot_id FROM disquaire_playlists")
+        known_snap = {r["id"]: r["snapshot_id"] for r in cur.fetchall()}
+        counts = {"megacompil": 0, "genre": 0, "mood": 0, "pile": 0}
+
+        for p, kind in relevant:
+            pid, name, snap = p.get("id"), p.get("name"), p.get("snapshot_id")
+            counts[kind] += 1
+            _recenser_state["phase"] = f"Recensement : {name}"
+            cur.execute(
+                """INSERT INTO disquaire_playlists (id, name, kind, tracks_total, snapshot_id, last_synced)
+                   VALUES (?, ?, ?, ?, ?, datetime('now'))
+                   ON CONFLICT(id) DO UPDATE SET name=excluded.name, kind=excluded.kind,
+                       tracks_total=excluded.tracks_total, snapshot_id=excluded.snapshot_id,
+                       last_synced=datetime('now')""",
+                (pid, name, kind, (p.get("tracks") or {}).get("total", 0), snap),
+            )
+            # Incrémental : snapshot inchangé → on ne relit pas les titres.
+            if snap and known_snap.get(pid) == snap:
+                _recenser_state["playlists_done"] += 1
+                continue
+
+            tracks = await spotify_service.get_playlist_tracks(pid)
+            cur.execute("DELETE FROM disquaire_membership WHERE playlist_id = ?", (pid,))
+            for t in tracks:
+                cur.execute(
+                    "INSERT OR IGNORE INTO disquaire_tracks (uri, name, artists) VALUES (?, ?, ?)",
+                    (t["uri"], t["name"], ", ".join(t["artists"])),
+                )
+                cur.execute(
+                    "INSERT OR IGNORE INTO disquaire_membership (track_uri, playlist_id) VALUES (?, ?)",
+                    (t["uri"], pid),
+                )
+            _recenser_state["tracks_seen"] += len(tracks)
+            _recenser_state["playlists_done"] += 1
+            conn.commit()
+
+        conn.commit()
+        cur.execute("SELECT COUNT(*) AS c FROM disquaire_tracks")
+        total_tracks = cur.fetchone()["c"]
+        conn.close()
+
+        _recenser_state["summary"] = {"tracks_total": total_tracks, **counts}
+        _recenser_state["phase"] = "Terminé"
+        logger.info(f"[DISQUAIRE] Recensement terminé : {total_tracks} titres, {counts}")
+    except Exception as e:
+        logger.error(f"[DISQUAIRE] recenser: {e}")
+        _recenser_state["error"] = str(e)
+    finally:
+        _recenser_state["running"] = False
+        _recenser_state["finished"] = True
+
+
+def get_local_stats() -> dict:
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) AS c FROM disquaire_tracks")
+    tracks = cur.fetchone()["c"]
+    cur.execute("SELECT kind, COUNT(*) AS c FROM disquaire_playlists GROUP BY kind")
+    by_kind = {r["kind"]: r["c"] for r in cur.fetchall()}
+    cur.execute("SELECT MAX(last_synced) AS m FROM disquaire_playlists")
+    last = cur.fetchone()["m"]
+    conn.close()
+    return {"tracks": tracks, "playlists_by_kind": by_kind, "last_synced": last}
+
+
+def get_track_memberships(uri: str) -> list[str]:
+    """Retourne les noms des playlists locales contenant ce titre (pour l'affichage « déjà dans »)."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT p.name FROM disquaire_membership m
+           JOIN disquaire_playlists p ON p.id = m.playlist_id
+           WHERE m.track_uri = ? ORDER BY p.name""",
+        (uri,),
+    )
+    names = [r["name"] for r in cur.fetchall()]
+    conn.close()
+    return names

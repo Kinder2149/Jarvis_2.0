@@ -38,6 +38,9 @@
     .dq-banner.ok { background: rgba(29,185,84,0.12); color: #4ade80; }
     .dq-banner.err { background: rgba(248,113,113,0.12); color: #f87171; }
     .dq-summary { font-size: 0.8rem; color: var(--text-muted, #94a3b8); margin: 0.3rem 0 0.8rem; }
+    .dq-progress { height: 8px; background: var(--border, #2a2f3a); border-radius: 6px; overflow: hidden; margin-bottom: 0.35rem; }
+    .dq-progress-bar { height: 100%; width: 0; background: #1db954; transition: width 0.3s; }
+    .dq-already { font-size: 0.7rem; color: #38bdf8; margin-top: 0.25rem; }
   </style>
 </head>
 <body>
@@ -59,6 +62,16 @@
 
     <div class="dq-card">
       <div class="dq-status" id="status">Vérification…</div>
+    </div>
+
+    <div class="dq-card">
+      <h3 style="margin:0 0 0.3rem;font-size:0.9rem">📚 Base locale</h3>
+      <div id="local-stats" class="dq-summary">…</div>
+      <button id="btn-recenser" class="dq-btn dq-btn--ghost">Recenser ma bibliothèque</button>
+      <div id="recenser-progress" style="margin-top:0.7rem;display:none">
+        <div class="dq-progress"><div id="recenser-bar" class="dq-progress-bar"></div></div>
+        <div id="recenser-phase" class="dq-summary"></div>
+      </div>
     </div>
 
     <div class="dq-card">
@@ -220,7 +233,46 @@ document.getElementById("btn-apply").onclick = async () => {
   }
 };
 
+async function loadLocalStats() {
+  const el = document.getElementById("local-stats");
+  try {
+    const s = await (await fetch(`${API}/disquaire/local-stats`)).json();
+    const k = s.playlists_by_kind || {};
+    if (!s.tracks) { el.textContent = "Bibliothèque pas encore recensée — clique pour lancer un premier recensement."; return; }
+    el.innerHTML = `<b>${s.tracks}</b> titres recensés · ${k.genre || 0} genres · ${k.mood || 0} moods · pile ${k.pile ? "✓" : "—"}`
+      + (s.last_synced ? ` · dernière synchro ${esc(s.last_synced)}` : "");
+  } catch (e) { el.textContent = ""; }
+}
+
+let recenserTimer = null;
+document.getElementById("btn-recenser").onclick = async () => {
+  banner("", "");
+  document.getElementById("btn-recenser").disabled = true;
+  document.getElementById("recenser-progress").style.display = "";
+  await fetch(`${API}/disquaire/recenser`, { method: "POST" });
+  if (recenserTimer) clearInterval(recenserTimer);
+  recenserTimer = setInterval(async () => {
+    let s;
+    try { s = await (await fetch(`${API}/disquaire/recenser/status`)).json(); }
+    catch (e) { return; }
+    const pct = s.playlists_total ? Math.round(100 * s.playlists_done / s.playlists_total) : 0;
+    document.getElementById("recenser-bar").style.width = pct + "%";
+    document.getElementById("recenser-phase").textContent =
+      s.finished ? "" : `${s.phase} — ${s.playlists_done}/${s.playlists_total} playlists, ${s.tracks_seen} titres lus`;
+    if (s.finished) {
+      clearInterval(recenserTimer);
+      document.getElementById("btn-recenser").disabled = false;
+      document.getElementById("recenser-progress").style.display = "none";
+      if (s.error) banner("Erreur pendant le recensement : " + s.error, "err");
+      else banner(`✅ Recensement terminé : ${s.summary?.tracks_total || 0} titres · ${s.summary?.genre || 0} genres · ${s.summary?.mood || 0} moods.`, "ok");
+      loadLocalStats();
+      loadStatus();
+    }
+  }, 1500);
+};
+
 loadStatus();
+loadLocalStats();
 </script>
 </body>
 </html>

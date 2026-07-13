@@ -487,6 +487,7 @@ def init_db():
     _migrate_v5_media(conn)
     _migrate_v6_consultation_state(conn)
     _migrate_v7_disc(conn)
+    _migrate_v8_disquaire(conn)
     _seed_api_keys_from_env(conn)
     conn.close()
 
@@ -818,6 +819,41 @@ def _migrate_v2(conn):
     except Exception:
         pass
 
+    conn.commit()
+
+
+def _migrate_v8_disquaire(conn):
+    """Migration v8 : base locale de l'agent DISQUAIRE (recensement bibliothèque Spotify)."""
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disquaire_tracks (
+            uri     TEXT PRIMARY KEY,
+            name    TEXT,
+            artists TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disquaire_playlists (
+            id           TEXT PRIMARY KEY,
+            name         TEXT,
+            kind         TEXT,
+            tracks_total INTEGER DEFAULT 0,
+            snapshot_id  TEXT,
+            last_synced  TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disquaire_membership (
+            track_uri   TEXT NOT NULL,
+            playlist_id TEXT NOT NULL,
+            PRIMARY KEY (track_uri, playlist_id)
+        )
+    """)
+
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_disquaire_membership_playlist ON disquaire_membership(playlist_id)")
     conn.commit()
 
 

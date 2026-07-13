@@ -6,6 +6,7 @@ disquaire.py — Routes de l'agent DISQUAIRE (Mission 2, rangement Genre par lot
   GET  /disquaire/batch   → propose un genre pour un lot de titres de la pile
   POST /disquaire/apply   → range le lot validé (ajoute dans les G., retire de la pile)
 """
+import asyncio
 import logging
 
 from fastapi import APIRouter, HTTPException
@@ -64,6 +65,26 @@ class ApplyItem(BaseModel):
 class ApplyBody(BaseModel):
     pile_id: str
     assignments: list[ApplyItem]
+
+
+@router.post("/recenser")
+async def recenser():
+    if not spotify_service.is_connected():
+        raise HTTPException(status_code=400, detail="Non connecté à Spotify.")
+    if disquaire_service.get_recenser_state()["running"]:
+        return {"already_running": True}
+    asyncio.create_task(disquaire_service.run_recenser())
+    return {"started": True}
+
+
+@router.get("/recenser/status")
+def recenser_status():
+    return disquaire_service.get_recenser_state()
+
+
+@router.get("/local-stats")
+def local_stats():
+    return disquaire_service.get_local_stats()
 
 
 @router.post("/apply")
