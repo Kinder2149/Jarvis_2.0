@@ -60,15 +60,15 @@ async def build_signatures(force: bool = False) -> dict:
         if not label:
             continue
         labels[label] = g.get("id")
-        tracks = await spotify_service.get_playlist_tracks(g["id"], max_tracks=60)
+        tracks = await spotify_service.get_playlist_tracks(g["id"], max_tracks=100)
         seen: list[str] = []
         for t in tracks:
             for a in t["artists"]:
                 if a and a not in seen:
                     seen.append(a)
-            if len(seen) >= 25:
+            if len(seen) >= 30:
                 break
-        examples[label] = seen[:25]
+        examples[label] = seen[:30]
     _signatures = {"labels": labels, "examples": examples}
     logger.info(f"[DISQUAIRE] Signatures construites : {len(labels)} genres.")
     return _signatures
@@ -86,16 +86,25 @@ async def get_status() -> dict:
 
 
 def _build_prompt(signatures: dict, tracks: list[dict]) -> str:
-    lines = ["Voici les GENRES de l'utilisateur (chacun est une playlist), avec des artistes représentatifs :"]
+    lines = [
+        "Tu es un disquaire expert qui range les titres d'un utilisateur dans SES propres playlists de genre.",
+        "",
+        "Voici ses GENRES (chacun est une playlist), avec des artistes représentatifs :",
+    ]
     for label, arts in signatures["examples"].items():
-        sample = ", ".join(arts[:15]) if arts else "(playlist vide)"
+        sample = ", ".join(arts[:20]) if arts else "(playlist vide)"
         lines.append(f"- {label} : {sample}")
     lines += [
         "",
-        "Pour CHAQUE titre ci-dessous, indique dans quel(s) genre(s) de la liste ci-dessus il doit être rangé.",
-        "Règles : utilise UNIQUEMENT des genres de la liste (mot exact). Un titre peut aller dans plusieurs genres. Si vraiment aucun ne convient, mets une liste vide.",
+        "TÂCHE : pour CHAQUE titre ci-dessous, liste TOUS les genres de la liste ci-dessus qui lui correspondent.",
         "",
-        "Titres :",
+        "RÈGLES IMPORTANTES :",
+        "- Un même titre appartient TRÈS SOUVENT à PLUSIEURS genres à la fois. Exemple : un tube festif anglophone est à la fois « Party » ET « Pop anglaise ». Sois généreux : liste TOUS les genres pertinents, pas seulement le plus évident (vise en général 2 à 3 genres quand ça se justifie).",
+        "- Appuie-toi À LA FOIS sur les artistes d'exemple ET sur le SENS du nom du genre.",
+        "- N'utilise QUE des genres présents dans la liste ci-dessus, au mot exact.",
+        "- Si vraiment aucun genre ne convient, mets une liste vide.",
+        "",
+        "Titres à classer :",
     ]
     for i, t in enumerate(tracks, start=1):
         artists = ", ".join(t["artists"]) or "artiste inconnu"
@@ -103,7 +112,7 @@ def _build_prompt(signatures: dict, tracks: list[dict]) -> str:
     lines += [
         "",
         'Réponds UNIQUEMENT en JSON, sans aucun texte autour, au format :',
-        '[{"i": 1, "genres": ["Rock"], "reason": "courte raison"}, ...]',
+        '[{"i": 1, "genres": ["Party", "Pop anglaise"], "reason": "courte raison"}, ...]',
     ]
     return "\n".join(lines)
 
