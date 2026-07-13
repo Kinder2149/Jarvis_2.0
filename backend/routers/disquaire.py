@@ -57,6 +57,28 @@ async def batch(size: int = 25):
         raise HTTPException(status_code=502, detail=str(e))
 
 
+@router.post("/analyse")
+async def analyse():
+    if not spotify_service.is_connected():
+        raise HTTPException(status_code=400, detail="Non connecté à Spotify.")
+    if disquaire_service.get_recenser_state()["running"]:
+        raise HTTPException(status_code=409, detail="Recensement en cours — attends qu'il se termine.")
+    if disquaire_service.get_analyse_state()["running"]:
+        return {"already_running": True}
+    asyncio.create_task(disquaire_service.run_analyse_complete())
+    return {"started": True}
+
+
+@router.get("/analyse/status")
+def analyse_status():
+    return disquaire_service.get_analyse_state()
+
+
+@router.get("/analyse/result")
+def analyse_result():
+    return disquaire_service.get_analyse_result()
+
+
 class ApplyItem(BaseModel):
     uri: str
     add: list[str] = []

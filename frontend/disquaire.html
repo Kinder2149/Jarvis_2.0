@@ -98,15 +98,17 @@
       <div class="dq-summary">Chaque titre reste dans la pile tant que tu n'as pas validé son lot. Un titre peut aller dans plusieurs genres — le tri propose les genres manquants (vert) en plus de ceux déjà présents (bleu).</div>
 
       <div class="dq-controls">
-        <span style="font-size:0.85rem">Analyser un lot de</span>
-        <input id="size" type="number" min="1" max="50" value="25">
-        <span style="font-size:0.85rem">titres</span>
-        <button id="btn-batch" class="dq-btn">Analyser un lot</button>
+        <button id="btn-analyse" class="dq-btn">Analyser toute la pile</button>
+        <span class="dq-summary" style="margin:0">Classe d'un coup tous les titres de la pile (peut prendre quelques minutes).</span>
+      </div>
+      <div id="analyse-progress" style="margin:0.6rem 0;display:none">
+        <div class="dq-progress"><div id="analyse-bar" class="dq-progress-bar"></div></div>
+        <div id="analyse-phase" class="dq-summary"></div>
       </div>
       <div id="summary" class="dq-summary"></div>
       <div id="tracks"></div>
       <div id="apply-zone" style="margin-top:1rem;display:none">
-        <button id="btn-apply" class="dq-btn">✅ Valider le lot et ranger</button>
+        <button id="btn-apply" class="dq-btn">✅ Tout valider et ranger</button>
       </div>
     </div>
   </div>
@@ -176,16 +178,16 @@ async function loadStatus() {
     const s = await (await fetch(`${API}/disquaire/status`)).json();
     if (!s.connected) {
       el.innerHTML = `⚠️ Non connecté à Spotify. <a href="spotify.html">Se connecter d'abord</a>.`;
-      document.getElementById("btn-batch").disabled = true;
+      document.getElementById("btn-analyse").disabled = true;
       return;
     }
     if (!s.pile_found) {
       el.innerHTML = `⚠️ Playlist « ${esc(s.pile_name)} » introuvable. Vérifie son nom exact.`;
-      document.getElementById("btn-batch").disabled = true;
+      document.getElementById("btn-analyse").disabled = true;
       return;
     }
     el.innerHTML = `Pile : <b>${s.pile_total}</b> titres à trier · Genres détectés (G.) : <b>${s.genre_count}</b>`;
-    document.getElementById("btn-batch").disabled = !s.ready;
+    document.getElementById("btn-analyse").disabled = !s.ready;
   } catch (e) {
     el.textContent = "Impossible de joindre JARVIS.";
   }
@@ -194,6 +196,31 @@ async function loadStatus() {
 function finalGenres(t) {
   const kept = t.existing.filter(g => !t.removed.includes(g));
   return [...new Set([...kept, ...t.add])];
+}
+
+function renderSummary() {
+  const ready = BATCH.tracks.filter(t => finalGenres(t).length > 0).length;
+  document.getElementById("summary").innerHTML =
+    `${BATCH.tracks.length} titres — <b>${ready}</b> avec au moins un genre (quitteront la pile). `
+    + `<span class="dq-chip blue" style="padding:0.05rem 0.4rem">déjà là</span> `
+    + `<span class="dq-chip" style="padding:0.05rem 0.4rem">à ajouter</span> `
+    + `<span class="dq-chip mood" style="padding:0.05rem 0.4rem">mood</span>`;
+}
+
+function rowInner(t, i) {
+  const blue = t.existing.filter(g => !t.removed.includes(g))
+    .map(g => `<span class="dq-chip blue">${esc(g)}<button onclick="removeExisting(${i},'${jsq(g)}')">×</button></span>`).join("");
+  const green = t.add
+    .map(g => `<span class="dq-chip">${esc(g)}<button onclick="removeAdd(${i},'${jsq(g)}')">×</button></span>`).join("");
+  const moods = (t.existing_moods || [])
+    .map(m => `<span class="dq-chip mood">${esc(m)}</span>`).join("");
+  const chips = (blue + green) || `<span class="dq-chip none">aucun genre — restera dans la pile</span>`;
+  return `<div class="dq-track-head">
+      <span class="dq-track-name">${esc(t.name)}</span>
+      <span class="dq-track-artist">${esc(t.artists.join(", "))}</span>
+    </div>
+    ${t.reason ? `<div class="dq-reason">💭 ${esc(t.reason)}</div>` : ""}
+    <div class="dq-chips">${chips}<button class="dq-add" onclick="showAdd(${i}, this)">+ ajouter</button>${moods}</div>`;
 }
 
 function renderBatch() {
@@ -205,83 +232,82 @@ function renderBatch() {
     document.getElementById("summary").textContent = "";
     return;
   }
-  const ready = BATCH.tracks.filter(t => finalGenres(t).length > 0).length;
-  document.getElementById("summary").innerHTML =
-    `${BATCH.tracks.length} titres — <b>${ready}</b> avec au moins un genre (quitteront la pile). `
-    + `<span class="dq-chip blue" style="padding:0.05rem 0.4rem">déjà là</span> `
-    + `<span class="dq-chip" style="padding:0.05rem 0.4rem">à ajouter</span> `
-    + `<span class="dq-chip mood" style="padding:0.05rem 0.4rem">mood</span>`;
-
-  wrap.innerHTML = BATCH.tracks.map((t, i) => {
-    const blue = t.existing.filter(g => !t.removed.includes(g))
-      .map(g => `<span class="dq-chip blue">${esc(g)}<button onclick="removeExisting(${i},'${jsq(g)}')">×</button></span>`).join("");
-    const green = t.add
-      .map(g => `<span class="dq-chip">${esc(g)}<button onclick="removeAdd(${i},'${jsq(g)}')">×</button></span>`).join("");
-    const moods = (t.existing_moods || [])
-      .map(m => `<span class="dq-chip mood">${esc(m)}</span>`).join("");
-    const used = new Set([...t.existing.filter(g => !t.removed.includes(g)), ...t.add]);
-    const chips = (blue + green) || `<span class="dq-chip none">aucun genre — restera dans la pile</span>`;
-    const options = BATCH.genres.filter(g => !used.has(g))
-      .map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join("");
-    const addSel = options
-      ? `<select class="dq-add" onchange="addGenre(${i}, this.value); this.selectedIndex=0"><option value="">+ ajouter</option>${options}</select>`
-      : "";
-    return `<div class="dq-track">
-      <div class="dq-track-head">
-        <span class="dq-track-name">${esc(t.name)}</span>
-        <span class="dq-track-artist">${esc(t.artists.join(", "))}</span>
-      </div>
-      ${t.reason ? `<div class="dq-reason">💭 ${esc(t.reason)}</div>` : ""}
-      <div class="dq-chips">${chips}${addSel}${moods}</div>
-    </div>`;
-  }).join("");
+  renderSummary();
+  wrap.innerHTML = BATCH.tracks.map((t, i) => `<div class="dq-track" id="dqrow-${i}">${rowInner(t, i)}</div>`).join("");
   applyZone.style.display = "";
 }
 
-function removeAdd(i, g) { BATCH.tracks[i].add = BATCH.tracks[i].add.filter(x => x !== g); renderBatch(); }
+function renderRow(i) {
+  const el = document.getElementById("dqrow-" + i);
+  if (el) el.innerHTML = rowInner(BATCH.tracks[i], i);
+  renderSummary();
+}
+
+function showAdd(i, btn) {
+  const t = BATCH.tracks[i];
+  const used = new Set([...t.existing.filter(g => !t.removed.includes(g)), ...t.add]);
+  const options = BATCH.genres.filter(g => !used.has(g)).map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join("");
+  const sel = document.createElement("select");
+  sel.className = "dq-add";
+  sel.innerHTML = `<option value="">+ ajouter</option>${options}`;
+  sel.onchange = () => addGenre(i, sel.value);
+  btn.replaceWith(sel);
+  sel.focus();
+}
+
+function removeAdd(i, g) { BATCH.tracks[i].add = BATCH.tracks[i].add.filter(x => x !== g); renderRow(i); }
 function removeExisting(i, g) {
   const t = BATCH.tracks[i];
   if (!t.removed.includes(g)) t.removed.push(g);
-  renderBatch();
+  renderRow(i);
 }
 function addGenre(i, g) {
   if (!g) return;
   const t = BATCH.tracks[i];
   if (t.existing.includes(g)) t.removed = t.removed.filter(x => x !== g);
   else if (!t.add.includes(g)) t.add.push(g);
-  renderBatch();
+  renderRow(i);
 }
 
-document.getElementById("btn-batch").onclick = async () => {
+let analyseTimer = null;
+document.getElementById("btn-analyse").onclick = async () => {
   banner("", "");
-  const btn = document.getElementById("btn-batch");
-  const size = document.getElementById("size").value || 25;
+  const btn = document.getElementById("btn-analyse");
   btn.disabled = true; btn.textContent = "Analyse en cours…";
+  BATCH = null;
   document.getElementById("tracks").innerHTML = "";
-  try {
-    const r = await fetch(`${API}/disquaire/batch?size=${size}`);
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({}));
-      banner("Erreur : " + (err.detail || "analyse impossible"), "err");
-      return;
+  document.getElementById("summary").textContent = "";
+  document.getElementById("apply-zone").style.display = "none";
+  document.getElementById("analyse-progress").style.display = "";
+  await fetch(`${API}/disquaire/analyse`, { method: "POST" });
+  if (analyseTimer) clearInterval(analyseTimer);
+  analyseTimer = setInterval(async () => {
+    let s;
+    try { s = await (await fetch(`${API}/disquaire/analyse/status`)).json(); }
+    catch (e) { return; }
+    const pct = s.total ? Math.round(100 * s.done / s.total) : 0;
+    document.getElementById("analyse-bar").style.width = pct + "%";
+    document.getElementById("analyse-phase").textContent = s.finished ? "" : `Analyse ${s.done}/${s.total} titres…`;
+    if (s.finished) {
+      clearInterval(analyseTimer);
+      document.getElementById("analyse-progress").style.display = "none";
+      btn.disabled = false; btn.textContent = "Analyser toute la pile";
+      if (s.error) { banner("Erreur pendant l'analyse : " + s.error, "err"); return; }
+      const data = await (await fetch(`${API}/disquaire/analyse/result`)).json();
+      BATCH = {
+        pile_id: data.pile_id,
+        genres: data.genres,
+        tracks: data.tracks.map(t => ({
+          ...t,
+          add: [...(t.proposed || [])],
+          existing: [...(t.existing_genres || [])],
+          removed: [],
+        })),
+      };
+      renderBatch();
+      banner(`✅ ${BATCH.tracks.length} titres analysés. Revois si besoin, puis « Tout valider et ranger ».`, "ok");
     }
-    const data = await r.json();
-    BATCH = {
-      pile_id: data.pile_id,
-      genres: data.genres,
-      tracks: data.tracks.map(t => ({
-        ...t,
-        add: [...(t.proposed || [])],
-        existing: [...(t.existing_genres || [])],
-        removed: [],
-      })),
-    };
-    renderBatch();
-  } catch (e) {
-    banner("Erreur : " + e.message, "err");
-  } finally {
-    btn.disabled = false; btn.textContent = "Analyser un lot";
-  }
+  }, 1500);
 };
 
 document.getElementById("btn-apply").onclick = async () => {
@@ -322,7 +348,7 @@ document.getElementById("btn-apply").onclick = async () => {
   } catch (e) {
     banner("Erreur : " + e.message, "err");
   } finally {
-    btn.disabled = false; btn.textContent = "✅ Valider le lot et ranger";
+    btn.disabled = false; btn.textContent = "✅ Tout valider et ranger";
   }
 };
 
@@ -332,7 +358,7 @@ let recenserTimer = null;
 document.getElementById("btn-recenser").onclick = async () => {
   banner("", "");
   document.getElementById("btn-recenser").disabled = true;
-  document.getElementById("btn-batch").disabled = true;
+  document.getElementById("btn-analyse").disabled = true;
   document.getElementById("recenser-progress").style.display = "";
   await fetch(`${API}/disquaire/recenser`, { method: "POST" });
   if (recenserTimer) clearInterval(recenserTimer);

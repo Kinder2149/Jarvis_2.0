@@ -326,6 +326,97 @@ async def apply(assignments: list[dict], pile_id: str) -> dict:
     }
 
 
+# ─── Analyse de la pile COMPLÈTE (pas par lots) ──────────────────────────────
+
+_analyse_state: dict = {
+    "running": False, "done": 0, "total": 0, "finished": False,
+    "error": None, "pile_id": None, "genres": [], "results": [],
+}
+
+
+def get_analyse_state() -> dict:
+    """Progression uniquement (sans la grosse liste de résultats), pour le polling."""
+    s = dict(_analyse_state)
+    s.pop("results", None)
+    return s
+
+
+def get_analyse_result() -> dict:
+    return {
+        "pile_id": _analyse_state["pile_id"],
+        "genres": _analyse_state["genres"],
+        "tracks": _analyse_state["results"],
+        "finished": _analyse_state["finished"],
+        "error": _analyse_state["error"],
+    }
+
+
+async def run_analyse_complete() -> None:
+    """Classe TOUS les titres de la pile, par tranches, en tâche de fond."""
+    global _analyse_state
+    if _analyse_state["running"]:
+        return
+    _analyse_state = {
+        "running": True, "done": 0, "total": 0, "finished": False,
+        "error": None, "pile_id": None, "genres": [], "results": [],
+    }
+    try:
+        config = load_config()
+        signatures = await build_signatures()
+        pile, _ = await _find_pile_and_genres()
+        if pile is None:
+            raise RuntimeError(f'Playlist « {PILE_NAME} » introuvable.')
+        if not signatures["labels"]:
+            raise RuntimeError("Aucune playlist de genre (préfixe « G. »).")
+
+        pile_tracks = await spotify_service.get_playlist_tracks(pile["id"])
+        _analyse_state["pile_id"] = pile["id"]
+        _analyse_state["genres"] = list(signatures["labels"].keys())
+        _analyse_state["total"] = len(pile_tracks)
+
+        label_by_lower = {l.lower(): l for l in signatures["labels"]}
+        detailed_all = get_memberships_detailed([t["uri"] for t in pile_tracks])
+        model_id = config.get("model_preferences", {}).get("analysis") or "anthropic/claude-sonnet-4.5"
+
+        CHUNK = 40
+        results: list[dict] = []
+        for i in range(0, len(pile_tracks), CHUNK):
+            chunk = pile_tracks[i:i + CHUNK]
+            raw = await model_router.call_model(
+                model_id=model_id,
+                messages=[{"role": "user", "content": _build_prompt(signatures, chunk)}],
+                api_keys=config.get("api_keys", {}),
+                session_id=0, step_name="disquaire_analyse_full",
+                model_type="analysis", db_conn=None, module_name="disquaire",
+            )
+            proposals = _parse_proposals(raw, len(chunk))
+            for idx, t in enumerate(chunk):
+                prop = proposals.get(idx + 1, {"genres": [], "reason": ""})
+                d = detailed_all.get(t["uri"], {"genres": [], "moods": []})
+                existing_g = d["genres"]
+                matched = []
+                for gname in prop.get("genres", []):
+                    real = label_by_lower.get(str(gname).strip().lower())
+                    if real and real not in matched and real not in existing_g:
+                        matched.append(real)
+                results.append({
+                    "uri": t["uri"], "name": t["name"], "artists": t["artists"],
+                    "proposed": matched, "existing_genres": existing_g,
+                    "existing_moods": d["moods"], "reason": prop.get("reason", ""),
+                })
+            _analyse_state["done"] = len(results)
+            _analyse_state["results"] = results
+
+        _analyse_state["finished"] = True
+        logger.info(f"[DISQUAIRE] Analyse complète : {len(results)} titres classés.")
+    except Exception as e:
+        logger.error(f"[DISQUAIRE] analyse complète: {e}")
+        _analyse_state["error"] = str(e)
+        _analyse_state["finished"] = True
+    finally:
+        _analyse_state["running"] = False
+
+
 # ─── Phase « Recenser » : base locale de la bibliothèque ─────────────────────
 
 _MOOD_RE = re.compile(r"^m\.\s*", re.IGNORECASE)
