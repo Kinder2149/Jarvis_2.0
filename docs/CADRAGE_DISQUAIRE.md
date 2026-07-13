@@ -170,5 +170,26 @@ Rappel du point de départ : solidifier la base avant d'ajouter un étage. À so
 | Mission | État | Détail |
 |---|---|---|
 | **1. Connexion Spotify** | ✅ **Terminée** (2026-07-13, commit 8847f57) | OAuth + lecture playlists. Page `/app/spotify.html`. Testé end-to-end (compte « Keamder », playlists lues, préfixes `g.`/`m.` repérés). |
-| **2. Le cerveau (Genre)** | ⏳ À venir | Apprendre les genres depuis les playlists `g.`, proposer un genre par titre de la pile « On est parti pour trier ». |
-| **3. Rangement par lots** | ⏳ À venir | Écran de validation par lots + application (ajout dans les `g.`, retrait de la pile). |
+| **2. Le cerveau + rangement par lots (Genre)** | ⏳ À venir — cadre figé 2026-07-13 | Voir cadre ci-dessous. |
+
+### Cadre Mission 2 (décidé le 2026-07-13)
+
+**Périmètre :** le DISQUAIRE apprend les genres depuis les playlists `G.`, puis traite la pile
+« On est parti pour trier » **par lots** : pour chaque titre d'un lot, il propose une/des
+playlist(s) `G.`, Kinder revoit tout le lot, valide, et le DISQUAIRE **range lui-même**
+(ajout dans les `G.` + retrait de la pile).
+
+**Décisions Kinder :**
+- Traitement **par lots** directement (pas titre par titre).
+- Le DISQUAIRE **applique automatiquement** après validation (écrit dans le compte).
+
+**Garde-fous (car on écrit dans le compte réel) :**
+- Détection des préfixes **insensible à la casse** (`G.` = `g.`).
+- **Revue du lot entier AVANT tout écrit** : Kinder peut décocher/corriger chaque ligne.
+- Lots de **taille raisonnable** (≈ 25 titres) pour rester revoyable + respecter les limites Spotify.
+- **Anti-doublon** : si un titre est déjà dans la playlist `G.` cible, on ne le rajoute pas.
+- On **ne retire de la pile que** les titres effectivement rangés.
+- `megacompil` **jamais touchée** — la pile est une copie de travail (pire cas = titre mal rangé, corrigé d'un clic).
+
+**Je décide (technique) :** modèle d'IA du tri (économique d'abord, montée en gamme si faible),
+résumé compact des playlists `G.` pour rester léger, ordre de traitement (haut de pile).
