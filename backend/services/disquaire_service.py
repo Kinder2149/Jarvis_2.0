@@ -481,6 +481,65 @@ def get_track_memberships(uri: str) -> list[str]:
     return get_memberships_for([uri]).get(uri, [])
 
 
+def get_etat() -> dict:
+    """État complet du rangement, calculé sur la base locale recensée.
+
+    Permet de COMPRENDRE l'organisation : combien de titres, combien déjà rangés
+    en genre, combien d'orphelins (dans megacompil sans genre), répartitions, etc.
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+    mega_id = _get_playlist_id_by_kind(cur, "megacompil")
+    pile_id = _get_playlist_id_by_kind(cur, "pile")
+
+    mega_uris: set[str] = set()
+    if mega_id:
+        cur.execute("SELECT track_uri FROM disquaire_membership WHERE playlist_id = ?", (mega_id,))
+        mega_uris = {r["track_uri"] for r in cur.fetchall()}
+
+    # Nombre de genres par titre
+    cur.execute(
+        """SELECT m.track_uri AS uri, COUNT(DISTINCT m.playlist_id) AS c
+           FROM disquaire_membership m JOIN disquaire_playlists p ON p.id = m.playlist_id
+           WHERE p.kind = 'genre' GROUP BY m.track_uri"""
+    )
+    genre_count = {r["uri"]: r["c"] for r in cur.fetchall()}
+    genre_tracks = set(genre_count)
+
+    def _per_kind(kind):
+        cur.execute(
+            """SELECT p.name AS name, COUNT(*) AS c
+               FROM disquaire_membership m JOIN disquaire_playlists p ON p.id = m.playlist_id
+               WHERE p.kind = ? GROUP BY p.id ORDER BY c DESC""",
+            (kind,),
+        )
+        return [{"name": r["name"], "count": r["c"]} for r in cur.fetchall()]
+
+    per_genre = _per_kind("genre")
+    per_mood = _per_kind("mood")
+
+    pile_count = 0
+    if pile_id:
+        cur.execute("SELECT COUNT(*) AS c FROM disquaire_membership WHERE playlist_id = ?", (pile_id,))
+        pile_count = cur.fetchone()["c"]
+    conn.close()
+
+    total = len(mega_uris)
+    in_genre = len(mega_uris & genre_tracks)
+    return {
+        "total": total,
+        "in_genre": in_genre,
+        "orphans": total - in_genre,
+        "multi_genre": sum(1 for u in mega_uris if genre_count.get(u, 0) >= 2),
+        "anomalies": len(genre_tracks - mega_uris),  # dans un genre mais pas dans megacompil
+        "pile": pile_count,
+        "genre_playlists": len(per_genre),
+        "mood_playlists": len(per_mood),
+        "per_genre": per_genre,
+        "per_mood": per_mood,
+    }
+
+
 def _get_playlist_id_by_kind(cur, kind: str) -> str | None:
     cur.execute("SELECT id FROM disquaire_playlists WHERE kind = ? LIMIT 1", (kind,))
     row = cur.fetchone()

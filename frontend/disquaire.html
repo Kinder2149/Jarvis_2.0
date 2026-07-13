@@ -12,8 +12,8 @@
                max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 5rem; }
     .dq-card { background: var(--surface, #1b1f2a); border: 1px solid var(--border, #2a2f3a);
                border-radius: 12px; padding: 1.1rem 1.2rem; margin-bottom: 1.1rem; }
-    .dq-status { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: 0.85rem; }
-    .dq-status b { color: var(--text, #e5e7eb); }
+    .dq-step-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em;
+                     color: #1db954; font-weight: 800; margin: 0 0 0.7rem; }
     .dq-btn { padding: 0.55rem 1rem; border-radius: 8px; border: none; cursor: pointer;
               font-size: 0.82rem; font-weight: 600; background: #1db954; color: #06210f; }
     .dq-btn:hover { filter: brightness(1.08); }
@@ -22,6 +22,22 @@
     .dq-controls { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
     .dq-controls input { width: 64px; padding: 0.4rem 0.5rem; border-radius: 8px;
                          border: 1px solid var(--border, #2a2f3a); background: var(--bg, #11141b); color: var(--text, #e5e7eb); }
+    .dq-summary { font-size: 0.8rem; color: var(--text-muted, #94a3b8); margin: 0.3rem 0 0.8rem; }
+    .dq-progress { height: 8px; background: var(--border, #2a2f3a); border-radius: 6px; overflow: hidden; margin-bottom: 0.35rem; }
+    .dq-progress-bar { height: 100%; width: 0; background: #1db954; transition: width 0.3s; }
+    /* KPIs */
+    .dq-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 0.6rem; margin: 0.4rem 0 1rem; }
+    .dq-kpi { background: var(--bg, #11141b); border: 1px solid var(--border, #2a2f3a); border-radius: 10px; padding: 0.7rem 0.8rem; }
+    .dq-kpi-val { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+    .dq-kpi-lbl { font-size: 0.68rem; color: var(--text-muted, #94a3b8); margin-top: 0.25rem; }
+    /* Barres genres */
+    .dq-bars { max-height: 230px; overflow-y: auto; padding-right: 0.3rem; }
+    .dq-bar-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; margin-bottom: 0.28rem; }
+    .dq-bar-label { width: 150px; flex: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted, #94a3b8); }
+    .dq-bar { flex: 1; height: 8px; background: var(--border, #2a2f3a); border-radius: 5px; overflow: hidden; }
+    .dq-bar-fill { display: block; height: 100%; background: #38bdf8; }
+    .dq-bar-val { width: 36px; flex: none; text-align: right; }
+    /* Titres à trier */
     .dq-track { padding: 0.7rem 0.2rem; border-bottom: 1px solid var(--border, #2a2f3a); }
     .dq-track-head { display: flex; align-items: baseline; gap: 0.5rem; }
     .dq-track-name { font-weight: 600; font-size: 0.9rem; }
@@ -40,10 +56,6 @@
     .dq-banner { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.83rem; margin-bottom: 1rem; }
     .dq-banner.ok { background: rgba(29,185,84,0.12); color: #4ade80; }
     .dq-banner.err { background: rgba(248,113,113,0.12); color: #f87171; }
-    .dq-summary { font-size: 0.8rem; color: var(--text-muted, #94a3b8); margin: 0.3rem 0 0.8rem; }
-    .dq-progress { height: 8px; background: var(--border, #2a2f3a); border-radius: 6px; overflow: hidden; margin-bottom: 0.35rem; }
-    .dq-progress-bar { height: 100%; width: 0; background: #1db954; transition: width 0.3s; }
-    .dq-already { font-size: 0.7rem; color: #38bdf8; margin-top: 0.25rem; }
   </style>
 </head>
 <body>
@@ -63,31 +75,32 @@
   <div class="dq-wrap">
     <div id="banner"></div>
 
+    <!-- ÉTAPE 1 — ÉTAT COMPLET -->
     <div class="dq-card">
-      <div class="dq-status" id="status">Vérification…</div>
-    </div>
-
-    <div class="dq-card">
-      <h3 style="margin:0 0 0.3rem;font-size:0.9rem">📚 Base locale</h3>
-      <div id="local-stats" class="dq-summary">…</div>
-      <button id="btn-recenser" class="dq-btn dq-btn--ghost">Recenser ma bibliothèque</button>
-      <div id="recenser-progress" style="margin-top:0.7rem;display:none">
+      <div class="dq-step-title">Étape 1 · État de ta bibliothèque</div>
+      <div class="dq-controls" style="margin-bottom:0.4rem">
+        <button id="btn-recenser" class="dq-btn dq-btn--ghost">↻ Recenser / rafraîchir</button>
+        <span id="local-stats" class="dq-summary" style="margin:0"></span>
+      </div>
+      <div id="recenser-progress" style="margin:0.6rem 0;display:none">
         <div class="dq-progress"><div id="recenser-bar" class="dq-progress-bar"></div></div>
         <div id="recenser-phase" class="dq-summary"></div>
       </div>
+      <div id="etat-kpis" class="dq-kpis"></div>
+      <div class="dq-summary" style="margin-bottom:0.3rem">Répartition par genre :</div>
+      <div id="etat-genres" class="dq-bars"></div>
     </div>
 
+    <!-- ÉTAPE 2 — RANGER LA PILE -->
     <div class="dq-card">
-      <h3 style="margin:0 0 0.3rem;font-size:0.9rem">🧹 Nettoyer la pile</h3>
-      <p class="dq-summary">Retire d'un coup tous les titres déjà bien rangés (dans megacompil + au moins un genre). Ils restent dans megacompil et leurs genres — seule la pile est allégée. Se base sur la base locale : recense d'abord si tu as beaucoup rangé depuis.</p>
-      <button id="btn-sweep" class="dq-btn dq-btn--ghost">🧹 Nettoyer la pile</button>
-    </div>
+      <div class="dq-step-title">Étape 2 · Ranger la pile « On est parti pour trier »</div>
+      <div class="dq-status" id="status" style="font-size:0.85rem;margin-bottom:0.8rem">Vérification…</div>
 
-    <div class="dq-card">
       <div style="margin-bottom:0.9rem;padding-bottom:0.9rem;border-bottom:1px solid var(--border,#2a2f3a)">
         <button id="btn-sweep" class="dq-btn">🧹 Nettoyer la pile (retirer les déjà rangés)</button>
-        <div class="dq-summary" style="margin-bottom:0">Retire d'un coup tous les titres déjà dans megacompil + au moins un genre. Ils restent rangés, ils quittent juste la pile.</div>
+        <div class="dq-summary" style="margin-bottom:0">Retire d'un coup les titres déjà dans megacompil + au moins un genre. Ils restent rangés, ils quittent juste la pile.</div>
       </div>
+
       <div class="dq-controls">
         <span style="font-size:0.85rem">Analyser un lot de</span>
         <input id="size" type="number" min="1" max="50" value="25">
@@ -106,7 +119,7 @@
 
 <script>
 const API = window.location.origin + "/api";
-let BATCH = null; // { pile_id, genres:[...], tracks:[{uri,name,artists,reason,selected:[...]}] }
+let BATCH = null;
 
 function banner(msg, kind) {
   document.getElementById("banner").innerHTML = msg ? `<div class="dq-banner ${kind}">${msg}</div>` : "";
@@ -114,6 +127,52 @@ function banner(msg, kind) {
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
+function jsq(s) { return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
+
+/* ───────── ÉTAPE 1 : état ───────── */
+
+function kpi(val, label, kind) {
+  const color = kind === "warn" ? "#f59e0b" : (kind === "accent" ? "#1db954" : "var(--text,#e5e7eb)");
+  return `<div class="dq-kpi"><div class="dq-kpi-val" style="color:${color}">${val}</div><div class="dq-kpi-lbl">${label}</div></div>`;
+}
+
+async function loadEtat() {
+  try {
+    const e = await (await fetch(`${API}/disquaire/etat`)).json();
+    if (!e.total) {
+      document.getElementById("etat-kpis").innerHTML =
+        `<div class="dq-summary">Recense ta bibliothèque pour voir l'état de ton rangement.</div>`;
+      document.getElementById("etat-genres").innerHTML = "";
+      return;
+    }
+    const pct = Math.round(100 * e.in_genre / e.total);
+    document.getElementById("etat-kpis").innerHTML = [
+      kpi(e.total, "Titres (megacompil)"),
+      kpi(`${e.in_genre} · ${pct}%`, "Rangés en genre"),
+      kpi(e.orphans, "Orphelins (sans genre)", e.orphans ? "warn" : null),
+      kpi(e.pile, "Pile à trier", e.pile ? "accent" : null),
+      kpi(e.multi_genre, "Multi-genres"),
+      ...(e.anomalies ? [kpi(e.anomalies, "Anomalies (hors megacompil)", "warn")] : []),
+    ].join("");
+    const max = e.per_genre.length ? e.per_genre[0].count : 1;
+    document.getElementById("etat-genres").innerHTML = e.per_genre.map(g =>
+      `<div class="dq-bar-row">
+         <span class="dq-bar-label" title="${esc(g.name)}">${esc(g.name)}</span>
+         <span class="dq-bar"><span class="dq-bar-fill" style="width:${Math.round(100 * g.count / max)}%"></span></span>
+         <span class="dq-bar-val">${g.count}</span>
+       </div>`).join("");
+  } catch (e) { /* silencieux */ }
+}
+
+async function loadLocalStats() {
+  const el = document.getElementById("local-stats");
+  try {
+    const s = await (await fetch(`${API}/disquaire/local-stats`)).json();
+    el.textContent = s.last_synced ? `dernière synchro ${s.last_synced}` : "pas encore recensée";
+  } catch (e) { el.textContent = ""; }
+}
+
+/* ───────── ÉTAPE 2 : tri ───────── */
 
 async function loadStatus() {
   const el = document.getElementById("status");
@@ -122,6 +181,7 @@ async function loadStatus() {
     if (!s.connected) {
       el.innerHTML = `⚠️ Non connecté à Spotify. <a href="spotify.html">Se connecter d'abord</a>.`;
       document.getElementById("btn-batch").disabled = true;
+      document.getElementById("btn-sweep").disabled = true;
       return;
     }
     if (!s.pile_found) {
@@ -129,16 +189,13 @@ async function loadStatus() {
       document.getElementById("btn-batch").disabled = true;
       return;
     }
-    el.innerHTML = `<span>Pile : <b>${s.pile_total}</b> titres à trier</span>
-                    <span>Genres détectés (G.) : <b>${s.genre_count}</b></span>`;
+    el.innerHTML = `Pile : <b>${s.pile_total}</b> titres à trier · Genres détectés (G.) : <b>${s.genre_count}</b>`;
     document.getElementById("btn-batch").disabled = !s.ready;
-    if (!s.ready) banner("Aucune playlist de genre « G. » détectée — impossible de proposer un rangement.", "err");
   } catch (e) {
     el.textContent = "Impossible de joindre JARVIS.";
   }
 }
 
-function jsq(s) { return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
 function finalGenres(t) {
   const kept = t.existing.filter(g => !t.removed.includes(g));
   return [...new Set([...kept, ...t.add])];
@@ -186,10 +243,7 @@ function renderBatch() {
   applyZone.style.display = "";
 }
 
-function removeAdd(i, g) {
-  BATCH.tracks[i].add = BATCH.tracks[i].add.filter(x => x !== g);
-  renderBatch();
-}
+function removeAdd(i, g) { BATCH.tracks[i].add = BATCH.tracks[i].add.filter(x => x !== g); renderBatch(); }
 function removeExisting(i, g) {
   const t = BATCH.tracks[i];
   if (!t.removed.includes(g)) t.removed.push(g);
@@ -198,7 +252,7 @@ function removeExisting(i, g) {
 function addGenre(i, g) {
   if (!g) return;
   const t = BATCH.tracks[i];
-  if (t.existing.includes(g)) t.removed = t.removed.filter(x => x !== g); // ré-active un bleu retiré
+  if (t.existing.includes(g)) t.removed = t.removed.filter(x => x !== g);
   else if (!t.add.includes(g)) t.add.push(g);
   renderBatch();
 }
@@ -269,7 +323,7 @@ document.getElementById("btn-apply").onclick = async () => {
     document.getElementById("summary").textContent = "";
     document.getElementById("apply-zone").style.display = "none";
     loadStatus();
-    loadLocalStats();
+    loadEtat();
   } catch (e) {
     banner("Erreur : " + e.message, "err");
   } finally {
@@ -277,16 +331,7 @@ document.getElementById("btn-apply").onclick = async () => {
   }
 };
 
-async function loadLocalStats() {
-  const el = document.getElementById("local-stats");
-  try {
-    const s = await (await fetch(`${API}/disquaire/local-stats`)).json();
-    const k = s.playlists_by_kind || {};
-    if (!s.tracks) { el.textContent = "Bibliothèque pas encore recensée — clique pour lancer un premier recensement."; return; }
-    el.innerHTML = `<b>${s.tracks}</b> titres recensés · ${k.genre || 0} genres · ${k.mood || 0} moods · pile ${k.pile ? "✓" : "—"}`
-      + (s.last_synced ? ` · dernière synchro ${esc(s.last_synced)}` : "");
-  } catch (e) { el.textContent = ""; }
-}
+/* ───────── Recenser + Nettoyer ───────── */
 
 let recenserTimer = null;
 document.getElementById("btn-recenser").onclick = async () => {
@@ -311,33 +356,10 @@ document.getElementById("btn-recenser").onclick = async () => {
       document.getElementById("btn-sweep").disabled = false;
       document.getElementById("recenser-progress").style.display = "none";
       if (s.error) banner("Erreur pendant le recensement : " + s.error, "err");
-      else banner(`✅ Recensement terminé : ${s.summary?.tracks_total || 0} titres · ${s.summary?.genre || 0} genres · ${s.summary?.mood || 0} moods.`, "ok");
-      loadLocalStats();
-      loadStatus();
+      else banner(`✅ Recensement terminé : ${s.summary?.tracks_total || 0} titres.`, "ok");
+      loadEtat(); loadLocalStats(); loadStatus();
     }
   }, 1500);
-};
-
-document.getElementById("btn-sweep").onclick = async () => {
-  if (!confirm("Retirer de la pile tous les titres déjà rangés (dans megacompil + au moins un genre) ? Ils restent dans megacompil et leurs genres.")) return;
-  const btn = document.getElementById("btn-sweep");
-  btn.disabled = true; btn.textContent = "Nettoyage en cours… (peut prendre ~1 min)";
-  banner("", "");
-  try {
-    const r = await fetch(`${API}/disquaire/sweep`, { method: "POST" });
-    if (!r.ok) {
-      const e = await r.json().catch(() => ({}));
-      banner("Erreur : " + (e.detail || "nettoyage impossible"), "err");
-      return;
-    }
-    const s = await r.json();
-    banner(`✅ Pile nettoyée : ${s.removed} titres déjà rangés retirés. Il reste ${s.remaining} titres à trier.`, "ok");
-    loadStatus();
-  } catch (e) {
-    banner("Erreur : " + e.message, "err");
-  } finally {
-    btn.disabled = false; btn.textContent = "🧹 Nettoyer la pile";
-  }
 };
 
 document.getElementById("btn-sweep").onclick = async () => {
@@ -350,8 +372,7 @@ document.getElementById("btn-sweep").onclick = async () => {
     const res = await r.json();
     if (!r.ok) { banner("Erreur : " + (res.detail || "nettoyage impossible"), "err"); return; }
     banner(`🧹 ${res.removed} titres déjà rangés retirés de la pile. Il reste ${res.pile_remaining} titres à trier.`, "ok");
-    loadStatus();
-    loadLocalStats();
+    loadStatus(); loadEtat();
   } catch (e) {
     banner("Erreur : " + e.message, "err");
   } finally {
@@ -360,6 +381,7 @@ document.getElementById("btn-sweep").onclick = async () => {
 };
 
 loadStatus();
+loadEtat();
 loadLocalStats();
 </script>
 </body>

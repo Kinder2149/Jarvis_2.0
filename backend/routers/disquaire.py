@@ -89,6 +89,11 @@ def local_stats():
     return disquaire_service.get_local_stats()
 
 
+@router.get("/etat")
+def etat():
+    return disquaire_service.get_etat()
+
+
 @router.post("/sweep")
 async def sweep():
     if not spotify_service.is_connected():
