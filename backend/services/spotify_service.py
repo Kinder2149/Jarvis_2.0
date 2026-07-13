@@ -189,3 +189,60 @@ async def get_all_playlists() -> list[dict]:
         if not data.get("next") or not batch:
             break
     return items
+
+
+async def _api_send(method: str, path: str, json_body: dict) -> dict:
+    token = await _get_access_token()
+    async with httpx.AsyncClient() as client:
+        resp = await client.request(
+            method,
+            f"{API_BASE}{path}",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            json=json_body,
+            timeout=30.0,
+        )
+    resp.raise_for_status()
+    return resp.json() if resp.content else {}
+
+
+async def get_playlist_tracks(playlist_id: str, max_tracks: int | None = None) -> list[dict]:
+    """
+    Récupère les titres d'une playlist (endpoint /items, post-fév. 2026).
+    Retourne une liste de {uri, name, artists: [noms]}. Ignore les entrées vides.
+    """
+    tracks: list[dict] = []
+    fields = "next,items(track(uri,name,artists(name)))"
+    while True:
+        data = await _api_get(
+            f"/playlists/{playlist_id}/items",
+            {"fields": fields, "limit": 100, "offset": len(tracks)},
+        )
+        batch = data.get("items", [])
+        for entry in batch:
+            track = entry.get("track") or {}
+            uri = track.get("uri")
+            if not uri or not uri.startswith("spotify:track:"):
+                continue  # titres locaux, épisodes ou entrées vides
+            tracks.append({
+                "uri": uri,
+                "name": track.get("name") or "",
+                "artists": [a.get("name", "") for a in (track.get("artists") or [])],
+            })
+        if not data.get("next") or not batch:
+            break
+        if max_tracks is not None and len(tracks) >= max_tracks:
+            break
+    return tracks[:max_tracks] if max_tracks is not None else tracks
+
+
+async def add_items(playlist_id: str, uris: list[str]) -> None:
+    """Ajoute des titres à une playlist (par paquets de 100)."""
+    for i in range(0, len(uris), 100):
+        await _api_send("POST", f"/playlists/{playlist_id}/items", {"uris": uris[i:i + 100]})
+
+
+async def remove_items(playlist_id: str, uris: list[str]) -> None:
+    """Retire des titres d'une playlist (par paquets de 100)."""
+    for i in range(0, len(uris), 100):
+        body = {"tracks": [{"uri": u} for u in uris[i:i + 100]]}
+        await _api_send("DELETE", f"/playlists/{playlist_id}/items", body)

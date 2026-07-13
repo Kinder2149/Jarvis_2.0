@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DISQUAIRE — Rangement par genre</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/board.css">
+  <style>
+    .dq-wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 5rem; }
+    .dq-card { background: var(--surface, #1b1f2a); border: 1px solid var(--border, #2a2f3a);
+               border-radius: 12px; padding: 1.1rem 1.2rem; margin-bottom: 1.1rem; }
+    .dq-status { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: 0.85rem; }
+    .dq-status b { color: var(--text, #e5e7eb); }
+    .dq-btn { padding: 0.55rem 1rem; border-radius: 8px; border: none; cursor: pointer;
+              font-size: 0.82rem; font-weight: 600; background: #1db954; color: #06210f; }
+    .dq-btn:hover { filter: brightness(1.08); }
+    .dq-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .dq-btn--ghost { background: transparent; border: 1px solid var(--border, #2a2f3a); color: var(--text-muted, #94a3b8); }
+    .dq-controls { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+    .dq-controls input { width: 64px; padding: 0.4rem 0.5rem; border-radius: 8px;
+                         border: 1px solid var(--border, #2a2f3a); background: var(--bg, #11141b); color: var(--text, #e5e7eb); }
+    .dq-track { padding: 0.7rem 0.2rem; border-bottom: 1px solid var(--border, #2a2f3a); }
+    .dq-track-head { display: flex; align-items: baseline; gap: 0.5rem; }
+    .dq-track-name { font-weight: 600; font-size: 0.9rem; }
+    .dq-track-artist { color: var(--text-muted, #94a3b8); font-size: 0.8rem; }
+    .dq-reason { font-size: 0.74rem; color: var(--text-muted, #94a3b8); font-style: italic; margin: 0.2rem 0 0.4rem; }
+    .dq-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .dq-chip { font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 20px;
+               background: rgba(29,185,84,0.15); color: #4ade80; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .dq-chip button { background: none; border: none; color: #4ade80; cursor: pointer; font-size: 0.85rem; line-height: 1; padding: 0; }
+    .dq-chip.none { background: rgba(248,113,113,0.12); color: #f87171; }
+    .dq-add { font-size: 0.72rem; padding: 0.2rem 0.4rem; border-radius: 8px;
+              border: 1px dashed var(--border, #2a2f3a); background: transparent; color: var(--text-muted, #94a3b8); }
+    .dq-banner { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.83rem; margin-bottom: 1rem; }
+    .dq-banner.ok { background: rgba(29,185,84,0.12); color: #4ade80; }
+    .dq-banner.err { background: rgba(248,113,113,0.12); color: #f87171; }
+    .dq-summary { font-size: 0.8rem; color: var(--text-muted, #94a3b8); margin: 0.3rem 0 0.8rem; }
+  </style>
+</head>
+<body>
+<div class="board-app" style="--board-accent:#1db954">
+
+  <nav class="board-nav">
+    <a href="jarvis.html" class="board-back">← JARVIS</a>
+    <div class="board-identity">
+      <div>
+        <div class="board-agent-name">DISQUAIRE</div>
+        <div class="board-agent-role">Rangement par genre</div>
+      </div>
+    </div>
+    <a href="spotify.html" class="dq-btn dq-btn--ghost" style="text-decoration:none">⚙ Connexion</a>
+  </nav>
+
+  <div class="dq-wrap">
+    <div id="banner"></div>
+
+    <div class="dq-card">
+      <div class="dq-status" id="status">Vérification…</div>
+    </div>
+
+    <div class="dq-card">
+      <div class="dq-controls">
+        <span style="font-size:0.85rem">Analyser un lot de</span>
+        <input id="size" type="number" min="1" max="50" value="25">
+        <span style="font-size:0.85rem">titres</span>
+        <button id="btn-batch" class="dq-btn">Analyser un lot</button>
+      </div>
+      <div id="summary" class="dq-summary"></div>
+      <div id="tracks"></div>
+      <div id="apply-zone" style="margin-top:1rem;display:none">
+        <button id="btn-apply" class="dq-btn">✅ Valider le lot et ranger</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = window.location.origin + "/api";
+let BATCH = null; // { pile_id, genres:[...], tracks:[{uri,name,artists,reason,selected:[...]}] }
+
+function banner(msg, kind) {
+  document.getElementById("banner").innerHTML = msg ? `<div class="dq-banner ${kind}">${msg}</div>` : "";
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function loadStatus() {
+  const el = document.getElementById("status");
+  try {
+    const s = await (await fetch(`${API}/disquaire/status`)).json();
+    if (!s.connected) {
+      el.innerHTML = `⚠️ Non connecté à Spotify. <a href="spotify.html">Se connecter d'abord</a>.`;
+      document.getElementById("btn-batch").disabled = true;
+      return;
+    }
+    if (!s.pile_found) {
+      el.innerHTML = `⚠️ Playlist « ${esc(s.pile_name)} » introuvable. Vérifie son nom exact.`;
+      document.getElementById("btn-batch").disabled = true;
+      return;
+    }
+    el.innerHTML = `<span>Pile : <b>${s.pile_total}</b> titres à trier</span>
+                    <span>Genres détectés (G.) : <b>${s.genre_count}</b></span>`;
+    document.getElementById("btn-batch").disabled = !s.ready;
+    if (!s.ready) banner("Aucune playlist de genre « G. » détectée — impossible de proposer un rangement.", "err");
+  } catch (e) {
+    el.textContent = "Impossible de joindre JARVIS.";
+  }
+}
+
+function renderBatch() {
+  const wrap = document.getElementById("tracks");
+  const applyZone = document.getElementById("apply-zone");
+  if (!BATCH || BATCH.tracks.length === 0) {
+    wrap.innerHTML = `<div class="dq-summary">🎉 La pile est vide — plus rien à trier !</div>`;
+    applyZone.style.display = "none";
+    document.getElementById("summary").textContent = "";
+    return;
+  }
+  const ready = BATCH.tracks.filter(t => t.selected.length > 0).length;
+  document.getElementById("summary").textContent =
+    `${BATCH.tracks.length} titres analysés — ${ready} prêts à ranger (au moins 1 genre).`;
+
+  wrap.innerHTML = BATCH.tracks.map((t, i) => {
+    const chips = t.selected.length
+      ? t.selected.map(g => `<span class="dq-chip">${esc(g)}<button onclick="removeGenre(${i},'${esc(g).replace(/'/g,"\\'")}')">×</button></span>`).join("")
+      : `<span class="dq-chip none">aucun genre — restera dans la pile</span>`;
+    const options = BATCH.genres
+      .filter(g => !t.selected.includes(g))
+      .map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join("");
+    const addSel = options
+      ? `<select class="dq-add" onchange="addGenre(${i}, this.value); this.selectedIndex=0">
+           <option value="">+ ajouter</option>${options}</select>`
+      : "";
+    return `<div class="dq-track">
+      <div class="dq-track-head">
+        <span class="dq-track-name">${esc(t.name)}</span>
+        <span class="dq-track-artist">${esc(t.artists.join(", "))}</span>
+      </div>
+      ${t.reason ? `<div class="dq-reason">💭 ${esc(t.reason)}</div>` : ""}
+      <div class="dq-chips">${chips}${addSel}</div>
+    </div>`;
+  }).join("");
+  applyZone.style.display = "";
+}
+
+function removeGenre(i, g) {
+  BATCH.tracks[i].selected = BATCH.tracks[i].selected.filter(x => x !== g);
+  renderBatch();
+}
+function addGenre(i, g) {
+  if (g && !BATCH.tracks[i].selected.includes(g)) BATCH.tracks[i].selected.push(g);
+  renderBatch();
+}
+
+document.getElementById("btn-batch").onclick = async () => {
+  banner("", "");
+  const btn = document.getElementById("btn-batch");
+  const size = document.getElementById("size").value || 25;
+  btn.disabled = true; btn.textContent = "Analyse en cours…";
+  document.getElementById("tracks").innerHTML = "";
+  try {
+    const r = await fetch(`${API}/disquaire/batch?size=${size}`);
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      banner("Erreur : " + (err.detail || "analyse impossible"), "err");
+      return;
+    }
+    const data = await r.json();
+    BATCH = {
+      pile_id: data.pile_id,
+      genres: data.genres,
+      tracks: data.tracks.map(t => ({ ...t, selected: [...(t.proposed || [])] })),
+    };
+    renderBatch();
+  } catch (e) {
+    banner("Erreur : " + e.message, "err");
+  } finally {
+    btn.disabled = false; btn.textContent = "Analyser un lot";
+  }
+};
+
+document.getElementById("btn-apply").onclick = async () => {
+  if (!BATCH) return;
+  const assignments = BATCH.tracks
+    .filter(t => t.selected.length > 0)
+    .map(t => ({ uri: t.uri, genre_labels: t.selected }));
+  if (assignments.length === 0) {
+    banner("Aucun titre à ranger (aucun genre sélectionné).", "err");
+    return;
+  }
+  const btn = document.getElementById("btn-apply");
+  btn.disabled = true; btn.textContent = "Rangement en cours…";
+  try {
+    const r = await fetch(`${API}/disquaire/apply`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pile_id: BATCH.pile_id, assignments }),
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      banner("Erreur : " + (err.detail || "rangement impossible"), "err");
+      return;
+    }
+    const res = await r.json();
+    banner(`✅ Rangé : ${res.filed} titres classés (${res.added} ajouts dans tes genres), ${res.removed_from_pile} retirés de la pile.`, "ok");
+    BATCH = null;
+    document.getElementById("tracks").innerHTML = "";
+    document.getElementById("summary").textContent = "";
+    document.getElementById("apply-zone").style.display = "none";
+    loadStatus();
+  } catch (e) {
+    banner("Erreur : " + e.message, "err");
+  } finally {
+    btn.disabled = false; btn.textContent = "✅ Valider le lot et ranger";
+  }
+};
+
+loadStatus();
+</script>
+</body>
+</html>
