@@ -171,7 +171,8 @@ Rappel du point de départ : solidifier la base avant d'ajouter un étage. À so
 |---|---|---|
 | **1. Connexion Spotify** | ✅ **Terminée** (2026-07-13, commit 8847f57) | OAuth + lecture playlists. Page `/app/spotify.html`. Testé end-to-end (compte « Keamder », playlists lues, préfixes `g.`/`m.` repérés). |
 | **2. Le cerveau + rangement par lots (Genre)** | ✅ **Validée en vrai** (2026-07-13) | Classification IA multi-genres, chips éditables, ajout dans G. (anti-doublon) + retrait pile. Formats API /items résolus : add=`{"uris":[...]}`, remove=`{"items":[{"uri":...}]}`. |
-| **3. Phase « Recenser » (base locale)** | ⏳ Prochaine — idée validée de Kinder | Aspirer toute la bibliothèque (megacompil + G./M. + pile) dans jarvis.db une fois, puis trier sur la copie locale. Donne l'affichage « ce titre est déjà dans… » + anti-doublon parfait + suivi de progression. |
+| **3. Phase « Recenser » (base locale)** | ✅ **Validée en vrai** (2026-07-13) | Migration v8 (3 tables), recensement en tâche de fond + progression, incrémental via snapshot_id. Test réel : 2437 titres, 38 genres, 27 moods, pile. |
+| **4. Brancher la base locale dans le tri** | ⏳ Prochaine | Signatures du cerveau sur contenu local complet (meilleure justesse) + affichage par titre « déjà dans : … » (get_track_memberships). |
 
 ### Cadre Mission 2 (décidé le 2026-07-13)
 
