@@ -75,6 +75,12 @@
     </div>
 
     <div class="dq-card">
+      <h3 style="margin:0 0 0.3rem;font-size:0.9rem">🧹 Nettoyer la pile</h3>
+      <p class="dq-summary">Retire d'un coup tous les titres déjà bien rangés (dans megacompil + au moins un genre). Ils restent dans megacompil et leurs genres — seule la pile est allégée. Se base sur la base locale : recense d'abord si tu as beaucoup rangé depuis.</p>
+      <button id="btn-sweep" class="dq-btn dq-btn--ghost">🧹 Nettoyer la pile</button>
+    </div>
+
+    <div class="dq-card">
       <div class="dq-controls">
         <span style="font-size:0.85rem">Analyser un lot de</span>
         <input id="size" type="number" min="1" max="50" value="25">
@@ -270,6 +276,28 @@ document.getElementById("btn-recenser").onclick = async () => {
       loadStatus();
     }
   }, 1500);
+};
+
+document.getElementById("btn-sweep").onclick = async () => {
+  if (!confirm("Retirer de la pile tous les titres déjà rangés (dans megacompil + au moins un genre) ? Ils restent dans megacompil et leurs genres.")) return;
+  const btn = document.getElementById("btn-sweep");
+  btn.disabled = true; btn.textContent = "Nettoyage en cours… (peut prendre ~1 min)";
+  banner("", "");
+  try {
+    const r = await fetch(`${API}/disquaire/sweep`, { method: "POST" });
+    if (!r.ok) {
+      const e = await r.json().catch(() => ({}));
+      banner("Erreur : " + (e.detail || "nettoyage impossible"), "err");
+      return;
+    }
+    const s = await r.json();
+    banner(`✅ Pile nettoyée : ${s.removed} titres déjà rangés retirés. Il reste ${s.remaining} titres à trier.`, "ok");
+    loadStatus();
+  } catch (e) {
+    banner("Erreur : " + e.message, "err");
+  } finally {
+    btn.disabled = false; btn.textContent = "🧹 Nettoyer la pile";
+  }
 };
 
 loadStatus();

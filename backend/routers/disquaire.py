@@ -87,6 +87,17 @@ def local_stats():
     return disquaire_service.get_local_stats()
 
 
+@router.post("/sweep")
+async def sweep():
+    if not spotify_service.is_connected():
+        raise HTTPException(status_code=400, detail="Non connecté à Spotify.")
+    try:
+        return await disquaire_service.sweep_pile()
+    except Exception as e:
+        logger.error(f"[DISQUAIRE] sweep: {e}")
+        raise HTTPException(status_code=502, detail=str(e))
+
+
 @router.post("/apply")
 async def apply(body: ApplyBody):
     if not spotify_service.is_connected():
