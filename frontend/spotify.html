@@ -181,14 +181,16 @@ document.getElementById("btn-playlists").onclick = async () => {
       return;
     }
     const data = await r.json();
-    const nbG = data.playlists.filter(p => (p.name || "").startsWith("g.")).length;
-    const nbM = data.playlists.filter(p => (p.name || "").startsWith("m.")).length;
-    summary.textContent = `${data.count} playlists — dont ${nbG} Genre (g.) et ${nbM} Mood (m.)`;
+    const isG = n => /^g\./i.test(n || "");
+    const isM = n => /^m\./i.test(n || "");
+    const nbG = data.playlists.filter(p => isG(p.name)).length;
+    const nbM = data.playlists.filter(p => isM(p.name)).length;
+    summary.textContent = `${data.count} playlists — dont ${nbG} Genre (G.) et ${nbM} Mood (M.)`;
     list.innerHTML = data.playlists.map(p => {
       const name = p.name || "(sans nom)";
       let tag = "";
-      if (name.startsWith("g.")) tag = `<span class="sp-tag g">GENRE</span>`;
-      else if (name.startsWith("m.")) tag = `<span class="sp-tag m">MOOD</span>`;
+      if (isG(name)) tag = `<span class="sp-tag g">GENRE</span>`;
+      else if (isM(name)) tag = `<span class="sp-tag m">MOOD</span>`;
       return `<div class="sp-pl">${tag}<span>${escapeHtml(name)}</span>
         <span class="sp-pl-count">${p.tracks_total} titres</span></div>`;
     }).join("");
