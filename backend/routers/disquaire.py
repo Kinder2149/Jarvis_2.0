@@ -94,19 +94,6 @@ def etat():
     return disquaire_service.get_etat()
 
 
-@router.post("/sweep")
-async def sweep():
-    if not spotify_service.is_connected():
-        raise HTTPException(status_code=400, detail="Non connecté à Spotify.")
-    if disquaire_service.get_recenser_state()["running"]:
-        raise HTTPException(status_code=409, detail="Recensement en cours — attends qu'il se termine.")
-    try:
-        return await disquaire_service.sweep_pile()
-    except Exception as e:
-        logger.error(f"[DISQUAIRE] sweep: {e}")
-        raise HTTPException(status_code=502, detail=str(e))
-
-
 @router.post("/apply")
 async def apply(body: ApplyBody):
     if not spotify_service.is_connected():

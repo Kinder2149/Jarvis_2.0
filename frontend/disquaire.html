@@ -95,11 +95,7 @@
     <div class="dq-card">
       <div class="dq-step-title">Étape 2 · Ranger la pile « On est parti pour trier »</div>
       <div class="dq-status" id="status" style="font-size:0.85rem;margin-bottom:0.8rem">Vérification…</div>
-
-      <div style="margin-bottom:0.9rem;padding-bottom:0.9rem;border-bottom:1px solid var(--border,#2a2f3a)">
-        <button id="btn-sweep" class="dq-btn">🧹 Nettoyer la pile (retirer les déjà rangés)</button>
-        <div class="dq-summary" style="margin-bottom:0">Retire d'un coup les titres déjà dans megacompil + au moins un genre. Ils restent rangés, ils quittent juste la pile.</div>
-      </div>
+      <div class="dq-summary">Chaque titre reste dans la pile tant que tu n'as pas validé son lot. Un titre peut aller dans plusieurs genres — le tri propose les genres manquants (vert) en plus de ceux déjà présents (bleu).</div>
 
       <div class="dq-controls">
         <span style="font-size:0.85rem">Analyser un lot de</span>
@@ -181,7 +177,6 @@ async function loadStatus() {
     if (!s.connected) {
       el.innerHTML = `⚠️ Non connecté à Spotify. <a href="spotify.html">Se connecter d'abord</a>.`;
       document.getElementById("btn-batch").disabled = true;
-      document.getElementById("btn-sweep").disabled = true;
       return;
     }
     if (!s.pile_found) {
@@ -331,13 +326,12 @@ document.getElementById("btn-apply").onclick = async () => {
   }
 };
 
-/* ───────── Recenser + Nettoyer ───────── */
+/* ───────── Recenser ───────── */
 
 let recenserTimer = null;
 document.getElementById("btn-recenser").onclick = async () => {
   banner("", "");
   document.getElementById("btn-recenser").disabled = true;
-  document.getElementById("btn-sweep").disabled = true;
   document.getElementById("btn-batch").disabled = true;
   document.getElementById("recenser-progress").style.display = "";
   await fetch(`${API}/disquaire/recenser`, { method: "POST" });
@@ -353,31 +347,12 @@ document.getElementById("btn-recenser").onclick = async () => {
     if (s.finished) {
       clearInterval(recenserTimer);
       document.getElementById("btn-recenser").disabled = false;
-      document.getElementById("btn-sweep").disabled = false;
       document.getElementById("recenser-progress").style.display = "none";
       if (s.error) banner("Erreur pendant le recensement : " + s.error, "err");
       else banner(`✅ Recensement terminé : ${s.summary?.tracks_total || 0} titres.`, "ok");
       loadEtat(); loadLocalStats(); loadStatus();
     }
   }, 1500);
-};
-
-document.getElementById("btn-sweep").onclick = async () => {
-  if (!confirm("Retirer de la pile TOUS les titres déjà rangés (dans megacompil + au moins un genre) ?\n\nIls restent dans megacompil et dans leurs genres — ils quittent juste la pile de travail.")) return;
-  const btn = document.getElementById("btn-sweep");
-  banner("", "");
-  btn.disabled = true; btn.textContent = "Nettoyage en cours…";
-  try {
-    const r = await fetch(`${API}/disquaire/sweep`, { method: "POST" });
-    const res = await r.json();
-    if (!r.ok) { banner("Erreur : " + (res.detail || "nettoyage impossible"), "err"); return; }
-    banner(`🧹 ${res.removed} titres déjà rangés retirés de la pile. Il reste ${res.pile_remaining} titres à trier.`, "ok");
-    loadStatus(); loadEtat();
-  } catch (e) {
-    banner("Erreur : " + e.message, "err");
-  } finally {
-    btn.disabled = false; btn.textContent = "🧹 Nettoyer la pile (retirer les déjà rangés)";
-  }
 };
 
 loadStatus();

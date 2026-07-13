@@ -443,39 +443,6 @@ def get_local_stats() -> dict:
     return {"tracks": tracks, "playlists_by_kind": by_kind, "last_synced": last}
 
 
-def _well_sorted_uris() -> set:
-    """URIs déjà « bien rangées » selon la base locale : dans megacompil ET dans ≥ 1 genre."""
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(
-        """SELECT DISTINCT gm.track_uri
-           FROM disquaire_membership gm
-           JOIN disquaire_playlists gp ON gp.id = gm.playlist_id AND gp.kind = 'genre'
-           WHERE gm.track_uri IN (
-               SELECT mm.track_uri FROM disquaire_membership mm
-               JOIN disquaire_playlists mp ON mp.id = mm.playlist_id AND mp.kind = 'megacompil'
-           )"""
-    )
-    uris = {r["track_uri"] for r in cur.fetchall()}
-    conn.close()
-    return uris
-
-
-async def sweep_pile() -> dict:
-    """Retire de la pile tous les titres déjà bien rangés (megacompil + ≥ 1 genre)."""
-    pile, _ = await _find_pile_and_genres()
-    if pile is None:
-        raise RuntimeError(f'Playlist « {PILE_NAME} » introuvable.')
-    well_sorted = _well_sorted_uris()
-    pile_tracks = await spotify_service.get_playlist_tracks(pile["id"])
-    to_remove = [t["uri"] for t in pile_tracks if t["uri"] in well_sorted]
-    if to_remove:
-        await spotify_service.remove_items(pile["id"], to_remove)
-    remaining = len(pile_tracks) - len(to_remove)
-    logger.info(f"[DISQUAIRE] Nettoyage pile : {len(to_remove)} retirés, {remaining} restants.")
-    return {"removed": len(to_remove), "remaining": remaining, "pile_before": len(pile_tracks)}
-
-
 def get_track_memberships(uri: str) -> list[str]:
     """Playlists genre/mood contenant ce titre (pour l'affichage « déjà dans »)."""
     return get_memberships_for([uri]).get(uri, [])
@@ -571,47 +538,6 @@ def get_memberships_detailed(uris: list[str]) -> dict[str, dict]:
                 d["moods"].append(r["name"])
     conn.close()
     return out
-
-
-async def sweep_pile() -> dict:
-    """Retire de la pile TOUS les titres déjà bien rangés (dans megacompil + ≥ 1 genre),
-    d'après la base locale recensée. Vide instantanément la majorité de la pile."""
-    conn = get_connection()
-    cur = conn.cursor()
-    pile_id = _get_playlist_id_by_kind(cur, "pile")
-    mega_id = _get_playlist_id_by_kind(cur, "megacompil")
-    if not pile_id or not mega_id:
-        conn.close()
-        raise RuntimeError("Base locale incomplète — lance un « Recenser » d'abord.")
-
-    cur.execute("SELECT track_uri FROM disquaire_membership WHERE playlist_id = ?", (pile_id,))
-    pile_uris = [r["track_uri"] for r in cur.fetchall()]
-    cur.execute("SELECT track_uri FROM disquaire_membership WHERE playlist_id = ?", (mega_id,))
-    mega_uris = {r["track_uri"] for r in cur.fetchall()}
-    cur.execute(
-        """SELECT DISTINCT m.track_uri FROM disquaire_membership m
-           JOIN disquaire_playlists p ON p.id = m.playlist_id WHERE p.kind = 'genre'"""
-    )
-    genre_uris = {r["track_uri"] for r in cur.fetchall()}
-    conn.close()
-
-    to_remove = [u for u in pile_uris if u in genre_uris and u in mega_uris]
-    if to_remove:
-        await spotify_service.remove_items(pile_id, to_remove)
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.executemany(
-            "DELETE FROM disquaire_membership WHERE playlist_id = ? AND track_uri = ?",
-            [(pile_id, u) for u in to_remove],
-        )
-        cur.execute(
-            "UPDATE disquaire_playlists SET tracks_total = MAX(0, tracks_total - ?) WHERE id = ?",
-            (len(to_remove), pile_id),
-        )
-        conn.commit()
-        conn.close()
-    logger.info(f"[DISQUAIRE] Sweep pile : {len(to_remove)} titres déjà rangés retirés.")
-    return {"removed": len(to_remove), "pile_remaining": len(pile_uris) - len(to_remove)}
 
 
 def get_memberships_for(uris: list[str]) -> dict[str, list[str]]:
