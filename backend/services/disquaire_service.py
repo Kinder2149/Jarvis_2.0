@@ -207,23 +207,26 @@ async def get_batch(size: int = 25) -> dict:
     )
     proposals = _parse_proposals(raw, len(pile_tracks))
     label_by_lower = {l.lower(): l for l in signatures["labels"]}
-    memberships = get_memberships_for([t["uri"] for t in pile_tracks])
+    detailed = get_memberships_detailed([t["uri"] for t in pile_tracks])
 
     result = []
     for idx, t in enumerate(pile_tracks):
         prop = proposals.get(idx + 1, {"genres": [], "reason": ""})
+        d = detailed.get(t["uri"], {"genres": [], "moods": []})
+        existing_g = d["genres"]
         matched = []
         for gname in prop.get("genres", []):
             real = label_by_lower.get(str(gname).strip().lower())
-            if real and real not in matched:
-                matched.append(real)
+            if real and real not in matched and real not in existing_g:
+                matched.append(real)  # suggestion NOUVELLE (pas déjà en place)
         result.append({
             "uri": t["uri"],
             "name": t["name"],
             "artists": t["artists"],
-            "proposed": matched,
+            "proposed": matched,             # 🟢 vert : à ajouter
+            "existing_genres": existing_g,   # 🔵 bleu : déjà là (retirable)
+            "existing_moods": d["moods"],    # 🟣 info : moods déjà là
             "reason": prop.get("reason", ""),
-            "already_in": memberships.get(t["uri"], []),
         })
     return {
         "pile_id": pile["id"],
@@ -232,53 +235,95 @@ async def get_batch(size: int = 25) -> dict:
     }
 
 
+def _sync_local_after_apply(labels, add_by_pl, remove_by_pl, filed_uris, to_mega, mega_id, pile_id):
+    """Met à jour la base locale pour rester cohérente après un rangement (sans re-recenser)."""
+    conn = get_connection()
+    cur = conn.cursor()
+    for l, uris in add_by_pl.items():
+        for u in uris:
+            cur.execute("INSERT OR IGNORE INTO disquaire_membership (track_uri, playlist_id) VALUES (?, ?)", (u, labels[l]))
+    for l, uris in remove_by_pl.items():
+        for u in uris:
+            cur.execute("DELETE FROM disquaire_membership WHERE track_uri = ? AND playlist_id = ?", (u, labels[l]))
+    if mega_id:
+        for u in to_mega:
+            cur.execute("INSERT OR IGNORE INTO disquaire_membership (track_uri, playlist_id) VALUES (?, ?)", (u, mega_id))
+    for u in filed_uris:
+        cur.execute("DELETE FROM disquaire_membership WHERE track_uri = ? AND playlist_id = ?", (u, pile_id))
+    conn.commit()
+    conn.close()
+
+
 async def apply(assignments: list[dict], pile_id: str) -> dict:
     """
-    assignments : [{"uri": ..., "genre_labels": [...]}]
-    Ajoute chaque titre dans les playlists G. correspondantes (anti-doublon),
-    puis retire de la pile les titres rangés dans >= 1 genre.
+    assignments : [{"uri", "add": [labels], "remove": [labels], "existing": [labels]}]
+    - ajoute les genres verts (anti-doublon), retire les genres bleus décochés,
+    - garantit la présence dans megacompil,
+    - retire de la pile tout titre ayant >= 1 genre final.
     """
     signatures = await build_signatures()
     labels = signatures["labels"]  # label -> playlist_id
 
-    target_labels = {l for a in assignments for l in a.get("genre_labels", []) if l in labels}
-
-    # Anti-doublon : uris déjà présentes dans chaque playlist cible.
-    existing: dict[str, set] = {}
-    for l in target_labels:
-        tracks = await spotify_service.get_playlist_tracks(labels[l])
-        existing[l] = {t["uri"] for t in tracks}
-
-    to_add: dict[str, list[str]] = {l: [] for l in target_labels}
+    add_by_pl: dict[str, list[str]] = {}
+    remove_by_pl: dict[str, list[str]] = {}
     filed_uris: list[str] = []
     for a in assignments:
         uri = a.get("uri")
-        glabels = [l for l in a.get("genre_labels", []) if l in labels]
-        if not uri or not glabels:
+        if not uri:
             continue
-        filed = False
-        for l in glabels:
-            if uri in existing[l]:
-                filed = True  # déjà rangé
-            elif uri not in to_add[l]:
-                to_add[l].append(uri)
-                filed = True
-        if filed:
+        add = [l for l in a.get("add", []) if l in labels]
+        remove = [l for l in a.get("remove", []) if l in labels]
+        existing = [l for l in a.get("existing", []) if l in labels]
+        for l in add:
+            add_by_pl.setdefault(l, []).append(uri)
+        for l in remove:
+            remove_by_pl.setdefault(l, []).append(uri)
+        final = (set(existing) - set(remove)) | set(add)
+        if final:
             filed_uris.append(uri)
 
+    # Ajouts dans les genres (anti-doublon live par playlist cible)
     added = 0
-    for l, uris in to_add.items():
-        if uris:
-            await spotify_service.add_items(labels[l], uris)
-            added += len(uris)
+    for l, uris in add_by_pl.items():
+        current = {t["uri"] for t in await spotify_service.get_playlist_tracks(labels[l])}
+        new = [u for u in uris if u not in current]
+        if new:
+            await spotify_service.add_items(labels[l], new)
+            added += len(new)
 
-    removed = 0
+    # Retraits de genres (corrections de mauvais tri)
+    removed_genres = 0
+    for l, uris in remove_by_pl.items():
+        if uris:
+            await spotify_service.remove_items(labels[l], uris)
+            removed_genres += len(uris)
+
+    # Garantir la présence dans megacompil
+    conn = get_connection()
+    cur = conn.cursor()
+    mega_id = _get_playlist_id_by_kind(cur, "megacompil")
+    mega_uris = set()
+    if mega_id:
+        cur.execute("SELECT track_uri FROM disquaire_membership WHERE playlist_id = ?", (mega_id,))
+        mega_uris = {r["track_uri"] for r in cur.fetchall()}
+    conn.close()
+    to_mega = [u for u in filed_uris if u not in mega_uris]
+    if mega_id and to_mega:
+        await spotify_service.add_items(mega_id, to_mega)
+
+    # Retrait de la pile
+    removed_pile = 0
     if filed_uris:
         await spotify_service.remove_items(pile_id, filed_uris)
-        removed = len(filed_uris)
+        removed_pile = len(filed_uris)
 
-    logger.info(f"[DISQUAIRE] Rangement : {added} ajouts, {removed} retirés de la pile.")
-    return {"added": added, "filed": len(filed_uris), "removed_from_pile": removed}
+    _sync_local_after_apply(labels, add_by_pl, remove_by_pl, filed_uris, to_mega, mega_id, pile_id)
+
+    logger.info(f"[DISQUAIRE] Apply : +{added} genres, -{removed_genres} genres, {removed_pile} retirés de la pile.")
+    return {
+        "added": added, "removed_from_genres": removed_genres,
+        "filed": len(filed_uris), "removed_from_pile": removed_pile,
+    }
 
 
 # ─── Phase « Recenser » : base locale de la bibliothèque ─────────────────────
@@ -433,6 +478,80 @@ async def sweep_pile() -> dict:
 def get_track_memberships(uri: str) -> list[str]:
     """Playlists genre/mood contenant ce titre (pour l'affichage « déjà dans »)."""
     return get_memberships_for([uri]).get(uri, [])
+
+
+def _get_playlist_id_by_kind(cur, kind: str) -> str | None:
+    cur.execute("SELECT id FROM disquaire_playlists WHERE kind = ? LIMIT 1", (kind,))
+    row = cur.fetchone()
+    return row["id"] if row else None
+
+
+def get_memberships_detailed(uris: list[str]) -> dict[str, dict]:
+    """Pour une liste d'uris : {uri: {"genres": [labels], "moods": [noms]}} (base locale)."""
+    if not uris:
+        return {}
+    conn = get_connection()
+    cur = conn.cursor()
+    placeholders = ",".join("?" * len(uris))
+    cur.execute(
+        f"""SELECT m.track_uri, p.name, p.kind FROM disquaire_membership m
+            JOIN disquaire_playlists p ON p.id = m.playlist_id
+            WHERE m.track_uri IN ({placeholders}) AND p.kind IN ('genre', 'mood')""",
+        uris,
+    )
+    out: dict[str, dict] = {}
+    for r in cur.fetchall():
+        d = out.setdefault(r["track_uri"], {"genres": [], "moods": []})
+        if r["kind"] == "genre":
+            lbl = _genre_label(r["name"])
+            if lbl not in d["genres"]:
+                d["genres"].append(lbl)
+        else:
+            if r["name"] not in d["moods"]:
+                d["moods"].append(r["name"])
+    conn.close()
+    return out
+
+
+async def sweep_pile() -> dict:
+    """Retire de la pile TOUS les titres déjà bien rangés (dans megacompil + ≥ 1 genre),
+    d'après la base locale recensée. Vide instantanément la majorité de la pile."""
+    conn = get_connection()
+    cur = conn.cursor()
+    pile_id = _get_playlist_id_by_kind(cur, "pile")
+    mega_id = _get_playlist_id_by_kind(cur, "megacompil")
+    if not pile_id or not mega_id:
+        conn.close()
+        raise RuntimeError("Base locale incomplète — lance un « Recenser » d'abord.")
+
+    cur.execute("SELECT track_uri FROM disquaire_membership WHERE playlist_id = ?", (pile_id,))
+    pile_uris = [r["track_uri"] for r in cur.fetchall()]
+    cur.execute("SELECT track_uri FROM disquaire_membership WHERE playlist_id = ?", (mega_id,))
+    mega_uris = {r["track_uri"] for r in cur.fetchall()}
+    cur.execute(
+        """SELECT DISTINCT m.track_uri FROM disquaire_membership m
+           JOIN disquaire_playlists p ON p.id = m.playlist_id WHERE p.kind = 'genre'"""
+    )
+    genre_uris = {r["track_uri"] for r in cur.fetchall()}
+    conn.close()
+
+    to_remove = [u for u in pile_uris if u in genre_uris and u in mega_uris]
+    if to_remove:
+        await spotify_service.remove_items(pile_id, to_remove)
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.executemany(
+            "DELETE FROM disquaire_membership WHERE playlist_id = ? AND track_uri = ?",
+            [(pile_id, u) for u in to_remove],
+        )
+        cur.execute(
+            "UPDATE disquaire_playlists SET tracks_total = MAX(0, tracks_total - ?) WHERE id = ?",
+            (len(to_remove), pile_id),
+        )
+        conn.commit()
+        conn.close()
+    logger.info(f"[DISQUAIRE] Sweep pile : {len(to_remove)} titres déjà rangés retirés.")
+    return {"removed": len(to_remove), "pile_remaining": len(pile_uris) - len(to_remove)}
 
 
 def get_memberships_for(uris: list[str]) -> dict[str, list[str]]:

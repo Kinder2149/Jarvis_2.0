@@ -32,6 +32,9 @@
                background: rgba(29,185,84,0.15); color: #4ade80; display: inline-flex; align-items: center; gap: 0.3rem; }
     .dq-chip button { background: none; border: none; color: #4ade80; cursor: pointer; font-size: 0.85rem; line-height: 1; padding: 0; }
     .dq-chip.none { background: rgba(248,113,113,0.12); color: #f87171; }
+    .dq-chip.blue { background: rgba(56,189,248,0.15); color: #38bdf8; }
+    .dq-chip.blue button { color: #38bdf8; }
+    .dq-chip.mood { background: rgba(167,139,250,0.14); color: #a78bfa; }
     .dq-add { font-size: 0.72rem; padding: 0.2rem 0.4rem; border-radius: 8px;
               border: 1px dashed var(--border, #2a2f3a); background: transparent; color: var(--text-muted, #94a3b8); }
     .dq-banner { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.83rem; margin-bottom: 1rem; }
@@ -81,6 +84,10 @@
     </div>
 
     <div class="dq-card">
+      <div style="margin-bottom:0.9rem;padding-bottom:0.9rem;border-bottom:1px solid var(--border,#2a2f3a)">
+        <button id="btn-sweep" class="dq-btn">🧹 Nettoyer la pile (retirer les déjà rangés)</button>
+        <div class="dq-summary" style="margin-bottom:0">Retire d'un coup tous les titres déjà dans megacompil + au moins un genre. Ils restent rangés, ils quittent juste la pile.</div>
+      </div>
       <div class="dq-controls">
         <span style="font-size:0.85rem">Analyser un lot de</span>
         <input id="size" type="number" min="1" max="50" value="25">
@@ -131,6 +138,12 @@ async function loadStatus() {
   }
 }
 
+function jsq(s) { return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
+function finalGenres(t) {
+  const kept = t.existing.filter(g => !t.removed.includes(g));
+  return [...new Set([...kept, ...t.add])];
+}
+
 function renderBatch() {
   const wrap = document.getElementById("tracks");
   const applyZone = document.getElementById("apply-zone");
@@ -140,20 +153,26 @@ function renderBatch() {
     document.getElementById("summary").textContent = "";
     return;
   }
-  const ready = BATCH.tracks.filter(t => t.selected.length > 0).length;
-  document.getElementById("summary").textContent =
-    `${BATCH.tracks.length} titres analysés — ${ready} prêts à ranger (au moins 1 genre).`;
+  const ready = BATCH.tracks.filter(t => finalGenres(t).length > 0).length;
+  document.getElementById("summary").innerHTML =
+    `${BATCH.tracks.length} titres — <b>${ready}</b> avec au moins un genre (quitteront la pile). `
+    + `<span class="dq-chip blue" style="padding:0.05rem 0.4rem">déjà là</span> `
+    + `<span class="dq-chip" style="padding:0.05rem 0.4rem">à ajouter</span> `
+    + `<span class="dq-chip mood" style="padding:0.05rem 0.4rem">mood</span>`;
 
   wrap.innerHTML = BATCH.tracks.map((t, i) => {
-    const chips = t.selected.length
-      ? t.selected.map(g => `<span class="dq-chip">${esc(g)}<button onclick="removeGenre(${i},'${esc(g).replace(/'/g,"\\'")}')">×</button></span>`).join("")
-      : `<span class="dq-chip none">aucun genre — restera dans la pile</span>`;
-    const options = BATCH.genres
-      .filter(g => !t.selected.includes(g))
+    const blue = t.existing.filter(g => !t.removed.includes(g))
+      .map(g => `<span class="dq-chip blue">${esc(g)}<button onclick="removeExisting(${i},'${jsq(g)}')">×</button></span>`).join("");
+    const green = t.add
+      .map(g => `<span class="dq-chip">${esc(g)}<button onclick="removeAdd(${i},'${jsq(g)}')">×</button></span>`).join("");
+    const moods = (t.existing_moods || [])
+      .map(m => `<span class="dq-chip mood">${esc(m)}</span>`).join("");
+    const used = new Set([...t.existing.filter(g => !t.removed.includes(g)), ...t.add]);
+    const chips = (blue + green) || `<span class="dq-chip none">aucun genre — restera dans la pile</span>`;
+    const options = BATCH.genres.filter(g => !used.has(g))
       .map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join("");
     const addSel = options
-      ? `<select class="dq-add" onchange="addGenre(${i}, this.value); this.selectedIndex=0">
-           <option value="">+ ajouter</option>${options}</select>`
+      ? `<select class="dq-add" onchange="addGenre(${i}, this.value); this.selectedIndex=0"><option value="">+ ajouter</option>${options}</select>`
       : "";
     return `<div class="dq-track">
       <div class="dq-track-head">
@@ -161,19 +180,26 @@ function renderBatch() {
         <span class="dq-track-artist">${esc(t.artists.join(", "))}</span>
       </div>
       ${t.reason ? `<div class="dq-reason">💭 ${esc(t.reason)}</div>` : ""}
-      ${t.already_in && t.already_in.length ? `<div class="dq-already">📍 déjà dans : ${esc(t.already_in.join(", "))}</div>` : ""}
-      <div class="dq-chips">${chips}${addSel}</div>
+      <div class="dq-chips">${chips}${addSel}${moods}</div>
     </div>`;
   }).join("");
   applyZone.style.display = "";
 }
 
-function removeGenre(i, g) {
-  BATCH.tracks[i].selected = BATCH.tracks[i].selected.filter(x => x !== g);
+function removeAdd(i, g) {
+  BATCH.tracks[i].add = BATCH.tracks[i].add.filter(x => x !== g);
+  renderBatch();
+}
+function removeExisting(i, g) {
+  const t = BATCH.tracks[i];
+  if (!t.removed.includes(g)) t.removed.push(g);
   renderBatch();
 }
 function addGenre(i, g) {
-  if (g && !BATCH.tracks[i].selected.includes(g)) BATCH.tracks[i].selected.push(g);
+  if (!g) return;
+  const t = BATCH.tracks[i];
+  if (t.existing.includes(g)) t.removed = t.removed.filter(x => x !== g); // ré-active un bleu retiré
+  else if (!t.add.includes(g)) t.add.push(g);
   renderBatch();
 }
 
@@ -194,7 +220,12 @@ document.getElementById("btn-batch").onclick = async () => {
     BATCH = {
       pile_id: data.pile_id,
       genres: data.genres,
-      tracks: data.tracks.map(t => ({ ...t, selected: [...(t.proposed || [])] })),
+      tracks: data.tracks.map(t => ({
+        ...t,
+        add: [...(t.proposed || [])],
+        existing: [...(t.existing_genres || [])],
+        removed: [],
+      })),
     };
     renderBatch();
   } catch (e) {
@@ -207,10 +238,15 @@ document.getElementById("btn-batch").onclick = async () => {
 document.getElementById("btn-apply").onclick = async () => {
   if (!BATCH) return;
   const assignments = BATCH.tracks
-    .filter(t => t.selected.length > 0)
-    .map(t => ({ uri: t.uri, genre_labels: t.selected }));
+    .filter(t => finalGenres(t).length > 0 || t.removed.length > 0 || t.add.length > 0)
+    .map(t => ({
+      uri: t.uri,
+      add: t.add,
+      remove: t.existing.filter(g => t.removed.includes(g)),
+      existing: t.existing,
+    }));
   if (assignments.length === 0) {
-    banner("Aucun titre à ranger (aucun genre sélectionné).", "err");
+    banner("Rien à valider dans ce lot (aucun genre).", "err");
     return;
   }
   const btn = document.getElementById("btn-apply");
@@ -227,12 +263,13 @@ document.getElementById("btn-apply").onclick = async () => {
       return;
     }
     const res = await r.json();
-    banner(`✅ Rangé : ${res.filed} titres classés (${res.added} ajouts dans tes genres), ${res.removed_from_pile} retirés de la pile.`, "ok");
+    banner(`✅ ${res.filed} titres rangés · +${res.added} ajouts genre · ${res.removed_from_genres} retraits · ${res.removed_from_pile} sortis de la pile.`, "ok");
     BATCH = null;
     document.getElementById("tracks").innerHTML = "";
     document.getElementById("summary").textContent = "";
     document.getElementById("apply-zone").style.display = "none";
     loadStatus();
+    loadLocalStats();
   } catch (e) {
     banner("Erreur : " + e.message, "err");
   } finally {
@@ -297,6 +334,25 @@ document.getElementById("btn-sweep").onclick = async () => {
     banner("Erreur : " + e.message, "err");
   } finally {
     btn.disabled = false; btn.textContent = "🧹 Nettoyer la pile";
+  }
+};
+
+document.getElementById("btn-sweep").onclick = async () => {
+  if (!confirm("Retirer de la pile TOUS les titres déjà rangés (dans megacompil + au moins un genre) ?\n\nIls restent dans megacompil et dans leurs genres — ils quittent juste la pile de travail.")) return;
+  const btn = document.getElementById("btn-sweep");
+  banner("", "");
+  btn.disabled = true; btn.textContent = "Nettoyage en cours…";
+  try {
+    const r = await fetch(`${API}/disquaire/sweep`, { method: "POST" });
+    const res = await r.json();
+    if (!r.ok) { banner("Erreur : " + (res.detail || "nettoyage impossible"), "err"); return; }
+    banner(`🧹 ${res.removed} titres déjà rangés retirés de la pile. Il reste ${res.pile_remaining} titres à trier.`, "ok");
+    loadStatus();
+    loadLocalStats();
+  } catch (e) {
+    banner("Erreur : " + e.message, "err");
+  } finally {
+    btn.disabled = false; btn.textContent = "🧹 Nettoyer la pile (retirer les déjà rangés)";
   }
 };
 

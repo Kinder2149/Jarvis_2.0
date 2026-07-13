@@ -59,7 +59,9 @@ async def batch(size: int = 25):
 
 class ApplyItem(BaseModel):
     uri: str
-    genre_labels: list[str]
+    add: list[str] = []
+    remove: list[str] = []
+    existing: list[str] = []
 
 
 class ApplyBody(BaseModel):
