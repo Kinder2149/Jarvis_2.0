@@ -250,8 +250,9 @@ async def add_items(playlist_id: str, uris: list[str]) -> None:
 async def remove_items(playlist_id: str, uris: list[str]) -> None:
     """Retire des titres d'une playlist (par paquets de 100).
 
-    Depuis fév. 2026 (/items), le corps attend {"uris": [...]} — plus l'ancien
-    format {"tracks": [{"uri": ...}]} (qui renvoie « No uris provided »).
+    Depuis fév. 2026 (/items), le corps attend {"items": [{"uri": ...}]} — la clé
+    est passée de « tracks » à « items » (l'ancien format renvoie « No uris provided »).
     """
     for i in range(0, len(uris), 100):
-        await _api_send("DELETE", f"/playlists/{playlist_id}/items", {"uris": uris[i:i + 100]})
+        body = {"items": [{"uri": u} for u in uris[i:i + 100]]}
+        await _api_send("DELETE", f"/playlists/{playlist_id}/items", body)
