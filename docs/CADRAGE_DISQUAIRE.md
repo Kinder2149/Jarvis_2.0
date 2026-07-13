@@ -162,3 +162,13 @@ Rappel du point de départ : solidifier la base avant d'ajouter un étage. À so
 - Faut-il retirer les titres de `On est parti pour trier` automatiquement après rangement, ou
   après un second OK ?
 - Nom définitif de l'agent (« DISQUAIRE » est provisoire, cosmétique).
+
+---
+
+## 11. Journal de construction
+
+| Mission | État | Détail |
+|---|---|---|
+| **1. Connexion Spotify** | ✅ **Terminée** (2026-07-13, commit 8847f57) | OAuth + lecture playlists. Page `/app/spotify.html`. Testé end-to-end (compte « Keamder », playlists lues, préfixes `g.`/`m.` repérés). |
+| **2. Le cerveau (Genre)** | ⏳ À venir | Apprendre les genres depuis les playlists `g.`, proposer un genre par titre de la pile « On est parti pour trier ». |
+| **3. Rangement par lots** | ⏳ À venir | Écran de validation par lots + application (ajout dans les `g.`, retrait de la pile). |
