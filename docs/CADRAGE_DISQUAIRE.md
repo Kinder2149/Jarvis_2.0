@@ -194,3 +194,26 @@ playlist(s) `G.`, Kinder revoit tout le lot, valide, et le DISQUAIRE **range lui
 
 **Je décide (technique) :** modèle d'IA du tri (économique d'abord, montée en gamme si faible),
 résumé compact des playlists `G.` pour rester léger, ordre de traitement (haut de pile).
+
+### Cadre Mission 3 — Phase « Recenser » (préparé le 2026-07-13)
+
+**Objectif :** aspirer une fois toute la bibliothèque Spotify dans la base locale de JARVIS,
+pour que le tri travaille sur une copie locale complète (idée de Kinder).
+
+**Ce qu'on stocke (3 tables dans jarvis.db) :**
+- `disquaire_tracks` : catalogue des titres (uri, nom, artistes).
+- `disquaire_playlists` : id, nom, **type** (megacompil / genre / mood / pile / autre), snapshot_id, date de synchro.
+- `disquaire_membership` : quel titre est dans quelle playlist (le lien).
+
+**Le geste « Recenser » :**
+- Un bouton → JARVIS parcourt les playlists pertinentes et remplit la base locale.
+- **Tâche de fond avec barre de progression** (≈ 1-3 min pour ~2235 titres + 38 genres + moods + pile).
+- **Rejouable** : un « Rafraîchir » qui ne relit que ce qui a changé (via snapshot_id Spotify).
+- On recense **tout** (y compris Mood) en une fois.
+
+**Ce que ça débloque pour le tri (répond aux 3 retours Kinder) :**
+- Signatures de genre construites sur le contenu **complet** (plus 60 titres) → tri plus juste.
+- Affichage par titre « déjà présent dans : G. Rock, M. Chill ».
+- Suivi de progression (rangés / restants), anti-doublon parfait, rapidité (plus d'appels Spotify en direct pour trier).
+
+**Ensuite :** le tri Genre (Mission 2) bascule sur la base locale ; puis Mood (Last.fm) + automatisation.
