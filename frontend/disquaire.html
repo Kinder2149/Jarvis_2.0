@@ -292,6 +292,8 @@ let recenserTimer = null;
 document.getElementById("btn-recenser").onclick = async () => {
   banner("", "");
   document.getElementById("btn-recenser").disabled = true;
+  document.getElementById("btn-sweep").disabled = true;
+  document.getElementById("btn-batch").disabled = true;
   document.getElementById("recenser-progress").style.display = "";
   await fetch(`${API}/disquaire/recenser`, { method: "POST" });
   if (recenserTimer) clearInterval(recenserTimer);
@@ -306,6 +308,7 @@ document.getElementById("btn-recenser").onclick = async () => {
     if (s.finished) {
       clearInterval(recenserTimer);
       document.getElementById("btn-recenser").disabled = false;
+      document.getElementById("btn-sweep").disabled = false;
       document.getElementById("recenser-progress").style.display = "none";
       if (s.error) banner("Erreur pendant le recensement : " + s.error, "err");
       else banner(`✅ Recensement terminé : ${s.summary?.tracks_total || 0} titres · ${s.summary?.genre || 0} genres · ${s.summary?.mood || 0} moods.`, "ok");

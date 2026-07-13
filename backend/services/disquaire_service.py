@@ -393,6 +393,7 @@ async def run_recenser() -> None:
                        last_synced=datetime('now')""",
                 (pid, name, kind, (p.get("tracks") or {}).get("total", 0), snap),
             )
+            conn.commit()  # libère le verrou d'écriture AVANT l'appel réseau qui suit
             # Incrémental : snapshot inchangé → on ne relit pas les titres.
             if snap and known_snap.get(pid) == snap:
                 _recenser_state["playlists_done"] += 1

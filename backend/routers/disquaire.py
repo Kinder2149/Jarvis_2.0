@@ -93,6 +93,8 @@ def local_stats():
 async def sweep():
     if not spotify_service.is_connected():
         raise HTTPException(status_code=400, detail="Non connecté à Spotify.")
+    if disquaire_service.get_recenser_state()["running"]:
+        raise HTTPException(status_code=409, detail="Recensement en cours — attends qu'il se termine.")
     try:
         return await disquaire_service.sweep_pile()
     except Exception as e:
@@ -104,6 +106,8 @@ async def sweep():
 async def apply(body: ApplyBody):
     if not spotify_service.is_connected():
         raise HTTPException(status_code=400, detail="Non connecté à Spotify.")
+    if disquaire_service.get_recenser_state()["running"]:
+        raise HTTPException(status_code=409, detail="Recensement en cours — attends qu'il se termine.")
     try:
         return await disquaire_service.apply(
             [a.model_dump() for a in body.assignments], body.pile_id
