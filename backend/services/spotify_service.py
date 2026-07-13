@@ -201,7 +201,13 @@ async def _api_send(method: str, path: str, json_body: dict) -> dict:
             json=json_body,
             timeout=30.0,
         )
-    resp.raise_for_status()
+    if resp.status_code >= 400:
+        try:
+            detail = resp.json().get("error", {}).get("message", "") or resp.text[:300]
+        except Exception:
+            detail = resp.text[:300]
+        logger.error(f"[SPOTIFY] {method} {path} → {resp.status_code} : {detail} | body envoyé: {json_body}")
+        raise RuntimeError(f"Spotify {resp.status_code} : {detail}")
     return resp.json() if resp.content else {}
 
 
