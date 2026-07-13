@@ -47,11 +47,54 @@ async def _find_pile_and_genres() -> tuple[dict | None, list[dict]]:
     return pile, genres
 
 
+def _build_signatures_local() -> dict:
+    """Signatures depuis la base locale recensée (contenu COMPLET des playlists G.)."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name FROM disquaire_playlists WHERE kind = 'genre'")
+    genres = cur.fetchall()
+    labels: dict[str, str] = {}
+    examples: dict[str, list[str]] = {}
+    for g in genres:
+        label = _genre_label(g["name"])
+        if not label:
+            continue
+        labels[label] = g["id"]
+        cur.execute(
+            """SELECT t.artists FROM disquaire_membership m
+               JOIN disquaire_tracks t ON t.uri = m.track_uri
+               WHERE m.playlist_id = ?""",
+            (g["id"],),
+        )
+        seen: list[str] = []
+        for r in cur.fetchall():
+            for a in (r["artists"] or "").split(", "):
+                a = a.strip()
+                if a and a not in seen:
+                    seen.append(a)
+            if len(seen) >= 40:
+                break
+        examples[label] = seen[:40]
+    conn.close()
+    return {"labels": labels, "examples": examples}
+
+
 async def build_signatures(force: bool = False) -> dict:
-    """Construit (et met en cache) une signature par genre : label → playlist_id + artistes types."""
+    """Construit (et met en cache) une signature par genre : label → playlist_id + artistes types.
+
+    Priorité à la base locale recensée (contenu complet). Repli sur la lecture live
+    Spotify (60-100 titres/genre) si la bibliothèque n'a pas encore été recensée.
+    """
     global _signatures
     if _signatures is not None and not force:
         return _signatures
+
+    local = _build_signatures_local()
+    if local["labels"]:
+        _signatures = local
+        logger.info(f"[DISQUAIRE] Signatures (base locale) : {len(local['labels'])} genres.")
+        return _signatures
+
     _, genres = await _find_pile_and_genres()
     labels: dict[str, str] = {}
     examples: dict[str, list[str]] = {}
@@ -70,7 +113,7 @@ async def build_signatures(force: bool = False) -> dict:
                 break
         examples[label] = seen[:30]
     _signatures = {"labels": labels, "examples": examples}
-    logger.info(f"[DISQUAIRE] Signatures construites : {len(labels)} genres.")
+    logger.info(f"[DISQUAIRE] Signatures (live Spotify) : {len(labels)} genres.")
     return _signatures
 
 
@@ -164,6 +207,7 @@ async def get_batch(size: int = 25) -> dict:
     )
     proposals = _parse_proposals(raw, len(pile_tracks))
     label_by_lower = {l.lower(): l for l in signatures["labels"]}
+    memberships = get_memberships_for([t["uri"] for t in pile_tracks])
 
     result = []
     for idx, t in enumerate(pile_tracks):
@@ -179,6 +223,7 @@ async def get_batch(size: int = 25) -> dict:
             "artists": t["artists"],
             "proposed": matched,
             "reason": prop.get("reason", ""),
+            "already_in": memberships.get(t["uri"], []),
         })
     return {
         "pile_id": pile["id"],
@@ -353,15 +398,29 @@ def get_local_stats() -> dict:
 
 
 def get_track_memberships(uri: str) -> list[str]:
-    """Retourne les noms des playlists locales contenant ce titre (pour l'affichage « déjà dans »)."""
+    """Playlists genre/mood contenant ce titre (pour l'affichage « déjà dans »)."""
+    return get_memberships_for([uri]).get(uri, [])
+
+
+def get_memberships_for(uris: list[str]) -> dict[str, list[str]]:
+    """Pour une liste d'uris, retourne {uri: [noms de playlists genre/mood]}.
+
+    Exclut megacompil et la pile (chaque titre y est, sans intérêt à l'affichage).
+    """
+    if not uris:
+        return {}
     conn = get_connection()
     cur = conn.cursor()
+    placeholders = ",".join("?" * len(uris))
     cur.execute(
-        """SELECT p.name FROM disquaire_membership m
-           JOIN disquaire_playlists p ON p.id = m.playlist_id
-           WHERE m.track_uri = ? ORDER BY p.name""",
-        (uri,),
+        f"""SELECT m.track_uri, p.name FROM disquaire_membership m
+            JOIN disquaire_playlists p ON p.id = m.playlist_id
+            WHERE m.track_uri IN ({placeholders}) AND p.kind IN ('genre', 'mood')
+            ORDER BY p.kind, p.name""",
+        uris,
     )
-    names = [r["name"] for r in cur.fetchall()]
+    out: dict[str, list[str]] = {}
+    for r in cur.fetchall():
+        out.setdefault(r["track_uri"], []).append(r["name"])
     conn.close()
-    return names
+    return out

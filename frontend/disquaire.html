@@ -155,6 +155,7 @@ function renderBatch() {
         <span class="dq-track-artist">${esc(t.artists.join(", "))}</span>
       </div>
       ${t.reason ? `<div class="dq-reason">💭 ${esc(t.reason)}</div>` : ""}
+      ${t.already_in && t.already_in.length ? `<div class="dq-already">📍 déjà dans : ${esc(t.already_in.join(", "))}</div>` : ""}
       <div class="dq-chips">${chips}${addSel}</div>
     </div>`;
   }).join("");
