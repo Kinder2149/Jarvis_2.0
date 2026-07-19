@@ -17,6 +17,27 @@ def _strip_code_fence(content: str) -> str:
             return '\n'.join(lines[1:-1]).strip()
     return content
 
+def _log_usage(db_conn, session_id, step_name, model_type, model_id, input_tokens, output_tokens, module_name):
+    """Enregistre la consommation. NE DOIT JAMAIS faire échouer l'appel au modèle.
+
+    L'écriture peut échouer (base verrouillée, table absente) : dans ce cas on perd la
+    ligne de journal, mais surtout PAS la réponse du modèle qu'on vient de payer.
+    """
+    if db_conn is None:
+        return
+    try:
+        cursor = db_conn.cursor()
+        cursor.execute(
+            """INSERT INTO model_decision_log
+            (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens, module_name)
+            VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (session_id, step_name, model_type, model_id, input_tokens, output_tokens, module_name),
+        )
+        db_conn.commit()
+    except Exception as e:
+        logger.warning(f"[MODEL_ROUTER] Journal de consommation non écrit ({module_name}/{step_name}) : {e}")
+
+
 async def _post_with_retry(client: httpx.AsyncClient, url: str, headers: dict, payload: dict) -> httpx.Response:
     response = await client.post(url, headers=headers, json=payload)
     delays = [60, 120, 240]
@@ -67,17 +88,8 @@ async def call_model(
                     input_tokens = data.get("usage", {}).get("prompt_tokens", 0)
                     output_tokens = data.get("usage", {}).get("completion_tokens", 0)
                     
-                    # Logging optionnel si db_conn fourni (BUG-05/08 corrigé)
-                    if db_conn is not None:
-                        cursor = db_conn.cursor()
-                        cursor.execute(
-                            """INSERT INTO model_decision_log
-                            (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens, module_name)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                            (session_id, step_name, model_type, model_id, input_tokens, output_tokens, module_name)
-                        )
-                        db_conn.commit()
-                    
+                    _log_usage(db_conn, session_id, step_name, model_type, model_id,
+                               input_tokens, output_tokens, module_name)
                     return content
                 elif response.status_code == 401:
                     raise Exception("Clé API invalide ou expirée. Vérifier dans Paramètres.")
@@ -126,15 +138,8 @@ async def call_model(
                     content = _strip_code_fence(data["content"][0]["text"])
                     input_tokens = data.get("usage", {}).get("input_tokens", 0)
                     output_tokens = data.get("usage", {}).get("output_tokens", 0)
-                    if db_conn is not None:
-                        cursor = db_conn.cursor()
-                        cursor.execute(
-                            """INSERT INTO model_decision_log
-                            (session_id, step_name, model_type, model_id_chosen, input_tokens, output_tokens, module_name)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                            (session_id, step_name, model_type, model_id, input_tokens, output_tokens, module_name)
-                        )
-                        db_conn.commit()
+                    _log_usage(db_conn, session_id, step_name, model_type, model_id,
+                               input_tokens, output_tokens, module_name)
                     return content
                 elif response.status_code == 401:
                     raise Exception("Clé API invalide ou expirée. Vérifier dans Paramètres.")

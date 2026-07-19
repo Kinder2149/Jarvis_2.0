@@ -1,0 +1,1998 @@
+SAUVEGARDE COMPLETE DES MOODS — avant premier tri assiste (2026-07-16)
+Format : playlist <TAB> titre <TAB> artistes <TAB> uri
+======================================================================
+M.Son de teuf	Esperanza	Hilight Tribe	spotify:track:1hxLjD8TYT5A1oAKhwgaA7
+M.Son de teuf	Hardcoriste	LE BASK	spotify:track:6Sa983YKYRbpkwIELbR4to
+M.Son de teuf	Exploration	Salut C'est Cool	spotify:track:1ra6GNtbf2Kkodh4UNPtnL
+M.Son de teuf	Great Spirit	Armin van Buuren, Vini Vici, Hilight Tribe	spotify:track:6FzjJPwf5JzzFOei7h6Qrp
+M.Son de teuf	Gros train de vie	Salut C'est Cool	spotify:track:5dDrO1bFFTNUp03lKsiAzQ
+M.Son de teuf	Il va danser !	Vortek's	spotify:track:1jnVHcopPMM8yeugVmJD3N
+M.Son de teuf	La Pilule Rouge	Comah, Chapeleiro	spotify:track:7nsf7Gojykry1fXmHF2cP8
+M.Son de teuf	La Soupe	Vortek's	spotify:track:3TeC8dmOlBa70P2SdJMs5D
+M.Son de teuf	La Teuf du Farfadet	Guigoo, Mat Weasel Busters, Farfaders	spotify:track:5UD7lUztoHE12aTkwUWw7x
+M.Son de teuf	Le silence	Salut C'est Cool	spotify:track:66u75KeroFB4i4f4WcJaAN
+M.Son de teuf	Les kassos	Darktek	spotify:track:58JZ6rp2DWa5HbKwhneAs3
+M.Son de teuf	Le son sort des enceintes	Salut C'est Cool	spotify:track:23XtpuXvoDM5VFb6zM6wMM
+M.Son de teuf	Moshi Moshi (feat. Mama Aoki)	Steve Aoki, Vini Vici, Mama Aoki	spotify:track:17lEJ9k56Wi3udKUrR4VWR
+M.Son de teuf	Punjabi	Timmy Trumpet, Dimatik	spotify:track:2PYK2jalvVid6A3Yc5aLhd
+M.Son de teuf	Free Tibet	Hilight Tribe	spotify:track:7puRCh5DDjKxdyN9vl6JdJ
+M.Son de teuf	Tony Hawk	Salut C'est Cool	spotify:track:48Ljue6r2j2l2UpRGaAlBe
+M.Son de teuf	Pica	Deorro, Elvis Crespo, Henry Fong	spotify:track:40VX50kHlByBKYWSoa6I5B
+M.Son de teuf	Space soap (la soupe aux choux) - Techn'o.v.n.i. Edit	Mister Cosmic, Fat Dog	spotify:track:6BWSXMWPYxmjbPcYAb1FKF
+M.Son de teuf	Super quenouille	Darktek	spotify:track:2JfuHpYly9D8oT6cEitYPc
+M.Son de teuf	Ameno	All In One	spotify:track:66rzVEpS0fxoP7rKxP9NTr
+M.Son de teuf	Hardcoriste	NeuroKontrol, LE BASK, Rkaotik	spotify:track:0uNQKoDj1bUT8Iew1ziMnU
+M.Son de teuf	Herbe Lactée	Le Wanski	spotify:track:5m1PeiuYTBJc9Zn1qFwggD
+M.Son de teuf	Kamado	El Desperado, Sköne	spotify:track:2cI3Q1cGzX7PNF8B0ShsZs
+M.Son de teuf	Massive Drum	Gush	spotify:track:24LUqqDSHDjkNyi7z0Ukw3
+M.Son de teuf	Ilona (Un Monde Parfait) - Frenchcore	RAW MONKEY	spotify:track:4wY7z3OOBQiUSW04mzK3dg
+M.Son de teuf	Influenceur - Hard Version	Dr. Peacock, ascendant vierge	spotify:track:3PUTGJc8JUnmJMbGTjWjd8
+M.Son de teuf	Al Pacino	Timmy Trumpet, Krunk!	spotify:track:5ykdEvOIec7UjP2N4Vcuyv
+M.Son de teuf	Bout de bois - Mat Weasel Busters Remix	Salut C'est Cool, Mat Weasel Busters	spotify:track:0ajpHrQ91X1pwurzND9fvy
+M.Son de teuf	Bleue Comme Une Orange	Le Wanski	spotify:track:6k8itgO82kUsgN6MWNlEE5
+M.Son de teuf	M.U.S.H	Le Wanski	spotify:track:32hwPQfy5y6GCHTXtjMnc2
+M.Son de teuf	Shankara	Hilight Tribe	spotify:track:3ChrN5yqI2YE6eAMMfvDs1
+M.Son de teuf	Free Tibet - Vini Vici Remix	Hilight Tribe, Vini Vici	spotify:track:1Ic75bJnvNE3zpE7qZg7aA
+M.Son de teuf	Sem Chão	Mandragora	spotify:track:5irKKFoCUyKFq8rvtSBIYM
+M.Son de teuf	Techno toujours pareil	Salut C'est Cool	spotify:track:4u2dQmcZaFAu0fKXGmIf96
+M.Son de teuf	Bout de bois	Salut C'est Cool	spotify:track:3wLRNsACNgXg2adgmZRnxe
+M.Son de teuf	Codeine	Mandragora	spotify:track:1AQH4K1OX1KHbTt5ojMonp
+M.Son de teuf	Trip to Ireland	Dr. Peacock	spotify:track:6zfu6kg5TkFfkMCGQc67D1
+M.Son de teuf	Trip to France	Dr. Peacock, Maissouille	spotify:track:6zx3hojv06r5sJYAhiADjg
+M.Son de teuf	Victory Forever (Defqon.1 Anthem 2017) - Edit	Frequencerz	spotify:track:4TOgCXS3zOgm5OalzhE7QV
+M.Son de teuf	Dance Tonight	Timmy Trumpet, Azteck, Darren Styles	spotify:track:1dN8YYO1s6an0mb3MIWrox
+M.Son de teuf	Popcorn	Steve Aoki, Ummet Ozcan, Dzeko	spotify:track:3CuE0SXDnJJbEsIt4Xijsn
+M.Son de teuf	Pursuit Of Happiness - Extended Steve Aoki Remix	Kid Cudi, MGMT, Ratatat, Steve Aoki	spotify:track:5PX4uS1LqlWEPL69phPVQQ
+M.Son de teuf	80's Never Die	Darktek	spotify:track:462603d91iTgX2VCa4M2S7
+M.Lets' get ready	X	Xzibit	spotify:track:5stZnlPMYz3Ba8Hbo3ajlP
+M.Lets' get ready	Stayin' Alive VS 50 C Tik Tok - Remix	ROSE BEAT	spotify:track:0u5Agy2RLORlgsxZ3INSJ5
+M.Lets' get ready	Astronomia	Vicetone, Tony Igy	spotify:track:665AK0ovB11McZRwfa852G
+M.Lets' get ready	Rhythm Is a Dancer (Radio Edit)	Max Deejay	spotify:track:2EGnzoAeYUrN75x47HwUAh
+M.Lets' get ready	Maniac	Sound Of Legend	spotify:track:7snMDOhoYrd4oQpVjPv3Ut
+M.Lets' get ready	Sweet Dreams - Are Made of This	Sound Of Legend	spotify:track:2Y8OTlI2muZTiFASMRONpJ
+M.Lets' get ready	Amazing	Kanye West, Jeezy	spotify:track:0m3Ze0cy8qBHSsV2exAfCw
+M.Lets' get ready	Hold Tight	Chinese Man, Scratch Bandits Crew, ASM, Youthstar, ILLAMAN	spotify:track:69yYDgM8sCrUsD56AHyOt9
+M.Lets' get ready	Without Me	Eminem	spotify:track:7lQ8MOhq6IN2w8EYcFNSUk
+M.Lets' get ready	X Gon' Give It To Ya	DMX	spotify:track:3S1vtNGSNvoQmz2sPVRT2V
+M.Lets' get ready	Gam Gam	Marnik, SMACK	spotify:track:3kf0ERnVuqQs62SIpj4HN8
+M.Lets' get ready	Esperanza	Hilight Tribe	spotify:track:1hxLjD8TYT5A1oAKhwgaA7
+M.Lets' get ready	Hardcoriste	LE BASK	spotify:track:6Sa983YKYRbpkwIELbR4to
+M.Lets' get ready	Space soap (la soupe aux choux) - Techn'o.v.n.i. Edit	Mister Cosmic, Fat Dog	spotify:track:6BWSXMWPYxmjbPcYAb1FKF
+M.Lets' get ready	Panda	Desiigner	spotify:track:5YEOzOojehCqxGQCcQiyR4
+M.Lets' get ready	Miss You - Sped Up Version	Oliver Tree, sped up nightcore	spotify:track:4pH8cIlMI9NrTWcDiQbuRe
+M.Lets' get ready	La Kush	Lorenzo, Tony Corrida	spotify:track:3803TnTgCIn4rq6ZdEoPAl
+M.Lets' get ready	Help Me!	GTA	spotify:track:6HwUhJPbLrLQcFqLTOKJs8
+M.Lets' get ready	Coco - Todiefor Remix	Lorenzo, Todiefor	spotify:track:4bspR2si4Qj2CFp9tG9mim
+M.Lets' get ready	Jackie Fitness	Bobine de Cuivre	spotify:track:0SE0o59IZSG6yNwTLW9qVx
+M.Lets' get ready	Dance Tonight	Timmy Trumpet, Azteck, Darren Styles	spotify:track:1dN8YYO1s6an0mb3MIWrox
+M.Lets' get ready	Trouble - Manudigital Remix	Chinese Man, Stylo G, Manudigital	spotify:track:3yvUTM2guv63JDJzUaKSPl
+M.Lets' get ready	Wellerman - Sea Shanty / 220 KID x Billen Ted Remix	Nathan Evans, 220 KID	spotify:track:3iw6V4LH7yPj1ESORX9RIN
+M.Lets' get ready	Les dauphins	St Graal	spotify:track:33Ec7jSMkhaNqBqO9yEoti
+M.Lets' get ready	I'm So Excited	Sound Of Legend	spotify:track:5uiQynC3Gq7tR7U41BONTF
+M.Lets' get ready	Quoi de neuf les voyous	Rok.wav, THÉA, Dudu.wav	spotify:track:3ZyK4C6HxLYB1hlwhQkXtE
+M.Lets' get ready	Al Pacino	Timmy Trumpet, Krunk!	spotify:track:5ykdEvOIec7UjP2N4Vcuyv
+M.Lets' get ready	Coccinelle	French Fuse	spotify:track:7s22VtRQcTlmTU4fFsx2nD
+M.Lets' get ready	Blue (Flip)	Wanna Wake	spotify:track:6zrSFomlnVT2gg2Az833Vw
+M.Lets' get ready	J'suis content c'est le printemps	Le Bard	spotify:track:10mvYrpNrQj0NucJK9W2bl
+M.Lets' get ready	Toi + Moi	Billx, Dr. Peacock, Grégoire	spotify:track:3I2sB3lNQ9NXACi6vJaL4T
+M.Lets' get ready	La Fripouille	Théo Coni	spotify:track:2YcASPQgEbyoUoKgqSJSjR
+M.Lets' get ready	Terrorisme de proximité	wasting shit, tommy moisi	spotify:track:4UZj1v5tGYaNJ2ojYi7YnG
+M.Lets' get ready	Yeah! (feat. Lil Jon & Ludacris)	USHER, Lil Jon, Ludacris	spotify:track:5rb9QrpfcKFHM1EUbSIurX
+M.Lets' get ready	Too Late	Chinese Man, Stogie T, KT Gorique, FP	spotify:track:3ELQFADoMHMdFG5ZN2Huso
+M.Lets' get ready	Blah!	Chinese Man, Youthstar, Taiwan MC, ILLAMAN	spotify:track:1I3pKHJ4LfnFlLvszmUhpb
+M.Lets' get ready	To the Beat	Chinese Man, Scratch Bandits Crew	spotify:track:64RXXxA27XTkqfYHbw0jZl
+M.Lets' get ready	Bad Guy	Eminem	spotify:track:3VvxblbhUGyyBgdT7EQR0p
+M.Lets' get ready	Turn Down for What	DJ Snake, Lil Jon	spotify:track:67awxiNHNyjMXhVgsHuIrs
+M.Lets' get ready	Too Late	Chinese Man, KT Gorique, Stogie T, FP	spotify:track:5wRU6hnHqZJZmwBjwpBUnV
+M.Lets' get ready	Free Tibet	Hilight Tribe	spotify:track:7puRCh5DDjKxdyN9vl6JdJ
+M.Lets' get ready	Blah! - Live	Chinese Man, Youthstar, ASM, ILLAMAN	spotify:track:3Bn61AqFTlM89up0bbHT91
+M.Lets' get ready	Still D.R.E.	Dr. Dre, Snoop Dogg	spotify:track:6ltPEsP4edATzvinHOzvk2
+M.Lets' get ready	Sweet Dreams (Are Made of This)	Sound Of Legend	spotify:track:0hTSyC0NPbEWEb8oWYJkbc
+M.Lets' get ready	Up & Down	Marnik	spotify:track:5ZaGbMqMDU70Tg5fVzq8hA
+M.Lets' get ready	My Name Is	Eminem	spotify:track:0l08dcPEqNEUhymVBext8h
+M.Lets' get ready	Rap God	Eminem	spotify:track:6sDQ4uiWw9OdVrCXFLSlZt
+M.Lets' get ready	Hancock	Chinese Man, Pistol McFly, Plex Rock	spotify:track:2uSD5HJu749QIfVUirL0Pz
+M.Lets' get ready	Alors On Danse	Stromae, Kanye West	spotify:track:3LSgimWw447KOR7SRM83Va
+M.Lets' get ready	The Code	Chinese Man, ASM, Stogie T, KT Gorique, Youthstar, Miscellaneous	spotify:track:3TM1mUjIlZz1YsiH7xCBoq
+M.Lets' get ready	Get Up	Chinese Man, exi, Lush One, Plex Rock	spotify:track:5PEZJMU4xfiSNwT26JhHnL
+M.Party	Partenaire Particulier	Flawx	spotify:track:7ujemOkzFH5BbNS4RQZhu9
+M.Party	Astronomia	Vicetone, Tony Igy	spotify:track:665AK0ovB11McZRwfa852G
+M.Party	Blah Blah Blah	Armin van Buuren	spotify:track:4JbmcPawCB84GH4DTrjqSK
+M.Party	Blue (Flip)	Wanna Wake	spotify:track:6zrSFomlnVT2gg2Az833Vw
+M.Party	Con Calma	Daddy Yankee, Snow	spotify:track:5w9c2J52mkdntKOmRLeM2m
+M.Party	Conga	Gloria Estefan, Miami Sound Machine	spotify:track:4aMT5LHe8A2uIc11H8Cx2m
+M.Party	Dance Tonight	Timmy Trumpet, Azteck, Darren Styles	spotify:track:1dN8YYO1s6an0mb3MIWrox
+M.Party	Danza 2016	Lucky Chops	spotify:track:7FleWASEOlEdTM7sdKXf1K
+M.Party	Échame La Culpa	Luis Fonsi, Demi Lovato	spotify:track:2hl6q70unbviGo3g1R7uFx
+M.Party	Freaks	Timmy Trumpet, Savage	spotify:track:62feRreeM9ea7i2VHVSKrg
+M.Party	Hit The Road Jack	Throttle	spotify:track:5o04dkaIX0dkryvBXngHaS
+M.Party	I Love It (feat. Charli XCX)	Icona Pop, Charli xcx	spotify:track:3VZQshi4COChhXaz7cLP02
+M.Party	I'm an Albatraoz	AronChupa, Little Sis Nora	spotify:track:5MhsZlmKJG6X5kTHkdwC4B
+M.Party	Joga O Bum Bum Tam Tam	MC Fioti	spotify:track:6Dry2J20K0oVUs8S9XaE90
+M.Party	Later Bitches	The Prince Karma	spotify:track:53dnBokesLEOGKW8k8qQsd
+M.Party	Levels - Radio Edit	Avicii	spotify:track:5UqCQaDshqbIk3pkhy4Pjg
+M.Party	Magenta Riddim	DJ Snake	spotify:track:4BiiDQtijdt0WdtiyIPhnO
+M.Party	Maniac	Sound Of Legend	spotify:track:7snMDOhoYrd4oQpVjPv3Ut
+M.Party	Mr. Saxobeat - Radio Edit	Alexandra Stan	spotify:track:3fuird3E5CqfmOCER4jiOX
+M.Party	Party Rock Anthem	LMFAO, Lauren Bennett, GoonRock	spotify:track:7mitXLIMCflkhZiD34uEQI
+M.Party	Popcorn	Steve Aoki, Ummet Ozcan, Dzeko	spotify:track:3CuE0SXDnJJbEsIt4Xijsn
+M.Party	Sandstorm	Darude	spotify:track:6Sy9BUbgFse0n0LPA5lwy5
+M.Party	Still D.R.E.	Dr. Dre, Snoop Dogg	spotify:track:6ltPEsP4edATzvinHOzvk2
+M.Party	Sweet Dreams (Are Made of This)	Sound Of Legend	spotify:track:0hTSyC0NPbEWEb8oWYJkbc
+M.Party	Watch Out For This (Bumaye)	Major Lazer, Busy Signal, FS Green, The Flexican	spotify:track:5StvAhgmgCOpCPHHNfS8bx
+M.Party	You See	We Are Nuts!	spotify:track:2tYisXNbodA5YVYGDGUF45
+M.Party	Gam Gam	Marnik, SMACK	spotify:track:3kf0ERnVuqQs62SIpj4HN8
+M.Party	Panda	Desiigner	spotify:track:5YEOzOojehCqxGQCcQiyR4
+M.Party	Miss You - Sped Up Version	Oliver Tree, sped up nightcore	spotify:track:4pH8cIlMI9NrTWcDiQbuRe
+M.Party	La Kush	Lorenzo, Tony Corrida	spotify:track:3803TnTgCIn4rq6ZdEoPAl
+M.Party	WOLFGANG	Timmy Trumpet, Mariana BO, Junkie Kid	spotify:track:7HG413xQYwoR6i8D3ADC7J
+M.Party	Bout de bois	Salut C'est Cool	spotify:track:3wLRNsACNgXg2adgmZRnxe
+M.Party	Georgian Lessons 1-6	Deladap	spotify:track:196N7QKzwsZMlyJGekuPJC
+M.Party	Gros train de vie	Salut C'est Cool	spotify:track:5dDrO1bFFTNUp03lKsiAzQ
+M.Party	Heads Will Roll - A-Trak Remix	Yeah Yeah Yeahs, A-Trak	spotify:track:5bs8OXiOt4BPF2FAnRFP1u
+M.Party	Infinity 2008	Guru Josh Project	spotify:track:7vseIfb8ooQmXzisuinchZ
+M.Party	Jackie Fitness	Bobine de Cuivre	spotify:track:0SE0o59IZSG6yNwTLW9qVx
+M.Party	Les kassos	Darktek	spotify:track:58JZ6rp2DWa5HbKwhneAs3
+M.Party	Living on Video - Radio Edit	Pakito	spotify:track:54c9wWo4ofRhVuwZjVtMNV
+M.Party	Codeine	Mandragora	spotify:track:1AQH4K1OX1KHbTt5ojMonp
+M.Party	Oracle	Timmy Trumpet	spotify:track:0O3hacFfr7hp4fIeomi4ex
+M.Party	Pursuit Of Happiness - Extended Steve Aoki Remix	Kid Cudi, MGMT, Ratatat, Steve Aoki	spotify:track:5PX4uS1LqlWEPL69phPVQQ
+M.Party	Right On Time	Syndicate of Law	spotify:track:3ReRDlSp1b8IvYYjzgvNxF
+M.Party	Rock 'n' Roll (Will Take You to the Mountain)	Skrillex	spotify:track:6TbYnMMWfdUZXQm6tZ6vib
+M.Party	Sweet Dreams - Are Made of This	Sound Of Legend	spotify:track:2Y8OTlI2muZTiFASMRONpJ
+M.Party	Tonight	Don Diablo	spotify:track:1kWDwbwMtrKMoKql0hl418
+M.Party	Trip to France	Dr. Peacock, Maissouille	spotify:track:6zx3hojv06r5sJYAhiADjg
+M.Party	World At Our Feet	Timmy Trumpet	spotify:track:4Bl3vhxLgSmTxbHTFR7eyd
+M.Party	La goffa Lolita	Vincè la petite culotte	spotify:track:32ujt0CBVLsFyQtAhVk7WN
+M.Party	Toi + Moi	Billx, Dr. Peacock, Grégoire	spotify:track:3I2sB3lNQ9NXACi6vJaL4T
+M.Party	Baila Conmigo (feat. Kelly Ruiz)	Dayvi, Victor Cardenas, Kelly Ruíz	spotify:track:4Clmg1g8n2yBYG13Z1oSdG
+M.Party	All Around The World (La La La)	R3HAB, A Touch Of Class	spotify:track:02itaCXOdC54J0ISjqqFAp
+M.Party	Hey Mama (feat. Nicki Minaj, Bebe Rexha & Afrojack)	David Guetta, AFROJACK, Bebe Rexha, Nicki Minaj	spotify:track:285HeuLxsngjFn4GGegGNm
+M.Party	Sweat - Snoop Dogg vs David Guetta Remix	Snoop Dogg, David Guetta	spotify:track:0R7YVi7w41Dr9jU5vblAok
+M.Party	Timber	Pitbull, Kesha	spotify:track:3cHyrEgdyYRjgJKSOiOtcS
+M.Party	Good Feeling	Flo Rida	spotify:track:2LEF1A8DOZ9wRYikWgVlZ8
+M.Party	Hangover	Taio Cruz, Flo Rida	spotify:track:5pmL3RzOy3IvGFaSDi4hZL
+M.Party	On The Floor - Radio Edit	Jennifer Lopez, Pitbull	spotify:track:0Oe49j06Bjrxs8PltuVeaW
+M.Party	Whistle	Flo Rida	spotify:track:3bC1ahPIYt1btJzSSEyyrF
+M.Party	Wake Me Up	Avicii	spotify:track:0nrRP2bk19rLc0orkWPQk2
+M.Party	TiK ToK	Kesha	spotify:track:0HPD5WQqrq7wPWR7P7Dw1i
+M.Party	My House	Flo Rida	spotify:track:6Knv6wdA0luoMUuuoYi2i1
+M.Party	Summer Paradise (feat. Sean Paul) - Single Version	Simple Plan, Sean Paul	spotify:track:3qakxFyYkg9BtnNfwZndnr
+M.Party	Turn Down for What	DJ Snake, Lil Jon	spotify:track:67awxiNHNyjMXhVgsHuIrs
+M.Party	Yeah! (feat. Lil Jon & Ludacris)	USHER, Lil Jon, Ludacris	spotify:track:5rb9QrpfcKFHM1EUbSIurX
+M.Party	Cheerleader (Felix Jaehn Remix) - Radio Edit	OMI, felix jaehn	spotify:track:7vFoFDWqTX0mHzLfrF1Cfy
+M.Party	Call Me Maybe	Carly Rae Jepsen	spotify:track:20I6sIOMTCkB6w7ryavxtO
+M.Party	Wiggle (feat. Snoop Dogg)	Jason Derulo, Snoop Dogg	spotify:track:4B4zDmbHdkXZ1wUJv1yKFy
+M.Party	Wannabe	Spice Girls	spotify:track:1Je1IMUlBXcx1Fz0WE7oPT
+M.Party	Want to Want Me	Jason Derulo	spotify:track:7oGZAicScQt96OAW4AruYy
+M.Party	La La La	Naughty Boy, Sam Smith	spotify:track:3wPPWcVuinAU7dXcJXtCID
+M.Party	Shake It Off	Taylor Swift	spotify:track:0cqRj7pUJDkTCEsJkx8snD
+M.Party	Trumpets	Jason Derulo	spotify:track:6jizk5lOUnfpaZXYMdfeC6
+M.Party	Love Today	MIKA	spotify:track:2IxoxL1FHw0RxN5r6y5mjF
+M.Party	Talk Dirty (feat. 2 Chainz)	Jason Derulo, 2 Chainz	spotify:track:5l3CML2OnzfNs5RfVgbcLt
+M.Party	Die Young	Kesha	spotify:track:7EQGXaVSyEDsCWKmUcfpLk
+M.Party	International Love (feat. Chris Brown)	Pitbull, Chris Brown	spotify:track:62zFEHfAYl5kdHYOivj4BC
+M.Party	Payphone	Maroon 5, Wiz Khalifa	spotify:track:1XGmzt0PVuFgQYYnV2It7A
+M.Party	Live Is Life	Opus	spotify:track:79W95b5f6eUb7Eci30qPnI
+M.Party	Mysterious Girl	Peter Andre	spotify:track:5ATzjKQ8iEcfeolEc95dVx
+M.Party	Shekini	P-Square	spotify:track:1HJy6wJBKmS1s90nyUfchC
+M.Party	Shekini	P-Square	spotify:track:1HJy6wJBKmS1s90nyUfchC
+M.Party	Baianá	Bakermat	spotify:track:7MUazB4rGIqFFIkjT95rCO
+M.Party	Summer Paradise (feat. Sean Paul) - Montreal Version	Simple Plan, Sean Paul	spotify:track:6c7z2JOGJypzU3BiGUX5HG
+M.Party	WatiBigali (feat. Wati B)	Big Ali, Wati-B	spotify:track:0kxhMpPFHO7GIoEqQLvsTV
+M.Party	All Star	Smash Mouth	spotify:track:3cfOd4CMv2snFaKAnMdnvK
+M.Party	Livin' On A Prayer	Bon Jovi	spotify:track:0ee1DiZF94NSqqpG0XHUzH
+M.Party	Calma - Remix	Pedro Capó, Farruko	spotify:track:5iwz1NiezX7WWjnCgY5TH4
+M.Party	Danza Kuduro	Don Omar, Lucenzo	spotify:track:6DXLO8LndZMVOHM0wNbpzg
+M.Party	Li Tourner - Radio Edit	DJ Assad, Alain Ramanisum, Willy William	spotify:track:4Ap8mBgPL2KLjJ9Msyr809
+M.Party	Logobitombo (Corde à sauter)	Moussier Tombola	spotify:track:5L3i9murWmBM62XVDV9JDk
+M.Party	Temperature	Sean Paul	spotify:track:0svvvbTUgEy79F6Sxweyjo
+M.Party	Vamos a la Playa	Loona	spotify:track:2Tk5B1h58lJRsrivGg1jaE
+M.Party	Si Nos Organizamos...	The Party Band	spotify:track:1QZZjLPHsXVc5OBgyLofe6
+M.Party	Rock This Party (Everybody Dance Now)	Bob Sinclar, Cutee B., DollarMan, Big Ali, Makedah	spotify:track:5qiIxojpo8YTFgOOcDuOaB
+M.Party	Song 2	D-Devils, Rumix, Highbreeze	spotify:track:6IXr50xGiGbcRFEMlKW9yB
+M.Party	Thunder	Gabry Ponte, LUM!X, Prezioso	spotify:track:2USlegnFJLrVLpoVfPimKB
+M.Party	Love Don't Let Me Go	David Guetta	spotify:track:0mIAWTIXUP9Os5RBXKclO6
+M.Party	The Rhythm of the Night	Neptunica, Corona	spotify:track:41T043SzZ8VPpQgvg301ZS
+M.Party	Everytime We Touch - Hardwell & Maurice West Remix	Cascada, Maurice West	spotify:track:18rHGxr6QDiPieSTo7cUGL
+M.Party	SUBEME LA RADIO	Enrique Iglesias, Descemer Bueno, Zion & Lennox	spotify:track:0mnAmQX1pciMncT2qFCNmK
+M.Party	La Cintura	Alvaro Soler	spotify:track:6VUJQqyeQhAZHkQbSDqLtI
+M.Party	Despacito	Luis Fonsi, Daddy Yankee	spotify:track:6habFhsOp2NvshLv26DqMb
+M.Party	Dura	Daddy Yankee	spotify:track:6KuqAtoeVzxAYOaMveLNpH
+M.Party	Limbo	Daddy Yankee	spotify:track:3pDhN3qB33AOPhQEkUCaWt
+M.Party	X	Nicky Jam, J Balvin	spotify:track:5YUyW9opqNsMSEzzecZih1
+M.Party	Taki Taki (feat. Selena Gomez, Ozuna & Cardi B)	DJ Snake, Selena Gomez, Ozuna, Cardi B	spotify:track:0KoiMHhqKLoL4xM54rcWYY
+M.Party	Savage Love (Laxed - Siren Beat)	Jawsh 685, Jason Derulo	spotify:track:5T490vvoFNU6psep0NPmxs
+M.Party	Sexy Bitch (feat. Akon)	David Guetta, Akon	spotify:track:2dGxjfhFXDIUX9h5ImyKkE
+M.Party	Country Roads	Timmy Trumpet, 3 Are Legend	spotify:track:1ymdX49SbJzb9DH1YAH8W7
+M.Party	Poker Face	Lady Gaga	spotify:track:1QV6tiMFM6fSOKOGLMHYYg
+M.Party	Daddy Cool	Boney M.	spotify:track:3WMbD1OyfKuwWDWMNbPQ4g
+M.Party	Country Roads	Timmy Trumpet, 3 Are Legend	spotify:track:5zCEzQtMVqQPnjua0Orfyc
+M.Party	Nuit de folie	Début De Soirée	spotify:track:1vBXixLz7cVLLTdR4Xe8aL
+M.Party	SARÀ PERCHÉ TI AMO - GIGI DAG & Luca Noise Amore Mix	GIGI D'AGOSTINO, Carolina Marquez, Luca Noise, GIGIDAG, Scialadance	spotify:track:7D53fa5ZRSr1Vho5Bn6SjA
+M.Party	Born to Be Alive - The Original	Patrick Hernandez	spotify:track:3XIEWK1V9n25PS9Vb6axj5
+M.Party	Tape dans tes mains	Cactus et Mammuth	spotify:track:1590SV5QwW8iEqm9F5elSx
+M.Party	Booty Swing	Parov Stelar	spotify:track:3sMleqdCDalZ6xsAQe8xuY
+M.Party	Al Pacino	Timmy Trumpet, Krunk!	spotify:track:5ykdEvOIec7UjP2N4Vcuyv
+M.Party	El Sonidito	Hechizeros Band	spotify:track:5L5Ox4ze5TZaQNw5CvD6CL
+M.Party	Moove Your Bodouine	Ooz Band	spotify:track:6AZf9j6cJnUJIDaQdfrZYb
+M.Party	Dancin' (A Catchy Rhythm)	Sue Ann Carwell, Joey Diggs	spotify:track:6DMp5fnBQoT6ySJ1kyR8Kq
+M.Party	Disko Partizani	Shantel	spotify:track:4xuHvW7c6xg6RxCACapGn2
+M.Party	Mundian to Bach Ke	Panjabi MC	spotify:track:3JvJjfao5kKHPd7H83Jh3e
+M.Party	Funkytown / I Feel Good	Lucky Chops	spotify:track:4X67ikG4nM5iw26ZkjF34N
+M.Party	Thank You (Falettinme Be Mice Elf Agin)	Big Brovaz	spotify:track:2Xn8BrYoMdcbo27LDwKO8y
+M.Party	Just Dance	Lady Gaga, Colby O'Donis	spotify:track:1dzQoRqT5ucxXVaAhTcT0J
+M.Party	The Time (Dirty Bit)	Black Eyed Peas	spotify:track:7vWFaMq63AwkFDhS2OAg5u
+M.Party	Single Ladies (Put a Ring on It)	Beyoncé	spotify:track:557un1HgwYMuqfWGSTmnxw
+M.Party	Uptown Funk (feat. Bruno Mars)	Mark Ronson, Bruno Mars	spotify:track:32OlwWuMpZ6b0aN2RZOeMS
+M.Party	Crazy In Love (feat. JAY-Z)	Beyoncé, JAŸ-Z	spotify:track:0TwBtDAWpkpM3srywFVOV5
+M.Party	Mambo No. 5 (a Little Bit of...)	Lou Bega	spotify:track:6x4tKaOzfNJpEJHySoiJcs
+M.Party	Boum Boum Boum	MIKA	spotify:track:3EFtoHHOCqgOSnvSUvdJfj
+M.Party	Soldat	Makassy	spotify:track:6H4fYpILy2SYsVz6idy3YU
+M.Party	Moves Like Jagger - Studio Recording From "The Voice" Performance	Maroon 5, Christina Aguilera	spotify:track:7pYfyrMNPn3wtoCyqcTVoI
+M.Party	Can't Hold Us (feat. Ray Dalton)	Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton	spotify:track:22skzmqfdWrjJylampe0kt
+M.Party	I'm Still Standing	Elton John	spotify:track:1jDJFeK9x3OZboIAHsY9k2
+M.Party	Wavin' Flag - Celebration Mix	K'NAAN	spotify:track:6MPzzCxr4lKFzT35c1hXNH
+M.Party	Danser	Yannick Noah	spotify:track:3gnJp5YaFLS17pvRYRxkz8
+M.Party	Punjabi	Timmy Trumpet, Dimatik	spotify:track:2PYK2jalvVid6A3Yc5aLhd
+M.Party	Pica	Deorro, Elvis Crespo, Henry Fong	spotify:track:40VX50kHlByBKYWSoa6I5B
+M.Party	Parti pour zouker - Live	Lorie	spotify:track:2HsNTr4jlNwLNkqA0WGGWk
+M.Party	Stayin' Alive VS 50 C Tik Tok - Remix	ROSE BEAT	spotify:track:0u5Agy2RLORlgsxZ3INSJ5
+M.Party	Rhythm Is a Dancer (Radio Edit)	Max Deejay	spotify:track:2EGnzoAeYUrN75x47HwUAh
+M.Party	Clap Your Hands	Kungs	spotify:track:7g7OshelYRRnOSEMmisJVI
+M.Party	Do It To It	ACRAZE, Cherish	spotify:track:20on25jryn53hWghthWWW3
+M.Party	Hello	OMFG	spotify:track:6BAnxKyld909yo6Pk1DO3r
+M.Party	The Sound Of C - Original 88 Version	Confetti's	spotify:track:5ZSy8ZyhOauGevGv5EnoZS
+M.Party	Même pas fatigué !!!	Kore, Magic System, Khaled	spotify:track:7GUpeUSeUckEBW8bcXrzj0
+M.Party	Alors On Danse - Radio Edit	Stromae	spotify:track:6LXRvh3S8TB5P1PKy4lY1S
+M.Party	Chihuahua	DJ BoBo	spotify:track:1OhfpuqKF8LM3ngn6uXnzx
+M.Party	Saga Africa (ambiance secousse)	Yannick Noah	spotify:track:6ouQVLPPEplvVA62uXh2ar
+M.Party	La Danse des magiciens	Magic System	spotify:track:0UeQDYSZ0mrAafhmKVUvQi
+M.Party	Wavin' Flag - Celebration Mix	K'NAAN, Féfé	spotify:track:3O8goxZKbL0HUYN53n8h3o
+M.Party	C'est bon pour le moral	La Compagnie Créole	spotify:track:3nYFDd5TLhBkj3bJtqqK5X
+M.Party	Can't Hold Us (feat. Ray Dalton)	Macklemore & Ryan Lewis, Ray Dalton	spotify:track:31qgVdvSqTQ7unwQQngycB
+M.Party	The Git Up	Blanco Brown	spotify:track:2KKijf6Ett4kmVNJze2roh
+M.Party	Mia Khalifa	Skan, M.I.M.E	spotify:track:19UywlTpQfPrg3uO5KSXep
+M.Party	Candy Shop	50 Cent, Olivia	spotify:track:5D2mYZuzcgjpchVY1pmTPh
+M.Party	Young, Wild & Free (feat. Bruno Mars)	Snoop Dogg, Wiz Khalifa, Bruno Mars	spotify:track:2g7uRZ68eLtv74XrxgdT2q
+M.Party	Jolie Coquine	Caravan Palace	spotify:track:0OuWBW2Q299zvZCdLUPlLx
+M.Party	Ready Set	Joey Valence & Brae	spotify:track:7rCrOTI49IE199dlDkGcC5
+M.Party	Jump	Van Halen	spotify:track:6Fba9RZtC6vTY814JToDtP
+M.Party	Solo (feat. Demi Lovato)	Clean Bandit, Demi Lovato	spotify:track:6kPJZM97LwdG9QIsT7khp6
+M.Party	Afraid To Feel	LF SYSTEM	spotify:track:40SBS57su9xLiE1WqkXOVr
+M.Party	Le bal masqué	La Compagnie Créole	spotify:track:0ZgRT1UmcCJ36KY39Jb1EA
+M.Party	Soirée disco	Boris	spotify:track:0JcNVnY8njNEI0L5s5quQZ
+M.Party	Les pouces en avant - Et tchic et tchac han han	Defer et s'n'orchess', Danse des pouces	spotify:track:5jO5bGgTfDGJ2Wy1JnEnPZ
+M.Party	La chenille	La Bande à Basile	spotify:track:66uaHXOS5izwCIKUt6XaGx
+M.Party	Je Suis Pas Timide - Original Remix	Blow Coxx	spotify:track:1qoIgYka5i67bLIDlvKHuJ
+M.Party	Disneyland Party - Off The Wall Edit	Off The Wall	spotify:track:6Dn6ZZ8TEkNU3F11lyD3Sx
+M.Party	Under the Sea	Off The Wall	spotify:track:5hS1hpbovyoIr834o9bMf5
+M.Party	Boogie Wonderland (with The Emotions)	Earth, Wind & Fire, The Emotions	spotify:track:6ztstiyZL6FXzh4aG46ZPD
+M.Party	Cotton Eye Joe	Rednex	spotify:track:0Jg602cHeMCnPez9baacIe
+M.Party	Gimme! Gimme! Gimme! (A Man After Midnight)	ABBA	spotify:track:7r5bS08R8d0jZuDZutVeHQ
+M.Party	Macarena	Los Del Rio	spotify:track:4Y6cDd4EPHcEbiUKdyvNwM
+M.Party	Let's Twist Again	Chubby Checker	spotify:track:50ZhLFpAf5nWUH9GlCwrWn
+M.Party	The Riddle - Radio Edit Mix	Prezioso, Marvin, Marvin & Andrea Prezioso	spotify:track:1nTvSHpuWOKjSAOaqULVnB
+M.Party	The Ketchup Song (Aserejé) - Spanglish Version	Las Ketchup	spotify:track:6UEfyhyfhYQsyipxOd95Ie
+M.Party	All I Want for Christmas Is You	Mariah Carey	spotify:track:0bYg9bo50gSsH3LtXe2SQn
+M.Party	All Night Long (All Night) - Single Version	Lionel Richie	spotify:track:4czNORk5MjW5WOn98bki32
+M.Party	Sex on the Beach 2000	Mr. De'	spotify:track:75KYrqq1V0BAKyh0xrPP9y
+M.Party	When the Rain Begins to Fall	Jermaine Jackson, Pia Zadora	spotify:track:4BNgHaHriMcnpeR7qdkojU
+M.Party	You Make Me Feel (Mighty Real)	Jimmy Somerville	spotify:track:3lwNHGO5yJLNpHsMlvL9IF
+M.Party	Blue (Da Ba Dee) - Gabry Ponte Ice Pop Mix	Eiffel 65, Gabry Ponte	spotify:track:5WWgRrYV0mAZmOvLBrjaR1
+M.Party	Can't Take My Eyes Off You - Almighty Definitive Radio Edit	Jimmy Somerville	spotify:track:1eTTIlLKtVp04f3TqP6hyK
+M.Party	Celebration - Single Version	Kool & The Gang	spotify:track:0CUEc6T65lrU6rVW3HVYsl
+M.Party	Sarà perché ti amo	Ricchi E Poveri	spotify:track:6FofVmsYAs2FNeOdzQJnnW
+M.Party	Staying Alive	London Theatre Orchestra & Cast	spotify:track:1wFzrCCNPpLK4JEQeEjmVj
+M.Party	Wake Me Up Before You Go-Go	Wham!	spotify:track:0ikz6tENMONtK6qGkOrU3c
+M.Party	Grease (You Are The One That I Want) (Frome the movie "Grease")	Arthur Bentley & Anita Benson	spotify:track:7IEoNrkhLIJGPllTDe999C
+M.Party	Waterloo	ABBA	spotify:track:3Dy4REq8O09IlgiwuHQ3sk
+M.Party	YMCA	Village People	spotify:track:3ypMsqUwfNFMiooMLVHfkp
+M.Party	Mamma Mia	ABBA	spotify:track:2TxCwUlqaOH3TIyJqGgR91
+M.Party	Eye of the Tiger	Survivor	spotify:track:2HHtWyy5CgaQbC7XSoOb0e
+M.Party	We No Speak Americano - Radio Edit	Yolanda Be Cool, DCup	spotify:track:7fG22bvpAT44rkKgYDLmFK
+M.Party	Pump Up The Jam - Edit	Technotronic, Felly	spotify:track:0UAEHlFR79k9CJvknSGUNf
+M.Party	Pata pata	Coumba Gawlo	spotify:track:5DK4l0eq3Sae6DkipEIHDq
+M.Party	We Will Rock You - Remastered 2011	Queen	spotify:track:4pbJqGIASGPr0ZpGpnWkDn
+M.Party	Vamos a Bailar	Gipsy Kings	spotify:track:1osFL5F8mlFJBj9yETkS9J
+M.Party	I'm So Excited	The Pointer Sisters	spotify:track:1ot6jEe4w4hYnsOPjd3xKQ
+M.Party	Sunny	Boney M.	spotify:track:3pf96IFggfQuT6Gafqx2rt
+M.Party	Kung Fu Fighting	Carl Douglas	spotify:track:40NRm1ZLvZpUSCUXAGGZ8J
+M.Party	Black or White - Single Version	Michael Jackson	spotify:track:6wdviVWctiZnY6tVn6bh6A
+M.Party	Thriller	Michael Jackson	spotify:track:3S2R0EVwBSAVMd5UMgKTL0
+M.Party	Smooth Criminal - 2012 Remaster	Michael Jackson	spotify:track:2bCQHF9gdG5BNDVuEIEnNk
+M.Party	Hung Up	Madonna	spotify:track:3850dYVgOFIXJh5U4BFEWH
+M.Party	Everybody	Martin Solveig	spotify:track:5NnZY32wltpTbFhRfiOtNC
+M.Party	24K Magic	Bruno Mars	spotify:track:6b8Be6ljOzmkOmFslEb23P
+M.Party	Bad Romance	Lady Gaga	spotify:track:1CZOrmHUUjeDP7N2B4Ba6S
+M.Party	CAN'T STOP THE FEELING! (from DreamWorks Animation's "TROLLS")	Justin Timberlake	spotify:track:6JV2JOEocMgcZxYSZelKcc
+M.Party	Cheap Thrills	Sia	spotify:track:27SdWb2rFzO6GWiYDBTD9j
+M.Party	Firework	Katy Perry	spotify:track:4lCv7b86sLynZbXhfScfm2
+M.Party	Hot N Cold	Katy Perry	spotify:track:1y4eb6hmAvsqlDOl3fx9kk
+M.Party	I Kissed A Girl	Katy Perry	spotify:track:14iN3o8ptQ8cFVZTEmyQRV
+M.Party	Dynamite	Taio Cruz	spotify:track:4lYKuF88iTBrppJoq03ujE
+M.Party	Hangover	Taio Cruz, Flo Rida	spotify:track:2tftivjRsvKs0jFH9h3Ti8
+M.Party	Locked out of Heaven	Bruno Mars	spotify:track:3w3y8KPTfNeOKPiqUTakBh
+M.Party	Feels (feat. Pharrell Williams, Katy Perry & Big Sean)	Calvin Harris, Pharrell Williams, Katy Perry, Big Sean, Funk Wav	spotify:track:5bcTCxgc7xVfSaMV3RuVke
+M.Party	FRIENDS	Marshmello, Anne-Marie	spotify:track:08bNPGLD8AhKpnnERrAc6G
+M.Party	GDFR (feat. Sage the Gemini & Lookas)	Flo Rida, Sage The Gemini, Lookas	spotify:track:26rdOwwjC2UnweK3xeS58u
+M.Party	Wake Me Up - Radio Edit	Avicii	spotify:track:6g1NlCpW7fgqDnWbCCDrHl
+M.Party	TiK ToK	Kesha	spotify:track:5PSba04SiAEUe3q6PyaTpQ
+M.Party	Where Them Girls At (feat. Nicki Minaj & Flo Rida)	David Guetta, Flo Rida, Nicki Minaj	spotify:track:5aD7AU8PJ4t4Fwnm9r2iI6
+M.Party	The Middle	Zedd, Maren Morris, Grey	spotify:track:09IStsImFySgyp0pIQdqAc
+M.Party	Problem	Ariana Grande, Iggy Azalea	spotify:track:3cySlItpiPiIAzU3NyHCJf
+M.Party	Toxic	Britney Spears	spotify:track:6I9VzXrHxO9rA9A5euc8Ak
+M.Party	Womanizer	Britney Spears	spotify:track:4fixebDZAVToLbUCuEloa2
+M.Party	My Way	Calvin Harris	spotify:track:1vvNmPOiUuyCbgWmtc6yfm
+M.Party	Havana (feat. Young Thug)	Camila Cabello, Young Thug	spotify:track:1rfofaqEpACxVEHIZBJe6W
+M.Party	I Like It	Cardi B, Bad Bunny, J Balvin	spotify:track:58q2HKrzhC3ozto2nDdN4z
+M.Party	Rockabye (feat. Sean Paul & Anne-Marie)	Clean Bandit, Anne-Marie, Sean Paul	spotify:track:5knuzwU65gJK7IF5yJsuaW
+M.Party	Here Comes the Hotstepper (Evian Version - Yuksek Remix) - Radio Edit	Baby & Me, Yuksek	spotify:track:1pdULd4gPPRveuxJBJz3x5
+M.Party	I'm the One (feat. Justin Bieber, Quavo, Chance the Rapper & Lil Wayne)	DJ Khaled, Justin Bieber, Quavo, Chance the Rapper, Lil Wayne	spotify:track:3DXncPQOG4VBw3QHh3S817
+M.Party	In My Head	Jason Derulo	spotify:track:6St9lR6dhV2tpCNVz7qfrS
+M.Party	Judas	Lady Gaga	spotify:track:4yQmDtjax2Ye9wY8EPAO1x
+M.Party	My House - Bonics & A-Rock Remix	Flo Rida, A-Rock, Bonics	spotify:track:3hQrJsP7G9jpdXOZ05PjQg
+M.Party	Party In The U.S.A.	Miley Cyrus	spotify:track:3E7dfMvvCLUddWissuqMwr
+M.Party	Right Round	Flo Rida, Kesha	spotify:track:3GpbwCm3YxiWDvy29Uo3vP
+M.Party	Shake It Off	Taylor Swift	spotify:track:5WfhXulggG0c6WoVeMPA8N
+M.Party	Shape of You	Ed Sheeran	spotify:track:7qiZfU4dY1lWllzX7mPBI3
+M.Party	So What	P!nk	spotify:track:0JiY190vktuhSGN6aqJdrt
+M.Party	Telephone	Lady Gaga, Beyoncé	spotify:track:6nCDnzErqalOaIY3EJM8NK
+M.Party	Runaway (U & I)	Galantis	spotify:track:7jTTclESZDl303D4p7tN6M
+M.Party	Sexy and I Know It (I'm Sexy and I Know It)	De Luna	spotify:track:2nP7Cma2SnXDI6o5KzQiyL
+M.Party	I Gotta Feeling	Black Eyed Peas	spotify:track:4kLLWz7srcuLKA7Et40PQR
+M.Party	Waka Waka (This Time for Africa) [The Official 2010 FIFA World Cup (TM) Song] (feat. Freshlyground)	Shakira, Freshlyground	spotify:track:2Cd9iWfcOpGDHLz6tVA3G4
+M.Party	Paparazzi	Lady Gaga	spotify:track:02XnQdf7sipaKBBHixz3Zp
+M.Party	Evacuate The Dancefloor	Cascada	spotify:track:0jDWRUbxSn8zQlwFbeLHwo
+M.Party	Everytime We Touch	Cascada	spotify:track:2vTaJoK6kaRnwsAPn66STg
+M.Party	SexyBack (feat. Timbaland)	Justin Timberlake, Timbaland	spotify:track:0O45fw2L5vsWpdsOdXwNAR
+M.Party	On The Floor	Jennifer Lopez, Pitbull	spotify:track:3C0nOe05EIt1390bVABLyN
+M.Party	Blurred Lines	Robin Thicke, T.I., Pharrell Williams	spotify:track:0n4bITAu0Y0nigrz3MFJMb
+M.Party	Only Girl (In The World)	Rihanna	spotify:track:2ENexcMEMsYk0rVJigVD3i
+M.Party	S&M Remix	Rihanna, Britney Spears	spotify:track:44FAj28ivN0HJ0xVYwQ9nL
+M.Party	Waiting For Love	Avicii	spotify:track:2P4OICZRVAQcYAV2JReRfj
+M.Party	Can't Believe It (feat. Pitbull)	Flo Rida, Pitbull	spotify:track:1kxyZ2SpflM1ogD0B5hgfX
+M.Party	These Days (feat. Jess Glynne, Macklemore & Dan Caplen)	Rudimental, Jess Glynne, Macklemore, Dan Caplen	spotify:track:5CLGzJsGqhCEECcpnFQA8x
+M.Party	Yeah!	USHER, Lil Jon, Ludacris	spotify:track:5vCBjhlWFluP6sigdl0E6q
+M.Party	Jump - Radio Edit	RDX	spotify:track:1fZnFIZGEDjm6Tqaa3G8qC
+M.Party	American Idiot	Green Day	spotify:track:6nTiIhLmQ3FWhvrGafw2zj
+M.Party	Black Betty	Ram Jam	spotify:track:2ZOTtG7v1OrSNs6EINIGb4
+M.Party	Thunderstruck	AC/DC	spotify:track:57bgtoPSgt236HzfBOd8kj
+M.Party	Highway to Hell	AC/DC	spotify:track:2zYzyRzz6pRmhPzyfMEC8s
+M.Party	It's My Life	Bon Jovi	spotify:track:4TmGtGkkmaoXRCvpOwDJoO
+M.Party	Another One Bites The Dust - Remastered 2011	Queen	spotify:track:5vdp5UmvTsnMEMESIF2Ym7
+M.Party	Back In Black	AC/DC	spotify:track:08mG3Y1vljYA6bvDt4Wqkj
+M.Party	Let's Bang	Shaka Ponk	spotify:track:3rN3NK7KO1NiI1j79L5Bi8
+M.Party	Take Me Out	Franz Ferdinand	spotify:track:20I8RduZC2PWMWTDCZuuAN
+M.Party	Turn Up	Waxx	spotify:track:7aRvcpKrkVQNXVdIGdLd4W
+M.Party	Can't Stop	Red Hot Chili Peppers	spotify:track:3ZOEytgrvLwQaqXreDs2Jx
+M.Party	Jerusalema (feat. Nomcebo Zikode)	Master KG, Nomcebo Zikode	spotify:track:2MlOUXmcofMackX3bxfSwi
+M.Party	Sofia	Alvaro Soler	spotify:track:5vj59ONIVbyhcrI8ZSwoRo
+M.Party	Murder On The Dancefloor	Sophie Ellis-Bextor	spotify:track:4tKGFmENO69tZR9ahgZu48
+M.Party	No Lie	Sean Paul, Dua Lipa	spotify:track:48QmG1dfvMuYLxMPt7KSRA
+M.Party	Décalé Gwada	Jessy Matador	spotify:track:6m9geVsbI6BsPZ6CESmK3c
+M.Party	I'm So Excited	Sound Of Legend	spotify:track:5uiQynC3Gq7tR7U41BONTF
+M.Voyage	Je me barre	Keny Arkana	spotify:track:4lGJ5ZLTAYrESLI2yEwLsD
+M.Calor	Échame La Culpa	Luis Fonsi, Demi Lovato	spotify:track:2hl6q70unbviGo3g1R7uFx
+M.Calor	SUBEME LA RADIO	Enrique Iglesias, Descemer Bueno, Zion & Lennox	spotify:track:0mnAmQX1pciMncT2qFCNmK
+M.Calor	La Cintura	Alvaro Soler	spotify:track:6VUJQqyeQhAZHkQbSDqLtI
+M.Calor	Despacito	Luis Fonsi, Daddy Yankee	spotify:track:6habFhsOp2NvshLv26DqMb
+M.Calor	Con Calma	Daddy Yankee, Snow	spotify:track:5w9c2J52mkdntKOmRLeM2m
+M.Calor	Dura	Daddy Yankee	spotify:track:6KuqAtoeVzxAYOaMveLNpH
+M.Calor	Limbo	Daddy Yankee	spotify:track:3pDhN3qB33AOPhQEkUCaWt
+M.Calor	X	Nicky Jam, J Balvin	spotify:track:5YUyW9opqNsMSEzzecZih1
+M.Calor	Taki Taki (feat. Selena Gomez, Ozuna & Cardi B)	DJ Snake, Selena Gomez, Ozuna, Cardi B	spotify:track:0KoiMHhqKLoL4xM54rcWYY
+M.Calor	Chacun son chacun	THEODORT	spotify:track:3PmHpfvSyxtBqZrRG8K2zx
+M.Calor	Maria	Lord Esperanza, Shaby	spotify:track:0tDS50FqewWTw2kX5VQxPL
+M.Calor	Me Gusta Latina	Tryf Dacomedian, Snoop Dogg	spotify:track:5xMVsIrFnn4b1TYVT1Nh5R
+M.Calor	Vamos a la Playa	Loona	spotify:track:2Tk5B1h58lJRsrivGg1jaE
+M.Calor	I Like It	Cardi B, Bad Bunny, J Balvin	spotify:track:58q2HKrzhC3ozto2nDdN4z
+M.Calor	FOMO	Lord Esperanza	spotify:track:3CepsWSM9yVKfVZSz1suud
+M.Calor	Who Mad Again	Jahyanai, Bamby	spotify:track:0YJnGoffpSDAmopZi2QUpw
+M.Calor	To the Beat	Chinese Man, Scratch Bandits Crew	spotify:track:64RXXxA27XTkqfYHbw0jZl
+M.Passe partout	Just A Gigolo - Remastered	Louis Prima	spotify:track:6lYeYgSkWh6TZDQy6YZuvG
+M.Passe partout	Closer To The Bone	Louis Prima, Sam Butera & The Witnesses	spotify:track:1hM17GopJXPqKaUVDVWzAD
+M.Passe partout	Santa María (del Buen Ayre)	Gotan Project	spotify:track:65MDo5mxRY45IHpyVkLEU5
+M.Passe partout	Diferente	Gotan Project	spotify:track:5I3jKRlR8WS0xYYamnAhpG
+M.Passe partout	Without a Trace (feat. Eric Benny Bloom)	Naughty Professor, Eric Benny Bloom	spotify:track:6oAoWCxAX63VZpAdk6Z2U1
+M.Passe partout	Freedom	Naâman	spotify:track:0cVN3b0652BtITQiVmA6zA
+M.Passe partout	Afraid To Feel	LF SYSTEM	spotify:track:40SBS57su9xLiE1WqkXOVr
+M.Passe partout	On the Rock - Synapson Remix	Mozambo, Synapson	spotify:track:57CAYbMGp1yJEvGcKcsTqh
+M.Passe partout	Tum Rakak	Deluxe	spotify:track:2C2SY9l26IT3guKqQoMMSr
+M.Passe partout	Je danse le mia - Live	Deluxe, IAM, M	spotify:track:6ufA631ynBATU4WTzhTqjG
+M.Passe partout	Motherless Jazz - Live	Smokey Joe & The Kid	spotify:track:0afSnuukLTBPznTj8Ir0no
+M.Passe partout	Smokid Inc. - Live	Smokey Joe & The Kid, MysDiggi, Yoshi Di Original	spotify:track:1QMpLPhDViyrmwBRu7sCbm
+M.Passe partout	Little Things x Gypsy Woman - L BEATS MASHUP	Jorja Smith	spotify:track:16Z3xV5jakcXMHVJChWWbl
+M.Passe partout	jazz is for ordinary people	berlioz	spotify:track:12BaQt9aYdTlEtKreqB5V4
+M.Passe partout	Don't Let Me Be Misunderstood	Santa Esmeralda	spotify:track:6rhVKeUhQTGLIRmQOfc9Wo
+M.Passe partout	Funkytown / I Feel Good	Lucky Chops	spotify:track:4X67ikG4nM5iw26ZkjF34N
+M.Passe partout	Haboglabotribin'	Bernard Wright	spotify:track:3XiHctnuCGCKuq2YC1O6ZU
+M.Passe partout	Les sunlights des tropiques	Gilbert Montagné	spotify:track:26CWyxnjmUf6n4GKX1QVuw
+M.Passe partout	Liberta	Pep's	spotify:track:1ReUVJkNB6bjwagl1g5YqF
+M.Passe partout	Run On	Pow Wow	spotify:track:1Z4rw1B6jpT1ajxlbQPTFo
+M.Passe partout	Iko Iko	The Dixie Cups	spotify:track:2xZPpUIcajScKX99PH0fD9
+M.Passe partout	Careless Whisper - Remix	Maty Deejay	spotify:track:54fHurjAtma43hW5yb1BF6
+M.Passe partout	Harder, Better, Faster, Stronger	Pomplamoose	spotify:track:1s2LrYFnrFdG2LCtyvwBmv
+M.Passe partout	I'm Still Standing	Elton John	spotify:track:1jDJFeK9x3OZboIAHsY9k2
+M.Passe partout	Punk Ass Bitches (feat. Snoop Dogg) (From "The Underdoggs")	Trap House Mechi, Snoop Dogg	spotify:track:7E3hX33u1pCC8PmU8easCp
+M.Passe partout	Femme FantoÌ‚me	Lockhart, Flora Fishbach	spotify:track:7AxvbiA33YaRmtLVYBMbIP
+M.Passe partout	Sunflower - Spider-Man: Into the Spider-Verse	Post Malone, Swae Lee	spotify:track:3KkXRkHbMCARz0aVfEt68P
+M.Passe partout	Irish Way	The O'Reillys and the Paddyhats	spotify:track:6OrPG3IZScKkSR2cz2q0zR
+M.Passe partout	Superstition - Single Version	Stevie Wonder	spotify:track:3eXMcllJFZWJ5LELHLcF3M
+M.Passe partout	Baila Morena	Zucchero, Maná	spotify:track:2MFiX5NURKleByp8YAn9xq
+M.Passe partout	Walk Of Life	Dire Straits	spotify:track:6HMFtoMvv6n6Q2eOyPFyne
+M.Passe partout	Can't Hold Us (feat. Ray Dalton)	Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton	spotify:track:22skzmqfdWrjJylampe0kt
+M.Passe partout	Can't Stop Feeling Billie Jean's Face	Pomplamoose	spotify:track:0yAuMnPTRBkLEJk4cGKYYi
+M.Passe partout	Paraiso（『ミチコとハッチン』オープニングテーマ TVヴァージョン80秒）	SOIL & “PIMP” SESSIONS	spotify:track:683G3Obvv1KSoCdxPiAX8u
+M.Passe partout	Hit the Road Jack - Swing Hop Mix	Wolfgang Lohr, LMZG	spotify:track:7891cBalOPY0dMuNWTYlYs
+M.Passe partout	Murder On The Dancefloor	Sophie Ellis-Bextor	spotify:track:4tKGFmENO69tZR9ahgZu48
+M.Passe partout	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Passe partout	No Lie	Sean Paul, Dua Lipa	spotify:track:48QmG1dfvMuYLxMPt7KSRA
+M.Passe partout	All or Nothing	Guts, Tanya Morgan, Lorine Chia	spotify:track:6jWFsJT5IYVKCJEQ55L29W
+M.Passe partout	Doin' it Right (feat. Panda Bear)	Daft Punk, Panda Bear	spotify:track:36c4JohayB9qd64eidQMBi
+M.Passe partout	Enemy (with JID) - from the series Arcane League of Legends	Imagine Dragons, JID, Arcane, League of Legends	spotify:track:1r9xUipOqoNwggBpENDsvJ
+M.Passe partout	Le Brio (Branchez la guitare)	Big Soul	spotify:track:12S1WtXvSXQE7Q0FYk650p
+M.Passe partout	Karma	Naâman	spotify:track:3rmYRJfWYAdKDei4yegdk1
+M.Passe partout	An Irish Party In Third Class	Nordsee	spotify:track:6ZYEo3omZd8mx5NzrS9TPf
+M.Passe partout	Dancin' (A Catchy Rhythm)	Sue Ann Carwell, Joey Diggs	spotify:track:6DMp5fnBQoT6ySJ1kyR8Kq
+M.Passe partout	Wellerman	LBG	spotify:track:3IuWg2dmyGBgXA169VYQZH
+M.Passe partout	The Next Episode	Dr. Dre, Snoop Dogg	spotify:track:20LxTsa6936zOlzTWqoPVt
+M.Passe partout	Daddy Cool	Boney M.	spotify:track:3WMbD1OyfKuwWDWMNbPQ4g
+M.Passe partout	Mambo No. 5 (a Little Bit of...)	Lou Bega	spotify:track:6x4tKaOzfNJpEJHySoiJcs
+M.Passe partout	Sweet Child O' Mine	Guns N' Roses	spotify:track:7snQQk1zcKl8gZ92AnueZW
+M.Passe partout	Low	Lenny Kravitz	spotify:track:3zcccQe4KhGXRqRBUwGU3G
+M.Passe partout	FOMO	Lord Esperanza	spotify:track:3CepsWSM9yVKfVZSz1suud
+M.Passe partout	Why Don't You Get A Job	The Offspring	spotify:track:0sNKiz82ATCvT3f3XVVUUj
+M.Passe partout	They Don't Care About Us	Michael Jackson	spotify:track:3wuCCNCnBhJlwkIJTBZFiv
+M.Passe partout	Clint Eastwood	Gorillaz, Del The Funky Homosapien	spotify:track:1RKUoGiLEbcXN4GY4spQDx
+M.Multi connu	Ma Benz (feat. Lord Kossity)	Suprême NTM, Lord Kossity	spotify:track:61vUa5Xpm5Gtsk7ZAGPN5N
+M.Multi connu	Gravé dans la roche	SNIPER	spotify:track:0OLh0QqBA781GNO5CJTKxR
+M.Multi connu	Marly-Gomont	Kamini	spotify:track:42SUjSOr2tsUmOIlYBX04Z
+M.Multi connu	Belsunce Breakdown	Bouga	spotify:track:1HMH8ctdYfDrRac24jkQv0
+M.Multi connu	Can't Hold Us (feat. Ray Dalton)	Macklemore & Ryan Lewis, Ray Dalton	spotify:track:31qgVdvSqTQ7unwQQngycB
+M.Multi connu	The Next Episode	Dr. Dre, Snoop Dogg	spotify:track:20LxTsa6936zOlzTWqoPVt
+M.Multi connu	Still D.R.E.	Dr. Dre, Snoop Dogg	spotify:track:503OTo2dSqe7qk76rgsbep
+M.Multi connu	P.I.M.P.	50 Cent	spotify:track:3G0yz3DZn3lfraledmBCT0
+M.Multi connu	God Bless (feat. Damso)	Hamza, Damso	spotify:track:6gkwAFKr9uk5Qq1HhSZzss
+M.Multi connu	Panda	Desiigner	spotify:track:5YEOzOojehCqxGQCcQiyR4
+M.Multi connu	Day 'N' Nite (Nightmare)	Kid Cudi	spotify:track:60PAzFNW3vAiAiVK6DRJfB
+M.Multi connu	The King and I	Eminem, CeeLo Green	spotify:track:6TL5dBwGGCIz31gctoldqT
+M.Multi connu	Young, Wild & Free (feat. Bruno Mars)	Snoop Dogg, Wiz Khalifa, Bruno Mars	spotify:track:2g7uRZ68eLtv74XrxgdT2q
+M.Multi connu	Numb / Encore	JAŸ-Z, Linkin Park	spotify:track:5sNESr6pQfIhL3krM8CtZn
+M.Multi connu	300 (Henri) - Colors Session - Roméo Elvis x Le Motel	Roméo Elvis, Le Motel	spotify:track:2niIfcpJ797rk53yupLerb
+M.Multi connu	Freestyle du sale	Lorenzo	spotify:track:6tM2eT1MabbdZUFtiEBdjb
+M.Multi connu	Freestyle Radio Phoenix	Casseurs Flowters	spotify:track:59g2FzWJbiW48fnNOmmHwj
+M.Multi connu	Bienvenue Dans La Secte	La Secte Phonétik	spotify:track:4JTxVVAc2zMWJ3tUqxxqIV
+M.Multi connu	Fume à fond	Lorenzo	spotify:track:4Hq0zp3vY6BHZWlSAeGWii
+M.Multi connu	La terre est ronde	Orelsan	spotify:track:3IM7zXywZ6sRTtkRjRLxJ8
+M.Multi connu	Tu le C	Lorenzo	spotify:track:0js2ot9kRfw2VVQpeXK2Rt
+M.Multi connu	Nique la BAC	Lorenzo	spotify:track:4VzalpjiHHK5cKSgrZuNjg
+M.Multi connu	On verra	Nekfeu	spotify:track:57I5KhEpQFC9XBgKt6nklL
+M.Multi connu	Ce genre	Lorenzo, Lujipeka, Foda C	spotify:track:3z8SyZeXlCd9YX6HpkgxQT
+M.Multi connu	Reuf - Version Five	Nekfeu	spotify:track:66Fyj5dF8mvXJKV1voPJF8
+M.Multi connu	POPOPOP	Gambi	spotify:track:5f0TOjFP3c96TFHzKnx5ri
+M.Multi connu	Désaccordé	Vald	spotify:track:0FYpW0zBO7cht8qGRY41Mz
+M.Multi connu	PETETE	Gambi	spotify:track:0z3bi63SNZ5ylyHOzb81Uq
+M.Multi connu	Air Max	Rim'K, Ninho	spotify:track:0RTvfKVdkt10ATfJ8BjMEI
+M.Multi connu	Petrouchka (feat. PLK)	Soso Maness, PLK	spotify:track:24l2mDpWEmA7gWgmFJ8CIG
+M.Multi connu	Djomb - Bien ou quoi	Bosh	spotify:track:0KBwGCY9RYD9t2zjeW4h48
+M.Multi connu	Moulaga	Heuss L'enfoiré, Jul	spotify:track:5BfCoUcWNXcpyJfjXRIeyC
+M.Multi connu	Jean-michel aulas	NOZIII	spotify:track:3ZljTaimU2iqfV7NbV92d9
+M.Multi connu	P*Tain de m*Rde	Naza	spotify:track:1OYliHobfsVlwcnQqtSSEE
+M.Multi connu	Suavemente	Soolking	spotify:track:6Qe7YCkIOc1iaw9HKqO3qV
+M.Multi connu	Θ. Macarena	Damso	spotify:track:2ewjMyCbNv2X1dB2qIDCwD
+M.Multi connu	What A Feeling	Irene Cara	spotify:track:0aAR5HogGoT68EWFbyRFqx
+M.Multi connu	Miss You - Sped Up Version	Oliver Tree, sped up nightcore	spotify:track:4pH8cIlMI9NrTWcDiQbuRe
+M.Multi connu	Ainsi soit-il	Taïro	spotify:track:0eTqahBdv7jpTdk5rJYKEt
+M.Multi connu	Même pas fatigué !!!	Kore, Magic System, Khaled	spotify:track:7GUpeUSeUckEBW8bcXrzj0
+M.Multi connu	Viva La Vida	Coldplay	spotify:track:1mea3bSkSGXuIRvnydlB5b
+M.Multi connu	Hymn for the Weekend	Coldplay	spotify:track:3RiPr603aXAoi4GHyXx0uy
+M.Multi connu	Paradise	Coldplay	spotify:track:6nek1Nin9q48AVZcWs9e9D
+M.Multi connu	La Kush	Lorenzo, Tony Corrida	spotify:track:3803TnTgCIn4rq6ZdEoPAl
+M.Multi connu	Ta fête	Stromae	spotify:track:7fWWbkok99Tvh8aly2Buox
+M.Multi connu	avf	Stromae	spotify:track:5a9vdoeBuXGewh9Oe0CfKA
+M.Multi connu	Bella ciao - Live, Rome / 2016	Goran Bregović	spotify:track:3y2m6dxCDiTZQHNm3tRGM6
+M.Multi connu	Je danse le mia - Live	Deluxe, IAM, M	spotify:track:6ufA631ynBATU4WTzhTqjG
+M.Multi connu	La main verte - Live	Tryo	spotify:track:6t84yOrkPAouma0bbGGYOO
+M.Multi connu	humain à l'eau	Stromae	spotify:track:1utm8E02HhJjVHwVuRv3AE
+M.Multi connu	Still D.R.E.	Dr. Dre, Snoop Dogg	spotify:track:6ltPEsP4edATzvinHOzvk2
+M.Multi connu	Ça c'est vraiment toi - Remasterisé en 2006	Téléphone	spotify:track:3yOaL1e5FtOjUU7FAJjKpG
+M.Multi connu	Les démons de minuit (Version single)	Images	spotify:track:4ePsPRmL0aXbgCY2BwOBGZ
+M.Multi connu	Les lacs du Connemara	Michel Sardou	spotify:track:3vHswuqTNO0hIiW6am0tKB
+M.Multi connu	Partenaire Particulier	Partenaire Particulier	spotify:track:0S4dVpqBLnBFj4wdB4UDMd
+M.Multi connu	Les sunlights des tropiques	Gilbert Montagné	spotify:track:26CWyxnjmUf6n4GKX1QVuw
+M.Multi connu	On va s'aimer	Gilbert Montagné	spotify:track:7MFWYTlrC81IGpb0Jwgdu7
+M.Multi connu	Liberta	Pep's	spotify:track:1ReUVJkNB6bjwagl1g5YqF
+M.Multi connu	The Antidote	Stupeflip	spotify:track:20o4BODGAs9sFJHC2O1y4x
+M.Multi connu	I'm Still Standing	Elton John	spotify:track:1jDJFeK9x3OZboIAHsY9k2
+M.Multi connu	Mamma Mia	ABBA	spotify:track:2TxCwUlqaOH3TIyJqGgR91
+M.Multi connu	Kung Fu Fighting	Carl Douglas	spotify:track:40NRm1ZLvZpUSCUXAGGZ8J
+M.Multi connu	Sweet Child O' Mine	Guns N' Roses	spotify:track:4MhTFsyqIJnjsOweVcU8ug
+M.Multi connu	Laissez-moi danser	Waxx, Pomme	spotify:track:1LBLEAMse3jta25SKwGs37
+M.Multi connu	Belles belles belles	Claude François	spotify:track:1Q6j1dx7pXzuLZLAexFWuQ
+M.Multi connu	Crazy In Love (feat. JAY-Z)	Beyoncé, JAŸ-Z	spotify:track:0TwBtDAWpkpM3srywFVOV5
+M.Multi connu	L'hymne de nos campagnes - Live	Tryo	spotify:track:0tcFkV7zLOGWgUbYtD6ROz
+M.Multi connu	(We're Gonna) Rock Around The Clock	Bill Haley & His Comets	spotify:track:0ud0boSjH5sFHs4iYJT8sQ
+M.Multi connu	Le Jerk	Thierry Hazard	spotify:track:0YJjl4SSIBx3h7L5M9OgiG
+M.Multi connu	Superstition - Single Version	Stevie Wonder	spotify:track:3eXMcllJFZWJ5LELHLcF3M
+M.Multi connu	15h02 - Regarde comme il fait beau (dehors)	Casseurs Flowters	spotify:track:4c1ArlBO56iNxiFTupUtt6
+M.Multi connu	Sofia	Alvaro Soler	spotify:track:5vj59ONIVbyhcrI8ZSwoRo
+M.Multi connu	Can't Hold Us (feat. Ray Dalton)	Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton	spotify:track:22skzmqfdWrjJylampe0kt
+M.Multi connu	La goffa Lolita	Vincè la petite culotte	spotify:track:32ujt0CBVLsFyQtAhVk7WN
+M.Multi connu	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Multi connu	No Lie	Sean Paul, Dua Lipa	spotify:track:48QmG1dfvMuYLxMPt7KSRA
+M.Multi connu	Ma dope	Nekfeu, S.Pri Noir	spotify:track:6eVHz1I8JaAYUl1jTgSjRW
+M.Multi connu	SPIDER	GIMS, DYSTINCT	spotify:track:2fFTn0f94EopgZyfSGQuyK
+M.Multi connu	SOIS PAS TIMIDE	GIMS	spotify:track:37tGmKyKlr8vyt9BVdoWQo
+M.Multi connu	Money For Nothing - Edit	Dire Straits	spotify:track:1hXtY9yeMAcxZlBvWzjwJn
+M.Multi connu	Doin' it Right (feat. Panda Bear)	Daft Punk, Panda Bear	spotify:track:36c4JohayB9qd64eidQMBi
+M.Multi connu	One Day (Vandaag) - Radio Edit	Bakermat	spotify:track:0GSU6yLOJqO10ziQuBLWOE
+M.Multi connu	I'm A Believer (Reprise) - Soundtrack Version	Eddie Murphy	spotify:track:7bDVOfUF41jMmcOJUEPAjQ
+M.Multi connu	La Soupe Aux Choux: Générique	Raymond Lefèvre	spotify:track:6fZSU4LCrgBQq7QIRDHlg7
+M.Multi connu	Wellerman - Sea Shanty / 220 KID x Billen Ted Remix	Nathan Evans, 220 KID	spotify:track:3iw6V4LH7yPj1ESORX9RIN
+M.Multi connu	Hit the Road Jack	Ray Charles	spotify:track:49fzPkBb3aOUWYRKaTWVhm
+M.Multi connu	Blue Suede Shoes	Elvis Presley	spotify:track:47gmoUrZV3w20JAnQOZMcO
+M.Multi connu	Siffler sur la colline	Les Croquants	spotify:track:3L942yj6BG52T5MxhdOxIz
+M.Multi connu	Le Brio (Branchez la guitare)	Big Soul	spotify:track:12S1WtXvSXQE7Q0FYk650p
+M.Multi connu	J'aimerais trop (feat. SAP)	Keen' V, SAP	spotify:track:3C2799IoWJS4OJExNsjBeh
+M.Multi connu	Karma	Naâman	spotify:track:3rmYRJfWYAdKDei4yegdk1
+M.Multi connu	J'me tire	GIMS	spotify:track:4w47YE9rjhmZUdtZjSCb82
+M.Multi connu	The Big Tree	Stand High Patrol	spotify:track:4ZpqCGtkgPn1Pxsgtmtc8O
+M.Multi connu	Iko Iko	The Dixie Cups	spotify:track:2xZPpUIcajScKX99PH0fD9
+M.Multi connu	Outta Road	Naâman	spotify:track:5wwDZoG2aXMUaxJZu1c6CO
+M.Multi connu	99 Luftballons	Nena	spotify:track:2zYxMtbvmTBWj8dj9nrFCl
+M.Multi connu	Wellerman	LBG	spotify:track:3IuWg2dmyGBgXA169VYQZH
+M.Multi connu	Sunny	Boney M.	spotify:track:3pf96IFggfQuT6Gafqx2rt
+M.Multi connu	I'm A Believer	Smash Mouth	spotify:track:4lAYMPLPFOovwTCmtTt9b5
+M.Multi connu	Doucement	Makassy	spotify:track:5bYxuqIOtzFwfT3hfQ1WHh
+M.Multi connu	I'm So Excited	The Pointer Sisters	spotify:track:1ot6jEe4w4hYnsOPjd3xKQ
+M.Multi connu	Thriller	Michael Jackson	spotify:track:3S2R0EVwBSAVMd5UMgKTL0
+M.Multi connu	Yeah!	USHER, Lil Jon, Ludacris	spotify:track:5vCBjhlWFluP6sigdl0E6q
+M.Multi connu	Daddy Cool	Boney M.	spotify:track:3WMbD1OyfKuwWDWMNbPQ4g
+M.Multi connu	Mambo No. 5 (a Little Bit of...)	Lou Bega	spotify:track:6x4tKaOzfNJpEJHySoiJcs
+M.Multi connu	La java de Broadway	Michel Sardou	spotify:track:4JfaQP5vF7WJy5n5khylzF
+M.Multi connu	Staying Alive	London Theatre Orchestra & Cast	spotify:track:1wFzrCCNPpLK4JEQeEjmVj
+M.Multi connu	One Day / Reckoning Song (Wankelmut Remix) [Radio Edit]	Asaf Avidan, The Mojos, Wankelmut	spotify:track:5bGG1abhVIUm6EAa36ipRX
+M.Multi connu	Bande organisée	13 Organisé, SCH, Kofs, Jul, Naps, Soso Maness, Elams, Solda, Houari	spotify:track:2JNJSm3CjesTWLOcJm4Kiz
+M.Multi connu	24K Magic	Bruno Mars	spotify:track:6b8Be6ljOzmkOmFslEb23P
+M.Multi connu	Les Rois mages - Remasterisé en 2006	Sheila	spotify:track:2y31xdqCINOlMWeR7sfR23
+M.Multi connu	Une autre histoire	Gérard Blanc	spotify:track:1ue54Yyh1O9kMbxEGmuyXo
+M.Multi connu	Les cactus	Jacques Dutronc	spotify:track:6N8bfaDYWJb7yyqdBcf0s8
+M.Multi connu	Don't Go Breaking My Heart	Elton John, Kiki Dee	spotify:track:7HW5WIw7ZgZORCzUxv5gW5
+M.Multi connu	La Bamba	Les Forbans	spotify:track:1A9cjxlUidV7cCmB10GjgP
+M.Multi connu	The Antidote	Stupeflip	spotify:track:6y8o3gzAroaVWIW0XvaYcv
+M.Multi connu	Stupeflip vite !!!	Stupeflip, Cadillac	spotify:track:3Qv2Bvd32SFdETcPlEq0f5
+M.Multi connu	Musique	France Gall	spotify:track:3J7V8Wg2wqqCM3tfpBoSne
+M.Multi connu	Pony	Deluxe	spotify:track:6xVfTx01TnGrzH1mqXfOmf
+M.Multi connu	Rude Boy	Dub Inc	spotify:track:1OR5HVQgKpCZn2JNIwTKmq
+M.Multi connu	Rude Boy	Dub Inc	spotify:track:1OR5HVQgKpCZn2JNIwTKmq
+M.Multi connu	Chihuahua	DJ BoBo	spotify:track:1OhfpuqKF8LM3ngn6uXnzx
+M.Multi connu	Vamos a la Playa	Loona	spotify:track:2Tk5B1h58lJRsrivGg1jaE
+M.Multi connu	Ta marinière	Hoshi	spotify:track:13bGMVe4lIR3LO7b45hvyg
+M.Multi connu	Être un homme comme vous	Ben L'Oncle Soul	spotify:track:2mxoHBPwZ9lx7ULQADerR0
+M.Multi connu	Les rois du monde - Roméo & Juliette, Les enfants de Vérone	Damien Sargue, Cyril Niccolaï, John Eyzen	spotify:track:2QxpVhguEv67Lwlf3wwltb
+M.Multi connu	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Multi connu	Sara perche ti amo	Ricchi, Poveri	spotify:track:0JLZcA4B8L4mONrrQ3Tu76
+M.Multi connu	3e sexe	Indochine	spotify:track:6MShyf3EUHqQ04kJzovIni
+M.Multi connu	Jerusalema (feat. Nomcebo Zikode)	Master KG, Nomcebo Zikode	spotify:track:2MlOUXmcofMackX3bxfSwi
+M.Multi connu	Without Me	Eminem	spotify:track:7lQ8MOhq6IN2w8EYcFNSUk
+M.Multi connu	In the Air Tonight - 2015 Remaster	Phil Collins	spotify:track:4fjWMAvvpx1dgq3pnCm8Wt
+M.Multi connu	Paint It Black	Wednesday Addams	spotify:track:1OuCn2F9BmyTAdM0Jylo9X
+M.Multi connu	Beggin'	Måneskin	spotify:track:3Wrjm47oTz2sjIgck11l5e
+M.Multi connu	The Lazy Song	Bruno Mars	spotify:track:386RUes7n1uM1yfzgeUuwp
+M.Multi connu	Nuit de folie	Début De Soirée	spotify:track:1vBXixLz7cVLLTdR4Xe8aL
+M.Multi connu	Why Don't You Get A Job	The Offspring	spotify:track:0sNKiz82ATCvT3f3XVVUUj
+M.Multi connu	They Don't Care About Us	Michael Jackson	spotify:track:3wuCCNCnBhJlwkIJTBZFiv
+M.Multi connu	Clint Eastwood	Gorillaz, Del The Funky Homosapien	spotify:track:1RKUoGiLEbcXN4GY4spQDx
+M.Multi connu	Reckoning Song	Asaf Avidan, The Mojos	spotify:track:6Wk6A8k7NjjSsPQT9Z3FXM
+M.Multi connu	On se connaît	Youssoupha, Noémie	spotify:track:18m3o2kmvnYJn2cCOZ4LD9
+M.Multi connu	Crazy - Single Version	Gnarls Barkley, CeeLo Green, Danger Mouse	spotify:track:6FlAGda9qkDhTU7ctFM4uG
+M.Multi connu	Fils de	Dub Inc	spotify:track:6RuBH60do7z2d2QXsn5j8g
+M.Multi connu	Belle demoiselle	Christophe Maé	spotify:track:1cHvyHJ1igIBrCpYoEKGIJ
+M.Mix Drop	Brigante Life	Biga*Ranx	spotify:track:2aaovxnujLeggxBJfDH8ug
+M.Mix Drop	Stereo	Elephanz	spotify:track:0UNHUe2FWrSJrHoNzotXUi
+M.Mix Drop	Queen of NY (feat. Nic Hanson)	Bakermat, Nic Hanson	spotify:track:1zEGS8Pa0uihldduIqajIJ
+M.Mix Drop	Tum Rakak	Deluxe	spotify:track:2C2SY9l26IT3guKqQoMMSr
+M.Mix Drop	Ta fête	Stromae	spotify:track:7fWWbkok99Tvh8aly2Buox
+M.Mix Drop	Un Jour Parfait	Calogero	spotify:track:3zGvYfGd4tif9GItI8vkzi
+M.Mix Drop	Je danse le mia - Live	Deluxe, IAM, M	spotify:track:6ufA631ynBATU4WTzhTqjG
+M.Mix Drop	Je joue de la musique - Live à l'Olympia, Paris / 2019	Calogero	spotify:track:4dxIdQs2jrLoHq8ZG0MJsq
+M.Mix Drop	Sensualité - Live	Axelle Red	spotify:track:6ffbm2pnvIVAeJ67BRHiKi
+M.Mix Drop	On t'emmène	Trois Cafés Gourmands	spotify:track:5S4Qq5ufU91XImS0T7EjJj
+M.Mix Drop	Je te donne - Live En passant 1998	Jean-Jacques Goldman	spotify:track:5dqGQgGCuoNh6IPyyRESFM
+M.Mix Drop	Cendrillon - Live	Téléphone	spotify:track:1F1xRPnHFpcpz1ToFeK5bL
+M.Mix Drop	Nos mains - Live Un tour ensemble 2003	Jean-Jacques Goldman	spotify:track:0vMOlgJk7dOAKqMFO9CTwu
+M.Mix Drop	Un, deux, trois - Live Sur scène 1992	Carole Fredericks, Jean-Jacques Goldman, Michael Jones	spotify:track:3jaeqecrR12pZVVo3qWzJm
+M.Mix Drop	Les choses - Live Un tour ensemble 2003	Jean-Jacques Goldman	spotify:track:1L7BxF3ptzxmMiPg9HBZCB
+M.Mix Drop	Le rapt - Live En passant 1998	Jean-Jacques Goldman	spotify:track:3O00ESW09XUHed1vQgQnDz
+M.Mix Drop	Et l'on n'y peut rien - Live Un tour ensemble 2003	Jean-Jacques Goldman	spotify:track:2MBLchXDXdMxZnBfEipATW
+M.Mix Drop	Soul Man - Live	The Blues Brothers	spotify:track:5z2F9FkKdhd9HOSTI1GxRq
+M.Mix Drop	Soldat	Makassy	spotify:track:6H4fYpILy2SYsVz6idy3YU
+M.Mix Drop	La parisienne	Christophe Maé	spotify:track:1XpblLS50JizDEF78BsrbF
+M.Mix Drop	Ready Set	Joey Valence & Brae	spotify:track:7rCrOTI49IE199dlDkGcC5
+M.Mix Drop	Little Things x Gypsy Woman - L BEATS MASHUP	Jorja Smith	spotify:track:16Z3xV5jakcXMHVJChWWbl
+M.Mix Drop	bâtard	Stromae	spotify:track:4APjoR6Fmrrl707Z1cShHS
+M.Mix Drop	Breathe	Bomel	spotify:track:3KiFuk2Oi6VBqEFmjszNdN
+M.Mix Drop	Funkytown / I Feel Good	Lucky Chops	spotify:track:4X67ikG4nM5iw26ZkjF34N
+M.Mix Drop	Giorgio by Moroder	Daft Punk	spotify:track:0oks4FnzhNp5QPTZtoet7c
+M.Mix Drop	Green Onions	Booker T. & the M.G.'s	spotify:track:4fQMGlCawbTkH9yPPZ49kP
+M.Mix Drop	Harder, Better, Faster, Stronger	Daft Punk	spotify:track:5W3cjX2J3tjhG8zb6u0qHn
+M.Mix Drop	I'm Not Scoobidoobidoo	Fat Dog	spotify:track:13LHX6U4Gx4Eh4pSCSHGEH
+M.Mix Drop	Irish Way	The O'Reillys and the Paddyhats	spotify:track:6OrPG3IZScKkSR2cz2q0zR
+M.Mix Drop	C'est une belle journée	Mylène Farmer	spotify:track:5nNIFYy5dDQo9s3hSOd7xX
+M.Mix Drop	Histoire d'1 soir (Bye bye les galères) - Version originale 1983	Bibi Flash	spotify:track:5JAGMln9Bd4xrHkjS4jMf2
+M.Mix Drop	Tes états d'âme Eric	Luna Parker	spotify:track:41OT0gmF3Ku5BAo06uoKvN
+M.Mix Drop	Cœur de loup	Philippe Lafontaine	spotify:track:0XrmPFVFpZy9ty4Rx6CG6f
+M.Mix Drop	J'veux du soleil	Au P'Tit Bonheur	spotify:track:0L4JEAhghqIcwjVyMJv8Yw
+M.Mix Drop	Chanson sur une drôle de vie	Géraldine Nakache, Leïla Bekhti	spotify:track:12zakSjWxrohomLLgxTkCR
+M.Mix Drop	La seule	Bigflo & Oli, Kacem Wapalek, Naâman	spotify:track:2FS3bCaxjad0TjsaWAsbjy
+M.Mix Drop	Harakiri	47ter	spotify:track:5lDTN2oBfKlM3oSGdRViUN
+M.Mix Drop	J'me fais chier dans les soirées	Petite Gueule, Julieta	spotify:track:5RVUYXuIid02DBA7eQC8WN
+M.Mix Drop	Adieu	KIK	spotify:track:21Z2RnNqeYItoHdIAwPjU3
+M.Mix Drop	La vibe	KIK	spotify:track:7Bc5vM91ltXHgA4AutHXlb
+M.Mix Drop	The Antidote	Stupeflip	spotify:track:20o4BODGAs9sFJHC2O1y4x
+M.Mix Drop	TK421	Lenny Kravitz	spotify:track:58d6jpiFmElbSX36MnnGFO
+M.Mix Drop	J'ai vu de la lumière	Grand Corps Malade	spotify:track:1sMFqVUvAfXyjMqGzPrtdu
+M.Mix Drop	Intro	The xx	spotify:track:2usrT8QIbIk9y0NEtQwS4j
+M.Mix Drop	Le Dernier Clope - Single Version	Louise Attaque	spotify:track:5Wh52GVhcEL6cjTbgJkpLg
+M.Mix Drop	Le stade	Fredz	spotify:track:4zIWUQcXL5olW32MRz5WOq
+M.Mix Drop	Madame	Morgan	spotify:track:6uwEGzM8eDHWoeKZFgJeeu
+M.Mix Drop	Elle ne t'aime pas	La Femme, Marlon Magnée, Saxa Goth	spotify:track:6QEvbmv2euCQxX54gjlarO
+M.Mix Drop	Left Behind	Scarecrow	spotify:track:5gSHmVV30dqKESS4nYGpXg
+M.Mix Drop	Pornstar	Bey	spotify:track:37Ty5v1rVIVgOZiiBR5r36
+M.Mix Drop	Au bon endroit	47ter	spotify:track:3rCkmEs3L2fF4qRiRAqYxJ
+M.Mix Drop	All, Now	Scarecrow	spotify:track:5J1d5FfPC7ZoY5ktOrD8X2
+M.Mix Drop	Magnifique	Demi Portion, Oxmo Puccino	spotify:track:0VuZGEOv7qOFSkQMXzhEof
+M.Mix Drop	Harder, Better, Faster, Stronger	Pomplamoose	spotify:track:1s2LrYFnrFdG2LCtyvwBmv
+M.Mix Drop	Je cherche une femme	James Deano	spotify:track:22A6lZkVfajwEQEG8DcrPd
+M.Mix Drop	Too Late	Chinese Man, KT Gorique, Stogie T, FP	spotify:track:5wRU6hnHqZJZmwBjwpBUnV
+M.Mix Drop	Adrénaline	Demi Portion, DJ Rolxx	spotify:track:3BR581UNtXsYd5zsPkFPK2
+M.Mix Drop	Viva La Vida - Live	Coldplay	spotify:track:5ZV67iTfNpW3ueMCELLiSX
+M.Mix Drop	Mamma Mia	ABBA	spotify:track:2TxCwUlqaOH3TIyJqGgR91
+M.Mix Drop	Kung Fu Fighting	Carl Douglas	spotify:track:40NRm1ZLvZpUSCUXAGGZ8J
+M.Mix Drop	En vrai - Marche des champions	KIK	spotify:track:0Moi9HLrvdp5khFV0KNIbz
+M.Mix Drop	Souvenirs	Lyre Le Temps	spotify:track:2Ds03ut5qLIuuJFbwEEmwY
+M.Mix Drop	Sweet Child O' Mine	Guns N' Roses	spotify:track:4MhTFsyqIJnjsOweVcU8ug
+M.Mix Drop	The Code	Chinese Man, ASM, Stogie T, KT Gorique, Youthstar, Miscellaneous	spotify:track:3TM1mUjIlZz1YsiH7xCBoq
+M.Mix Drop	Never Take	Biga*Ranx, Naâman, L'Entourloop	spotify:track:7K0xjyfZDxHEcCzhWAq1uM
+M.Mix Drop	Les dauphins	St Graal	spotify:track:33Ec7jSMkhaNqBqO9yEoti
+M.Mix Drop	Thank You (Falettinme Be Mice Elf Agin)	Big Brovaz	spotify:track:2Xn8BrYoMdcbo27LDwKO8y
+M.Mix Drop	Point d'orgue (Outro)	Petite Gueule	spotify:track:2A3SYhyhPcCseeakcdrqgJ
+M.Mix Drop	Laissez-moi danser	Waxx, Pomme	spotify:track:1LBLEAMse3jta25SKwGs37
+M.Mix Drop	Bande organisée	Vernis Rouge	spotify:track:1vZ9zAIQ9cB386y0E6jcxg
+M.Mix Drop	Lydia	Highly Suspect	spotify:track:7yoBjKO6cCnK3zV8gr1k4e
+M.Mix Drop	Orangé (Nelly)	Roméo Elvis	spotify:track:6I608vKudwGQypQ0vlwjvG
+M.Mix Drop	Burning Pipers Hut	Beltaine	spotify:track:23v0qubT2YfaD2GD3QKr6H
+M.Mix Drop	Échame La Culpa	Luis Fonsi, Demi Lovato	spotify:track:2hl6q70unbviGo3g1R7uFx
+M.Mix Drop	Sunflower - Spider-Man: Into the Spider-Verse	Post Malone, Swae Lee	spotify:track:3KkXRkHbMCARz0aVfEt68P
+M.Mix Drop	Télégraphe	La Femme	spotify:track:6OKX7eTa4TkhUUZXMkHP6j
+M.Mix Drop	144p	LecHad	spotify:track:6gkd2wM5yecyTkqxhabHZX
+M.Mix Drop	DONT TALK ABOUT IT	SkyDxddy	spotify:track:0DS4lzBkarJ3mgBpDaOZrX
+M.Mix Drop	ALWAYS	Forrest Frank	spotify:track:2MRm76TO0j4VBbyPj6lodc
+M.Mix Drop	Sultans Of Swing	Dire Straits	spotify:track:3TiQGEP0UYsT5RpXRo2q0W
+M.Mix Drop	What's Up Danger (with Black Caviar)	Blackway, Black Caviar	spotify:track:5zsHmE2gO3RefVsPyw2e3T
+M.Mix Drop	Sofia	Alvaro Soler	spotify:track:5vj59ONIVbyhcrI8ZSwoRo
+M.Mix Drop	La Résistance	Dooz Kawa	spotify:track:51TT39eR7yLvxbTrEtF8jZ
+M.Mix Drop	J'picole	Sasso	spotify:track:3DIYanBth8SOpko0IIB5CD
+M.Mix Drop	Baila Morena	Zucchero, Maná	spotify:track:2MFiX5NURKleByp8YAn9xq
+M.Mix Drop	Psyché Rock - Malpaso Mix By Fatboy Slim	Pierre Henry, Michel Colombier	spotify:track:48R1fMxYe4Tve4RbMsMKjR
+M.Mix Drop	Walk Of Life	Dire Straits	spotify:track:6HMFtoMvv6n6Q2eOyPFyne
+M.Mix Drop	Le savoir faire	L'Entourloop, N'Zeng	spotify:track:1sPplsIEv3D4AFufq2tTOj
+M.Mix Drop	Okay	MC Solaar, Marie-Flore	spotify:track:0oohdNzQIMjaFUk4130Lyh
+M.Mix Drop	No Stress	Deluxe, Oxmo Puccino	spotify:track:5hNBOE2UPAzOxIGcvBpq5y
+M.Mix Drop	Imagine	Carbonne	spotify:track:6IcsbETuviVu6UTiBTcxY4
+M.Mix Drop	Maché bécif	Dub Inc	spotify:track:2GJSKtIC8zUXJtTLu3mMgr
+M.Mix Drop	C'est pire	WarEnd	spotify:track:4kpVZfQXDkpScZGtRaccmg
+M.Mix Drop	Mélomaniac	Petite Gueule	spotify:track:4LFNJUz6dBmfLCbvXSblEw
+M.Mix Drop	Can't Stop Feeling Billie Jean's Face	Pomplamoose	spotify:track:0yAuMnPTRBkLEJk4cGKYYi
+M.Mix Drop	Paname	Léo Ferré	spotify:track:5tKcOT7v4aCiRgFoPc6ZzK
+M.Mix Drop	Mademoiselle	Trois Cafés Gourmands	spotify:track:3uyBsgkTKH8AzKoWqrwpD2
+M.Mix Drop	Par amour	Youssoupha	spotify:track:0FsgAyAF0sHLJlTJIo3lEA
+M.Mix Drop	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Mix Drop	Chacun son chacun	THEODORT	spotify:track:3PmHpfvSyxtBqZrRG8K2zx
+M.Mix Drop	Monument	Soleil Noir, Swift Guad, Dooz Kawa, Davodka, Euphonik	spotify:track:76hv7yImQ35LbAeyddmezn
+M.Mix Drop	Hypnotize - 2007 Remaster	The Notorious B.I.G.	spotify:track:6Tsu3OsuMz4KEGKbOYd6A0
+M.Mix Drop	Maria	Lord Esperanza, Shaby	spotify:track:0tDS50FqewWTw2kX5VQxPL
+M.Mix Drop	Fire	Ayọ, Youssoupha	spotify:track:6gYpqMBJUGFxkXEus4PVQL
+M.Mix Drop	Paradise (feat. Lomepal)	Lefa, Lomepal	spotify:track:00YUNap0MFncqzzuvwzUlS
+M.Mix Drop	Rap Jazz	Hi Levelz	spotify:track:47RwVBEViaX0KlRvYfCZrd
+M.Mix Drop	Mozart in Da Ghetto	Mister Modo, Ugly Mac Beer	spotify:track:7lWP67Clx9sgkEHlJ1aif7
+M.Mix Drop	Cock Music Smart Music - Live 2015	Fauve	spotify:track:1uBUEsRRUcAXG9l2dd24RI
+M.Mix Drop	Doin' it Right (feat. Panda Bear)	Daft Punk, Panda Bear	spotify:track:36c4JohayB9qd64eidQMBi
+M.Mix Drop	Dans la tête des autres - James Gainsbrown	Kamini	spotify:track:45i1R3OPiLbx2pTvoZSyGi
+M.Mix Drop	Quand ton père t’engueule	Orelsan	spotify:track:7l0tZknEIevghdTejbtrNr
+M.Mix Drop	L'ADRESSE	Roméo Elvis	spotify:track:6XxaNqgzbgwkw0LaeE2Z63
+M.Mix Drop	Fuis-moi si tu veux	James Baker	spotify:track:5yUeOzrOXu7jSeez6Xj0cm
+M.Mix Drop	Nouveaux Horizons	Melissa NKonda	spotify:track:36hQtXKgy1fQYmjZRsx8AW
+M.Mix Drop	Stayin' Alive VS 50 C Tik Tok - Remix	ROSE BEAT	spotify:track:0u5Agy2RLORlgsxZ3INSJ5
+M.Mix Drop	Amours	Louise Attaque	spotify:track:74hfadh5A04GahFMBFoNh1
+M.Mix Drop	Jolie Coquine	Caravan Palace	spotify:track:0OuWBW2Q299zvZCdLUPlLx
+M.Mix Drop	Karma	Naâman	spotify:track:3rmYRJfWYAdKDei4yegdk1
+M.Mix Drop	Arcades	C2C	spotify:track:14zo201LRIXPtpgZCjDW7t
+M.Mix Drop	Automatic Attack	Stand High Patrol	spotify:track:38srUX62KRfmtpgovBNw0e
+M.Mix Drop	The Big Tree	Stand High Patrol	spotify:track:4ZpqCGtkgPn1Pxsgtmtc8O
+M.Mix Drop	Bomb Intro / Pass That Dutch	Missy Elliott	spotify:track:1MaI6NwdrqnE3mRzOYTpoo
+M.Mix Drop	Brest Bay	Stand High Patrol	spotify:track:5UX8v9D9CE0rXSEO4pfQJn
+M.Mix Drop	An Irish Party In Third Class	Nordsee	spotify:track:6ZYEo3omZd8mx5NzrS9TPf
+M.Mix Drop	Si Nos Organizamos...	The Party Band	spotify:track:1QZZjLPHsXVc5OBgyLofe6
+M.Mix Drop	99 Luftballons	Nena	spotify:track:2zYxMtbvmTBWj8dj9nrFCl
+M.Mix Drop	Bisso Na bisso	Bisso na Bisso	spotify:track:7pQKLGoSPL8tVSEofWxC2w
+M.Mix Drop	A.I.E. (A Moun'La)	La Compagnie Créole	spotify:track:7Ka1NFrptl7haeYQX1Qb6u
+M.Mix Drop	Écoute-moi camarade	Rachid Taha	spotify:track:7HCAJNB9VcFMvcwjYPh7pH
+M.Mix Drop	Peace - A Mushroom Cloud	Bormin’	spotify:track:1k9QrXahFsWvT2GCrGLpB2
+M.Mix Drop	Egoraphobia	Deluxe	spotify:track:5GMDdUHg3J1dcaxVpsYTaL
+M.Mix Drop	Mundian to Bach Ke	Panjabi MC	spotify:track:3JvJjfao5kKHPd7H83Jh3e
+M.Mix Drop	Tout le monde danse	Shaka Ponk	spotify:track:2eYh5XMW8SIU6kQTx2mpHW
+M.Mix Drop	Second Hand	TUN - Torino Unlimited Noise, Studnitzky	spotify:track:658NwfnebW2ztQnQ97ky00
+M.Mix Drop	Thriller	Michael Jackson	spotify:track:3S2R0EVwBSAVMd5UMgKTL0
+M.Mix Drop	Ma salope à moi	Doc Gynéco	spotify:track:4hTMICmba2P6B8TtyxooeW
+M.Mix Drop	One Day / Reckoning Song (Wankelmut Remix) [Radio Edit]	Asaf Avidan, The Mojos, Wankelmut	spotify:track:5bGG1abhVIUm6EAa36ipRX
+M.Mix Drop	Sweet Child O' Mine	Guns N' Roses	spotify:track:7snQQk1zcKl8gZ92AnueZW
+M.Mix Drop	Elvira	Alonzo	spotify:track:39qeQou5OR7ZL7KoJYqTJi
+M.Mix Drop	Trackin'	Billy Crawford	spotify:track:4iVpylB55RQJYl6QxqdBbt
+M.Mix Drop	La voix des sages (No More Fighting) - Live	Yannick Noah	spotify:track:5mpRMMyY2pv8KVOqKjVSvw
+M.Mix Drop	Décalé Gwada	Jessy Matador	spotify:track:6m9geVsbI6BsPZ6CESmK3c
+M.Mix Drop	Con J'Pense	Manau	spotify:track:0AmQ0qIhedN3luHmhHeMIp
+M.Mix Drop	Évidemment	Trois Cafés Gourmands	spotify:track:7vPkK6DpOcx3F6hJFFMDrL
+M.Mix Drop	Ta marinière	Hoshi	spotify:track:13bGMVe4lIR3LO7b45hvyg
+M.Mix Drop	La Sagesse	Grand Corps Malade	spotify:track:6LcHbiJPQjml8BUy4k13TG
+M.Mix Drop	GDFR (feat. Sage the Gemini & Lookas)	Flo Rida, Sage The Gemini, Lookas	spotify:track:26rdOwwjC2UnweK3xeS58u
+M.Mix Drop	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Mix Drop	+32 492 836 849 ou +33 1 70 99 24 30	Roméo Elvis, Le Motel, VYNK	spotify:track:5jvMFgui872LyuUqIWmxaR
+M.Mix Drop	Addictions	Superbus	spotify:track:62x5BmPPt987oXG84roCpq
+M.Mix Drop	Adieu bientôt	Columbine	spotify:track:17y8kqTbNDd9QM3j6yln4g
+M.Mix Drop	MACHTOU PICHTOU	PERCEVAL, Vadrouilleur2.0	spotify:track:6sK07T1fWshcwz9AkHp8gc
+M.Mix Drop	Jerusalema (feat. Nomcebo Zikode)	Master KG, Nomcebo Zikode	spotify:track:2MlOUXmcofMackX3bxfSwi
+M.Mix Drop	Saint-Denis (en musique)	Grand Corps Malade	spotify:track:3bZnFH8piHkJc1VUAnDs7P
+M.Mix Drop	La vie	Bolivard	spotify:track:0o5ZpZiuqyUPaqGq4cw6Lk
+M.Mix Drop	Confidence pour confidence - Version originale 1981	Jean Schultheis	spotify:track:6qfjUmIxPluNISxBgJfvM3
+M.Mix Drop	Brokopoly	Lyre Le Temps	spotify:track:5d5MhVgbAcQHgFyNxNQEIq
+M.Mix Drop	Sur des musiques noires	Thierry Pastor	spotify:track:2tiExMMP0mxiTL0EdNlZ1S
+M.Mix Drop	Coco - Todiefor Remix	Lorenzo, Todiefor	spotify:track:4bspR2si4Qj2CFp9tG9mim
+M.Mix Drop	Clint Eastwood	Gorillaz, Del The Funky Homosapien	spotify:track:1RKUoGiLEbcXN4GY4spQDx
+M.Mix Drop	Another Brick in the Wall, Pt. 2	Pink Floyd	spotify:track:4gMgiXfqyzZLMhsksGmbQV
+M.Mix Drop	Un ticket pour la lune	Suzane	spotify:track:6YT4NU0xlsLRLUtp4oFv0p
+M.Mix Drop	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.Mix Drop	Crazy - Single Version	Gnarls Barkley, CeeLo Green, Danger Mouse	spotify:track:6FlAGda9qkDhTU7ctFM4uG
+M.Mix Drop	Aimer sans amour	Guts	spotify:track:7yi1aBMIGLg3P25RNANtux
+M.Mix Drop	The Heart Part 5	Kendrick Lamar	spotify:track:5MMW4CZsZiZt2iuqAXzzWC
+M.Mix Drop	La vibe	KIK	spotify:track:7LB23eR3e7wtk5qgHJyeGr
+M.Mix Drop	Bizarre	Antes & Madzes	spotify:track:0b5Ur6VZd8ab1XAX584bnm
+M.Memories	Only Girl (In The World)	Rihanna	spotify:track:2ENexcMEMsYk0rVJigVD3i
+M.Memories	Shake It Off	Taylor Swift	spotify:track:5WfhXulggG0c6WoVeMPA8N
+M.Memories	DONT TALK ABOUT IT	SkyDxddy	spotify:track:0DS4lzBkarJ3mgBpDaOZrX
+M.Memories	Get out of My Head	Pab the Kid	spotify:track:7gchcs5ekj3XypmrKtiZl9
+M.Memories	So What	P!nk	spotify:track:0JiY190vktuhSGN6aqJdrt
+M.Memories	TiK ToK	Kesha	spotify:track:0HPD5WQqrq7wPWR7P7Dw1i
+M.Memories	Timber	Pitbull, Kesha	spotify:track:3cHyrEgdyYRjgJKSOiOtcS
+M.Memories	Call Me Maybe	Carly Rae Jepsen	spotify:track:20I6sIOMTCkB6w7ryavxtO
+M.Memories	Can't Hold Us (feat. Ray Dalton)	Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton	spotify:track:22skzmqfdWrjJylampe0kt
+M.Memories	No Lie	Sean Paul, Dua Lipa	spotify:track:48QmG1dfvMuYLxMPt7KSRA
+M.Memories	Poker Face	Lady Gaga	spotify:track:1QV6tiMFM6fSOKOGLMHYYg
+M.Memories	I'm an Albatraoz	AronChupa, Little Sis Nora	spotify:track:5MhsZlmKJG6X5kTHkdwC4B
+M.Memories	Watch Out For This (Bumaye)	Major Lazer, Busy Signal, FS Green, The Flexican	spotify:track:5StvAhgmgCOpCPHHNfS8bx
+M.Memories	Just Dance	Lady Gaga, Colby O'Donis	spotify:track:1dzQoRqT5ucxXVaAhTcT0J
+M.Memories	Right Round	Flo Rida, Kesha	spotify:track:3GpbwCm3YxiWDvy29Uo3vP
+M.Memories	All Around The World (La La La)	R3HAB, A Touch Of Class	spotify:track:02itaCXOdC54J0ISjqqFAp
+M.Memories	Sexy Bitch (feat. Akon)	David Guetta, Akon	spotify:track:2dGxjfhFXDIUX9h5ImyKkE
+M.Memories	Hey Mama (feat. Nicki Minaj, Bebe Rexha & Afrojack)	David Guetta, AFROJACK, Bebe Rexha, Nicki Minaj	spotify:track:285HeuLxsngjFn4GGegGNm
+M.Memories	Sweat - Snoop Dogg vs David Guetta Remix	Snoop Dogg, David Guetta	spotify:track:0R7YVi7w41Dr9jU5vblAok
+M.Memories	Good Feeling	Flo Rida	spotify:track:2LEF1A8DOZ9wRYikWgVlZ8
+M.Memories	Hangover	Taio Cruz, Flo Rida	spotify:track:5pmL3RzOy3IvGFaSDi4hZL
+M.Memories	On The Floor - Radio Edit	Jennifer Lopez, Pitbull	spotify:track:0Oe49j06Bjrxs8PltuVeaW
+M.Memories	Whistle	Flo Rida	spotify:track:3bC1ahPIYt1btJzSSEyyrF
+M.Memories	Wake Me Up	Avicii	spotify:track:0nrRP2bk19rLc0orkWPQk2
+M.Memories	My House	Flo Rida	spotify:track:6Knv6wdA0luoMUuuoYi2i1
+M.Memories	Lady Mélody	Tom Frager	spotify:track:4LWVPTpGzQjKtwYmmx7Hbd
+M.Memories	Jet Lag (feat. Marie-Mai)	Simple Plan, Marie-Mai	spotify:track:6AYVcU5t08isfIf9Km82mi
+M.Memories	Summer Paradise (feat. Sean Paul) - Single Version	Simple Plan, Sean Paul	spotify:track:3qakxFyYkg9BtnNfwZndnr
+M.Memories	Turn Down for What	DJ Snake, Lil Jon	spotify:track:67awxiNHNyjMXhVgsHuIrs
+M.Memories	Yeah! (feat. Lil Jon & Ludacris)	USHER, Lil Jon, Ludacris	spotify:track:5rb9QrpfcKFHM1EUbSIurX
+M.Memories	Airplanes (feat. Hayley Williams of Paramore)	B.o.B, Hayley Williams	spotify:track:6lV2MSQmRIkycDScNtrBXO
+M.Memories	Cheerleader (Felix Jaehn Remix) - Radio Edit	OMI, felix jaehn	spotify:track:7vFoFDWqTX0mHzLfrF1Cfy
+M.Memories	Wiggle (feat. Snoop Dogg)	Jason Derulo, Snoop Dogg	spotify:track:4B4zDmbHdkXZ1wUJv1yKFy
+M.Memories	Counting Stars	OneRepublic	spotify:track:2tpWsVSb9UEmDRxAl1zhX1
+M.Memories	Wannabe	Spice Girls	spotify:track:1Je1IMUlBXcx1Fz0WE7oPT
+M.Memories	Want to Want Me	Jason Derulo	spotify:track:7oGZAicScQt96OAW4AruYy
+M.Memories	One More Night	Maroon 5	spotify:track:6cpk00i5TxCqSeqNi2HuIe
+M.Memories	The Time (Dirty Bit)	Black Eyed Peas	spotify:track:7vWFaMq63AwkFDhS2OAg5u
+M.Memories	Single Ladies (Put a Ring on It)	Beyoncé	spotify:track:557un1HgwYMuqfWGSTmnxw
+M.Memories	Uptown Funk (feat. Bruno Mars)	Mark Ronson, Bruno Mars	spotify:track:32OlwWuMpZ6b0aN2RZOeMS
+M.Memories	Am I Wrong	Nico & Vinz	spotify:track:1fidCEsYlaVE3pHwKCvpFZ
+M.Memories	La La La	Naughty Boy, Sam Smith	spotify:track:3wPPWcVuinAU7dXcJXtCID
+M.Memories	Shake It Off	Taylor Swift	spotify:track:0cqRj7pUJDkTCEsJkx8snD
+M.Memories	Crazy In Love (feat. JAY-Z)	Beyoncé, JAŸ-Z	spotify:track:0TwBtDAWpkpM3srywFVOV5
+M.Memories	Trumpets	Jason Derulo	spotify:track:6jizk5lOUnfpaZXYMdfeC6
+M.Memories	The Lazy Song	Bruno Mars	spotify:track:386RUes7n1uM1yfzgeUuwp
+M.Memories	Mambo No. 5 (a Little Bit of...)	Lou Bega	spotify:track:6x4tKaOzfNJpEJHySoiJcs
+M.Memories	...Baby One More Time	Britney Spears	spotify:track:3MjUtNVVq3C8Fn0MP3zhXa
+M.Memories	Prince charmant	Keen' V	spotify:track:190bU2hiwo925TmptMkj59
+M.Memories	Juste une photo de toi	M. Pokora	spotify:track:18kJf6FlODugvc1uWe6c7g
+M.Memories	Wati by Night	Sexion d'Assaut	spotify:track:4g0kyRLFKBYFxDF1vCxj8v
+M.Memories	Désolé	Sexion d'Assaut	spotify:track:5NsOnvpjvH9sCz8TyVOmOz
+M.Memories	Ma direction	Sexion d'Assaut	spotify:track:6tFJdAZGXGsHTdMKmc1NjR
+M.Memories	Avant qu'elle parte	Sexion d'Assaut	spotify:track:53J0MZswXsuJfgG6kR3m32
+M.Memories	Wati House	Sexion d'Assaut	spotify:track:1QYzARrGUVT5Zk75HQXHJ1
+M.Memories	Happy Ending	MIKA	spotify:track:0TzbmxnYrlMV6dEln2l9nb
+M.Memories	Elle me dit	MIKA	spotify:track:3xUhchyBGEUNAwelO2yzqp
+M.Memories	Relax, Take It Easy	MIKA	spotify:track:0KM2y796j63t5RHhvRUxld
+M.Memories	Love Today	MIKA	spotify:track:2IxoxL1FHw0RxN5r6y5mjF
+M.Memories	Boum Boum Boum	MIKA	spotify:track:3EFtoHHOCqgOSnvSUvdJfj
+M.Memories	Andalouse	Kendji Girac	spotify:track:0fqlz0L5w16uQrELsFxTp0
+M.Memories	Sur ma route	Black M	spotify:track:3Uyt0WO3wOopnUBCe9BaXl
+M.Memories	À nos souvenirs	Trois Cafés Gourmands	spotify:track:3LgrzjwX7RVTtAX9Ai12Qm
+M.Memories	Tout oublier	Angèle, Roméo Elvis	spotify:track:06O3hxudc6V0BOuoCFSy71
+M.Memories	Soulman	Ben L'Oncle Soul	spotify:track:5DqEz7i72Q8q3AnZzxII8A
+M.Memories	Et alors !	Shy'm	spotify:track:0XKTCQiiJpW9GfQa9eh4Wi
+M.Memories	Bruxelles	Boulevard des Airs	spotify:track:3o9FyxQbCzMsyPLwcr0RIK
+M.Memories	Rien qu'une fois	Keen' V	spotify:track:423Lqrleljmw1TVm6tNnFh
+M.Memories	Le chant des sirènes	Fréro Delavega	spotify:track:0gSvEcIBXqiYqomjp6hKHj
+M.Memories	En feu	Soprano	spotify:track:6FxIFhVlOvI1wcXWe8LKei
+M.Memories	Non non non (Ecouter Barbara)	Camélia Jordana	spotify:track:6M6jVoM0ULQ2P12iQg1BOc
+M.Memories	Talk Dirty (feat. 2 Chainz)	Jason Derulo, 2 Chainz	spotify:track:5l3CML2OnzfNs5RfVgbcLt
+M.Memories	Die Young	Kesha	spotify:track:7EQGXaVSyEDsCWKmUcfpLk
+M.Memories	International Love (feat. Chris Brown)	Pitbull, Chris Brown	spotify:track:62zFEHfAYl5kdHYOivj4BC
+M.Memories	Vamos a la Playa	Loona	spotify:track:2Tk5B1h58lJRsrivGg1jaE
+M.Memories	La lettre	Renan Luce	spotify:track:2qaFgVtoMyWAb53M1UcCjj
+M.Memories	Toutes les femmes de ta vie	L5	spotify:track:3PkVPI5Qj87BCyNBUQ2pJB
+M.Memories	Moi... Lolita	Alizée	spotify:track:6e0LjNPkRqxIAlmmdjWSV8
+M.Memories	Toi et moi	Guillaume Grand	spotify:track:1M09D3Qd5ni7uMufLp1NvJ
+M.Memories	Tatoue moi	Mozart Opera Rock	spotify:track:4ZRY58aEy2TsixskDcEOIJ
+M.Memories	Double je - Remix	Christophe Willem	spotify:track:1EDQN7WMV9En0OhQuLBO6P
+M.Memories	Seul	Garou	spotify:track:7MRyru6giOwdtFYL5KQEVq
+M.Memories	Je serai (ta meilleure amie)	Lorie	spotify:track:4FL6ttDXeXjgxXLII24wEX
+M.Memories	Aux arbres citoyens	Yannick Noah	spotify:track:2poOtKwdjc39DRNmY6wRV2
+M.Memories	Le chemin (feat. Sita)	Kyo, Sita	spotify:track:5T37zS90GkaMHRj5uNaJpb
+M.Memories	Toujours pas d'amour	Priscilla	spotify:track:6XjLjrPnWqegY8xJf5HfYF
+M.Memories	One Day (Vandaag) - Radio Edit	Bakermat	spotify:track:0GSU6yLOJqO10ziQuBLWOE
+M.Memories	Barman	Soprano	spotify:track:4As0k5ciqtu4YC05taszuj
+M.Memories	Wavin' Flag - Celebration Mix	K'NAAN	spotify:track:6MPzzCxr4lKFzT35c1hXNH
+M.Memories	Avenir	Louane	spotify:track:5vhLa5SMn0PJJd1GZIUitd
+M.Memories	Trackin'	Billy Crawford	spotify:track:4iVpylB55RQJYl6QxqdBbt
+M.Memories	Décalé Gwada	Jessy Matador	spotify:track:6m9geVsbI6BsPZ6CESmK3c
+M.Memories	GDFR (feat. Sage the Gemini & Lookas)	Flo Rida, Sage The Gemini, Lookas	spotify:track:26rdOwwjC2UnweK3xeS58u
+M.Memories	+32 492 836 849 ou +33 1 70 99 24 30	Roméo Elvis, Le Motel, VYNK	spotify:track:5jvMFgui872LyuUqIWmxaR
+M.Memories	Addictions	Superbus	spotify:track:62x5BmPPt987oXG84roCpq
+M.Memories	Sur un air latino - Radio Edit	Lorie	spotify:track:0oMZ2WUfc7XhmwdCmD9TN2
+M.Memories	Belle demoiselle	Christophe Maé	spotify:track:1cHvyHJ1igIBrCpYoEKGIJ
+M.Memories	Parle-moi	Nâdiya	spotify:track:2rXROCKPA9IHn6zMILU7aX
+M.24K - Sunshine	Trumpets	Jason Derulo	spotify:track:6jizk5lOUnfpaZXYMdfeC6
+M.24K - Sunshine	Sunflower - Spider-Man: Into the Spider-Verse	Post Malone, Swae Lee	spotify:track:3KkXRkHbMCARz0aVfEt68P
+M.24K - Sunshine	Belles belles belles	Claude François	spotify:track:1Q6j1dx7pXzuLZLAexFWuQ
+M.24K - Sunshine	(We're Gonna) Rock Around The Clock	Bill Haley & His Comets	spotify:track:0ud0boSjH5sFHs4iYJT8sQ
+M.24K - Sunshine	J'irai où tu iras (with Jean-Jacques Goldman)	Céline Dion, Jean-Jacques Goldman	spotify:track:2dMLZBAf1mnrtviUHiwd7J
+M.24K - Sunshine	Rock N Roll Train	AC/DC	spotify:track:4feXJ5IC3avXsVW9WNFSag
+M.24K - Sunshine	Irish Way	The O'Reillys and the Paddyhats	spotify:track:6OrPG3IZScKkSR2cz2q0zR
+M.24K - Sunshine	Shake It Off	Taylor Swift	spotify:track:5WfhXulggG0c6WoVeMPA8N
+M.24K - Sunshine	15h02 - Regarde comme il fait beau (dehors)	Casseurs Flowters	spotify:track:4c1ArlBO56iNxiFTupUtt6
+M.24K - Sunshine	ALWAYS	Forrest Frank	spotify:track:2MRm76TO0j4VBbyPj6lodc
+M.24K - Sunshine	Sultans Of Swing	Dire Straits	spotify:track:3TiQGEP0UYsT5RpXRo2q0W
+M.24K - Sunshine	Sofia	Alvaro Soler	spotify:track:5vj59ONIVbyhcrI8ZSwoRo
+M.24K - Sunshine	Bellingham	Soprano, Youssoupha, S.Pri Noir	spotify:track:1IWy495eFBB1PLCga34v9K
+M.24K - Sunshine	Baila Morena	Zucchero, Maná	spotify:track:2MFiX5NURKleByp8YAn9xq
+M.24K - Sunshine	Psyché Rock - Malpaso Mix By Fatboy Slim	Pierre Henry, Michel Colombier	spotify:track:48R1fMxYe4Tve4RbMsMKjR
+M.24K - Sunshine	Bélinda	Claude François	spotify:track:3HiPDGrE4Bys0Xy4m82wQ1
+M.24K - Sunshine	Je viens dîner ce soir	Claude François	spotify:track:6lwypcbkt0dUL5IZpaMTH7
+M.24K - Sunshine	Walk Of Life	Dire Straits	spotify:track:6HMFtoMvv6n6Q2eOyPFyne
+M.24K - Sunshine	Le savoir faire	L'Entourloop, N'Zeng	spotify:track:1sPplsIEv3D4AFufq2tTOj
+M.24K - Sunshine	Imagine	Carbonne	spotify:track:6IcsbETuviVu6UTiBTcxY4
+M.24K - Sunshine	Can't Hold Us (feat. Ray Dalton)	Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton	spotify:track:22skzmqfdWrjJylampe0kt
+M.24K - Sunshine	À ma place	KIK	spotify:track:3rAGqbXgktr811iKgZt5JD
+M.24K - Sunshine	Mélomaniac	Petite Gueule	spotify:track:4LFNJUz6dBmfLCbvXSblEw
+M.24K - Sunshine	Can't Stop Feeling Billie Jean's Face	Pomplamoose	spotify:track:0yAuMnPTRBkLEJk4cGKYYi
+M.24K - Sunshine	Yes Papa	Papa Style	spotify:track:7AWcntVPX89eTnQxYEje9A
+M.24K - Sunshine	Mademoiselle	Trois Cafés Gourmands	spotify:track:3uyBsgkTKH8AzKoWqrwpD2
+M.24K - Sunshine	Murder On The Dancefloor	Sophie Ellis-Bextor	spotify:track:4tKGFmENO69tZR9ahgZu48
+M.24K - Sunshine	Hypnotize - 2007 Remaster	The Notorious B.I.G.	spotify:track:6Tsu3OsuMz4KEGKbOYd6A0
+M.24K - Sunshine	Viser le top	Demi Portion	spotify:track:7Lb7RNKprpbzOau7T2c1Tg
+M.24K - Sunshine	Maria	Lord Esperanza, Shaby	spotify:track:0tDS50FqewWTw2kX5VQxPL
+M.24K - Sunshine	Fire	Ayọ, Youssoupha	spotify:track:6gYpqMBJUGFxkXEus4PVQL
+M.24K - Sunshine	SPIDER	GIMS, DYSTINCT	spotify:track:2fFTn0f94EopgZyfSGQuyK
+M.24K - Sunshine	Rap Jazz	Hi Levelz	spotify:track:47RwVBEViaX0KlRvYfCZrd
+M.24K - Sunshine	SOIS PAS TIMIDE	GIMS	spotify:track:37tGmKyKlr8vyt9BVdoWQo
+M.24K - Sunshine	All or Nothing	Guts, Tanya Morgan, Lorine Chia	spotify:track:6jWFsJT5IYVKCJEQ55L29W
+M.24K - Sunshine	Money For Nothing - Edit	Dire Straits	spotify:track:1hXtY9yeMAcxZlBvWzjwJn
+M.24K - Sunshine	Why Don't You Get A Job	The Offspring	spotify:track:0sNKiz82ATCvT3f3XVVUUj
+M.24K - Sunshine	Bourbier	Timal, Naza	spotify:track:1f0RLxICht3MdQ00Z8PNca
+M.24K - Sunshine	The Zephyr Song	Red Hot Chili Peppers	spotify:track:1ndGB6rvxKYN9seCYO1dTF
+M.24K - Sunshine	Nouveaux Horizons	Melissa NKonda	spotify:track:36hQtXKgy1fQYmjZRsx8AW
+M.24K - Sunshine	Sur Le Fil	Jenifer	spotify:track:7FDoN7JvQ6xQb5OviI0JU0
+M.24K - Sunshine	I'm A Believer (Reprise) - Soundtrack Version	Eddie Murphy	spotify:track:7bDVOfUF41jMmcOJUEPAjQ
+M.24K - Sunshine	Freestyle Funk	Tsonpa	spotify:track:61hO3dj5FoWM4MprDoCE3r
+M.24K - Sunshine	On vient gâcher tes classiques n*4	47ter	spotify:track:2LtNWczamWhnbhj2TERWKg
+M.24K - Sunshine	Rock and Roll High School - Live	Ramones	spotify:track:2SBr9TBq1PERMUbsVEePsq
+M.24K - Sunshine	Wellerman - Sea Shanty / 220 KID x Billen Ted Remix	Nathan Evans, 220 KID	spotify:track:3iw6V4LH7yPj1ESORX9RIN
+M.24K - Sunshine	Le Brio (Branchez la guitare)	Big Soul	spotify:track:12S1WtXvSXQE7Q0FYk650p
+M.24K - Sunshine	Another Day Of Sun	La La Land Cast	spotify:track:5kRBzRZmZTXVg8okC7SJFZ
+M.24K - Sunshine	Outta Road	Naâman	spotify:track:5wwDZoG2aXMUaxJZu1c6CO
+M.24K - Sunshine	Si Nos Organizamos...	The Party Band	spotify:track:1QZZjLPHsXVc5OBgyLofe6
+M.24K - Sunshine	Dancin' (A Catchy Rhythm)	Sue Ann Carwell, Joey Diggs	spotify:track:6DMp5fnBQoT6ySJ1kyR8Kq
+M.24K - Sunshine	Bisso Na bisso	Bisso na Bisso	spotify:track:7pQKLGoSPL8tVSEofWxC2w
+M.24K - Sunshine	Dynabeat	Jain	spotify:track:5lZoZuFYQpsRy8D5iD1MG2
+M.24K - Sunshine	Oblivion	Royal Blood	spotify:track:3Ye5icBka8ODjcaEQakPvZ
+M.24K - Sunshine	Funkytown / I Feel Good	Lucky Chops	spotify:track:4X67ikG4nM5iw26ZkjF34N
+M.24K - Sunshine	Souvenirs	Lyre Le Temps	spotify:track:2Ds03ut5qLIuuJFbwEEmwY
+M.24K - Sunshine	Thank You (Falettinme Be Mice Elf Agin)	Big Brovaz	spotify:track:2Xn8BrYoMdcbo27LDwKO8y
+M.24K - Sunshine	Trois nuits par semaine	Indochine	spotify:track:7HGeeuXL4KuztZXhYLrsm5
+M.24K - Sunshine	Sunny	Boney M.	spotify:track:3pf96IFggfQuT6Gafqx2rt
+M.24K - Sunshine	I'm A Believer	Smash Mouth	spotify:track:4lAYMPLPFOovwTCmtTt9b5
+M.24K - Sunshine	Toujours beau	2CheeseMilkShake, Dj Weedim	spotify:track:6axvgZX9bUAGgEV0wqmpUW
+M.24K - Sunshine	I'm So Excited	The Pointer Sisters	spotify:track:1ot6jEe4w4hYnsOPjd3xKQ
+M.24K - Sunshine	Et alors !	Shy'm	spotify:track:0XKTCQiiJpW9GfQa9eh4Wi
+M.24K - Sunshine	Daddy Cool	Boney M.	spotify:track:3WMbD1OyfKuwWDWMNbPQ4g
+M.24K - Sunshine	La fleur aux dents	Joe Dassin	spotify:track:4D32L2KxovFlZ8hazjnF8e
+M.24K - Sunshine	Mambo No. 5 (a Little Bit of...)	Lou Bega	spotify:track:6x4tKaOzfNJpEJHySoiJcs
+M.24K - Sunshine	Dieu m'a donné la foi	Ophélie Winter	spotify:track:4QlC4HmIyo2nO0l0bRrgdm
+M.24K - Sunshine	Barman	Soprano	spotify:track:4As0k5ciqtu4YC05taszuj
+M.24K - Sunshine	Vous avez l'heure	Louise Attaque	spotify:track:7AL3sIk9wH3ttyYIC5tvrC
+M.24K - Sunshine	C'est La Vie	Stereophonics	spotify:track:0RtIyGCAp35Hk2WYiTRHnH
+M.24K - Sunshine	Sous les apparences	Ana Ka	spotify:track:3GZTxNYUu7PpXv47oCMa4G
+M.24K - Sunshine	Sweet Child O' Mine	Guns N' Roses	spotify:track:7snQQk1zcKl8gZ92AnueZW
+M.24K - Sunshine	24K Magic	Bruno Mars	spotify:track:6b8Be6ljOzmkOmFslEb23P
+M.24K - Sunshine	Les Rois mages - Remasterisé en 2006	Sheila	spotify:track:2y31xdqCINOlMWeR7sfR23
+M.24K - Sunshine	Don't Go Breaking My Heart	Elton John, Kiki Dee	spotify:track:7HW5WIw7ZgZORCzUxv5gW5
+M.24K - Sunshine	La Bamba	Les Forbans	spotify:track:1A9cjxlUidV7cCmB10GjgP
+M.24K - Sunshine	Trackin'	Billy Crawford	spotify:track:4iVpylB55RQJYl6QxqdBbt
+M.24K - Sunshine	Parti pour zouker - Live	Lorie	spotify:track:2HsNTr4jlNwLNkqA0WGGWk
+M.24K - Sunshine	Je fonce - Live	Lorie	spotify:track:5tAwY1EvQrX75KP0aTGCYt
+M.24K - Sunshine	La voix des sages (No More Fighting) - Live	Yannick Noah	spotify:track:5mpRMMyY2pv8KVOqKjVSvw
+M.24K - Sunshine	Je dois m'en aller	Niagara	spotify:track:7fxvGz4A606ADmsAGT5r4Q
+M.24K - Sunshine	Évidemment	Trois Cafés Gourmands	spotify:track:7vPkK6DpOcx3F6hJFFMDrL
+M.24K - Sunshine	Décibels	Dub Inc	spotify:track:0yBhbDDNO9jUORiTWbtOP0
+M.24K - Sunshine	La Sagesse	Grand Corps Malade	spotify:track:6LcHbiJPQjml8BUy4k13TG
+M.24K - Sunshine	Je vous aime	KIK	spotify:track:1fjZIZxt5ql6DSnX1mBysM
+M.24K - Sunshine	GDFR (feat. Sage the Gemini & Lookas)	Flo Rida, Sage The Gemini, Lookas	spotify:track:26rdOwwjC2UnweK3xeS58u
+M.24K - Sunshine	Addictions	Superbus	spotify:track:62x5BmPPt987oXG84roCpq
+M.24K - Sunshine	A la vie, à l'Armor (feat. Les 3 Fromages)	Les Fatals Picards, Les 3 Fromages	spotify:track:4CdnzkXHYUtsMm6bAgd79M
+M.24K - Sunshine	Saint-Denis (en musique)	Grand Corps Malade	spotify:track:3bZnFH8piHkJc1VUAnDs7P
+M.24K - Sunshine	La vie	Bolivard	spotify:track:0o5ZpZiuqyUPaqGq4cw6Lk
+M.24K - Sunshine	FOMO	Lord Esperanza	spotify:track:3CepsWSM9yVKfVZSz1suud
+M.24K - Sunshine	Brokopoly	Lyre Le Temps	spotify:track:5d5MhVgbAcQHgFyNxNQEIq
+M.24K - Sunshine	Nougayork	Claude Nougaro	spotify:track:2kQOw4QEDxUkuEdeGxDqtc
+M.24K - Sunshine	Coco - Todiefor Remix	Lorenzo, Todiefor	spotify:track:4bspR2si4Qj2CFp9tG9mim
+M.24K - Sunshine	One Life	iambillies	spotify:track:0lYewH7vm7PLZfnl9QOo3g
+M.24K - Sunshine	Dans ma ruche	Guizmo	spotify:track:1cBPbd6lXCL78s8J5hk6tJ
+M.24K - Sunshine	La Fin Du Monde	Sam Sauvage	spotify:track:3QHVBHcvXwvEeey5Gy9Fz2
+M.24K - Sunshine	Les Gens Qui Dansent (j'adore)	Sam Sauvage	spotify:track:0kgZ7YqklQkVLV8SoEi5Us
+M.24K - Sunshine	Sur un air latino - Radio Edit	Lorie	spotify:track:0oMZ2WUfc7XhmwdCmD9TN2
+M.24K - Sunshine	Filer au soleil	An'Om	spotify:track:6jM7wKQpfnvnXemo7Z6nxC
+M.24K - Sunshine	Fils de	Dub Inc	spotify:track:6RuBH60do7z2d2QXsn5j8g
+M.24K - Sunshine	Belle demoiselle	Christophe Maé	spotify:track:1cHvyHJ1igIBrCpYoEKGIJ
+M.24K - Sunshine	Prière païenne - Live à Paris	Céline Dion	spotify:track:3CjmGFuI5SkqxJFjcqCccW
+M.24K - Sunshine	Gardien de nuit - Extrait du "Soldat Rose"	Francis Cabrel	spotify:track:3xkm1UY6EU65oQ3rU7M9Be
+M.24K - Sunshine	Poker Face	Lady Gaga	spotify:track:1QV6tiMFM6fSOKOGLMHYYg
+M.24K - Sunshine	DJ (Version française de "The Magic Key")	Dieselle	spotify:track:4z30OHooNCMJ7j5dCIycTd
+M.24K - Sunshine	Boze	_TLR_	spotify:track:5Tm9cPRGoirES3k4VhECvm
+M.24K - Sunshine	Two Princes	Spin Doctors	spotify:track:0cuq829zRNq4AEdmDJA4aw
+M.Au bistrot	Appelle moi camarade	Ministere des affaires populaire	spotify:track:5qRr8fDt15vumraOmkVDi2
+M.Au bistrot	La rue kétanou	La Rue Kétanou	spotify:track:063bFwvfjPqnIMNNHOT58Y
+M.Au bistrot	Les hommes que j'aime	La Rue Kétanou	spotify:track:7ebyGGBvIus0ZgdbzcXweL
+M.Au bistrot	Le capitaine de la barrique	La Rue Kétanou	spotify:track:68Mw9GeJ5pZHWKqeGtcIMu
+M.Au bistrot	Mon amant de St Jean	Les Croquants	spotify:track:14d5gJKVmRqhWw2HWNmWuW
+M.Au bistrot	Les petits papiers	Les Croquants	spotify:track:32xjDTljxGE02pwYzrUqY8
+M.Au bistrot	Le tourbillon de la vie	Les Croquants	spotify:track:5bXJt0Wftn2x8CzHs0g1yc
+M.Au bistrot	Tu parles trop	La Rue Kétanou	spotify:track:5DLqmMZvMaJe9FbuHkd9RF
+M.Au bistrot	Emmenez-moi	Les Croquants	spotify:track:2yqLMJPRnWLfhxsqn71UjM
+M.Au bistrot	Les souliers rouges	Mes Souliers Sont Rouges	spotify:track:3jrxlASmwbM3HQ8znW4iFj
+M.Au bistrot	Rap'n'roll	La Rue Kétanou	spotify:track:0P0KsUKjLxnM4H8Fvclgcw
+M.Au bistrot	Run On	Pow Wow	spotify:track:1Z4rw1B6jpT1ajxlbQPTFo
+M.Au bistrot	Niquons la planète	HK et Les Saltimbanks	spotify:track:3AeW6dzqO1Ma6R9bBamE2M
+M.Au bistrot	Siffler sur la colline	Les Croquants	spotify:track:3L942yj6BG52T5MxhdOxIz
+M.Au bistrot	Un petit poisson, un petit oiseau / Milord	Bande à Part	spotify:track:2h7HJLymV0pd9cqAZimtdP
+M.Au bistrot	Super Pouvoir D'Achat	La Chanson Du Dimanche	spotify:track:4eXerBzWuWUWRCayo0DcdC
+M.Au bistrot	Les prisons de Nantes	Tri Yann	spotify:track:7leVj2jwVG79K4fJwXifK2
+M.Au bistrot	La manivelle	Wazoo	spotify:track:6Qcl6UqlEfJl6Rt3h0Dp4i
+M.Au bistrot	Je danse le mia - Live	Deluxe, IAM, M	spotify:track:6ufA631ynBATU4WTzhTqjG
+M.Au bistrot	Fais-Moi Mal, Johnny	Carmen Maria Vega	spotify:track:47i2aAoIG8Ty9kj6mOVqsS
+M.Au bistrot	J'aurais bien voulu	Babylon Circus	spotify:track:1FysXLnl9G9qiyhfCzKE1J
+M.Au bistrot	Planter des cailloux	Syrano	spotify:track:3WQ4R2sHqa8oQMGtSsUoY0
+M.Au bistrot	Prohibition 2	Smokey Joe & The Kid, Yoshi Di Original	spotify:track:2QwZ43tysHmIRCuL0wyFqx
+M.Au bistrot	Prohibition 3	Smokey Joe & The Kid, Yoshi Di Original	spotify:track:5qD4XJR7slABeyb0aKM94T
+M.Au bistrot	L'envol	Babylon Circus	spotify:track:299QTSf7Mp4peUqH2Mu6eb
+M.Au bistrot	Danser encore	HK	spotify:track:3lDn0RxZWGTKymCSn0Oz07
+M.Au bistrot	Ma faute à toi	La Rue Kétanou	spotify:track:0BJiITBa2wpzagOlqulViS
+M.Au bistrot	La mauvaise réputation	Sinsémilia	spotify:track:5LtLPbmvr4ZocOTIIkZjxP
+M.Au bistrot	Président des gens	La Place du KiF	spotify:track:2ZrUbEviZulA6VOGR3bacS
+M.Au bistrot	Sans papiers	La Place du KiF	spotify:track:6OQXcLpFEto3GopXcm6D4M
+M.Au bistrot	Brokopoly	Lyre Le Temps	spotify:track:5d5MhVgbAcQHgFyNxNQEIq
+M.Au bistrot	Petit Martien	La Fanfare En Pétard	spotify:track:2svx0YqX7IpvJduRsVEvua
+M.Au bistrot	Jolie Coquine	Caravan Palace	spotify:track:0OuWBW2Q299zvZCdLUPlLx
+M.Au bistrot	Un homme qui aime les femmes - Live	Tryo	spotify:track:5f6wd8NVs42BJFRnnv2a4n
+M.Au bistrot	Je suis libre et j't'emmerde	Dirty Old Mat	spotify:track:5LFsanC4vmGAkMXlAHPOKY
+M.Au bistrot	H24	La Place du KiF	spotify:track:5Zu5QFX4opbhubUTfucbvS
+M.Au bistrot	La haine	La Place du KiF	spotify:track:522WqS9x3laXZvOhOgjlPv
+M.Au bistrot	A Pic	R.Wan	spotify:track:3TP7Qc8OXMCFWDp3Qt9SwC
+M.Au bistrot	La Menteuse	Carmen Maria Vega	spotify:track:6l5XhrgBV1o2JYShxJgoOx
+M.Au bistrot	Smokid Inc. - Live	Smokey Joe & The Kid, MysDiggi, Yoshi Di Original	spotify:track:1QMpLPhDViyrmwBRu7sCbm
+M.Au bistrot	Dans La Salle Du Bar-Tabac De La Rue Des Martyrs	Pigalle	spotify:track:6SOuIgfdDRAiSgQ7F8Eaje
+M.Au bistrot	J'veux du soleil	Au P'Tit Bonheur	spotify:track:0L4JEAhghqIcwjVyMJv8Yw
+M.Au bistrot	Fatigante	Louise Attaque	spotify:track:7q5k5kOFOOTcZ479yVVKQG
+M.Au bistrot	All, Now	Scarecrow	spotify:track:5J1d5FfPC7ZoY5ktOrD8X2
+M.Au bistrot	Left Behind	Scarecrow	spotify:track:5gSHmVV30dqKESS4nYGpXg
+M.Au bistrot	Burning Pipers Hut	Beltaine	spotify:track:23v0qubT2YfaD2GD3QKr6H
+M.Au bistrot	Rue d'la soif	Saez	spotify:track:19Iu2xqnoQymUMX3JbHOCp
+M.Au bistrot	Lache l'affaire	R.Wan	spotify:track:1BDAkqZ9L48rMrnNeL2YDY
+M.Au bistrot	Vous avez l'heure	Louise Attaque	spotify:track:7AL3sIk9wH3ttyYIC5tvrC
+M.Au bistrot	A la vie, à l'Armor (feat. Les 3 Fromages)	Les Fatals Picards, Les 3 Fromages	spotify:track:4CdnzkXHYUtsMm6bAgd79M
+M.Besoin de chanter ?🎤	Belles belles belles	Claude François	spotify:track:1Q6j1dx7pXzuLZLAexFWuQ
+M.Besoin de chanter ?🎤	L'hymne de nos campagnes - Live	Tryo	spotify:track:0tcFkV7zLOGWgUbYtD6ROz
+M.Besoin de chanter ?🎤	1000°C	Lomepal, Roméo Elvis	spotify:track:4lzjE9GlGamkuYqQBfCY8R
+M.Besoin de chanter ?🎤	Bonne idée - Live En passant 1998	Jean-Jacques Goldman	spotify:track:4TPC0PSYIzDfjbgPYUdcLb
+M.Besoin de chanter ?🎤	Le Jerk	Thierry Hazard	spotify:track:0YJjl4SSIBx3h7L5M9OgiG
+M.Besoin de chanter ?🎤	La parisienne	Marie-Paule Belle	spotify:track:1Eg6Q5KlzU6ZHqyM9USX3Q
+M.Besoin de chanter ?🎤	Le prince Aladin (feat. Kev Adams)	Black M, Kev Adams	spotify:track:6ZS3WTqzdyff3cAUfjQaRV
+M.Besoin de chanter ?🎤	Les souliers rouges	Mes Souliers Sont Rouges	spotify:track:3jrxlASmwbM3HQ8znW4iFj
+M.Besoin de chanter ?🎤	Dernière danse	Zephyr 21	spotify:track:2rXEzWb8sThODmG8RQ5fGc
+M.Besoin de chanter ?🎤	J'irai où tu iras (with Jean-Jacques Goldman)	Céline Dion, Jean-Jacques Goldman	spotify:track:2dMLZBAf1mnrtviUHiwd7J
+M.Besoin de chanter ?🎤	Je suis ton meilleur ami	Richard Darbois	spotify:track:4HPGEIll5M2eZVnEpqPkvL
+M.Besoin de chanter ?🎤	Daniela	Elmer Food Beat	spotify:track:1XeTkG4QdxJMbGYqbtGdGC
+M.Besoin de chanter ?🎤	15h02 - Regarde comme il fait beau (dehors)	Casseurs Flowters	spotify:track:4c1ArlBO56iNxiFTupUtt6
+M.Besoin de chanter ?🎤	Baila Morena	Zucchero, Maná	spotify:track:2MFiX5NURKleByp8YAn9xq
+M.Besoin de chanter ?🎤	Freestyle Radio Phoenix	Casseurs Flowters	spotify:track:59g2FzWJbiW48fnNOmmHwj
+M.Besoin de chanter ?🎤	Bélinda	Claude François	spotify:track:3HiPDGrE4Bys0Xy4m82wQ1
+M.Besoin de chanter ?🎤	Toujours pas d'amour	Priscilla	spotify:track:6XjLjrPnWqegY8xJf5HfYF
+M.Besoin de chanter ?🎤	Imagine	Carbonne	spotify:track:6IcsbETuviVu6UTiBTcxY4
+M.Besoin de chanter ?🎤	À ma place	KIK	spotify:track:3rAGqbXgktr811iKgZt5JD
+M.Besoin de chanter ?🎤	Mademoiselle	Trois Cafés Gourmands	spotify:track:3uyBsgkTKH8AzKoWqrwpD2
+M.Besoin de chanter ?🎤	SPIDER	GIMS, DYSTINCT	spotify:track:2fFTn0f94EopgZyfSGQuyK
+M.Besoin de chanter ?🎤	SOIS PAS TIMIDE	GIMS	spotify:track:37tGmKyKlr8vyt9BVdoWQo
+M.Besoin de chanter ?🎤	La maladie des Hommes	Antes & Madzes	spotify:track:71UhiBTGaZvMEZZaUKWbgg
+M.Besoin de chanter ?🎤	Tu peux préparer le café noir	Eddy Mitchell	spotify:track:4Fry9NcYlTfnMnLnDQGCyi
+M.Besoin de chanter ?🎤	L'instant X - Live Bercy, Paris / 1996	Mylène Farmer	spotify:track:0rnSRBIzLmNtbSaIWdIuAM
+M.Besoin de chanter ?🎤	Bourbier	Timal, Naza	spotify:track:1f0RLxICht3MdQ00Z8PNca
+M.Besoin de chanter ?🎤	Toi et moi	Guillaume Grand	spotify:track:1M09D3Qd5ni7uMufLp1NvJ
+M.Besoin de chanter ?🎤	Sur Le Fil	Jenifer	spotify:track:7FDoN7JvQ6xQb5OviI0JU0
+M.Besoin de chanter ?🎤	OVGTC - Star Wars remix	47ter, KIK	spotify:track:55mcupbf7cIsuCEVAuTJVk
+M.Besoin de chanter ?🎤	Amours	Louise Attaque	spotify:track:74hfadh5A04GahFMBFoNh1
+M.Besoin de chanter ?🎤	Siffler sur la colline	Les Croquants	spotify:track:3L942yj6BG52T5MxhdOxIz
+M.Besoin de chanter ?🎤	J'aime	QQUN	spotify:track:17kutsxL0cpoXYUZHLhBLO
+M.Besoin de chanter ?🎤	Gardien de nuit - Extrait du "Soldat Rose"	Francis Cabrel	spotify:track:3xkm1UY6EU65oQ3rU7M9Be
+M.Besoin de chanter ?🎤	Aux arbres citoyens	Yannick Noah	spotify:track:2poOtKwdjc39DRNmY6wRV2
+M.Besoin de chanter ?🎤	On s'attache	Christophe Maé	spotify:track:4E8hgGDOwG5CpiEke6qZMT
+M.Besoin de chanter ?🎤	Belle demoiselle	Christophe Maé	spotify:track:4prNHQCgqVpmGJRulNK4zg
+M.Besoin de chanter ?🎤	Toutes les femmes de ta vie	L5	spotify:track:3PkVPI5Qj87BCyNBUQ2pJB
+M.Besoin de chanter ?🎤	Je me lâche	Christophe Maé	spotify:track:2xrhwuJPdPbKpgT7nfU81I
+M.Besoin de chanter ?🎤	Tombé sous le charme	Christophe Maé	spotify:track:2EifYrFVMyUrNCOz1esOVx
+M.Besoin de chanter ?🎤	La bonne du curé	Annie Cordy	spotify:track:0jX9399UsV5I0arebRwJjK
+M.Besoin de chanter ?🎤	Dingue, dingue, dingue	Christophe Maé	spotify:track:0mR80lwmVmIxl4safmmQsk
+M.Besoin de chanter ?🎤	J'aimerais trop (feat. SAP)	Keen' V, SAP	spotify:track:3C2799IoWJS4OJExNsjBeh
+M.Besoin de chanter ?🎤	Bande organisée	Vernis Rouge	spotify:track:1vZ9zAIQ9cB386y0E6jcxg
+M.Besoin de chanter ?🎤	Je fonce	Lorie	spotify:track:5ojVZfVfuK5xO0MTDAuzuB
+M.Besoin de chanter ?🎤	Cielo Ciego	Boulevard des Airs	spotify:track:6FTCtvPI9SUvgeiBTqNxDe
+M.Besoin de chanter ?🎤	Prince Ali	Richard Darbois	spotify:track:1oklUKamfKpJb2XjTcoaFE
+M.Besoin de chanter ?🎤	On est là	M. Pokora	spotify:track:4u7BbTD9b88Fvy84V5cesh
+M.Besoin de chanter ?🎤	La parisienne	Christophe Maé	spotify:track:1XpblLS50JizDEF78BsrbF
+M.Besoin de chanter ?🎤	Point d'orgue (Outro)	Petite Gueule	spotify:track:2A3SYhyhPcCseeakcdrqgJ
+M.Besoin de chanter ?🎤	Je Voudrais Déjà Être Roi	Dimitri Rougeul, Michel Prudhomme, Melinda Attia	spotify:track:2vRKm8OTmxJP1dImXQ8Od3
+M.Besoin de chanter ?🎤	Aquatrip	Hippocampe Fou	spotify:track:4VZhlN99UoRLx3eaYwIaxg
+M.Besoin de chanter ?🎤	ALWAYS	Forrest Frank	spotify:track:2MRm76TO0j4VBbyPj6lodc
+M.Besoin de chanter ?🎤	Sofia	Alvaro Soler	spotify:track:5vj59ONIVbyhcrI8ZSwoRo
+M.Besoin de chanter ?🎤	Bellingham	Soprano, Youssoupha, S.Pri Noir	spotify:track:1IWy495eFBB1PLCga34v9K
+M.Besoin de chanter ?🎤	J'picole	Sasso	spotify:track:3DIYanBth8SOpko0IIB5CD
+M.Besoin de chanter ?🎤	Sensualité - Live	Axelle Red	spotify:track:6ffbm2pnvIVAeJ67BRHiKi
+M.Besoin de chanter ?🎤	Je viens dîner ce soir	Claude François	spotify:track:6lwypcbkt0dUL5IZpaMTH7
+M.Besoin de chanter ?🎤	Walk Of Life	Dire Straits	spotify:track:6HMFtoMvv6n6Q2eOyPFyne
+M.Besoin de chanter ?🎤	Maria	Lord Esperanza, Shaby	spotify:track:0tDS50FqewWTw2kX5VQxPL
+M.Besoin de chanter ?🎤	Laissez-moi danser	Waxx, Pomme	spotify:track:1LBLEAMse3jta25SKwGs37
+M.Besoin de chanter ?🎤	Rome	Solann	spotify:track:2lfVOXTYg0AQ30BOmvTDXX
+M.Besoin de chanter ?🎤	L'insatisfait	Suzane	spotify:track:6f9HzvbQiqqxpv5kCSv4vz
+M.Besoin de chanter ?🎤	Nouveaux Horizons	Melissa NKonda	spotify:track:36hQtXKgy1fQYmjZRsx8AW
+M.Besoin de chanter ?🎤	Le Brio (Branchez la guitare)	Big Soul	spotify:track:12S1WtXvSXQE7Q0FYk650p
+M.Besoin de chanter ?🎤	Sans Prétention	Sans Prétention	spotify:track:3HHSWXQjNyfPDjzd4RbDcE
+M.Besoin de chanter ?🎤	Un peu de blues	Christophe Maé	spotify:track:1EM7vRaw3KNEQ5N5KFONtH
+M.Besoin de chanter ?🎤	Sur un air latino - Live	Lorie	spotify:track:3JfQFXYwb0zlQXSUBP4ukO
+M.Besoin de chanter ?🎤	Un, deux, trois - Live Sur scène 1992	Carole Fredericks, Jean-Jacques Goldman, Michael Jones	spotify:track:3jaeqecrR12pZVVo3qWzJm
+M.Besoin de chanter ?🎤	C'est Toi Que Je T'aime	Head Fish	spotify:track:5LYsjeqdLcbTpgfzhaLUoS
+M.Besoin de chanter ?🎤	La fleur aux dents	Joe Dassin	spotify:track:4D32L2KxovFlZ8hazjnF8e
+M.Besoin de chanter ?🎤	Toi et moi	Guillaume Grand	spotify:track:3A92gdzkl64FX8puP7zbCD
+M.Besoin de chanter ?🎤	Seul et célibataire	Les Fatals Picards	spotify:track:1OZGqWVmcZ47w3JOykos9f
+M.Besoin de chanter ?🎤	La java de Broadway	Michel Sardou	spotify:track:4JfaQP5vF7WJy5n5khylzF
+M.Besoin de chanter ?🎤	Barman	Soprano	spotify:track:4As0k5ciqtu4YC05taszuj
+M.Besoin de chanter ?🎤	Vous avez l'heure	Louise Attaque	spotify:track:7AL3sIk9wH3ttyYIC5tvrC
+M.Besoin de chanter ?🎤	Sous les apparences	Ana Ka	spotify:track:3GZTxNYUu7PpXv47oCMa4G
+M.Besoin de chanter ?🎤	L' Arène	JoeyStarr, Tuco Gadamn	spotify:track:17PyqjG58lSwz5F94znqm6
+M.Besoin de chanter ?🎤	Tournent les violons	Jean-Jacques Goldman	spotify:track:66Ri5mLDOXWaDONfVA8Ao7
+M.Besoin de chanter ?🎤	Et c'est parti... (feat. Smartzee)	Nâdiya, Smartzee	spotify:track:1zwJikF2MYUwqcVnqtGxVj
+M.Besoin de chanter ?🎤	Les Rois mages - Remasterisé en 2006	Sheila	spotify:track:2y31xdqCINOlMWeR7sfR23
+M.Besoin de chanter ?🎤	Les cactus	Jacques Dutronc	spotify:track:6N8bfaDYWJb7yyqdBcf0s8
+M.Besoin de chanter ?🎤	Vous êtes fous - Single edit	Benny B, DJ Daddy K	spotify:track:7BSHykSC5uTxPgcGSCveSN
+M.Besoin de chanter ?🎤	The Antidote	Stupeflip	spotify:track:6y8o3gzAroaVWIW0XvaYcv
+M.Besoin de chanter ?🎤	Stupeflip vite !!!	Stupeflip, Cadillac	spotify:track:3Qv2Bvd32SFdETcPlEq0f5
+M.Besoin de chanter ?🎤	Musique	France Gall	spotify:track:3J7V8Wg2wqqCM3tfpBoSne
+M.Besoin de chanter ?🎤	Je fonce - Live	Lorie	spotify:track:5tAwY1EvQrX75KP0aTGCYt
+M.Besoin de chanter ?🎤	La voix des sages (No More Fighting) - Live	Yannick Noah	spotify:track:5mpRMMyY2pv8KVOqKjVSvw
+M.Besoin de chanter ?🎤	Être un homme comme vous	Ben L'Oncle Soul	spotify:track:2mxoHBPwZ9lx7ULQADerR0
+M.Besoin de chanter ?🎤	Décibels	Dub Inc	spotify:track:0yBhbDDNO9jUORiTWbtOP0
+M.Besoin de chanter ?🎤	Je vous aime	KIK	spotify:track:1fjZIZxt5ql6DSnX1mBysM
+M.Besoin de chanter ?🎤	Les rois du monde - Roméo & Juliette, Les enfants de Vérone	Damien Sargue, Cyril Niccolaï, John Eyzen	spotify:track:2QxpVhguEv67Lwlf3wwltb
+M.Besoin de chanter ?🎤	Sara perche ti amo	Ricchi, Poveri	spotify:track:0JLZcA4B8L4mONrrQ3Tu76
+M.Besoin de chanter ?🎤	3e sexe	Indochine	spotify:track:6MShyf3EUHqQ04kJzovIni
+M.Besoin de chanter ?🎤	Addictions	Superbus	spotify:track:62x5BmPPt987oXG84roCpq
+M.Besoin de chanter ?🎤	Afrique adieu	Michel Sardou	spotify:track:2CAbxrckqD1WUuBMwjQpcN
+M.Besoin de chanter ?🎤	A la vie, à l'Armor (feat. Les 3 Fromages)	Les Fatals Picards, Les 3 Fromages	spotify:track:4CdnzkXHYUtsMm6bAgd79M
+M.Besoin de chanter ?🎤	Maintenant	47ter	spotify:track:3BoGFPh1yv3YGKldmD0tGO
+M.Besoin de chanter ?🎤	ALLO?C MOI	THÉA	spotify:track:0aWnBogGkcNoyXyh7pgLo2
+M.Besoin de chanter ?🎤	Prière païenne - Live à Paris	Céline Dion	spotify:track:3CjmGFuI5SkqxJFjcqCccW
+M.Besoin de chanter ?🎤	Saint-Denis (en musique)	Grand Corps Malade	spotify:track:3bZnFH8piHkJc1VUAnDs7P
+M.Besoin de chanter ?🎤	La vie	Bolivard	spotify:track:0o5ZpZiuqyUPaqGq4cw6Lk
+M.Besoin de chanter ?🎤	Medley	Manau	spotify:track:4OmWAXwS0wMGQQULzIcvqR
+M.Besoin de chanter ?🎤	Confidence pour confidence - Version originale 1981	Jean Schultheis	spotify:track:6qfjUmIxPluNISxBgJfvM3
+M.Besoin de chanter ?🎤	Bienvenue Dans La Secte	La Secte Phonétik	spotify:track:4JTxVVAc2zMWJ3tUqxxqIV
+M.Besoin de chanter ?🎤	Nougayork	Claude Nougaro	spotify:track:2kQOw4QEDxUkuEdeGxDqtc
+M.Besoin de chanter ?🎤	Sur des musiques noires	Thierry Pastor	spotify:track:2tiExMMP0mxiTL0EdNlZ1S
+M.Besoin de chanter ?🎤	Nuit de folie	Début De Soirée	spotify:track:1vBXixLz7cVLLTdR4Xe8aL
+M.Besoin de chanter ?🎤	One Life	iambillies	spotify:track:0lYewH7vm7PLZfnl9QOo3g
+M.Besoin de chanter ?🎤	Reckoning Song	Asaf Avidan, The Mojos	spotify:track:6Wk6A8k7NjjSsPQT9Z3FXM
+M.Besoin de chanter ?🎤	Dans ma ruche	Guizmo	spotify:track:1cBPbd6lXCL78s8J5hk6tJ
+M.Besoin de chanter ?🎤	La Fin Du Monde	Sam Sauvage	spotify:track:3QHVBHcvXwvEeey5Gy9Fz2
+M.Besoin de chanter ?🎤	On se connaît	Youssoupha, Noémie	spotify:track:18m3o2kmvnYJn2cCOZ4LD9
+M.Besoin de chanter ?🎤	Sur un air latino - Radio Edit	Lorie	spotify:track:0oMZ2WUfc7XhmwdCmD9TN2
+M.Besoin de chanter ?🎤	Fils de	Dub Inc	spotify:track:6RuBH60do7z2d2QXsn5j8g
+M.Besoin de chanter ?🎤	Belle demoiselle	Christophe Maé	spotify:track:1cHvyHJ1igIBrCpYoEKGIJ
+M.Espoir Héroïque	Brothers (Remix Rilès)	KIK	spotify:track:2UwrB6Ge6mPfUV8yGvAfX7
+M.Espoir Héroïque	Rock N Roll Train	AC/DC	spotify:track:4feXJ5IC3avXsVW9WNFSag
+M.Espoir Héroïque	What's Up Danger (with Black Caviar)	Blackway, Black Caviar	spotify:track:5zsHmE2gO3RefVsPyw2e3T
+M.Espoir Héroïque	Bellingham	Soprano, Youssoupha, S.Pri Noir	spotify:track:1IWy495eFBB1PLCga34v9K
+M.Espoir Héroïque	À ma place	KIK	spotify:track:3rAGqbXgktr811iKgZt5JD
+M.Espoir Héroïque	Viser le top	Demi Portion	spotify:track:7Lb7RNKprpbzOau7T2c1Tg
+M.Espoir Héroïque	Fire	Ayọ, Youssoupha	spotify:track:6gYpqMBJUGFxkXEus4PVQL
+M.Espoir Héroïque	Enemy (with JID) - from the series Arcane League of Legends	Imagine Dragons, JID, Arcane, League of Legends	spotify:track:1r9xUipOqoNwggBpENDsvJ
+M.Espoir Héroïque	The Revolution Has Begun	Mark Mothersbaugh	spotify:track:0Ngi2o40xrQlPsKJyu8ZJk
+M.Espoir Héroïque	Tout le monde est là	Manau	spotify:track:7kXyWOtcakS25GKGCxqfxO
+M.Espoir Héroïque	Augie's Great Municipal Band/ End Credits	London Voices, London Symphony Orchestra, John Williams, New London Children's Choir	spotify:track:504h3IcUaIltwtkZz9Go4W
+M.Espoir Héroïque	Welcome To The Arena Suckers	Raison Varner	spotify:track:3IYdHdNo5jtqY7nPrJ2Ads
+M.Espoir Héroïque	Yeah!	USHER, Lil Jon, Ludacris	spotify:track:5vCBjhlWFluP6sigdl0E6q
+M.Espoir Héroïque	Partis de rien	Scred Connexion, Fabe, Haroun, Mokless, Koma	spotify:track:7hpGE5NHxTK5umouUBw20v
+M.Espoir Héroïque	L' Arène	JoeyStarr, Tuco Gadamn	spotify:track:17PyqjG58lSwz5F94znqm6
+M.Espoir Héroïque	Et c'est parti... (feat. Smartzee)	Nâdiya, Smartzee	spotify:track:1zwJikF2MYUwqcVnqtGxVj
+M.Espoir Héroïque	Évidemment	Trois Cafés Gourmands	spotify:track:7vPkK6DpOcx3F6hJFFMDrL
+M.Espoir Héroïque	Adieu	KIK	spotify:track:21Z2RnNqeYItoHdIAwPjU3
+M.Espoir Héroïque	Afro Trap Part. 11 (King Kong)	MHD	spotify:track:62nJqZs3Qs7DGUto35dVUv
+M.Espoir Héroïque	ALLO?C MOI	THÉA	spotify:track:0aWnBogGkcNoyXyh7pgLo2
+M.Espoir Héroïque	Medley	Manau	spotify:track:4OmWAXwS0wMGQQULzIcvqR
+M.Espoir Héroïque	Hip hop	Demi Portion	spotify:track:7bDrIbF7LGRNnYcjYRmLnb
+M.Espoir Héroïque	Gravé dans la roche	SNIPER	spotify:track:0LZ90308GB1Tp05STjabeC
+M.Espoir Héroïque	Toi + Moi	Billx, Dr. Peacock, Grégoire	spotify:track:3I2sB3lNQ9NXACi6vJaL4T
+M.Espoir Héroïque	They Don't Care About Us	Michael Jackson	spotify:track:3wuCCNCnBhJlwkIJTBZFiv
+M.Espoir Héroïque	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.Espoir Héroïque	Dans ma ruche	Guizmo	spotify:track:1cBPbd6lXCL78s8J5hk6tJ
+M.Espoir Héroïque	La Fin Du Monde	Sam Sauvage	spotify:track:3QHVBHcvXwvEeey5Gy9Fz2
+M.Espoir Héroïque	Blah!	Chinese Man, Youthstar, Taiwan MC, ILLAMAN	spotify:track:1I3pKHJ4LfnFlLvszmUhpb
+M.Espoir Héroïque	Je Veux Savoir	Phil Collins	spotify:track:7G041dBHhRpIBWMKkR21Ba
+M.Espoir Héroïque	Parle-moi	Nâdiya	spotify:track:2rXROCKPA9IHn6zMILU7aX
+M.Douceur	Baba au Rhum	Vladimir Cosma	spotify:track:2rb6v5Jpj2l1yPEBcilINX
+M.Douceur	Te parler pour rien	Hoshi	spotify:track:2sYMnR9Sy2Cr24378FTJaK
+M.Douceur	Le déluge	KIK	spotify:track:2KYfulQdiGSGwwSLWiGSmm
+M.Douceur	Un morceau de Sicre	Francis Cabrel	spotify:track:2a3cTxYAOm6O2VRTQj8qxl
+M.Douceur	Côte Ouest	47ter	spotify:track:4ZuuPLV4qYiznagLAFPHcW
+M.Douceur	On verra bien	47ter	spotify:track:4sdUMzju9WdKtrt5Ye8rGm
+M.Douceur	Eté 90	Therapie TAXI	spotify:track:1p9dxTMtG4gZpLp7yzvT54
+M.Douceur	Blesse-moi	Therapie TAXI	spotify:track:6nRSyu4oOed8HgcVxV1cWl
+M.Douceur	Sous les ponts	Demi Portion	spotify:track:3JlWnSpMfl30ZQGZDgx4bA
+M.Douceur	Chewing gum	Odezenne	spotify:track:1oUUEWfTQJu6pxuTKmN8GB
+M.Douceur	Ma Benz	Brigitte	spotify:track:3VtgKyNdd9D7T3u9FZbrsX
+M.Douceur	Évidemment	Lomepal	spotify:track:43yYuYeSOOupBHOkH9pRtF
+M.Douceur	Elisa	Volo	spotify:track:3gK0zboAOQQ2mhC2p4emm1
+M.Douceur	Dans l'univers	Nekfeu, Vanessa Paradis	spotify:track:2PYXOG6GdxF9sUIH2NfOAD
+M.Douceur	Ce soir	KIK	spotify:track:72ykbwKnWSAQrVogru08nE
+M.Douceur	Moi j'crois aux fées	Petite Gueule	spotify:track:5ki61yi8009zjTLUIfqXCh
+M.Douceur	Les choses - Live Un tour ensemble 2003	Jean-Jacques Goldman	spotify:track:1L7BxF3ptzxmMiPg9HBZCB
+M.Douceur	Bonne idée - Live En passant 1998	Jean-Jacques Goldman	spotify:track:4TPC0PSYIzDfjbgPYUdcLb
+M.Douceur	Soleil noir - Live	47ter	spotify:track:5KN80QQM4PxunCcJdfUTjU
+M.Douceur	Un peu de blues	Christophe Maé	spotify:track:3tY28mqBdxYRuJRo5Rb6fe
+M.Douceur	Et alors ?	Adé	spotify:track:7ea3mHTSpZFvG6aB4muiGI
+M.Douceur	Der Verkehr	Zenzile	spotify:track:5szu78YqrsGDvakhVAq2uk
+M.Douceur	Hinode	Fakear	spotify:track:2GyH0rJwUlpgf8KHEj3tCx
+M.Douceur	Push the Limits	L'Entourloop, Biga*Ranx	spotify:track:3YANwShzRdwXRLeyDx6vH2
+M.Douceur	Les sunlights des tropiques	Gilbert Montagné	spotify:track:26CWyxnjmUf6n4GKX1QVuw
+M.Douceur	Elle préfère l'amour en mer	Philippe Lavil	spotify:track:5ZhLMUNyZWRjVWwHKDNF6H
+M.Douceur	Mélissa	Julien Clerc	spotify:track:3fgPASOCjTadwgqwd0hcgS
+M.Douceur	La corrida - Remastered	Francis Cabrel	spotify:track:5MtP6QGoOkA1L5ynZyQEiv
+M.Douceur	Quelque chose de Tennessee	Johnny Hallyday	spotify:track:54BqQGaBnDTkSKOp7A3MRP
+M.Douceur	Liberta	Pep's	spotify:track:1ReUVJkNB6bjwagl1g5YqF
+M.Douceur	Le prix des rêves	KIK	spotify:track:3uH3pNNE2GiAxd4NWUFX45
+M.Douceur	La vibe	KIK	spotify:track:7Bc5vM91ltXHgA4AutHXlb
+M.Douceur	Au conditionnel	Matmatah	spotify:track:1W7IcRwjXT5C4PrB2XlniF
+M.Douceur	Ta marinière	Hoshi	spotify:track:2JFmiASjHttT8AK7WeZjAb
+M.Douceur	Mauvais rêve	Hoshi	spotify:track:36HkKVTxGk1jIoUqW0AnUi
+M.Douceur	1, 2, 3, 4	47ter	spotify:track:4i5eHqRpXIZg9aTpqSASe9
+M.Douceur	OVGTC ROOFTOP - Daft Punk remix	47ter	spotify:track:6hkwlYBeRspNO0CglRbcp3
+M.Douceur	J'ai vu de la lumière	Grand Corps Malade	spotify:track:1sMFqVUvAfXyjMqGzPrtdu
+M.Douceur	Intro	The xx	spotify:track:2usrT8QIbIk9y0NEtQwS4j
+M.Douceur	Magnifique	Demi Portion, Oxmo Puccino	spotify:track:0VuZGEOv7qOFSkQMXzhEof
+M.Douceur	La vie est belle	Seyté	spotify:track:4zFM2jL5OmDZAoIr3vwcZh
+M.Douceur	Allez là	Hoshi	spotify:track:6zwdJ84cbMrj9owonEerNZ
+M.Douceur	Too Late	Chinese Man, KT Gorique, Stogie T, FP	spotify:track:5wRU6hnHqZJZmwBjwpBUnV
+M.Douceur	Amour censure	Hoshi	spotify:track:1Oa6WPyiLIRaY5x0jl8GMC
+M.Douceur	J'ai besoin d'amour - Live	Lorie	spotify:track:0mcvtzl2L95Y48eX3pbL6u
+M.Douceur	L'horizon des évènements	Kyan Khojandi	spotify:track:6ylgmKOcKhGn4SAHr6rrs1
+M.Douceur	Soleil nuit	Kyan Khojandi, Mathilda	spotify:track:51bIyN3jxSuJwhHnhwrrvD
+M.Douceur	Brako (feat. Hippocampe Fou)	Dooz Kawa, Hippocampe Fou	spotify:track:1n35PSuJdKBdZkFPY19bd5
+M.Douceur	En vrai - Marche des champions	KIK	spotify:track:0Moi9HLrvdp5khFV0KNIbz
+M.Douceur	Horizon	Demi Portion, DJ Rolxx	spotify:track:6ykmHlInUUvfy1UP3fCETh
+M.Douceur	Cielo Ciego	Boulevard des Airs	spotify:track:6FTCtvPI9SUvgeiBTqNxDe
+M.Douceur	Never Take	Biga*Ranx, Naâman, L'Entourloop	spotify:track:7K0xjyfZDxHEcCzhWAq1uM
+M.Douceur	J'ai dix ans	Waxx, -M-	spotify:track:4jef5oyztHLbrxE9C4vrPM
+M.Douceur	Moi j'crois aux fées	Petite Gueule	spotify:track:5qvJe3BNW5beARmNwMEl8i
+M.Douceur	Laissez-moi danser	Waxx, Pomme	spotify:track:1LBLEAMse3jta25SKwGs37
+M.Douceur	Cortège dansant	Petite Gueule	spotify:track:6DanOgMhynP2yB2rnxMddY
+M.Douceur	Sunflower - Spider-Man: Into the Spider-Verse	Post Malone, Swae Lee	spotify:track:3KkXRkHbMCARz0aVfEt68P
+M.Douceur	JAD	47ter	spotify:track:4FvkdnCBjXuTuSEJfxudbe
+M.Douceur	Alors Lise	Foé	spotify:track:7omTRZ58uxN5c8A77S1gUP
+M.Douceur	Under the Bridge	Red Hot Chili Peppers	spotify:track:3d9DChrdc6BOeFsbrZ3Is0
+M.Douceur	Young, Wild & Free (feat. Bruno Mars)	Snoop Dogg, Wiz Khalifa, Bruno Mars	spotify:track:2g7uRZ68eLtv74XrxgdT2q
+M.Douceur	Hélène	Roch Voisine	spotify:track:1CgOx7wQjNc3J4PDWpMKV2
+M.Douceur	Moi Lolita	Julien Doré	spotify:track:2Kr6jA5kf2ogkMGrI4yrY1
+M.Douceur	Felicità	Al Bano And Romina Power	spotify:track:7sXTcibuNYugjjYNfgf2kY
+M.Douceur	Promesses	Bigflo & Oli	spotify:track:5qkUZ9gfkILxc135ZOMx1O
+M.Douceur	Get out of My Head	Pab the Kid	spotify:track:7gchcs5ekj3XypmrKtiZl9
+M.Douceur	Every Breath You Take - Live From River Plate Stadium, Buenos Aires	The Police	spotify:track:3ZPyWxGouBXvvSBqwNqCMC
+M.Douceur	La Résistance	Dooz Kawa	spotify:track:51TT39eR7yLvxbTrEtF8jZ
+M.Douceur	L'insatisfait	Suzane	spotify:track:6f9HzvbQiqqxpv5kCSv4vz
+M.Douceur	Giorgio by Moroder	Daft Punk	spotify:track:0oks4FnzhNp5QPTZtoet7c
+M.Douceur	Walk Of Life	Dire Straits	spotify:track:6HMFtoMvv6n6Q2eOyPFyne
+M.Douceur	Bubble Dance	Julien Rey	spotify:track:4fVLMflZRtAWeKg56cx7GV
+M.Douceur	Okay	MC Solaar, Marie-Flore	spotify:track:0oohdNzQIMjaFUk4130Lyh
+M.Douceur	Résiste	Booboo'zzz All Stars, Taïro	spotify:track:0YXrRswi6c1y73LYziVQzt
+M.Douceur	Rayon de soleil	KIK	spotify:track:68zSyolcklFpvbbfmXwi6J
+M.Douceur	This World	Selah Sue	spotify:track:1J7QVxpmhWtt2vVfim0Ll7
+M.Douceur	Paname	Léo Ferré	spotify:track:5tKcOT7v4aCiRgFoPc6ZzK
+M.Douceur	Par amour	Youssoupha	spotify:track:0FsgAyAF0sHLJlTJIo3lEA
+M.Douceur	Toute ma vie	Antes & Madzes	spotify:track:6tB602d7hSImvqaEAkZsH5
+M.Douceur	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Douceur	Chacun son chacun	THEODORT	spotify:track:3PmHpfvSyxtBqZrRG8K2zx
+M.Douceur	Decrescendo	Lomepal	spotify:track:4otT81iBBpaf36roGtzT4a
+M.Douceur	Rap Jazz	Hi Levelz	spotify:track:47RwVBEViaX0KlRvYfCZrd
+M.Douceur	Raggamuffin - Sexion d'Assaut Remix	Selah Sue, Sexion d'Assaut	spotify:track:4JNTKTSJcsxufPBRw5nZrM
+M.Douceur	Bécane - A COLORS SHOW	Yamê, COLORS	spotify:track:3oUEzTAoOxqZHN4xiqTGqJ
+M.Douceur	Nouvelle journée	Skread	spotify:track:7DE29RExqYnmgvELjh4vWG
+M.Douceur	In the Air Tonight - 2015 Remaster	Phil Collins	spotify:track:4fjWMAvvpx1dgq3pnCm8Wt
+M.Douceur	Love The Way You Lie	Eminem, Rihanna	spotify:track:15JINEqzVMv3SvJTAXAKED
+M.Douceur	Balek	Le Bon Nob	spotify:track:61BD0dBjIoH9Zwa72FCLSN
+M.Douceur	Dans ma rue - High for the Chronic !	Doc Gynéco	spotify:track:3DTl0VOkyprQN95ljYlHDj
+M.Douceur	Karma Mix	Indochine	spotify:track:207cY9yap1IflewBCsXarD
+M.Douceur	Bye Bye Macadam	Rone	spotify:track:609ztq0z70ty0fFR3KUuJl
+M.Douceur	Gisèle - Part 4	Luidji	spotify:track:6ZAoS3dnU1Hha59H3Fxw6L
+M.Douceur	J'aime Bien!	Josman	spotify:track:4eWcCSJEe0d1gCEdKqyiHS
+M.Douceur	Juste après	Carole Fredericks, Jean-Jacques Goldman, Michael Jones	spotify:track:67KWKY87njBgnfDmkRcnXW
+M.Douceur	L'addition	Demi Portion, Grand Corps Malade	spotify:track:7b2L0880T0kb7IvMygpQL8
+M.Douceur	Wake Me Up (feat. Justice) - Single Version	The Weeknd, Justice	spotify:track:0HHKGXT6NQ83tUbVI31O1H
+M.Douceur	J'ai mal au mic - Remasterisé	Oxmo Puccino	spotify:track:5UFYMR9p1VkC1NMpjyYDxJ
+M.Douceur	J'aime	QQUN	spotify:track:17kutsxL0cpoXYUZHLhBLO
+M.Douceur	Another Day Of Sun	La La Land Cast	spotify:track:5kRBzRZmZTXVg8okC7SJFZ
+M.Douceur	Mirror	Lil Wayne, Bruno Mars	spotify:track:6MreoQf8oixWI2xRcw3Fv1
+M.Douceur	Ma salope à moi	Doc Gynéco	spotify:track:4hTMICmba2P6B8TtyxooeW
+M.Douceur	The Big Tree	Stand High Patrol	spotify:track:4ZpqCGtkgPn1Pxsgtmtc8O
+M.Douceur	Canopée	Polo & Pan	spotify:track:260V7huyJrXnyYe0dFv2Fa
+M.Douceur	Iko Iko	The Dixie Cups	spotify:track:2xZPpUIcajScKX99PH0fD9
+M.Douceur	Me faire la belle	Dooz Kawa	spotify:track:7Dg6YSfLTADFX1t0Nszy5B
+M.Douceur	Love Me or Not	Dub FX	spotify:track:5b59RfPJUVfpO565rhnrkx
+M.Douceur	Golden Moment	4th Dimension	spotify:track:6tSo3y1gEYLT98UB75S7B1
+M.Douceur	Alain - La Pomme de Terrre	Natoo	spotify:track:3gGdi8pgA6DoRGo3X06UIq
+M.Douceur	Un peu de blues	Christophe Maé	spotify:track:1EM7vRaw3KNEQ5N5KFONtH
+M.Douceur	Somebody That I Used To Know	Gotye, Kimbra	spotify:track:1qDrWA6lyx8cLECdZE7TV7
+M.Douceur	Malade	Roméo Elvis	spotify:track:35e7ckbWgHjHI9n3oL6jnd
+M.Douceur	2 chez moi	Demi Portion	spotify:track:6VZ6q8B0YT58URVV3y8KTR
+M.Douceur	Don't Go Breaking My Heart	Elton John, Kiki Dee	spotify:track:7HW5WIw7ZgZORCzUxv5gW5
+M.Douceur	Avenir	Louane	spotify:track:5vhLa5SMn0PJJd1GZIUitd
+M.Douceur	Tout ira bien	KIK, Soprano	spotify:track:4qgOnJroM0xOwocupOYq5T
+M.Douceur	Musique	France Gall	spotify:track:3J7V8Wg2wqqCM3tfpBoSne
+M.Douceur	Ta marinière	Hoshi	spotify:track:13bGMVe4lIR3LO7b45hvyg
+M.Douceur	6:30	Snoop Dogg, Wiz Khalifa	spotify:track:02Io4lJ2wtUAVKlmDA6v4S
+M.Douceur	Colors	Black Pumas	spotify:track:6J3HNhDBIwEX11bX8hzx5u
+M.Douceur	Maintenant	47ter	spotify:track:3BoGFPh1yv3YGKldmD0tGO
+M.Douceur	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Douceur	Saint-Denis (en musique)	Grand Corps Malade	spotify:track:3bZnFH8piHkJc1VUAnDs7P
+M.Douceur	Sur des musiques noires	Thierry Pastor	spotify:track:2tiExMMP0mxiTL0EdNlZ1S
+M.Douceur	The Lazy Song	Bruno Mars	spotify:track:386RUes7n1uM1yfzgeUuwp
+M.Douceur	L-O-V-E	Nat King Cole	spotify:track:4QxDOjgpYtQDxxbWPuEJOy
+M.Douceur	Je me barre	Keny Arkana	spotify:track:4lGJ5ZLTAYrESLI2yEwLsD
+M.Électro de fond	Stayin' Alive VS 50 C Tik Tok - Remix	ROSE BEAT	spotify:track:0u5Agy2RLORlgsxZ3INSJ5
+M.Électro de fond	Que Nadie Sepa Mi Sufrir - Soondclub Remix	Soondclub	spotify:track:08wPKjShHh3fdClkIdHNIO
+M.Électro de fond	Sunlight	TheFatRat, Phaera	spotify:track:4bTpPZDWettH15QgNgRWrM
+M.Électro de fond	Nouvelle journée	Skread	spotify:track:7DE29RExqYnmgvELjh4vWG
+M.Électro de fond	Tweet-Tweet	Abraham Inc.	spotify:track:02oILqBZQh6ADI3HTC006X
+M.Électro de fond	Harder, Better, Faster, Stronger	Daft Punk	spotify:track:5W3cjX2J3tjhG8zb6u0qHn
+M.Électro de fond	Heaven	Youthstar, Miscellaneous, Senbeï	spotify:track:3sCstJ2Z5lXyy18vhwloap
+M.Électro de fond	Down The Road	C2C	spotify:track:1x5MjCffpcdHLf65eR9r3T
+M.Électro de fond	Friendships (Lost My Love)	Pascal Letoublon, Leony	spotify:track:0lQ2obtzmAsJu9xk3D6FqH
+M.Électro de fond	Thank God	Rilès	spotify:track:5ZtoiFGlZ3tur8NJAMn0ws
+M.Électro de fond	Day 'N' Nite (Nightmare)	Kid Cudi	spotify:track:60PAzFNW3vAiAiVK6DRJfB
+M.Électro de fond	The Heart Part 5	Kendrick Lamar	spotify:track:5MMW4CZsZiZt2iuqAXzzWC
+M.Électro de fond	All or Nothing	Guts, Tanya Morgan, Lorine Chia	spotify:track:6jWFsJT5IYVKCJEQ55L29W
+M.Électro de fond	R-Dug Strikes Back	R-DUG	spotify:track:6teyfbdCOiXedTCYyYbMt2
+M.Électro de fond	Psyché Rock - Malpaso Mix By Fatboy Slim	Pierre Henry, Michel Colombier	spotify:track:48R1fMxYe4Tve4RbMsMKjR
+M.Électro de fond	Be (Intro)	Common	spotify:track:11aFVmFy8903RwDx4ohQiq
+M.Électro de fond	ROXANNE	Arizona Zervas	spotify:track:696DnlkuDOXcMAnKlTgXXK
+M.Électro de fond	Trippin'	Smokey Joe & The Kid, Puppetmastaz	spotify:track:5ewcQuFjNEL6T491mj4xJt
+M.Électro de fond	Motherless Jazz - Live	Smokey Joe & The Kid	spotify:track:0afSnuukLTBPznTj8Ir0no
+M.Électro de fond	Santa María (del Buen Ayre)	Gotan Project	spotify:track:65MDo5mxRY45IHpyVkLEU5
+M.Électro de fond	Afraid To Feel	LF SYSTEM	spotify:track:40SBS57su9xLiE1WqkXOVr
+M.Électro de fond	Epic	TheFatRat	spotify:track:0WbWIl9LMSxvTugrOjOoWE
+M.Électro de fond	Una música brutal	Gotan Project	spotify:track:1JdVxOvbPCpgzT3mP2Y4WF
+M.Électro de fond	Rayuela - Man Recordings Disco Mix	Gotan Project	spotify:track:7FAs5Biwch6XV1r7OEzRx1
+M.Électro de fond	Little Things x Gypsy Woman - L BEATS MASHUP	Jorja Smith	spotify:track:16Z3xV5jakcXMHVJChWWbl
+M.Électro de fond	jazz is for ordinary people	berlioz	spotify:track:12BaQt9aYdTlEtKreqB5V4
+M.Électro de fond	Breathe	Bomel	spotify:track:3KiFuk2Oi6VBqEFmjszNdN
+M.Électro de fond	Get Lucky (feat. Pharrell Williams and Nile Rodgers)	Daft Punk, Pharrell Williams, Nile Rodgers	spotify:track:69kOkLUCkxIZYexIgSG8rq
+M.Électro de fond	Giorgio by Moroder	Daft Punk	spotify:track:0oks4FnzhNp5QPTZtoet7c
+M.Électro de fond	Tick Tock	Tom Misch	spotify:track:3al8a3uZrOZIHc6J1n8i5f
+M.Électro de fond	Motherboard (Drumless Edition)	Daft Punk	spotify:track:444SlMZ9mcxTHiB7J1H6IF
+M.Électro de fond	Harder, Better, Faster, Stronger	Pomplamoose	spotify:track:1s2LrYFnrFdG2LCtyvwBmv
+M.Électro de fond	Too Late	Chinese Man, KT Gorique, Stogie T, FP	spotify:track:5wRU6hnHqZJZmwBjwpBUnV
+M.Électro de fond	Ain't Nothing Like the Real Thing (feat. Elton John) - Kenny Dope Extended Mix	Marcella Detroit, Elton John, Kenny Dope	spotify:track:2p5tO39jvj5kPy7voaCOWX
+M.Électro de fond	Femme FantoÌ‚me	Lockhart, Flora Fishbach	spotify:track:7AxvbiA33YaRmtLVYBMbIP
+M.Électro de fond	Arcades	C2C	spotify:track:14zo201LRIXPtpgZCjDW7t
+M.Électro de fond	1979	Else	spotify:track:551p1fP1KDTILER7rCcqYv
+M.Électro de fond	Artichaut	Chinese Man	spotify:track:1kPqYrb1Kc9NvKbd9JaRMO
+M.Électro de fond	Der Verkehr	Zenzile	spotify:track:5szu78YqrsGDvakhVAq2uk
+M.Électro de fond	Chacun son chacun	THEODORT	spotify:track:3PmHpfvSyxtBqZrRG8K2zx
+M.Électro de fond	Mozart in Da Ghetto	Mister Modo, Ugly Mac Beer	spotify:track:7lWP67Clx9sgkEHlJ1aif7
+M.Électro de fond	Song of Hope	Jazzbois	spotify:track:1dmeyJAk6ZJO5GkhWlvT0c
+M.Électro de fond	Amnésie	Nhyx	spotify:track:1mJq3tpVwEQF1Bxmo4A8tk
+M.Électro de fond	Doin' it Right (feat. Panda Bear)	Daft Punk, Panda Bear	spotify:track:36c4JohayB9qd64eidQMBi
+M.Électro de fond	Hinode	Fakear	spotify:track:2GyH0rJwUlpgf8KHEj3tCx
+M.Électro de fond	Karma Mix	Indochine	spotify:track:207cY9yap1IflewBCsXarD
+M.Électro de fond	Promenade imprévue	Skread	spotify:track:0pKlYNSUtJCugw3MTOftfr
+M.Électro de fond	Kids	Kyle Dixon & Michael Stein	spotify:track:68gzf3AleOyt4NlKwpV0MY
+M.Électro de fond	One Day (Vandaag) - Radio Edit	Bakermat	spotify:track:0GSU6yLOJqO10ziQuBLWOE
+M.Électro de fond	New Life	Mayaewk	spotify:track:63mEHZ7XqabNBHCETSxomW
+M.Électro de fond	La Soupe Aux Choux: Générique	Raymond Lefèvre	spotify:track:6fZSU4LCrgBQq7QIRDHlg7
+M.Électro de fond	Without a Trace (feat. Eric Benny Bloom)	Naughty Professor, Eric Benny Bloom	spotify:track:6oAoWCxAX63VZpAdk6Z2U1
+M.Électro de fond	No Stress	Deluxe, Oxmo Puccino	spotify:track:5hNBOE2UPAzOxIGcvBpq5y
+M.Électro de fond	Pony	Deluxe	spotify:track:6xVfTx01TnGrzH1mqXfOmf
+M.Électro de fond	80's Never Die	Darktek	spotify:track:462603d91iTgX2VCa4M2S7
+M.Électro de fond	Soledad	Combo Los Galleros	spotify:track:7fG0bqv3XzEUW3CfQCoWfK
+M.Électro de fond	Paint It Black	Wednesday Addams	spotify:track:1OuCn2F9BmyTAdM0Jylo9X
+M.Électro de fond	To the Beat	Chinese Man, Scratch Bandits Crew	spotify:track:64RXXxA27XTkqfYHbw0jZl
+M.Chill relax	La défaite	KIK, Nemir	spotify:track:1EPmxdxizduVG9GrzEDLZX
+M.Chill relax	JAD	47ter	spotify:track:4FvkdnCBjXuTuSEJfxudbe
+M.Chill relax	Alors Lise	Foé	spotify:track:7omTRZ58uxN5c8A77S1gUP
+M.Chill relax	Under the Bridge	Red Hot Chili Peppers	spotify:track:3d9DChrdc6BOeFsbrZ3Is0
+M.Chill relax	Young, Wild & Free (feat. Bruno Mars)	Snoop Dogg, Wiz Khalifa, Bruno Mars	spotify:track:2g7uRZ68eLtv74XrxgdT2q
+M.Chill relax	Hélène	Roch Voisine	spotify:track:1CgOx7wQjNc3J4PDWpMKV2
+M.Chill relax	Liberta	Pep's	spotify:track:1ReUVJkNB6bjwagl1g5YqF
+M.Chill relax	Blues	A2h	spotify:track:224hAVNiYFjIxwXPK4rwwC
+M.Chill relax	Liberta	Pep's	spotify:track:7sJBx5VyGxbLlhwloGBmyP
+M.Chill relax	Si seul	Orelsan	spotify:track:5whn3ZJ5WLEnjoqfvcUKDu
+M.Chill relax	Si facile	Casseurs Flowters	spotify:track:7GfmLz1shp0aMwkPYHan0y
+M.Chill relax	La terre est ronde	Orelsan	spotify:track:3IM7zXywZ6sRTtkRjRLxJ8
+M.Chill relax	Reuf - Version Five	Nekfeu	spotify:track:2leMkoqVDExMeTdIxO5mzq
+M.Chill relax	1, 2, 3, 4	47ter	spotify:track:4i5eHqRpXIZg9aTpqSASe9
+M.Chill relax	La lumière	Orelsan	spotify:track:1aj1Y2wG82EsnYVJXE5Bhn
+M.Chill relax	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Chill relax	Chacun son chacun	THEODORT	spotify:track:3PmHpfvSyxtBqZrRG8K2zx
+M.Chill relax	Decrescendo	Lomepal	spotify:track:4otT81iBBpaf36roGtzT4a
+M.Chill relax	Raggamuffin - Sexion d'Assaut Remix	Selah Sue, Sexion d'Assaut	spotify:track:4JNTKTSJcsxufPBRw5nZrM
+M.Chill relax	Bécane - A COLORS SHOW	Yamê, COLORS	spotify:track:3oUEzTAoOxqZHN4xiqTGqJ
+M.Chill relax	La maladie des Hommes	Antes & Madzes	spotify:track:71UhiBTGaZvMEZZaUKWbgg
+M.Chill relax	Nouvelle journée	Skread	spotify:track:7DE29RExqYnmgvELjh4vWG
+M.Chill relax	JVP	Mr GISCARD	spotify:track:3zPI4Q0waxD3S2Y2tjcMZ8
+M.Chill relax	Toute ma vie	Antes & Madzes	spotify:track:6tB602d7hSImvqaEAkZsH5
+M.Chill relax	J'aime	QQUN	spotify:track:17kutsxL0cpoXYUZHLhBLO
+M.Chill relax	Karma	Naâman	spotify:track:3rmYRJfWYAdKDei4yegdk1
+M.Chill relax	Me faire la belle	Dooz Kawa	spotify:track:7Dg6YSfLTADFX1t0Nszy5B
+M.Chill relax	No Guidance (feat. Drake)	Chris Brown, Drake	spotify:track:7FEwp8BavoEVE3AnxJDchc
+M.Chill relax	Somebody That I Used To Know	Gotye, Kimbra	spotify:track:1qDrWA6lyx8cLECdZE7TV7
+M.Chill relax	Partis de rien	Scred Connexion, Fabe, Haroun, Mokless, Koma	spotify:track:7hpGE5NHxTK5umouUBw20v
+M.Chill relax	Balance ton quoi	Angèle	spotify:track:2jX5c5RFp0A9E1GDsvGxIa
+M.Chill relax	Ma salope à moi	Doc Gynéco	spotify:track:4hTMICmba2P6B8TtyxooeW
+M.Chill relax	Malade	Roméo Elvis	spotify:track:35e7ckbWgHjHI9n3oL6jnd
+M.Chill relax	Inachevés	Casseurs Flowters	spotify:track:5p9kj8hbofB2EIzwYAqjlb
+M.Chill relax	2 chez moi	Demi Portion	spotify:track:6VZ6q8B0YT58URVV3y8KTR
+M.Chill relax	Tout ira bien	KIK, Soprano	spotify:track:4qgOnJroM0xOwocupOYq5T
+M.Chill relax	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Chill relax	6:30	Snoop Dogg, Wiz Khalifa	spotify:track:02Io4lJ2wtUAVKlmDA6v4S
+M.Chill relax	Colors	Black Pumas	spotify:track:6J3HNhDBIwEX11bX8hzx5u
+M.Chill relax	L-O-V-E	Nat King Cole	spotify:track:4QxDOjgpYtQDxxbWPuEJOy
+M.Chill relax	Reckoning Song	Asaf Avidan, The Mojos	spotify:track:6Wk6A8k7NjjSsPQT9Z3FXM
+M.Chill relax	Je me barre	Keny Arkana	spotify:track:4lGJ5ZLTAYrESLI2yEwLsD
+M.Chill relax	Aimer sans amour	Guts	spotify:track:7yi1aBMIGLg3P25RNANtux
+M.Chill relax	The Heart Part 5	Kendrick Lamar	spotify:track:5MMW4CZsZiZt2iuqAXzzWC
+M.Mélancolie	Blues	A2h	spotify:track:224hAVNiYFjIxwXPK4rwwC
+M.Mélancolie	Rayon de soleil	KIK	spotify:track:68zSyolcklFpvbbfmXwi6J
+M.Mélancolie	Monument	Soleil Noir, Swift Guad, Dooz Kawa, Davodka, Euphonik	spotify:track:76hv7yImQ35LbAeyddmezn
+M.Mélancolie	Le dicton dit 2	Lacraps, Andréa Capobianco	spotify:track:3BDdR71LIOyIAtwdeSNEub
+M.Mélancolie	Les monstres	Dooz Kawa, Demi Portion	spotify:track:0B5qzEhmAF8TqGiY68eVOf
+M.Mélancolie	Cock Music Smart Music - Live 2015	Fauve	spotify:track:1uBUEsRRUcAXG9l2dd24RI
+M.Mélancolie	Toute ma vie	Antes & Madzes	spotify:track:6tB602d7hSImvqaEAkZsH5
+M.Mélancolie	Déchiré (feat. Orelsan)	Gringe, Orelsan	spotify:track:538x2M5meRmjYUFGvMepEl
+M.Mélancolie	Quand ton père t’engueule	Orelsan	spotify:track:7l0tZknEIevghdTejbtrNr
+M.Mélancolie	Évidemment	Lomepal	spotify:track:43yYuYeSOOupBHOkH9pRtF
+M.Mélancolie	Incompris	Melan	spotify:track:6t8cfbQmd6Cw6ClPkOCBpW
+M.Mélancolie	Seul et célibataire	Les Fatals Picards	spotify:track:1OZGqWVmcZ47w3JOykos9f
+M.Mélancolie	Malade	Roméo Elvis	spotify:track:35e7ckbWgHjHI9n3oL6jnd
+M.Mélancolie	Ta marinière	Hoshi	spotify:track:13bGMVe4lIR3LO7b45hvyg
+M.Mélancolie	30 ans	Bigflo & Oli	spotify:track:3flkffgRq13s5SlKAgaerg
+M.Mélancolie	Maintenant	47ter	spotify:track:3BoGFPh1yv3YGKldmD0tGO
+M.Mélancolie	Du ferme	Lenaïg	spotify:track:5kGrtUJm37q09s2lVD5aAd
+M.Mélancolie	Confidence pour confidence - Version originale 1981	Jean Schultheis	spotify:track:6qfjUmIxPluNISxBgJfvM3
+M.Mélancolie	Reckoning Song	Asaf Avidan, The Mojos	spotify:track:6Wk6A8k7NjjSsPQT9Z3FXM
+M.Mélancolie	Evil Morty - Rick and Morty Remix	The Trap Remix Guys	spotify:track:3dgy6bkbPGlKSMu3NyvRJW
+M.Parole consciente	Quand j'étais petit	KIK	spotify:track:6Kv8D9oA7cFVpVPddgRPYO
+M.Parole consciente	06h16 - Des histoires à raconter	Casseurs Flowters	spotify:track:1wJAu0NKytglV2bJ6Ven5o
+M.Parole consciente	Là-haut	Hugo TSR	spotify:track:3vjnuagiopTRGWIBNaZJF0
+M.Parole consciente	Rei	Hugo TSR	spotify:track:0iC6b6zaBQg7VekaL6wRZM
+M.Parole consciente	Exercice	Hugo TSR	spotify:track:6AwO9haDdBurUnmTMtIdfS
+M.Parole consciente	C'est tout	Guizmo	spotify:track:4FRPR6y90yQyyzLzKPcSrQ
+M.Parole consciente	Senseï	Hugo TSR	spotify:track:2VS9Io8d9WKzvPHHi1h8Pl
+M.Parole consciente	Pas du même monde (feat. Bigflo & Oli)	Guizmo, Bigflo & Oli	spotify:track:4REI5iyrSBuKNH0sIOk0Qj
+M.Parole consciente	Alors dites pas	I.n.c.h, Hugo TSR	spotify:track:4joBW7qC3W1qGw1OkmuYy7
+M.Parole consciente	Yeux disent	Lomepal	spotify:track:0RsI4r9abN1pSFJro36Hon
+M.Parole consciente	Abysses	Scylla	spotify:track:4XBee2Pqqql3OMwyjrila5
+M.Parole consciente	L'insatisfait	Suzane	spotify:track:6f9HzvbQiqqxpv5kCSv4vz
+M.Parole consciente	La vie d’après	Bigflo & Oli	spotify:track:0VVUKYAmACrTR3vYwc9tqz
+M.Parole consciente	Soleil nuit	Kyan Khojandi, Mathilda	spotify:track:51bIyN3jxSuJwhHnhwrrvD
+M.Parole consciente	Quand est-ce que ça s'arrête	Orelsan	spotify:track:4oj5EhSEKKpxG3R34btLta
+M.Parole consciente	Rappel	Vald	spotify:track:6WD8BChZNMRIVXySd9sxUc
+M.Parole consciente	Le mal est fait	Gringe	spotify:track:09zldvZV2nAWAJfgxiUibd
+M.Parole consciente	Si seul	Orelsan	spotify:track:5whn3ZJ5WLEnjoqfvcUKDu
+M.Parole consciente	Pour être franc	La Smala	spotify:track:4s2vMVTkHhODiWxoCvYxuv
+M.Parole consciente	Monument	Soleil Noir, Swift Guad, Dooz Kawa, Davodka, Euphonik	spotify:track:76hv7yImQ35LbAeyddmezn
+M.Parole consciente	Les monstres	Dooz Kawa, Demi Portion	spotify:track:0B5qzEhmAF8TqGiY68eVOf
+M.Parole consciente	Cock Music Smart Music - Live 2015	Fauve	spotify:track:1uBUEsRRUcAXG9l2dd24RI
+M.Parole consciente	Incompris	Melan	spotify:track:6t8cfbQmd6Cw6ClPkOCBpW
+M.Parole consciente	Malade	Roméo Elvis	spotify:track:35e7ckbWgHjHI9n3oL6jnd
+M.Parole consciente	Inachevés	Casseurs Flowters	spotify:track:5p9kj8hbofB2EIzwYAqjlb
+M.Parole consciente	22h31 - Fais les backs	Casseurs Flowters	spotify:track:4UmJNtvVyPoK4xnU6LIx2P
+M.Parole consciente	Con J'Pense	Manau	spotify:track:0AmQ0qIhedN3luHmhHeMIp
+M.Parole consciente	Clope sur la lune	Scylla, ISHA, Sofiane Pamart	spotify:track:6jC2NrlK26dutdKw8vElZV
+M.Parole consciente	30 ans	Bigflo & Oli	spotify:track:3flkffgRq13s5SlKAgaerg
+M.Parole consciente	Maintenant	47ter	spotify:track:3BoGFPh1yv3YGKldmD0tGO
+M.Parole consciente	DIEU MERCI	Vald	spotify:track:3BgCXkXF6K6pwi9RZrzPDp
+M.Parole consciente	Plan B	Grand Corps Malade	spotify:track:6paksK2KW9xoJ2OgNRjbrd
+M.Parole consciente	Bizarre	Antes & Madzes	spotify:track:0b5Ur6VZd8ab1XAX584bnm
+M.Une étoile au milieu de la nuit	06h16 - Des histoires à raconter	Casseurs Flowters	spotify:track:1wJAu0NKytglV2bJ6Ven5o
+M.Une étoile au milieu de la nuit	Génération désenchantée	Suzane	spotify:track:5yeCYJzFykj421kaSz6htN
+M.Une étoile au milieu de la nuit	Abysses	Scylla	spotify:track:4XBee2Pqqql3OMwyjrila5
+M.Une étoile au milieu de la nuit	Rayon de soleil	KIK	spotify:track:68zSyolcklFpvbbfmXwi6J
+M.Une étoile au milieu de la nuit	C'est pire	WarEnd	spotify:track:4kpVZfQXDkpScZGtRaccmg
+M.Une étoile au milieu de la nuit	La lumière	Orelsan	spotify:track:1aj1Y2wG82EsnYVJXE5Bhn
+M.Une étoile au milieu de la nuit	Pour être franc	La Smala	spotify:track:4s2vMVTkHhODiWxoCvYxuv
+M.Une étoile au milieu de la nuit	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Une étoile au milieu de la nuit	Le dicton dit 2	Lacraps, Andréa Capobianco	spotify:track:3BDdR71LIOyIAtwdeSNEub
+M.Une étoile au milieu de la nuit	Paradise (feat. Lomepal)	Lefa, Lomepal	spotify:track:00YUNap0MFncqzzuvwzUlS
+M.Une étoile au milieu de la nuit	Bécane - A COLORS SHOW	Yamê, COLORS	spotify:track:3oUEzTAoOxqZHN4xiqTGqJ
+M.Une étoile au milieu de la nuit	Cock Music Smart Music - Live 2015	Fauve	spotify:track:1uBUEsRRUcAXG9l2dd24RI
+M.Une étoile au milieu de la nuit	Mamy ... (feat. Nicoletta)	JoeyStarr, Nicoletta	spotify:track:1X1EibLspnxpfq72i97PA9
+M.Une étoile au milieu de la nuit	Love The Way You Lie	Eminem, Rihanna	spotify:track:15JINEqzVMv3SvJTAXAKED
+M.Une étoile au milieu de la nuit	Déchiré (feat. Orelsan)	Gringe, Orelsan	spotify:track:538x2M5meRmjYUFGvMepEl
+M.Une étoile au milieu de la nuit	Mirror	Lil Wayne, Bruno Mars	spotify:track:6MreoQf8oixWI2xRcw3Fv1
+M.Une étoile au milieu de la nuit	Poudre dodo	KIK, rubi	spotify:track:2R6J4iGz335HkuFxo5mVzb
+M.Une étoile au milieu de la nuit	Weak	AJR	spotify:track:3TJk0aoXM0knrOlgd1fnbx
+M.Une étoile au milieu de la nuit	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Une étoile au milieu de la nuit	30 ans	Bigflo & Oli	spotify:track:3flkffgRq13s5SlKAgaerg
+M.Une étoile au milieu de la nuit	Adieu	KIK	spotify:track:21Z2RnNqeYItoHdIAwPjU3
+M.Une étoile au milieu de la nuit	Adieu bientôt	Columbine	spotify:track:17y8kqTbNDd9QM3j6yln4g
+M.Une étoile au milieu de la nuit	Maintenant	47ter	spotify:track:3BoGFPh1yv3YGKldmD0tGO
+M.Une étoile au milieu de la nuit	Confidence pour confidence - Version originale 1981	Jean Schultheis	spotify:track:6qfjUmIxPluNISxBgJfvM3
+M.Une étoile au milieu de la nuit	Là-haut	Hugo TSR	spotify:track:3vjnuagiopTRGWIBNaZJF0
+M.Une étoile au milieu de la nuit	Rappel	Vald	spotify:track:6WD8BChZNMRIVXySd9sxUc
+M.Une étoile au milieu de la nuit	Reckoning Song	Asaf Avidan, The Mojos	spotify:track:6Wk6A8k7NjjSsPQT9Z3FXM
+M.Une étoile au milieu de la nuit	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.Une étoile au milieu de la nuit	Plan B	Grand Corps Malade	spotify:track:6paksK2KW9xoJ2OgNRjbrd
+M.Une étoile au milieu de la nuit	Crazy - Single Version	Gnarls Barkley, CeeLo Green, Danger Mouse	spotify:track:6FlAGda9qkDhTU7ctFM4uG
+M.Une étoile au milieu de la nuit	Aimer sans amour	Guts	spotify:track:7yi1aBMIGLg3P25RNANtux
+M.Flow Kiffant	La défaite	KIK, Nemir	spotify:track:1EPmxdxizduVG9GrzEDLZX
+M.Flow Kiffant	1000°C	Lomepal, Roméo Elvis	spotify:track:4lzjE9GlGamkuYqQBfCY8R
+M.Flow Kiffant	Brothers (Remix Rilès)	KIK	spotify:track:2UwrB6Ge6mPfUV8yGvAfX7
+M.Flow Kiffant	Brako (feat. Hippocampe Fou)	Dooz Kawa, Hippocampe Fou	spotify:track:1n35PSuJdKBdZkFPY19bd5
+M.Flow Kiffant	Quand j'étais petit	KIK	spotify:track:6Kv8D9oA7cFVpVPddgRPYO
+M.Flow Kiffant	15h02 - Regarde comme il fait beau (dehors)	Casseurs Flowters	spotify:track:4c1ArlBO56iNxiFTupUtt6
+M.Flow Kiffant	Mémoire	Demi Portion, Furax Barbarossa, Mehsah	spotify:track:5tpuppLjsctOO6lDKXT3sa
+M.Flow Kiffant	Génération désenchantée	Suzane	spotify:track:5yeCYJzFykj421kaSz6htN
+M.Flow Kiffant	What's Up Danger (with Black Caviar)	Blackway, Black Caviar	spotify:track:5zsHmE2gO3RefVsPyw2e3T
+M.Flow Kiffant	La Résistance	Dooz Kawa	spotify:track:51TT39eR7yLvxbTrEtF8jZ
+M.Flow Kiffant	Bellingham	Soprano, Youssoupha, S.Pri Noir	spotify:track:1IWy495eFBB1PLCga34v9K
+M.Flow Kiffant	L'insatisfait	Suzane	spotify:track:6f9HzvbQiqqxpv5kCSv4vz
+M.Flow Kiffant	J'picole	Sasso	spotify:track:3DIYanBth8SOpko0IIB5CD
+M.Flow Kiffant	Freestyle Radio Phoenix	Casseurs Flowters	spotify:track:59g2FzWJbiW48fnNOmmHwj
+M.Flow Kiffant	Imagine	Carbonne	spotify:track:6IcsbETuviVu6UTiBTcxY4
+M.Flow Kiffant	Chanson française	Youssoupha	spotify:track:1apVaGOr4BUgSdWG81CIv4
+M.Flow Kiffant	À ma place	KIK	spotify:track:3rAGqbXgktr811iKgZt5JD
+M.Flow Kiffant	Mélomaniac	Petite Gueule	spotify:track:4LFNJUz6dBmfLCbvXSblEw
+M.Flow Kiffant	Viser le top	Demi Portion	spotify:track:7Lb7RNKprpbzOau7T2c1Tg
+M.Flow Kiffant	Maria	Lord Esperanza, Shaby	spotify:track:0tDS50FqewWTw2kX5VQxPL
+M.Flow Kiffant	Ma dope	Nekfeu, S.Pri Noir	spotify:track:6eVHz1I8JaAYUl1jTgSjRW
+M.Flow Kiffant	Paradise (feat. Lomepal)	Lefa, Lomepal	spotify:track:00YUNap0MFncqzzuvwzUlS
+M.Flow Kiffant	RUN	KT Gorique, Riga	spotify:track:0uORhocXXGwauWfPMGMlCa
+M.Flow Kiffant	SOIS PAS TIMIDE	GIMS	spotify:track:37tGmKyKlr8vyt9BVdoWQo
+M.Flow Kiffant	Cock Music Smart Music - Live 2015	Fauve	spotify:track:1uBUEsRRUcAXG9l2dd24RI
+M.Flow Kiffant	Love The Way You Lie	Eminem, Rihanna	spotify:track:15JINEqzVMv3SvJTAXAKED
+M.Flow Kiffant	Balek	Le Bon Nob	spotify:track:61BD0dBjIoH9Zwa72FCLSN
+M.Flow Kiffant	Dans ma rue - High for the Chronic !	Doc Gynéco	spotify:track:3DTl0VOkyprQN95ljYlHDj
+M.Flow Kiffant	La louve	Morgan	spotify:track:0Y6yIU6epIdMLvVxPRN7DS
+M.Flow Kiffant	Le 69	Draviss	spotify:track:0dOEsiDFHuhroMtLM8fVUA
+M.Flow Kiffant	Gisèle - Part 4	Luidji	spotify:track:6ZAoS3dnU1Hha59H3Fxw6L
+M.Flow Kiffant	Ça parle de	Demi Portion	spotify:track:7cI4ZRhQKSvtDj4cgJytRC
+M.Flow Kiffant	Paroles et Musique	Grand Corps Malade	spotify:track:4vk56Yw4Uay4u56ZE1E7OD
+M.Flow Kiffant	L'ADRESSE	Roméo Elvis	spotify:track:6XxaNqgzbgwkw0LaeE2Z63
+M.Flow Kiffant	Fuis-moi si tu veux	James Baker	spotify:track:5yUeOzrOXu7jSeez6Xj0cm
+M.Flow Kiffant	Get Up	Chinese Man, exi, Lush One, Plex Rock	spotify:track:5PEZJMU4xfiSNwT26JhHnL
+M.Flow Kiffant	On vient gâcher tes classiques n*1	47ter	spotify:track:0RbhQzfDF6iDFQMyQnXeAq
+M.Flow Kiffant	On vient gâcher tes classiques n*11	47ter	spotify:track:57WMXZffjhGDU1RsVRyZSZ
+M.Flow Kiffant	On vient gâcher tes classiques n*4	47ter	spotify:track:2LtNWczamWhnbhj2TERWKg
+M.Flow Kiffant	Influenceurs	Vink	spotify:track:4xVedc8CLb7SMzEfZNwmhl
+M.Flow Kiffant	OVGTC - Star Wars remix	47ter, KIK	spotify:track:55mcupbf7cIsuCEVAuTJVk
+M.Flow Kiffant	Stayin' Alive VS 50 C Tik Tok - Remix	ROSE BEAT	spotify:track:0u5Agy2RLORlgsxZ3INSJ5
+M.Flow Kiffant	Le Brio (Branchez la guitare)	Big Soul	spotify:track:12S1WtXvSXQE7Q0FYk650p
+M.Flow Kiffant	Malaise	Lomepal	spotify:track:2pfQpym5WNrEJByGkwfSVZ
+M.Flow Kiffant	Tout le monde danse	Shaka Ponk	spotify:track:2eYh5XMW8SIU6kQTx2mpHW
+M.Flow Kiffant	Poudre dodo	KIK, rubi	spotify:track:2R6J4iGz335HkuFxo5mVzb
+M.Flow Kiffant	The Next Episode	Dr. Dre, Snoop Dogg	spotify:track:20LxTsa6936zOlzTWqoPVt
+M.Flow Kiffant	Et alors !	Shy'm	spotify:track:0XKTCQiiJpW9GfQa9eh4Wi
+M.Flow Kiffant	Inachevés	Casseurs Flowters	spotify:track:5p9kj8hbofB2EIzwYAqjlb
+M.Flow Kiffant	24K Magic	Bruno Mars	spotify:track:6b8Be6ljOzmkOmFslEb23P
+M.Flow Kiffant	22h31 - Fais les backs	Casseurs Flowters	spotify:track:4UmJNtvVyPoK4xnU6LIx2P
+M.Flow Kiffant	2 chez moi	Demi Portion	spotify:track:6VZ6q8B0YT58URVV3y8KTR
+M.Flow Kiffant	Hold Tight	Chinese Man, Scratch Bandits Crew, ASM, Youthstar, ILLAMAN	spotify:track:69yYDgM8sCrUsD56AHyOt9
+M.Flow Kiffant	The Drop	Chinese Man, Scratch Bandits Crew	spotify:track:2SgdlsANzYKMCL0w5RmFxq
+M.Flow Kiffant	The Antidote	Stupeflip	spotify:track:6y8o3gzAroaVWIW0XvaYcv
+M.Flow Kiffant	Stupeflip vite !!!	Stupeflip, Cadillac	spotify:track:3Qv2Bvd32SFdETcPlEq0f5
+M.Flow Kiffant	Tout ira bien	KIK, Soprano	spotify:track:4qgOnJroM0xOwocupOYq5T
+M.Flow Kiffant	Le prix des rêves	KIK	spotify:track:3uH3pNNE2GiAxd4NWUFX45
+M.Flow Kiffant	La Sagesse	Grand Corps Malade	spotify:track:6LcHbiJPQjml8BUy4k13TG
+M.Flow Kiffant	Je vous aime	KIK	spotify:track:1fjZIZxt5ql6DSnX1mBysM
+M.Flow Kiffant	Psychostar Show	Kamini	spotify:track:20yRJ69tIMPFSSlBqkrqnR
+M.Flow Kiffant	Presque Rien	Hippocampe Fou, Gaël Faye	spotify:track:1om616X5tor0L7UR78zapJ
+M.Flow Kiffant	300 (Henri) - Colors Session - Roméo Elvis x Le Motel	Roméo Elvis, Le Motel	spotify:track:2niIfcpJ797rk53yupLerb
+M.Flow Kiffant	+32 492 836 849 ou +33 1 70 99 24 30	Roméo Elvis, Le Motel, VYNK	spotify:track:5jvMFgui872LyuUqIWmxaR
+M.Flow Kiffant	Afro Trap Part. 11 (King Kong)	MHD	spotify:track:62nJqZs3Qs7DGUto35dVUv
+M.Flow Kiffant	Colors	Black Pumas	spotify:track:6J3HNhDBIwEX11bX8hzx5u
+M.Flow Kiffant	Maintenant	47ter	spotify:track:3BoGFPh1yv3YGKldmD0tGO
+M.Flow Kiffant	ALLO?C MOI	THÉA	spotify:track:0aWnBogGkcNoyXyh7pgLo2
+M.Flow Kiffant	Without Me	Eminem	spotify:track:7lQ8MOhq6IN2w8EYcFNSUk
+M.Flow Kiffant	Saint-Denis (en musique)	Grand Corps Malade	spotify:track:3bZnFH8piHkJc1VUAnDs7P
+M.Flow Kiffant	FOMO	Lord Esperanza	spotify:track:3CepsWSM9yVKfVZSz1suud
+M.Flow Kiffant	Hip hop	Demi Portion	spotify:track:7bDrIbF7LGRNnYcjYRmLnb
+M.Flow Kiffant	Bienvenue Dans La Secte	La Secte Phonétik	spotify:track:4JTxVVAc2zMWJ3tUqxxqIV
+M.Flow Kiffant	Là-haut	Hugo TSR	spotify:track:3vjnuagiopTRGWIBNaZJF0
+M.Flow Kiffant	Gravé dans la roche	SNIPER	spotify:track:0LZ90308GB1Tp05STjabeC
+M.Flow Kiffant	Rappel	Vald	spotify:track:6WD8BChZNMRIVXySd9sxUc
+M.Flow Kiffant	Black Desperado - Remasterisé	Oxmo Puccino	spotify:track:75Z7STvdVOKO4UFFb1V4zW
+M.Flow Kiffant	One Life	iambillies	spotify:track:0lYewH7vm7PLZfnl9QOo3g
+M.Flow Kiffant	They Don't Care About Us	Michael Jackson	spotify:track:3wuCCNCnBhJlwkIJTBZFiv
+M.Flow Kiffant	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.Flow Kiffant	Dans ma ruche	Guizmo	spotify:track:1cBPbd6lXCL78s8J5hk6tJ
+M.Flow Kiffant	La Fin Du Monde	Sam Sauvage	spotify:track:3QHVBHcvXwvEeey5Gy9Fz2
+M.Flow Kiffant	Les Gens Qui Dansent (j'adore)	Sam Sauvage	spotify:track:0kgZ7YqklQkVLV8SoEi5Us
+M.Flow Kiffant	On se connaît	Youssoupha, Noémie	spotify:track:18m3o2kmvnYJn2cCOZ4LD9
+M.Flow Kiffant	Filer au soleil	An'Om	spotify:track:6jM7wKQpfnvnXemo7Z6nxC
+M.Flow Kiffant	Je me barre	Keny Arkana	spotify:track:4lGJ5ZLTAYrESLI2yEwLsD
+M.Flow Kiffant	Plan B	Grand Corps Malade	spotify:track:6paksK2KW9xoJ2OgNRjbrd
+M.Flow Kiffant	Fils de	Dub Inc	spotify:track:6RuBH60do7z2d2QXsn5j8g
+M.Flow Kiffant	Aquatrip	Hippocampe Fou	spotify:track:4VZhlN99UoRLx3eaYwIaxg
+M.Flow Kiffant	La vibe	KIK	spotify:track:7LB23eR3e7wtk5qgHJyeGr
+M.Flow Kiffant	Blah!	Chinese Man, Youthstar, Taiwan MC, ILLAMAN	spotify:track:1I3pKHJ4LfnFlLvszmUhpb
+M.Flow Kiffant	AH WE	KT Gorique, Riga	spotify:track:0IQJRVwr9ADMkvqd66muZA
+M.Flow Kiffant	Boze	_TLR_	spotify:track:5Tm9cPRGoirES3k4VhECvm
+M.Mignon	Toi et moi	Guillaume Grand	spotify:track:1M09D3Qd5ni7uMufLp1NvJ
+M.Mignon	Et alors ?	Adé	spotify:track:7ea3mHTSpZFvG6aB4muiGI
+M.Mignon	Tough Lover - Burlesque Original Motion Picture Soundtrack	Christina Aguilera	spotify:track:3W3BHalLp288TxkZN1uPRd
+M.Mignon	Me faire la belle	Dooz Kawa	spotify:track:7Dg6YSfLTADFX1t0Nszy5B
+M.Mignon	Jour 1	Louane	spotify:track:2hRnKc5pSfGLuqukSN9mcn
+M.Mignon	Ma salope à moi	Doc Gynéco	spotify:track:4hTMICmba2P6B8TtyxooeW
+M.Mignon	Toi et moi	Guillaume Grand	spotify:track:3A92gdzkl64FX8puP7zbCD
+M.Mignon	Ta marinière	Hoshi	spotify:track:13bGMVe4lIR3LO7b45hvyg
+M.Mignon	JAD	47ter	spotify:track:4FvkdnCBjXuTuSEJfxudbe
+M.Mignon	Au conditionnel	Matmatah	spotify:track:1W7IcRwjXT5C4PrB2XlniF
+M.Mignon	Felicità	Al Bano And Romina Power	spotify:track:7sXTcibuNYugjjYNfgf2kY
+M.Mignon	Promesses	Bigflo & Oli	spotify:track:5qkUZ9gfkILxc135ZOMx1O
+M.Mignon	Je viens dîner ce soir	Claude François	spotify:track:6lwypcbkt0dUL5IZpaMTH7
+M.Mignon	Toujours pas d'amour	Priscilla	spotify:track:6XjLjrPnWqegY8xJf5HfYF
+M.Mignon	Par amour	Youssoupha	spotify:track:0FsgAyAF0sHLJlTJIo3lEA
+M.Mignon	Decrescendo	Lomepal	spotify:track:4otT81iBBpaf36roGtzT4a
+M.Mignon	La maladie des Hommes	Antes & Madzes	spotify:track:71UhiBTGaZvMEZZaUKWbgg
+M.Mignon	In the Air Tonight - 2015 Remaster	Phil Collins	spotify:track:4fjWMAvvpx1dgq3pnCm8Wt
+M.Mignon	J'aime Bien!	Josman	spotify:track:4eWcCSJEe0d1gCEdKqyiHS
+M.Mignon	J'aime	QQUN	spotify:track:17kutsxL0cpoXYUZHLhBLO
+M.Mignon	Golden Moment	4th Dimension	spotify:track:6tSo3y1gEYLT98UB75S7B1
+M.Mignon	Dessin	Felhur x Andro	spotify:track:4dM2xwBSte2QDwUZ5HjEGK
+M.Mignon	No Guidance (feat. Drake)	Chris Brown, Drake	spotify:track:7FEwp8BavoEVE3AnxJDchc
+M.Mignon	Doucement	Makassy	spotify:track:5bYxuqIOtzFwfT3hfQ1WHh
+M.Mignon	Malade	Roméo Elvis	spotify:track:35e7ckbWgHjHI9n3oL6jnd
+M.Mignon	Avenir	Louane	spotify:track:5vhLa5SMn0PJJd1GZIUitd
+M.Mignon	Sara perche ti amo	Ricchi, Poveri	spotify:track:0JLZcA4B8L4mONrrQ3Tu76
+M.Mignon	Sur des musiques noires	Thierry Pastor	spotify:track:2tiExMMP0mxiTL0EdNlZ1S
+M.Mignon	L-O-V-E	Nat King Cole	spotify:track:4QxDOjgpYtQDxxbWPuEJOy
+M.Mignon	Bizarre	Antes & Madzes	spotify:track:0b5Ur6VZd8ab1XAX584bnm
+M. DANCING	Crazy In Love (feat. JAY-Z)	Beyoncé, JAŸ-Z	spotify:track:0TwBtDAWpkpM3srywFVOV5
+M. DANCING	(We're Gonna) Rock Around The Clock	Bill Haley & His Comets	spotify:track:0ud0boSjH5sFHs4iYJT8sQ
+M. DANCING	Shake It Off	Taylor Swift	spotify:track:5WfhXulggG0c6WoVeMPA8N
+M. DANCING	Can't Hold Us (feat. Ray Dalton)	Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton	spotify:track:22skzmqfdWrjJylampe0kt
+M. DANCING	La goffa Lolita	Vincè la petite culotte	spotify:track:32ujt0CBVLsFyQtAhVk7WN
+M. DANCING	Dance Tonight	Timmy Trumpet, Azteck, Darren Styles	spotify:track:1dN8YYO1s6an0mb3MIWrox
+M. DANCING	SPIDER	GIMS, DYSTINCT	spotify:track:2fFTn0f94EopgZyfSGQuyK
+M. DANCING	Trouble - Manudigital Remix	Chinese Man, Stylo G, Manudigital	spotify:track:3yvUTM2guv63JDJzUaKSPl
+M. DANCING	Wellerman - Sea Shanty / 220 KID x Billen Ted Remix	Nathan Evans, 220 KID	spotify:track:3iw6V4LH7yPj1ESORX9RIN
+M. DANCING	La Kush	Lorenzo, Tony Corrida	spotify:track:3803TnTgCIn4rq6ZdEoPAl
+M. DANCING	Watch Out For This (Bumaye)	Major Lazer, Busy Signal, FS Green, The Flexican	spotify:track:5StvAhgmgCOpCPHHNfS8bx
+M. DANCING	Right Round	Flo Rida, Kesha	spotify:track:3GpbwCm3YxiWDvy29Uo3vP
+M. DANCING	Blue (Flip)	Wanna Wake	spotify:track:6zrSFomlnVT2gg2Az833Vw
+M. DANCING	Daddy Cool	Boney M.	spotify:track:3WMbD1OyfKuwWDWMNbPQ4g
+M. DANCING	Heads Will Roll - A-Trak Remix	Yeah Yeah Yeahs, A-Trak	spotify:track:5bs8OXiOt4BPF2FAnRFP1u
+M. DANCING	I Like It	Cardi B, Bad Bunny, J Balvin	spotify:track:58q2HKrzhC3ozto2nDdN4z
+M. DANCING	Beggin'	Måneskin	spotify:track:3Wrjm47oTz2sjIgck11l5e
+M. DANCING	Coco - Todiefor Remix	Lorenzo, Todiefor	spotify:track:4bspR2si4Qj2CFp9tG9mim
+M. DANCING	Toi + Moi	Billx, Dr. Peacock, Grégoire	spotify:track:3I2sB3lNQ9NXACi6vJaL4T
+M. DANCING	Who Mad Again	Jahyanai, Bamby	spotify:track:0YJnGoffpSDAmopZi2QUpw
+M. DANCING	...Baby One More Time	Britney Spears	spotify:track:3MjUtNVVq3C8Fn0MP3zhXa
+M. DANCING	Sur un air latino - Radio Edit	Lorie	spotify:track:0oMZ2WUfc7XhmwdCmD9TN2
+M. DANCING	Poker Face	Lady Gaga	spotify:track:1QV6tiMFM6fSOKOGLMHYYg
+M.Patate d'enfer	Brothers (Remix Rilès)	KIK	spotify:track:2UwrB6Ge6mPfUV8yGvAfX7
+M.Patate d'enfer	Dernière danse	Zephyr 21	spotify:track:2rXEzWb8sThODmG8RQ5fGc
+M.Patate d'enfer	Irish Way	The O'Reillys and the Paddyhats	spotify:track:6OrPG3IZScKkSR2cz2q0zR
+M.Patate d'enfer	K21	Sawano Hiroyuki	spotify:track:5bdc03rlZHi6hz0eVONVmb
+M.Patate d'enfer	Hardcoriste	LE BASK	spotify:track:6Sa983YKYRbpkwIELbR4to
+M.Patate d'enfer	La mort avec toi - Billx remix	Billx, Gargäntua	spotify:track:4y4dJ4TO3lwTMrc3Eg9JwZ
+M.Patate d'enfer	RUN	KT Gorique, Riga	spotify:track:0uORhocXXGwauWfPMGMlCa
+M.Patate d'enfer	I'm A Believer (Reprise) - Soundtrack Version	Eddie Murphy	spotify:track:7bDVOfUF41jMmcOJUEPAjQ
+M.Patate d'enfer	Blue Suede Shoes	Elvis Presley	spotify:track:47gmoUrZV3w20JAnQOZMcO
+M.Patate d'enfer	Siffler sur la colline	Les Croquants	spotify:track:3L942yj6BG52T5MxhdOxIz
+M.Patate d'enfer	Les dauphins	St Graal	spotify:track:33Ec7jSMkhaNqBqO9yEoti
+M.Patate d'enfer	Le Brio (Branchez la guitare)	Big Soul	spotify:track:12S1WtXvSXQE7Q0FYk650p
+M.Patate d'enfer	Can't Stop	Red Hot Chili Peppers	spotify:track:3ZOEytgrvLwQaqXreDs2Jx
+M.Patate d'enfer	The Kids Aren't Alright	The Offspring	spotify:track:4EchqUKQ3qAQuRNKmeIpnf
+M.Patate d'enfer	Et alors !	Shy'm	spotify:track:0XKTCQiiJpW9GfQa9eh4Wi
+M.Patate d'enfer	C'est La Vie	Stereophonics	spotify:track:0RtIyGCAp35Hk2WYiTRHnH
+M.Patate d'enfer	Sous les apparences	Ana Ka	spotify:track:3GZTxNYUu7PpXv47oCMa4G
+M.Patate d'enfer	L' Arène	JoeyStarr, Tuco Gadamn	spotify:track:17PyqjG58lSwz5F94znqm6
+M.Patate d'enfer	Et c'est parti... (feat. Smartzee)	Nâdiya, Smartzee	spotify:track:1zwJikF2MYUwqcVnqtGxVj
+M.Patate d'enfer	Fire	Ren	spotify:track:5PvcEnLzuaEp9sK6J4CViP
+M.Patate d'enfer	Hold Tight	Chinese Man, Scratch Bandits Crew, ASM, Youthstar, ILLAMAN	spotify:track:69yYDgM8sCrUsD56AHyOt9
+M.Patate d'enfer	The Drop	Chinese Man, Scratch Bandits Crew	spotify:track:2SgdlsANzYKMCL0w5RmFxq
+M.Patate d'enfer	Vous êtes fous - Single edit	Benny B, DJ Daddy K	spotify:track:7BSHykSC5uTxPgcGSCveSN
+M.Patate d'enfer	Stupeflip vite !!!	Stupeflip, Cadillac	spotify:track:3Qv2Bvd32SFdETcPlEq0f5
+M.Patate d'enfer	Parti pour zouker - Live	Lorie	spotify:track:2HsNTr4jlNwLNkqA0WGGWk
+M.Patate d'enfer	Je fonce - Live	Lorie	spotify:track:5tAwY1EvQrX75KP0aTGCYt
+M.Patate d'enfer	Décalé Gwada	Jessy Matador	spotify:track:6m9geVsbI6BsPZ6CESmK3c
+M.Patate d'enfer	J'suis content c'est le printemps	Le Bard	spotify:track:10mvYrpNrQj0NucJK9W2bl
+M.Patate d'enfer	Je vous aime	KIK	spotify:track:1fjZIZxt5ql6DSnX1mBysM
+M.Patate d'enfer	Bangarang (feat. Sirah)	Skrillex, Sirah	spotify:track:6VRhkROS2SZHGlp0pxndbJ
+M.Patate d'enfer	Afro Trap Part. 11 (King Kong)	MHD	spotify:track:62nJqZs3Qs7DGUto35dVUv
+M.Patate d'enfer	ALLO?C MOI	THÉA	spotify:track:0aWnBogGkcNoyXyh7pgLo2
+M.Patate d'enfer	Without Me	Eminem	spotify:track:7lQ8MOhq6IN2w8EYcFNSUk
+M.Patate d'enfer	Nougayork	Claude Nougaro	spotify:track:2kQOw4QEDxUkuEdeGxDqtc
+M.Patate d'enfer	Coco - Todiefor Remix	Lorenzo, Todiefor	spotify:track:4bspR2si4Qj2CFp9tG9mim
+M.Patate d'enfer	They Don't Care About Us	Michael Jackson	spotify:track:3wuCCNCnBhJlwkIJTBZFiv
+M.Patate d'enfer	Dans ma ruche	Guizmo	spotify:track:1cBPbd6lXCL78s8J5hk6tJ
+M.Patate d'enfer	La Fin Du Monde	Sam Sauvage	spotify:track:3QHVBHcvXwvEeey5Gy9Fz2
+M.Patate d'enfer	Les Gens Qui Dansent (j'adore)	Sam Sauvage	spotify:track:0kgZ7YqklQkVLV8SoEi5Us
+M.Patate d'enfer	Fils de	Dub Inc	spotify:track:6RuBH60do7z2d2QXsn5j8g
+M.Patate d'enfer	Blah!	Chinese Man, Youthstar, Taiwan MC, ILLAMAN	spotify:track:1I3pKHJ4LfnFlLvszmUhpb
+M.Patate d'enfer	AH WE	KT Gorique, Riga	spotify:track:0IQJRVwr9ADMkvqd66muZA
+M.Pépite Auditive	Tough Lover - Burlesque Original Motion Picture Soundtrack	Christina Aguilera	spotify:track:3W3BHalLp288TxkZN1uPRd
+M.Pépite Auditive	Can't Stop	Red Hot Chili Peppers	spotify:track:3ZOEytgrvLwQaqXreDs2Jx
+M.Pépite Auditive	The Kids Aren't Alright	The Offspring	spotify:track:4EchqUKQ3qAQuRNKmeIpnf
+M.Pépite Auditive	Écoute-moi camarade	Rachid Taha	spotify:track:7HCAJNB9VcFMvcwjYPh7pH
+M.Pépite Auditive	L'ombre et la lumière	Calogero, Grand Corps Malade	spotify:track:4U1Slhugu8FueZeuChnSSn
+M.Pépite Auditive	Mount Everest	Labrinth	spotify:track:1ZdhOMWyFR8Iv9eylMGYg2
+M.Pépite Auditive	Fire	Ren	spotify:track:5PvcEnLzuaEp9sK6J4CViP
+M.Pépite Auditive	The Drop	Chinese Man, Scratch Bandits Crew	spotify:track:2SgdlsANzYKMCL0w5RmFxq
+M.Pépite Auditive	Uprising	Muse	spotify:track:4VqPOruhp5EdPBeR92t6lQ
+M.Pépite Auditive	Low	Lenny Kravitz	spotify:track:3zcccQe4KhGXRqRBUwGU3G
+M.Pépite Auditive	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Pépite Auditive	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.Pépite Auditive	Sara perche ti amo	Ricchi, Poveri	spotify:track:0JLZcA4B8L4mONrrQ3Tu76
+M.Pépite Auditive	Colors	Black Pumas	spotify:track:6J3HNhDBIwEX11bX8hzx5u
+M.Pépite Auditive	ALLO?C MOI	THÉA	spotify:track:0aWnBogGkcNoyXyh7pgLo2
+M.Pépite Auditive	Confidence pour confidence - Version originale 1981	Jean Schultheis	spotify:track:6qfjUmIxPluNISxBgJfvM3
+M.Pépite Auditive	Intro	The xx	spotify:track:2usrT8QIbIk9y0NEtQwS4j
+M.Pépite Auditive	Kids	Kyle Dixon & Michael Stein	spotify:track:68gzf3AleOyt4NlKwpV0MY
+M.Pépite Auditive	Paint It Black	Wednesday Addams	spotify:track:1OuCn2F9BmyTAdM0Jylo9X
+M.Pépite Auditive	Another Brick in the Wall, Pt. 2	Pink Floyd	spotify:track:4gMgiXfqyzZLMhsksGmbQV
+M.Pépite Auditive	Reckoning Song	Asaf Avidan, The Mojos	spotify:track:6Wk6A8k7NjjSsPQT9Z3FXM
+M.Pépite Auditive	Les Gens Qui Dansent (j'adore)	Sam Sauvage	spotify:track:0kgZ7YqklQkVLV8SoEi5Us
+M.Pépite Auditive	Finale (William Tell Overture)	Hans Zimmer	spotify:track:0txFKLplUPPpb0YqR8x9lg
+M.Pépite Auditive	Bubble Dance	Julien Rey	spotify:track:4fVLMflZRtAWeKg56cx7GV
+M.Pépite Auditive	The Heart Part 5	Kendrick Lamar	spotify:track:5MMW4CZsZiZt2iuqAXzzWC
+M.Sombre Dynamique	Bandana noir	KIK	spotify:track:25reb87lakloBRWr0kdfP0
+M.Sombre Dynamique	Brothers (Remix Rilès)	KIK	spotify:track:2UwrB6Ge6mPfUV8yGvAfX7
+M.Sombre Dynamique	Wolf Totem	The HU	spotify:track:6uCzY8MKTcLDExUR6nGl99
+M.Sombre Dynamique	07 56 89 24 89	KIK	spotify:track:27x1z3kAL3Jx5TF4HyikPG
+M.Sombre Dynamique	Mémoire	Demi Portion, Furax Barbarossa, Mehsah	spotify:track:5tpuppLjsctOO6lDKXT3sa
+M.Sombre Dynamique	Génération désenchantée	Suzane	spotify:track:5yeCYJzFykj421kaSz6htN
+M.Sombre Dynamique	What's Up Danger (with Black Caviar)	Blackway, Black Caviar	spotify:track:5zsHmE2gO3RefVsPyw2e3T
+M.Sombre Dynamique	Abysses	Scylla	spotify:track:4XBee2Pqqql3OMwyjrila5
+M.Sombre Dynamique	RUN	KT Gorique, Riga	spotify:track:0uORhocXXGwauWfPMGMlCa
+M.Sombre Dynamique	Le 69	Draviss	spotify:track:0dOEsiDFHuhroMtLM8fVUA
+M.Sombre Dynamique	Viens chez nous	Draviss	spotify:track:3bivBD0S8ogYDvdYka3PnH
+M.Sombre Dynamique	Ça parle de	Demi Portion	spotify:track:7cI4ZRhQKSvtDj4cgJytRC
+M.Sombre Dynamique	Hugo Tsr	Hugo TSR	spotify:track:2Udw2xJ18HOowNkOwrHRfL
+M.Sombre Dynamique	Nouveaux Hippies, Pt. 3	KIK	spotify:track:6pjtY9QtWHxTqPkTfGW0ru
+M.Sombre Dynamique	Aucune émotion	Krisy	spotify:track:3tvvJEKlUK4gy3GgAjoopf
+M.Sombre Dynamique	Rue d'la soif	Saez	spotify:track:19Iu2xqnoQymUMX3JbHOCp
+M.Sombre Dynamique	L' Arène	JoeyStarr, Tuco Gadamn	spotify:track:17PyqjG58lSwz5F94znqm6
+M.Sombre Dynamique	PP Haine	Les Sales Majestés	spotify:track:25hpkg3bftAP2XqHfZECeG
+M.Sombre Dynamique	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Sombre Dynamique	300 (Henri) - Colors Session - Roméo Elvis x Le Motel	Roméo Elvis, Le Motel	spotify:track:2niIfcpJ797rk53yupLerb
+M.Sombre Dynamique	Adieu	KIK	spotify:track:21Z2RnNqeYItoHdIAwPjU3
+M.Sombre Dynamique	Afro Trap Part. 11 (King Kong)	MHD	spotify:track:62nJqZs3Qs7DGUto35dVUv
+M.Sombre Dynamique	Without Me	Eminem	spotify:track:7lQ8MOhq6IN2w8EYcFNSUk
+M.Sombre Dynamique	Hip hop	Demi Portion	spotify:track:7bDrIbF7LGRNnYcjYRmLnb
+M.Sombre Dynamique	Là-haut	Hugo TSR	spotify:track:3vjnuagiopTRGWIBNaZJF0
+M.Sombre Dynamique	Gravé dans la roche	SNIPER	spotify:track:0LZ90308GB1Tp05STjabeC
+M.Wake up chill	Savage Love (Laxed - Siren Beat)	Jawsh 685, Jason Derulo	spotify:track:5T490vvoFNU6psep0NPmxs
+M.Wake up chill	Sunflower - Spider-Man: Into the Spider-Verse	Post Malone, Swae Lee	spotify:track:3KkXRkHbMCARz0aVfEt68P
+M.Wake up chill	Under the Bridge	Red Hot Chili Peppers	spotify:track:3d9DChrdc6BOeFsbrZ3Is0
+M.Wake up chill	Bonne idée - Live En passant 1998	Jean-Jacques Goldman	spotify:track:4TPC0PSYIzDfjbgPYUdcLb
+M.Wake up chill	Aquatrip	Hippocampe Fou	spotify:track:4VZhlN99UoRLx3eaYwIaxg
+M.Wake up chill	Young, Wild & Free (feat. Bruno Mars)	Snoop Dogg, Wiz Khalifa, Bruno Mars	spotify:track:2g7uRZ68eLtv74XrxgdT2q
+M.Wake up chill	Au conditionnel	Matmatah	spotify:track:1W7IcRwjXT5C4PrB2XlniF
+M.Wake up chill	Liberta	Pep's	spotify:track:1ReUVJkNB6bjwagl1g5YqF
+M.Wake up chill	Superstition - Single Version	Stevie Wonder	spotify:track:3eXMcllJFZWJ5LELHLcF3M
+M.Wake up chill	1, 2, 3, 4	47ter	spotify:track:4i5eHqRpXIZg9aTpqSASe9
+M.Wake up chill	La terre est ronde	Orelsan	spotify:track:3IM7zXywZ6sRTtkRjRLxJ8
+M.Wake up chill	Danse	Grégoire	spotify:track:5c9ooZorCEEMRzs1HepUgd
+M.Wake up chill	Brako (feat. Hippocampe Fou)	Dooz Kawa, Hippocampe Fou	spotify:track:1n35PSuJdKBdZkFPY19bd5
+M.Wake up chill	Promesses	Bigflo & Oli	spotify:track:5qkUZ9gfkILxc135ZOMx1O
+M.Wake up chill	Get out of My Head	Pab the Kid	spotify:track:7gchcs5ekj3XypmrKtiZl9
+M.Wake up chill	Every Breath You Take - Live From River Plate Stadium, Buenos Aires	The Police	spotify:track:3ZPyWxGouBXvvSBqwNqCMC
+M.Wake up chill	Giorgio by Moroder	Daft Punk	spotify:track:0oks4FnzhNp5QPTZtoet7c
+M.Wake up chill	Motherboard (Drumless Edition)	Daft Punk	spotify:track:444SlMZ9mcxTHiB7J1H6IF
+M.Wake up chill	Bubble Dance	Julien Rey	spotify:track:4fVLMflZRtAWeKg56cx7GV
+M.Wake up chill	Okay	MC Solaar, Marie-Flore	spotify:track:0oohdNzQIMjaFUk4130Lyh
+M.Wake up chill	Résiste	Booboo'zzz All Stars, Taïro	spotify:track:0YXrRswi6c1y73LYziVQzt
+M.Wake up chill	Maché bécif	Dub Inc	spotify:track:2GJSKtIC8zUXJtTLu3mMgr
+M.Wake up chill	This World	Selah Sue	spotify:track:1J7QVxpmhWtt2vVfim0Ll7
+M.Wake up chill	Par amour	Youssoupha	spotify:track:0FsgAyAF0sHLJlTJIo3lEA
+M.Wake up chill	JVP	Mr GISCARD	spotify:track:3zPI4Q0waxD3S2Y2tjcMZ8
+M.Wake up chill	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Wake up chill	Chacun son chacun	THEODORT	spotify:track:3PmHpfvSyxtBqZrRG8K2zx
+M.Wake up chill	Raggamuffin - Sexion d'Assaut Remix	Selah Sue, Sexion d'Assaut	spotify:track:4JNTKTSJcsxufPBRw5nZrM
+M.Wake up chill	Bécane - A COLORS SHOW	Yamê, COLORS	spotify:track:3oUEzTAoOxqZHN4xiqTGqJ
+M.Wake up chill	Nouvelle journée	Skread	spotify:track:7DE29RExqYnmgvELjh4vWG
+M.Wake up chill	Balek	Le Bon Nob	spotify:track:61BD0dBjIoH9Zwa72FCLSN
+M.Wake up chill	Dans ma rue - High for the Chronic !	Doc Gynéco	spotify:track:3DTl0VOkyprQN95ljYlHDj
+M.Wake up chill	Doin' it Right (feat. Panda Bear)	Daft Punk, Panda Bear	spotify:track:36c4JohayB9qd64eidQMBi
+M.Wake up chill	Hinode	Fakear	spotify:track:2GyH0rJwUlpgf8KHEj3tCx
+M.Wake up chill	Gisèle - Part 4	Luidji	spotify:track:6ZAoS3dnU1Hha59H3Fxw6L
+M.Wake up chill	J'aime Bien!	Josman	spotify:track:4eWcCSJEe0d1gCEdKqyiHS
+M.Wake up chill	Tu peux préparer le café noir	Eddy Mitchell	spotify:track:4Fry9NcYlTfnMnLnDQGCyi
+M.Wake up chill	Juste après	Carole Fredericks, Jean-Jacques Goldman, Michael Jones	spotify:track:67KWKY87njBgnfDmkRcnXW
+M.Wake up chill	Promenade imprévue	Skread	spotify:track:0pKlYNSUtJCugw3MTOftfr
+M.Wake up chill	Kids	Kyle Dixon & Michael Stein	spotify:track:68gzf3AleOyt4NlKwpV0MY
+M.Wake up chill	L'addition	Demi Portion, Grand Corps Malade	spotify:track:7b2L0880T0kb7IvMygpQL8
+M.Wake up chill	One Day (Vandaag) - Radio Edit	Bakermat	spotify:track:0GSU6yLOJqO10ziQuBLWOE
+M.Wake up chill	Wake Me Up (feat. Justice) - Single Version	The Weeknd, Justice	spotify:track:0HHKGXT6NQ83tUbVI31O1H
+M.Wake up chill	The Zephyr Song	Red Hot Chili Peppers	spotify:track:1ndGB6rvxKYN9seCYO1dTF
+M.Wake up chill	J'ai mal au mic - Remasterisé	Oxmo Puccino	spotify:track:5UFYMR9p1VkC1NMpjyYDxJ
+M.Wake up chill	New Life	Mayaewk	spotify:track:63mEHZ7XqabNBHCETSxomW
+M.Wake up chill	Double Trouble	John Williams	spotify:track:1woL1W9wp2tKz9cFyc4NUm
+M.Wake up chill	Stayin' Alive VS 50 C Tik Tok - Remix	ROSE BEAT	spotify:track:0u5Agy2RLORlgsxZ3INSJ5
+M.Wake up chill	J'aime	QQUN	spotify:track:17kutsxL0cpoXYUZHLhBLO
+M.Wake up chill	Karma	Naâman	spotify:track:3rmYRJfWYAdKDei4yegdk1
+M.Wake up chill	Breathe	Bomel	spotify:track:3KiFuk2Oi6VBqEFmjszNdN
+M.Wake up chill	J'me tire	GIMS	spotify:track:4w47YE9rjhmZUdtZjSCb82
+M.Wake up chill	Malade	Roméo Elvis	spotify:track:35e7ckbWgHjHI9n3oL6jnd
+M.Wake up chill	The Big Tree	Stand High Patrol	spotify:track:4ZpqCGtkgPn1Pxsgtmtc8O
+M.Wake up chill	Iko Iko	The Dixie Cups	spotify:track:2xZPpUIcajScKX99PH0fD9
+M.Wake up chill	Me Gusta Latina	Tryf Dacomedian, Snoop Dogg	spotify:track:5xMVsIrFnn4b1TYVT1Nh5R
+M.Wake up chill	Alain - La Pomme de Terrre	Natoo	spotify:track:3gGdi8pgA6DoRGo3X06UIq
+M.Wake up chill	You Are Never Alone	Socalled, C-Rayz Walz, Doris Glaspie, Katie Moore	spotify:track:0yWOE0IFgRLT672kil42gI
+M.Wake up chill	One Day / Reckoning Song (Wankelmut Remix) [Radio Edit]	Asaf Avidan, The Mojos, Wankelmut	spotify:track:5bGG1abhVIUm6EAa36ipRX
+M.Wake up chill	2 chez moi	Demi Portion	spotify:track:6VZ6q8B0YT58URVV3y8KTR
+M.Wake up chill	Don't Go Breaking My Heart	Elton John, Kiki Dee	spotify:track:7HW5WIw7ZgZORCzUxv5gW5
+M.Wake up chill	Musique	France Gall	spotify:track:3J7V8Wg2wqqCM3tfpBoSne
+M.Wake up chill	Weak	AJR	spotify:track:3TJk0aoXM0knrOlgd1fnbx
+M.Wake up chill	Presque Rien	Hippocampe Fou, Gaël Faye	spotify:track:1om616X5tor0L7UR78zapJ
+M.Wake up chill	6:30	Snoop Dogg, Wiz Khalifa	spotify:track:02Io4lJ2wtUAVKlmDA6v4S
+M.Wake up chill	Colors	Black Pumas	spotify:track:6J3HNhDBIwEX11bX8hzx5u
+M.Wake up chill	In the Air Tonight - 2015 Remaster	Phil Collins	spotify:track:4fjWMAvvpx1dgq3pnCm8Wt
+M.Wake up chill	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Wake up chill	Jerusalema (feat. Nomcebo Zikode)	Master KG, Nomcebo Zikode	spotify:track:2MlOUXmcofMackX3bxfSwi
+M.Wake up chill	Saint-Denis (en musique)	Grand Corps Malade	spotify:track:3bZnFH8piHkJc1VUAnDs7P
+M.Wake up chill	FOMO	Lord Esperanza	spotify:track:3CepsWSM9yVKfVZSz1suud
+M.Wake up chill	The Lazy Song	Bruno Mars	spotify:track:386RUes7n1uM1yfzgeUuwp
+M.Wake up chill	Rappel	Vald	spotify:track:6WD8BChZNMRIVXySd9sxUc
+M.Wake up chill	Clint Eastwood	Gorillaz, Del The Funky Homosapien	spotify:track:1RKUoGiLEbcXN4GY4spQDx
+M.Wake up chill	Another Brick in the Wall, Pt. 2	Pink Floyd	spotify:track:4gMgiXfqyzZLMhsksGmbQV
+M.Wake up chill	L-O-V-E	Nat King Cole	spotify:track:4QxDOjgpYtQDxxbWPuEJOy
+M.Wake up chill	Aimer sans amour	Guts	spotify:track:7yi1aBMIGLg3P25RNANtux
+M.You're crazy of course	Aquatrip	Hippocampe Fou	spotify:track:4VZhlN99UoRLx3eaYwIaxg
+M.You're crazy of course	La parisienne	Marie-Paule Belle	spotify:track:1Eg6Q5KlzU6ZHqyM9USX3Q
+M.You're crazy of course	Le prince Aladin (feat. Kev Adams)	Black M, Kev Adams	spotify:track:6ZS3WTqzdyff3cAUfjQaRV
+M.You're crazy of course	Dernière danse	Zephyr 21	spotify:track:2rXEzWb8sThODmG8RQ5fGc
+M.You're crazy of course	La salsa du démon	Le Grand Orchestre du Splendid	spotify:track:5QJZ7tGZxE2azr1JiskwIw
+M.You're crazy of course	Je suis ton meilleur ami	Richard Darbois	spotify:track:4HPGEIll5M2eZVnEpqPkvL
+M.You're crazy of course	I'm Shipping Up To Boston	Dropkick Murphys	spotify:track:7rSERmjAT38lC5QhJ8hnQc
+M.You're crazy of course	Shake It Off	Taylor Swift	spotify:track:5WfhXulggG0c6WoVeMPA8N
+M.You're crazy of course	Tout le monde - Billx edit	Billx, Nathalie Froehlich	spotify:track:2gDHVvrX2cC3mAlphdHv18
+M.You're crazy of course	La mort avec toi - Billx remix	Billx, Gargäntua	spotify:track:4y4dJ4TO3lwTMrc3Eg9JwZ
+M.You're crazy of course	Dance Tonight	Timmy Trumpet, Azteck, Darren Styles	spotify:track:1dN8YYO1s6an0mb3MIWrox
+M.You're crazy of course	SPIDER	GIMS, DYSTINCT	spotify:track:2fFTn0f94EopgZyfSGQuyK
+M.You're crazy of course	Mozart in Da Ghetto	Mister Modo, Ugly Mac Beer	spotify:track:7lWP67Clx9sgkEHlJ1aif7
+M.You're crazy of course	RUN	KT Gorique, Riga	spotify:track:0uORhocXXGwauWfPMGMlCa
+M.You're crazy of course	Ma Benz	Brigitte	spotify:track:3VtgKyNdd9D7T3u9FZbrsX
+M.You're crazy of course	Bubble Dance	Julien Rey	spotify:track:4fVLMflZRtAWeKg56cx7GV
+M.You're crazy of course	Bourbier	Timal, Naza	spotify:track:1f0RLxICht3MdQ00Z8PNca
+M.You're crazy of course	Freestyle Funk	Tsonpa	spotify:track:61hO3dj5FoWM4MprDoCE3r
+M.You're crazy of course	Blue Suede Shoes	Elvis Presley	spotify:track:47gmoUrZV3w20JAnQOZMcO
+M.You're crazy of course	La Kush	Lorenzo, Tony Corrida	spotify:track:3803TnTgCIn4rq6ZdEoPAl
+M.You're crazy of course	The Kids Aren't Alright	The Offspring	spotify:track:4EchqUKQ3qAQuRNKmeIpnf
+M.You're crazy of course	Wellerman	LBG	spotify:track:3IuWg2dmyGBgXA169VYQZH
+M.You're crazy of course	C'est Toi Que Je T'aime	Head Fish	spotify:track:5LYsjeqdLcbTpgfzhaLUoS
+M.You're crazy of course	Et alors !	Shy'm	spotify:track:0XKTCQiiJpW9GfQa9eh4Wi
+M.You're crazy of course	Barman	Soprano	spotify:track:4As0k5ciqtu4YC05taszuj
+M.You're crazy of course	C'est La Vie	Stereophonics	spotify:track:0RtIyGCAp35Hk2WYiTRHnH
+M.You're crazy of course	Sous les apparences	Ana Ka	spotify:track:3GZTxNYUu7PpXv47oCMa4G
+M.You're crazy of course	Trackin'	Billy Crawford	spotify:track:4iVpylB55RQJYl6QxqdBbt
+M.You're crazy of course	Décalé Gwada	Jessy Matador	spotify:track:6m9geVsbI6BsPZ6CESmK3c
+M.You're crazy of course	Chihuahua	DJ BoBo	spotify:track:1OhfpuqKF8LM3ngn6uXnzx
+M.You're crazy of course	PP Haine	Les Sales Majestés	spotify:track:25hpkg3bftAP2XqHfZECeG
+M.You're crazy of course	J'suis content c'est le printemps	Le Bard	spotify:track:10mvYrpNrQj0NucJK9W2bl
+M.You're crazy of course	Psychostar Show	Kamini	spotify:track:20yRJ69tIMPFSSlBqkrqnR
+M.You're crazy of course	Bangarang (feat. Sirah)	Skrillex, Sirah	spotify:track:6VRhkROS2SZHGlp0pxndbJ
+M.You're crazy of course	Addictions	Superbus	spotify:track:62x5BmPPt987oXG84roCpq
+M.You're crazy of course	ALLO?C MOI	THÉA	spotify:track:0aWnBogGkcNoyXyh7pgLo2
+M.You're crazy of course	01h47 - Change de pote	Casseurs Flowters	spotify:track:3p8QBS8m959GVpJSEpA2Cn
+M.You're crazy of course	144p	LecHad	spotify:track:6gkd2wM5yecyTkqxhabHZX
+M.You're crazy of course	GRANDS GODETS	A'Paulo, Nolam	spotify:track:5WQ9lxblEO9uemvKLtf9kf
+M.You're crazy of course	Dans la tête des autres - James Gainsbrown	Kamini	spotify:track:45i1R3OPiLbx2pTvoZSyGi
+M.You're crazy of course	I'm A Believer (Reprise) - Soundtrack Version	Eddie Murphy	spotify:track:7bDVOfUF41jMmcOJUEPAjQ
+M.You're crazy of course	Wondercash	Casseurs Flowters	spotify:track:6prfpNZvYnXROnwwdyD6ql
+M.You're crazy of course	C'est une pute	Fatal Bazooka	spotify:track:2SBYJc1S2vTnaZfYv2ifFb
+M.You're crazy of course	Le son qui fait plaiz	Lorenzo	spotify:track:2syhl7N2qR4IwhlI7vy5HP
+M.You're crazy of course	Krusty Krab Spongebob Trap Remix Vine Theme	William Jacobs	spotify:track:79VupVk4BWNqYcfXe5oVOh
+M.You're crazy of course	Automatic Attack	Stand High Patrol	spotify:track:38srUX62KRfmtpgovBNw0e
+M.You're crazy of course	Coccinelle	French Fuse	spotify:track:7s22VtRQcTlmTU4fFsx2nD
+M.You're crazy of course	Prohibition 2	Smokey Joe & The Kid, Yoshi	spotify:track:5upw4ByRsejgL6yOydNpuv
+M.You're crazy of course	Mon truc en plumes	Zizi Jeanmaire	spotify:track:4IXy8vK0xHfgM6XukEAEy8
+M.You're crazy of course	El Sonidito	Hechizeros Band	spotify:track:5L5Ox4ze5TZaQNw5CvD6CL
+M.You're crazy of course	Sans Prétention	Sans Prétention	spotify:track:3HHSWXQjNyfPDjzd4RbDcE
+M.You're crazy of course	Anam Manjar	Mauresca Fracas Dub	spotify:track:0orlW7BtqSRG6dLaqiHXpa
+M.You're crazy of course	La vieille	Leila Huissoud	spotify:track:59iUwdfeSQSpuaL5mk6Ppo
+M.You're crazy of course	Promenons nous dans les bois	Juliette Z	spotify:track:1eXtiAucfSB7w1xv0Kq3Ez
+M.You're crazy of course	L'homme de cromagnon	Les Quatre Barbus	spotify:track:1SjHnafAFHmw4TrsCcciPb
+M.You're crazy of course	La goffa Lolita	Vincè la petite culotte	spotify:track:32ujt0CBVLsFyQtAhVk7WN
+M.You're crazy of course	Tié la famille !	Bengous	spotify:track:6TdX6nbBXtH4FxiZKhD4tD
+M.You're crazy of course	I'm A Believer	Smash Mouth	spotify:track:4lAYMPLPFOovwTCmtTt9b5
+M.You're crazy of course	Sous la douche	Spider ZED	spotify:track:74SVsdOhzozS9mxBzNHyLO
+M.You're crazy of course	Seul et célibataire	Les Fatals Picards	spotify:track:1OZGqWVmcZ47w3JOykos9f
+M.You're crazy of course	Rue d'la soif	Saez	spotify:track:19Iu2xqnoQymUMX3JbHOCp
+M.You're crazy of course	Dieu m'a donné la foi	Ophélie Winter	spotify:track:4QlC4HmIyo2nO0l0bRrgdm
+M.You're crazy of course	Lache l'affaire	R.Wan	spotify:track:1BDAkqZ9L48rMrnNeL2YDY
+M.You're crazy of course	Bande organisée	13 Organisé, SCH, Kofs, Jul, Naps, Soso Maness, Elams, Solda, Houari	spotify:track:2JNJSm3CjesTWLOcJm4Kiz
+M.You're crazy of course	Vous êtes fous - Single edit	Benny B, DJ Daddy K	spotify:track:7BSHykSC5uTxPgcGSCveSN
+M.You're crazy of course	Ilona (Un Monde Parfait) - Frenchcore	RAW MONKEY	spotify:track:4wY7z3OOBQiUSW04mzK3dg
+M.You're crazy of course	A la vie, à l'Armor (feat. Les 3 Fromages)	Les Fatals Picards, Les 3 Fromages	spotify:track:4CdnzkXHYUtsMm6bAgd79M
+M.You're crazy of course	MACHTOU PICHTOU	PERCEVAL, Vadrouilleur2.0	spotify:track:6sK07T1fWshcwz9AkHp8gc
+M.You're crazy of course	La vie	Bolivard	spotify:track:0o5ZpZiuqyUPaqGq4cw6Lk
+M.You're crazy of course	Le syndrome de Göteborg	Les Fatals Picards	spotify:track:3APDxCvBsLG7HoFwR3Gf8g
+M.You're crazy of course	Bienvenue Dans La Secte	La Secte Phonétik	spotify:track:4JTxVVAc2zMWJ3tUqxxqIV
+M.You're crazy of course	Nougayork	Claude Nougaro	spotify:track:2kQOw4QEDxUkuEdeGxDqtc
+M.You're crazy of course	Coco - Todiefor Remix	Lorenzo, Todiefor	spotify:track:4bspR2si4Qj2CFp9tG9mim
+M.You're crazy of course	Super Pouvoir D'Achat	La Chanson Du Dimanche	spotify:track:4eXerBzWuWUWRCayo0DcdC
+M.You're crazy of course	Toi + Moi	Billx, Dr. Peacock, Grégoire	spotify:track:3I2sB3lNQ9NXACi6vJaL4T
+M.You're crazy of course	One Life	iambillies	spotify:track:0lYewH7vm7PLZfnl9QOo3g
+M.You're crazy of course	They Don't Care About Us	Michael Jackson	spotify:track:3wuCCNCnBhJlwkIJTBZFiv
+M.You're crazy of course	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.You're crazy of course	Les Gens Qui Dansent (j'adore)	Sam Sauvage	spotify:track:0kgZ7YqklQkVLV8SoEi5Us
+M.You're crazy of course	Who Mad Again	Jahyanai, Bamby	spotify:track:0YJnGoffpSDAmopZi2QUpw
+M.You're crazy of course	Sur un air latino - Radio Edit	Lorie	spotify:track:0oMZ2WUfc7XhmwdCmD9TN2
+M.You're crazy of course	Le Pudding à l'Arsenic - Bonus Track	Magoyond	spotify:track:42XOTrOoPPg363aAwWT8An
+M.You're crazy of course	Chasse aux sorcières	Hippocampe Fou	spotify:track:1gLGgACnvbc2JP3lO0XErJ
+M.You're crazy of course	Terrorisme de proximité	wasting shit, tommy moisi	spotify:track:4UZj1v5tGYaNJ2ojYi7YnG
+M.Casque Session	AMAPIANO RIDDIM	Youssoupha, Heaven Sam	spotify:track:6pr5s9Wrn52er6sXnulaNA
+M.Casque Session	Gibraltar	Abd Al Malik	spotify:track:2Ji6pcpNIuRPSilgKHjnN6
+M.Casque Session	Réalité	Bolivard	spotify:track:7t8wiYXnc7jLKy93ds62VT
+M.Casque Session	Le savoir faire	L'Entourloop, N'Zeng	spotify:track:1sPplsIEv3D4AFufq2tTOj
+M.Casque Session	Green Onions	Booker T. & the M.G.'s	spotify:track:4fQMGlCawbTkH9yPPZ49kP
+M.Casque Session	Fire	Ren	spotify:track:5PvcEnLzuaEp9sK6J4CViP
+M.Casque Session	a woman is a god	Tommy Genesis	spotify:track:1aJwxjWEaP7SOWZ3ejaKej
+M.Casque Session	My Face	Biga*Ranx	spotify:track:74vgqbfWaDGkggH2lYaCO7
+M.Casque Session	Sexy (feat. Big Red)	Biga*Ranx, Big Red	spotify:track:715sjcQWWLNAekrn3exJUb
+M.Casque Session	Amazing	Kanye West, Jeezy	spotify:track:0m3Ze0cy8qBHSsV2exAfCw
+M.Casque Session	Paint It Black	Wednesday Addams	spotify:track:1OuCn2F9BmyTAdM0Jylo9X
+M.Casque Session	Calling Elvis	Dire Straits	spotify:track:5g6o2ZEegnAI3MczbwZaTZ
+M.Casque Session	Mount Everest	Labrinth	spotify:track:1ZdhOMWyFR8Iv9eylMGYg2
+M.Casque Session	My Home	Igit	spotify:track:6BrDJw1mgaNaJHqbZLZVLX
+M.Casque Session	Uprising	Muse	spotify:track:4VqPOruhp5EdPBeR92t6lQ
+M.Casque Session	Bitch Better Have My Money	Rihanna	spotify:track:0NTMtAO2BV4tnGvw9EgBVq
+M.Casque Session	Blinding Lights	The Weeknd	spotify:track:0VjIjW4GlUZAMYd2vXMi3b
+M.Casque Session	Shape of You	Ed Sheeran	spotify:track:7qiZfU4dY1lWllzX7mPBI3
+M.Casque Session	Talk	Khalid, Disclosure	spotify:track:0rTV5WefWd1J3OwIheTzxM
+M.Casque Session	Dynabeat	Jain	spotify:track:5lZoZuFYQpsRy8D5iD1MG2
+M.Casque Session	Thank God	Rilès	spotify:track:5ZtoiFGlZ3tur8NJAMn0ws
+M.Casque Session	Rap God	Eminem	spotify:track:6sDQ4uiWw9OdVrCXFLSlZt
+M.Casque Session	Day 'N' Nite (Nightmare)	Kid Cudi	spotify:track:60PAzFNW3vAiAiVK6DRJfB
+M.Casque Session	The Heart Part 5	Kendrick Lamar	spotify:track:5MMW4CZsZiZt2iuqAXzzWC
+M.Casque Session	Acouphènes	Grand Corps Malade	spotify:track:6zV5cbuOVa5wcKwqvDFDkv
+M.Casque Session	Insolent 1	Bigflo & Oli	spotify:track:0PBA7IyEYcn2Ae6ePib43l
+M.Casque Session	Je parle	Manau	spotify:track:1vnPePrSs3TJIEjY2HpdPe
+M.Casque Session	Je Parle II	Manau	spotify:track:5fAvXfgcHwjggZzQB2fJZt
+M.Casque Session	J'suis pas rentré	Grand Corps Malade, Rachid Taxi	spotify:track:28nTK0TPbriUo73D4kn6xn
+M.Casque Session	Tôt le matin	Gaël Faye	spotify:track:44P75p1gtECmB1T1eJ7tFy
+M.Casque Session	Fonky Freestyle	Demi Portion	spotify:track:0PV42ualfn3HpnvytaS0cf
+M.Casque Session	Ma femme	Gaël Faye	spotify:track:0wpjEtcUQrYA2BjRYQyQwv
+M.Casque Session	Freestyle d'adieu	KIK	spotify:track:5IWsc3Rsv38FzHkLq01Xbp
+M.Casque Session	L'Impasse	THK, KT Gorique	spotify:track:2RSFXztuH7uVrIl393n9ZC
+M.Casque Session	Purple Noise	Boris Brejcha	spotify:track:6BA2JM59JObFjHNvLK2KOg
+M.Casque Session	Rub-a-Dub Anthem - Dub Axiom	High Tone, Pupajim	spotify:track:6JGVfpWXm8uYXC1F6or4HM
+M.Casque Session	Métèque	JoeyStarr	spotify:track:6QLFSBZplNrIBOjy0m07tx
+M.Casque Session	Toucher l'horizon - Remasterisé	Oxmo Puccino	spotify:track:1QZ66nuBGkHgb9WWGcXBte
+M.Casque Session	Solaar pleure	MC Solaar	spotify:track:4IFd5gfOwvN8KEkRdJr0yn
+M.Casque Session	Baby Blue (feat. Chance the Rapper)	Action Bronson, Chance the Rapper	spotify:track:7gDwRzJhLs0fFHaGtMDJVM
+M.Casque Session	Lemme Freak	Lil Dicky	spotify:track:0egGmGkZ8maYdEYo4RrVsZ
+M.Casque Session	God Bless (feat. Damso)	Hamza, Damso	spotify:track:6gkwAFKr9uk5Qq1HhSZzss
+M.Casque Session	ANOTHER DAY, ANOTHER CHALLENGE	Rilès	spotify:track:7v22z3F5yNlUxNrrmx1USa
+M.Casque Session	Motherless Jazz - Live	Smokey Joe & The Kid	spotify:track:0afSnuukLTBPznTj8Ir0no
+M.Casque Session	Singulier	KT Gorique	spotify:track:16r1FT0ON7i8gZv1zM2JHk
+M.Casque Session	Charbon	Scylla, Sofiane Pamart	spotify:track:1411YxMR04yvldN3IluV7Q
+M.Casque Session	Poto	Demi Portion	spotify:track:0hUcoojpkSJ26edizZg0DE
+M.Casque Session	Ouache Away Your Mix - You're Here, Now What? - Live 2017	Matmatah	spotify:track:2zQrtkSbgiz7EddSKvsagh
+M.Casque Session	Madame n'aime pas	Francis Cabrel	spotify:track:6uryKrnJTmahjKgVNadEhR
+M.Casque Session	Afraid To Feel	LF SYSTEM	spotify:track:40SBS57su9xLiE1WqkXOVr
+M.Casque Session	Mauvais rêve	Hoshi	spotify:track:6IZWTHVNit0ajtXwAWDGO9
+M.Casque Session	Le déluge	KIK	spotify:track:2KYfulQdiGSGwwSLWiGSmm
+M.Casque Session	L'enfant des rizières	Images	spotify:track:6Ns7e1Snyc0qEVmbxxXeyC
+M.Casque Session	Santa María (del Buen Ayre)	Gotan Project	spotify:track:65MDo5mxRY45IHpyVkLEU5
+M.Casque Session	Without a Trace (feat. Eric Benny Bloom)	Naughty Professor, Eric Benny Bloom	spotify:track:6oAoWCxAX63VZpAdk6Z2U1
+M.Casque Session	On verra bien	47ter	spotify:track:4sdUMzju9WdKtrt5Ye8rGm
+M.Casque Session	One Night in Bangkok	Murray Head	spotify:track:6erBowZaW6Ur3vNOWhS2zM
+M.Casque Session	Comme d'habitude	Demi Portion	spotify:track:1T3yxtGk0duqAeLS3qOUtc
+M.Casque Session	Enemy (with JID) - from the series Arcane League of Legends	Imagine Dragons, JID, Arcane, League of Legends	spotify:track:3CIyK1V4JEJkg02E4EJnDl
+M.Casque Session	Autoreflet	Grand Corps Malade	spotify:track:2j3sASiYw3Vp9Hc3rgoUaO
+M.Casque Session	Saute	Vink	spotify:track:0m1OTp8YgXO9HdLy8hWral
+M.Casque Session	Un Jour Parfait	Calogero	spotify:track:3zGvYfGd4tif9GItI8vkzi
+M.Casque Session	Mama Sam - Live 2005 Version Radio	-M-	spotify:track:1OHphRl2ho5RGZKeB13jJE
+M.Casque Session	Just Can't Get Enough - Live	Depeche Mode	spotify:track:68OKGv6gxjAXEQVhLXfbEV
+M.Casque Session	Cendrillon - Live	Téléphone	spotify:track:1F1xRPnHFpcpz1ToFeK5bL
+M.Casque Session	La bombe humaine - Live	Téléphone	spotify:track:0KofYC41wDUJ3Enit5agrO
+M.Casque Session	Les choses - Live Un tour ensemble 2003	Jean-Jacques Goldman	spotify:track:1L7BxF3ptzxmMiPg9HBZCB
+M.Casque Session	Le rapt - Live En passant 1998	Jean-Jacques Goldman	spotify:track:3O00ESW09XUHed1vQgQnDz
+M.Casque Session	Ton invitation - Live – La Cigale 2016	Louise Attaque	spotify:track:5bZca1K9jpI044vp5ogbEZ
+M.Casque Session	Et l'on n'y peut rien - Live Un tour ensemble 2003	Jean-Jacques Goldman	spotify:track:2MBLchXDXdMxZnBfEipATW
+M.Casque Session	Bonne idée - Live En passant 1998	Jean-Jacques Goldman	spotify:track:4TPC0PSYIzDfjbgPYUdcLb
+M.Casque Session	Soleil noir - Live	47ter	spotify:track:5KN80QQM4PxunCcJdfUTjU
+M.Casque Session	bâtard	Stromae	spotify:track:4APjoR6Fmrrl707Z1cShHS
+M.Casque Session	Codeine	Mandragora	spotify:track:1AQH4K1OX1KHbTt5ojMonp
+M.Casque Session	Get Lucky (feat. Pharrell Williams and Nile Rodgers)	Daft Punk, Pharrell Williams, Nile Rodgers	spotify:track:69kOkLUCkxIZYexIgSG8rq
+M.Casque Session	C'est une belle journée	Mylène Farmer	spotify:track:5nNIFYy5dDQo9s3hSOd7xX
+M.Casque Session	Les choses	Jean-Jacques Goldman	spotify:track:4Gze2IIG72BjPA9cb6UoNR
+M.Casque Session	J'me fais chier dans les soirées	Petite Gueule, Julieta	spotify:track:5RVUYXuIid02DBA7eQC8WN
+M.Casque Session	J'ai vu de la lumière	Grand Corps Malade	spotify:track:1sMFqVUvAfXyjMqGzPrtdu
+M.Casque Session	Intro	The xx	spotify:track:2usrT8QIbIk9y0NEtQwS4j
+M.Casque Session	Madame	Morgan	spotify:track:6uwEGzM8eDHWoeKZFgJeeu
+M.Casque Session	Haagen-Dazs	Kyan Khojandi	spotify:track:1WBpiPUPp4GsElJtTAtcq3
+M.Casque Session	Pornstar	Bey	spotify:track:37Ty5v1rVIVgOZiiBR5r36
+M.Casque Session	J'te déteste	Kyan Khojandi	spotify:track:0EJHEfsceoNDavbtdmqwe2
+M.Casque Session	Allez là	Hoshi	spotify:track:6zwdJ84cbMrj9owonEerNZ
+M.Casque Session	Too Late	Chinese Man, KT Gorique, Stogie T, FP	spotify:track:5wRU6hnHqZJZmwBjwpBUnV
+M.Casque Session	Amour censure	Hoshi	spotify:track:1Oa6WPyiLIRaY5x0jl8GMC
+M.Casque Session	L'horizon des évènements	Kyan Khojandi	spotify:track:6ylgmKOcKhGn4SAHr6rrs1
+M.Casque Session	Quoi de neuf les voyous	Rok.wav, THÉA, Dudu.wav	spotify:track:3ZyK4C6HxLYB1hlwhQkXtE
+M.Casque Session	Les dauphins	St Graal	spotify:track:33Ec7jSMkhaNqBqO9yEoti
+M.Casque Session	Lydia	Highly Suspect	spotify:track:7yoBjKO6cCnK3zV8gr1k4e
+M.Casque Session	Cortège dansant	Petite Gueule	spotify:track:6DanOgMhynP2yB2rnxMddY
+M.Casque Session	Génération désenchantée	Suzane	spotify:track:5yeCYJzFykj421kaSz6htN
+M.Casque Session	Abysses	Scylla	spotify:track:4XBee2Pqqql3OMwyjrila5
+M.Casque Session	La vie d’après	Bigflo & Oli	spotify:track:0VVUKYAmACrTR3vYwc9tqz
+M.Casque Session	This World	Selah Sue	spotify:track:1J7QVxpmhWtt2vVfim0Ll7
+M.Casque Session	Mademoiselle	Trois Cafés Gourmands	spotify:track:3uyBsgkTKH8AzKoWqrwpD2
+M.Casque Session	Nightcall	Kavinsky, Angèle, Phoenix	spotify:track:2KejCKgm7l3uefW9cFt8cH
+M.Casque Session	Cock Music Smart Music - Live 2015	Fauve	spotify:track:1uBUEsRRUcAXG9l2dd24RI
+M.Casque Session	Nouvelle journée	Skread	spotify:track:7DE29RExqYnmgvELjh4vWG
+M.Casque Session	Hinode	Fakear	spotify:track:2GyH0rJwUlpgf8KHEj3tCx
+M.Casque Session	Paroles et Musique	Grand Corps Malade	spotify:track:4vk56Yw4Uay4u56ZE1E7OD
+M.Casque Session	Kids	Kyle Dixon & Michael Stein	spotify:track:68gzf3AleOyt4NlKwpV0MY
+M.Casque Session	Enemy (with JID) - from the series Arcane League of Legends	Imagine Dragons, JID, Arcane, League of Legends	spotify:track:1r9xUipOqoNwggBpENDsvJ
+M.Casque Session	The Zephyr Song	Red Hot Chili Peppers	spotify:track:1ndGB6rvxKYN9seCYO1dTF
+M.Casque Session	J'aime	QQUN	spotify:track:17kutsxL0cpoXYUZHLhBLO
+M.Casque Session	Brest Bay	Stand High Patrol	spotify:track:5UX8v9D9CE0rXSEO4pfQJn
+M.Casque Session	Reborn	ERA	spotify:track:5PE71E920iG1Grgpra8RJf
+M.Casque Session	Sous les apparences	Ana Ka	spotify:track:3GZTxNYUu7PpXv47oCMa4G
+M.Casque Session	La Sagesse	Grand Corps Malade	spotify:track:6LcHbiJPQjml8BUy4k13TG
+M.Casque Session	Low	Lenny Kravitz	spotify:track:3zcccQe4KhGXRqRBUwGU3G
+M.Casque Session	rockstar (feat. 21 Savage)	Post Malone, 21 Savage	spotify:track:0e7ipj03S05BNilyu5bRzt
+M.Casque Session	300 (Henri) - Colors Session - Roméo Elvis x Le Motel	Roméo Elvis, Le Motel	spotify:track:2niIfcpJ797rk53yupLerb
+M.Casque Session	6:30	Snoop Dogg, Wiz Khalifa	spotify:track:02Io4lJ2wtUAVKlmDA6v4S
+M.Casque Session	Adieu	KIK	spotify:track:21Z2RnNqeYItoHdIAwPjU3
+M.Casque Session	Colors	Black Pumas	spotify:track:6J3HNhDBIwEX11bX8hzx5u
+M.Casque Session	FOMO	Lord Esperanza	spotify:track:3CepsWSM9yVKfVZSz1suud
+M.Casque Session	In the Air Tonight - 2015 Remaster	Phil Collins	spotify:track:4fjWMAvvpx1dgq3pnCm8Wt
+M.Casque Session	Hip hop	Demi Portion	spotify:track:7bDrIbF7LGRNnYcjYRmLnb
+M.Casque Session	Rappel	Vald	spotify:track:6WD8BChZNMRIVXySd9sxUc
+M.Casque Session	Berghain	ROSALÍA, Björk, Yves Tumor	spotify:track:2T8yuUKl1nhmtaIocqWo4i
+M.Casque Session	Plan B	Grand Corps Malade	spotify:track:6paksK2KW9xoJ2OgNRjbrd
+M.Casque Session	Finale (William Tell Overture)	Hans Zimmer	spotify:track:0txFKLplUPPpb0YqR8x9lg

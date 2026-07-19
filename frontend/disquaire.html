@@ -51,6 +51,11 @@
     .dq-chip.blue { background: rgba(56,189,248,0.15); color: #38bdf8; }
     .dq-chip.blue button { color: #38bdf8; }
     .dq-chip.mood { background: rgba(167,139,250,0.14); color: #a78bfa; }
+    .dq-chip.warn { background: rgba(251,146,60,0.16); color: #fb923c; border: 1px dashed #fb923c; }
+    .dq-chip.warn button { color: #fb923c; }
+    .dq-mode { display: inline-flex; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; overflow: hidden; margin-right: 0.6rem; }
+    .dq-mode button { background: transparent; border: none; color: inherit; padding: 0.35rem 0.9rem; cursor: pointer; font-size: 0.85rem; }
+    .dq-mode button.on { background: #1db954; color: #08240f; font-weight: 600; }
     .dq-add { font-size: 0.72rem; padding: 0.2rem 0.4rem; border-radius: 8px;
               border: 1px dashed var(--border, #2a2f3a); background: transparent; color: var(--text-muted, #94a3b8); }
     .dq-banner { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.83rem; margin-bottom: 1rem; }
@@ -97,9 +102,27 @@
       <div class="dq-status" id="status" style="font-size:0.85rem;margin-bottom:0.8rem">Vérification…</div>
       <div class="dq-summary">Chaque titre reste dans la pile tant que tu n'as pas validé son lot. Un titre peut aller dans plusieurs genres — le tri propose les genres manquants (vert) en plus de ceux déjà présents (bleu).</div>
 
-      <div class="dq-controls">
-        <button id="btn-analyse" class="dq-btn">Analyser toute la pile</button>
-        <span class="dq-summary" style="margin:0">Classe d'un coup tous les titres de la pile (peut prendre quelques minutes).</span>
+      <div style="display:flex;flex-direction:column;gap:0.55rem;margin-bottom:0.4rem">
+        <div class="dq-controls" style="margin:0">
+          <span class="dq-summary" style="margin:0;min-width:7.5rem">1 · Quoi trier ?</span>
+          <span class="dq-mode">
+            <button id="mode-genre" class="on" onclick="setMode('genre')">🎸 Genres</button>
+            <button id="mode-mood" onclick="setMode('mood')">💫 Moods</button>
+          </span>
+        </div>
+        <div class="dq-controls" style="margin:0">
+          <span class="dq-summary" style="margin:0;min-width:7.5rem">2 · Sur combien ?</span>
+          <span class="dq-mode">
+            <button id="scope-essai" class="on" onclick="setScope(50)">🧪 Essai — 50 titres</button>
+            <button id="scope-full" onclick="setScope(0)">📦 Toute la pile</button>
+          </span>
+        </div>
+        <div class="dq-controls" style="margin:0">
+          <span class="dq-summary" style="margin:0;min-width:7.5rem">3 · C'est parti :</span>
+          <button id="btn-analyse" class="dq-btn">▶ Lancer l'analyse</button>
+          <button id="btn-stop" class="dq-btn dq-btn--ghost" style="display:none">⏹ Stopper</button>
+          <span class="dq-summary" style="margin:0" id="analyse-hint"></span>
+        </div>
       </div>
       <div id="analyse-progress" style="margin:0.6rem 0;display:none">
         <div class="dq-progress"><div id="analyse-bar" class="dq-progress-bar"></div></div>
@@ -118,6 +141,38 @@
 <script>
 const API = window.location.origin + "/api";
 let BATCH = null;
+let MODE = "genre";   // "genre" | "mood" — cible du tri (cadrage §14 pour les moods)
+let SCOPE = 50;       // 50 = essai (défaut prudent) | 0 = toute la pile
+
+function setMode(m) {
+  if (MODE === m) return;
+  MODE = m;
+  document.getElementById("mode-genre").classList.toggle("on", m === "genre");
+  document.getElementById("mode-mood").classList.toggle("on", m === "mood");
+  viderResultats();
+  majHint();
+}
+function setScope(s) {
+  if (SCOPE === s) return;
+  SCOPE = s;
+  document.getElementById("scope-essai").classList.toggle("on", s === 50);
+  document.getElementById("scope-full").classList.toggle("on", s === 0);
+  majHint();
+}
+function majHint() {
+  const quoi = MODE === "mood" ? "moods (ajouts + retraits suggérés)" : "genres";
+  document.getElementById("analyse-hint").textContent = SCOPE
+    ? `Essai : les ${SCOPE} premiers titres de la pile, tri des ${quoi} — ~0,05 $, ~1-2 min.`
+    : `Toute la pile, tri des ${quoi} — ~2-3 $ et 30-60 min. Fais d'abord un essai !`;
+}
+function viderResultats() {
+  BATCH = null;
+  document.getElementById("tracks").innerHTML = "";
+  document.getElementById("summary").textContent = "";
+  document.getElementById("apply-zone").style.display = "none";
+  banner("", "");
+}
+function modeLabel() { return MODE === "mood" ? "mood" : "genre"; }
 
 function banner(msg, kind) {
   document.getElementById("banner").innerHTML = msg ? `<div class="dq-banner ${kind}">${msg}</div>` : "";
@@ -200,27 +255,45 @@ function finalGenres(t) {
 
 function renderSummary() {
   const ready = BATCH.tracks.filter(t => finalGenres(t).length > 0).length;
-  document.getElementById("summary").innerHTML =
-    `${BATCH.tracks.length} titres — <b>${ready}</b> avec au moins un genre (quitteront la pile). `
+  const sugg = BATCH.tracks.reduce((n, t) => n + (t.suggested || []).filter(g => !t.removed.includes(g)).length, 0);
+  let html = `${BATCH.tracks.length} titres — <b>${ready}</b> avec au moins un ${modeLabel()} (quitteront la pile). `
     + `<span class="dq-chip blue" style="padding:0.05rem 0.4rem">déjà là</span> `
-    + `<span class="dq-chip" style="padding:0.05rem 0.4rem">à ajouter</span> `
-    + `<span class="dq-chip mood" style="padding:0.05rem 0.4rem">mood</span>`;
+    + `<span class="dq-chip" style="padding:0.05rem 0.4rem">à ajouter</span> `;
+  html += MODE === "mood"
+    ? `<span class="dq-chip warn" style="padding:0.05rem 0.4rem">retrait suggéré</span> <span class="dq-chip mood" style="padding:0.05rem 0.4rem">genre (info)</span>`
+    : `<span class="dq-chip mood" style="padding:0.05rem 0.4rem">mood (info)</span>`;
+  if (MODE === "mood" && sugg > 0) {
+    html += ` — <b>${sugg}</b> retrait(s) suggéré(s) par l'IA (pastilles orange : clique × pour accepter) `
+      + `<button class="dq-add" onclick="acceptAllSuggested()">✂ tout accepter</button>`;
+  }
+  document.getElementById("summary").innerHTML = html;
 }
 
 function rowInner(t, i) {
   const blue = t.existing.filter(g => !t.removed.includes(g))
-    .map(g => `<span class="dq-chip blue">${esc(g)}<button onclick="removeExisting(${i},'${jsq(g)}')">×</button></span>`).join("");
+    .map(g => {
+      const warn = (t.suggested || []).includes(g);
+      const titre = warn ? ` title="L'IA suggère de retirer ce ${modeLabel()} — clique × pour accepter"` : "";
+      return `<span class="dq-chip ${warn ? "warn" : "blue"}"${titre}>${warn ? "⚠ " : ""}${esc(g)}<button onclick="removeExisting(${i},'${jsq(g)}')">×</button></span>`;
+    }).join("");
   const green = t.add
     .map(g => `<span class="dq-chip">${esc(g)}<button onclick="removeAdd(${i},'${jsq(g)}')">×</button></span>`).join("");
-  const moods = (t.existing_moods || [])
+  const infos = (MODE === "mood" ? (t.existing_genres || []) : (t.existing_moods || []))
     .map(m => `<span class="dq-chip mood">${esc(m)}</span>`).join("");
-  const chips = (blue + green) || `<span class="dq-chip none">aucun genre — restera dans la pile</span>`;
+  const chips = (blue + green) || `<span class="dq-chip none">aucun ${modeLabel()} — restera dans la pile</span>`;
   return `<div class="dq-track-head">
       <span class="dq-track-name">${esc(t.name)}</span>
       <span class="dq-track-artist">${esc(t.artists.join(", "))}</span>
     </div>
     ${t.reason ? `<div class="dq-reason">💭 ${esc(t.reason)}</div>` : ""}
-    <div class="dq-chips">${chips}<button class="dq-add" onclick="showAdd(${i}, this)">+ ajouter</button>${moods}</div>`;
+    <div class="dq-chips">${chips}<button class="dq-add" onclick="showAdd(${i}, this)">+ ajouter</button>${infos}</div>`;
+}
+
+function acceptAllSuggested() {
+  BATCH.tracks.forEach(t => (t.suggested || []).forEach(g => {
+    if (!t.removed.includes(g)) t.removed.push(g);
+  }));
+  renderBatch();
 }
 
 function renderBatch() {
@@ -270,45 +343,90 @@ function addGenre(i, g) {
 }
 
 let analyseTimer = null;
-document.getElementById("btn-analyse").onclick = async () => {
-  banner("", "");
+document.getElementById("btn-analyse").onclick = () => lancerAnalyse();
+document.getElementById("btn-stop").onclick = async () => {
+  document.getElementById("btn-stop").disabled = true;
+  await fetch(`${API}/disquaire/analyse/stop`, { method: "POST" });
+  banner("⏹ Arrêt demandé — l'analyse s'arrête à la fin de la tranche en cours (quelques secondes). Les titres déjà analysés seront affichés.", "ok");
+};
+
+function boutonsAnalyse(enCours) {
   const btn = document.getElementById("btn-analyse");
-  btn.disabled = true; btn.textContent = "Analyse en cours…";
-  BATCH = null;
-  document.getElementById("tracks").innerHTML = "";
-  document.getElementById("summary").textContent = "";
-  document.getElementById("apply-zone").style.display = "none";
-  document.getElementById("analyse-progress").style.display = "";
-  await fetch(`${API}/disquaire/analyse`, { method: "POST" });
+  btn.disabled = enCours;
+  btn.textContent = enCours ? "Analyse en cours…" : "▶ Lancer l'analyse";
+  const stop = document.getElementById("btn-stop");
+  stop.style.display = enCours ? "" : "none";
+  stop.disabled = false;
+  document.getElementById("analyse-progress").style.display = enCours ? "" : "none";
+}
+
+async function lancerAnalyse() {
+  banner("", "");
+  viderResultats();
+  boutonsAnalyse(true);
+  const r = await fetch(`${API}/disquaire/analyse?mode=${MODE}&limit=${SCOPE}`, { method: "POST" });
+  if (!r.ok) {
+    // Le serveur a REFUSÉ (ex. recensement en cours) : on le dit, on n'attend rien.
+    const err = await r.json().catch(() => ({}));
+    boutonsAnalyse(false);
+    banner("⛔ Analyse non lancée : " + (err.detail || `erreur ${r.status}`), "err");
+    return;
+  }
+  const rep = await r.json().catch(() => ({}));
+  if (rep.already_running) {
+    banner("⚠️ Une analyse est DÉJÀ en cours — je m'y raccroche. Utilise ⏹ Stopper si ce n'est pas celle que tu voulais.", "err");
+  }
+  suivreAnalyse();
+}
+
+function suivreAnalyse() {
+  boutonsAnalyse(true);
   if (analyseTimer) clearInterval(analyseTimer);
   analyseTimer = setInterval(async () => {
     let s;
     try { s = await (await fetch(`${API}/disquaire/analyse/status`)).json(); }
     catch (e) { return; }
+    const modeLance = s.mode || MODE;
     const pct = s.total ? Math.round(100 * s.done / s.total) : 0;
     document.getElementById("analyse-bar").style.width = pct + "%";
-    document.getElementById("analyse-phase").textContent = s.finished ? "" : `Analyse ${s.done}/${s.total} titres…`;
+    document.getElementById("analyse-phase").textContent = s.finished ? ""
+      : `Analyse ${modeLance === "mood" ? "MOODS" : "GENRES"} — ${s.done}/${s.total} titres…`;
     if (s.finished) {
       clearInterval(analyseTimer);
-      document.getElementById("analyse-progress").style.display = "none";
-      btn.disabled = false; btn.textContent = "Analyser toute la pile";
+      boutonsAnalyse(false);
       if (s.error) { banner("Erreur pendant l'analyse : " + s.error, "err"); return; }
       const data = await (await fetch(`${API}/disquaire/analyse/result`)).json();
+      if (MODE !== modeLance) setMode(modeLance);  // aligner l'écran sur ce qui a réellement tourné
       BATCH = {
         pile_id: data.pile_id,
         genres: data.genres,
         tracks: data.tracks.map(t => ({
           ...t,
           add: [...(t.proposed || [])],
-          existing: [...(t.existing_genres || [])],
+          existing: modeLance === "mood" ? [...(t.existing_moods || [])] : [...(t.existing_genres || [])],
+          suggested: [...(t.remove_suggested || [])],
           removed: [],
         })),
       };
       renderBatch();
-      banner(`✅ ${BATCH.tracks.length} titres analysés. Revois si besoin, puis « Tout valider et ranger ».`, "ok");
+      const note = data.stopped ? " (analyse stoppée — résultats partiels, validables)" : "";
+      banner(`✅ ${BATCH.tracks.length} titres analysés (${modeLance === "mood" ? "moods" : "genres"})${note}. Revois si besoin, puis « Tout valider et ranger ».`, "ok");
     }
   }, 1500);
-};
+}
+
+// Au chargement : si une analyse tourne déjà (page rechargée, onglet rouvert), on la retrouve.
+(async () => {
+  try {
+    const s = await (await fetch(`${API}/disquaire/analyse/status`)).json();
+    if (s.running) {
+      if (s.mode && s.mode !== MODE) setMode(s.mode);
+      banner(`⚠️ Une analyse ${s.mode === "mood" ? "MOODS" : "GENRES"} est en cours (${s.done}/${s.total}) — reprise de l'affichage. ⏹ Stopper pour l'arrêter.`, "err");
+      suivreAnalyse();
+    }
+  } catch (e) { /* serveur pas prêt : ignorer */ }
+  majHint();
+})();
 
 document.getElementById("btn-apply").onclick = async () => {
   if (!BATCH) return;
@@ -321,7 +439,7 @@ document.getElementById("btn-apply").onclick = async () => {
       existing: t.existing,
     }));
   if (assignments.length === 0) {
-    banner("Rien à valider dans ce lot (aucun genre).", "err");
+    banner(`Rien à valider dans ce lot (aucun ${modeLabel()}).`, "err");
     return;
   }
   const btn = document.getElementById("btn-apply");
@@ -330,7 +448,7 @@ document.getElementById("btn-apply").onclick = async () => {
     const r = await fetch(`${API}/disquaire/apply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pile_id: BATCH.pile_id, assignments }),
+      body: JSON.stringify({ pile_id: BATCH.pile_id, assignments, mode: MODE }),
     });
     if (!r.ok) {
       const err = await r.json().catch(() => ({}));
@@ -338,7 +456,7 @@ document.getElementById("btn-apply").onclick = async () => {
       return;
     }
     const res = await r.json();
-    banner(`✅ ${res.filed} titres rangés · +${res.added} ajouts genre · ${res.removed_from_genres} retraits · ${res.removed_from_pile} sortis de la pile.`, "ok");
+    banner(`✅ ${res.filed} titres rangés · +${res.added} ajouts ${modeLabel()} · ${res.removed_from_genres} retraits · ${res.removed_from_pile} sortis de la pile.`, "ok");
     BATCH = null;
     document.getElementById("tracks").innerHTML = "";
     document.getElementById("summary").textContent = "";

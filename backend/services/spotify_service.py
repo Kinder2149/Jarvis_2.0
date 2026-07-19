@@ -10,7 +10,7 @@ Identifiants et jeton stockés dans la table app_config (catégorie 'spotify') :
   - spotify_refresh_token   : jeton renouvelable obtenu après autorisation
 
 Contraintes figées (voir docs/CADRAGE_DISQUAIRE.md) :
-  - Redirect URI = http://127.0.0.1:8000/api/spotify/callback (identique côté fiche Spotify)
+  - Redirect URI = http://127.0.0.1:8010/api/spotify/callback (identique côté fiche Spotify)
   - Loopback 127.0.0.1 obligatoire (Spotify refuse « localhost »)
 """
 import base64
@@ -27,7 +27,7 @@ AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API_BASE = "https://api.spotify.com/v1"
 
-REDIRECT_URI = "http://127.0.0.1:8000/api/spotify/callback"
+REDIRECT_URI = "http://127.0.0.1:8010/api/spotify/callback"
 
 # Droits demandés : lire les playlists + ranger des titres dans les playlists du compte.
 SCOPES = (
@@ -191,6 +191,48 @@ async def get_all_playlists() -> list[dict]:
     return items
 
 
+async def get_artist_genres(uris: list[str]) -> dict[str, list[str]]:
+    """Genres que Spotify attribue aux ARTISTES de ces titres → {uri: [genres]}.
+
+    Sert à combler ce que l'IA ignore : elle ne connaît pas les artistes obscurs, mais
+    Spotify sait souvent les situer (« french indie pop », « bhangra », « amapiano »…).
+
+    ATTENTION : ces genres décrivent l'ARTISTE, pas le morceau. Un groupe pop peut avoir
+    un titre qui sonne tout autrement — c'est une indication, pas un verdict.
+    """
+    ids = [u.split(":")[-1] for u in uris if u.startswith("spotify:track:")]
+    artistes_par_titre: dict[str, list[str]] = {}
+    tous_artistes: list[str] = []
+    for i in range(0, len(ids), 50):  # /tracks : 50 max
+        data = await _api_get("/tracks", {"ids": ",".join(ids[i:i + 50])})
+        for t in data.get("tracks") or []:
+            if not t or not t.get("uri"):
+                continue
+            aids = [a["id"] for a in (t.get("artists") or []) if a.get("id")]
+            artistes_par_titre[t["uri"]] = aids
+            for a in aids:
+                if a not in tous_artistes:
+                    tous_artistes.append(a)
+
+    genres_par_artiste: dict[str, list[str]] = {}
+    for i in range(0, len(tous_artistes), 50):  # /artists : 50 max
+        data = await _api_get("/artists", {"ids": ",".join(tous_artistes[i:i + 50])})
+        for a in data.get("artists") or []:
+            if a and a.get("id"):
+                genres_par_artiste[a["id"]] = a.get("genres") or []
+
+    out: dict[str, list[str]] = {}
+    for uri, aids in artistes_par_titre.items():
+        g: list[str] = []
+        for a in aids:
+            for x in genres_par_artiste.get(a, []):
+                if x not in g:
+                    g.append(x)
+        if g:
+            out[uri] = g
+    return out
+
+
 async def _api_send(method: str, path: str, json_body: dict) -> dict:
     token = await _get_access_token()
     async with httpx.AsyncClient() as client:
@@ -217,13 +259,17 @@ async def get_playlist_tracks(playlist_id: str, max_tracks: int | None = None) -
     Retourne une liste de {uri, name, artists: [noms]}. Ignore les entrées vides.
     """
     tracks: list[dict] = []
+    offset = 0  # décalage sur le nombre BRUT d'entrées lues, pas sur les titres retenus :
+                # les fichiers locaux/podcasts sont ignorés ci-dessous, et compter les titres
+                # retenus décalerait les pages suivantes → des titres relus deux fois.
     fields = "next,items(track(uri,name,artists(name)))"
     while True:
         data = await _api_get(
             f"/playlists/{playlist_id}/items",
-            {"fields": fields, "limit": 100, "offset": len(tracks)},
+            {"fields": fields, "limit": 100, "offset": offset},
         )
         batch = data.get("items", [])
+        offset += len(batch)
         for entry in batch:
             track = entry.get("track") or {}
             uri = track.get("uri")

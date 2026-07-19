@@ -39,8 +39,10 @@ def load_config():
         logger.warning("⚠️ [DB] Aucune clé API en DB, utilisation des valeurs par défaut vides")
         api_keys = {"openrouter_key": "", "anthropic_key": "", "google_key": "", "web_search_key": "", "twelve_data_key": "", "openai_key": ""}
     
-    # Fallback .env : si une clé est vide en DB, chercher dans les variables d'environnement
-    env_file = Path(__file__).parent / ".env"
+    # Fallback .env : si une clé est vide en DB, chercher dans le .env à la RACINE du projet.
+    # (Bug corrigé 2026-07-16 : on cherchait backend/.env, qui n'a jamais existé — le vrai
+    # fichier est à la racine. Le repli .env était donc du code mort depuis le début.)
+    env_file = Path(__file__).parent.parent / ".env"
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
             line = line.strip()
@@ -55,6 +57,7 @@ def load_config():
                 "WEB_SEARCH_KEY": "web_search_key",
                 "TWELVE_DATA_KEY": "twelve_data_key",
                 "OPENAI_KEY": "openai_key",
+                "LASTFM_KEY": "lastfm_key",
             }
             db_key = env_map.get(env_key.strip())
             if db_key and not api_keys.get(db_key):

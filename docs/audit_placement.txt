@@ -1,0 +1,936 @@
+RAPPORT D'AUDIT DE PLACEMENT
+======================================================================
+
+1923 titres audités dans 27 genres
+419 titres signalés MAL PLACÉS (21.8 %)
+
+--- CLASSEMENT DES PLAYLISTS PAR TAUX D'ERREUR ---
+
+ 90.3 %    28/  31  Classique
+ 50.0 %     2/   4  Latino
+ 41.9 %    44/ 105  Pop Culture
+ 37.1 %    49/ 132  Rap old school
+ 36.3 %    37/ 102  Rap us
+ 33.3 %    12/  36  Disney
+ 30.0 %    15/  50  Dub
+ 30.0 %    18/  60  Rock soůl
+ 28.6 %     8/  28  Dub Singing
+ 27.1 %    29/ 107  House
+ 26.5 %    30/ 113  Électro Chill
+ 21.0 %    21/ 100  Jazz
+ 20.7 %    50/ 241  Freestyle
+ 17.5 %    17/  97  BO film
+ 15.8 %    15/  95  Live
+ 15.0 %     3/  20  Drop d'un autre temps
+ 14.3 %     2/  14  Pop Dance
+ 14.2 %    22/ 155  Rock
+ 12.8 %     5/  39  Reprise
+  8.6 %     6/  70  Reggae
+  8.1 %     5/  62  Fat Beat
+  1.7 %     1/  59  Beauf
+  0.0 %     0/   6  Chill pop
+  0.0 %     0/  49  Chinesse-man crew
+  0.0 %     0/   7  Pop
+  0.0 %     0/ 128  Rap de rue
+  0.0 %     0/  13  Variété
+
+======================================================================
+DÉTAIL PAR PLAYLIST
+======================================================================
+
+### Classique — 28 mal placés sur 31 (90.3 %)
+   - The Avengers — Alan Silvestri
+       → devrait être : BO film  | Bande originale de film Marvel
+   - Take Five — Dave Brubeck, The Dave Brubeck Quartet
+       → devrait être : Jazz  | Jazz iconique de Dave Brubeck
+   - Le Bon la Brute et le Truand (Thème Principal) — Ennio Morricone
+       → devrait être : BO film  | Bande originale de western
+   - Finale (William Tell Overture) — Hans Zimmer
+       → devrait être : BO film  | BO de Lone Ranger par Zimmer
+   - Discombobulate — Hans Zimmer
+       → devrait être : BO film  | BO de Sherlock Holmes
+   - Avengers: Endgame — Jared Moreno Luna
+       → devrait être : BO film  | Bande originale Marvel
+   - Double Trouble — John Williams
+       → devrait être : BO film  | BO Harry Potter
+   - Hedwig's Theme — John Williams
+       → devrait être : BO film  | BO Harry Potter
+   - Victory Celebration/End Title - Medley — John Williams
+       → devrait être : BO film  | BO Star Wars
+   - Cantina Band — John Williams, London Symphony Orchestra
+       → devrait être : BO film  | BO Star Wars
+   - Star Wars Main Title and the Arrival at Naboo — John Williams, London Symphony Orchestra
+       → devrait être : BO film  | BO Star Wars
+   - Indiana Jones Theme — John Williams, Philharmonic Symphony Orchestra, Richard Hayman
+       → devrait être : BO film  | BO Indiana Jones
+   - Jurassic Park Theme — John Williams, The Piano Guys
+       → devrait être : BO film  | BO Jurassic Park
+   - Augie's Great Municipal Band/ End Credits — London Voices, London Symphony Orchestra, John Williams, New London Children's Choir
+       → devrait être : BO film  | BO Star Wars
+   - La 7ème Compagnie — Marc Reift, Philharmonic Wind Orchestra, Marc Reift Orchestra
+       → devrait être : BO film  | Bande originale de film français
+   - Mission: Impossible Theme — Michael Giacchino
+       → devrait être : BO film  | BO Mission Impossible
+   - Mission Impossible — Mission Impossible
+       → devrait être : BO film  | BO Mission Impossible
+   - L'operap — Mozart Opera Rock
+       → devrait être : Pop Culture  | Comédie musicale rock
+   - Hogwarts' March — Patrick Doyle
+       → devrait être : BO film  | BO Harry Potter
+   - Potter Waltz — Patrick Doyle
+       → devrait être : BO film  | BO Harry Potter
+   - Psyché Rock - Malpaso Mix By Fatboy Slim — Pierre Henry, Michel Colombier
+       → devrait être : Électro Chill  | Musique électronique expérimentale
+   - Berghain — ROSALÍA, Björk, Yves Tumor
+       → devrait être : Pop  | Pop contemporaine
+   - James Bond — Un Siècle De Musiques De Films
+       → devrait être : BO film  | Bande originale James Bond
+   - La Panthère Rose — Un Siècle De Musiques De Films
+       → devrait être : BO film  | Bande originale de film
+   - Le Grand Blond Avec Une Chaussure Noire — Un Siècle De Musiques De Films
+       → devrait être : BO film  | Bande originale de film français
+   - Happy Meal - Concerto pour l’Aile ou la cuisse — Vladimir Cosma
+       → devrait être : BO film  | BO de comédie française
+   - Paint It Black — Wednesday Addams
+       → devrait être : Rock, BO film  | Reprise rock d'un classique Rolling Stones
+   - La Foule — Édith Piaf
+       → devrait être : Variété  | Chanson française variété
+
+### Latino — 2 mal placés sur 4 (50.0 %)
+   - Vamos a la Playa — Loona
+       → devrait être : Pop Dance  | Eurodance allemande, pas d'identité musicale latino
+   - L'italiano — Toto Cutugno
+       → devrait être : Variété  | Variété italienne pop, pas de style musical latino
+
+### Pop Culture — 44 mal placés sur 105 (41.9 %)
+   - Solo (feat. Demi Lovato) — Clean Bandit, Demi Lovato
+       → devrait être : Pop, Pop Dance  | Pop internationale électro, pas rap français pop culture
+   - Khapta — Heuss L'enfoiré, Sofiane
+       → devrait être : Rap de rue  | Rap urbain français typique
+   - Attentat — Imen Es
+       → devrait être : Pop  | Pop urbaine, pas une référence culturelle pop
+   - Diarabi — Kaaris
+       → devrait être : Rap de rue  | Rap hardcore Kaaris
+   - Diarabi — Kaaris
+       → devrait être : Rap de rue  | Doublon, rap hardcore
+   - Tchoin — Kaaris
+       → devrait être : Rap de rue  | Rap de rue classique
+   - Moments — Kalash Criminel, Bigflo & Oli
+       → devrait être : Rap de rue  | Collaboration rap, pas pop culture
+   - Complètement sonné — KeBlack
+       → devrait être : Pop  | Pop urbaine standard
+   - Bazardée — KeBlack
+       → devrait être : Pop  | Pop urbaine standard
+   - On est equipé — KeBlack, Naza
+       → devrait être : Rap de rue  | Rap urbain
+   - Bande organisée — Kofs, Soso Maness, Elams, Jul, SCH, Naps, Solda, Houari, 13 Organisé
+       → devrait être : Rap de rue  | Hymne rap marseillais
+   - Ma 6t a craqué (feat. Ninho) — Kpoint, Ninho
+       → devrait être : Rap de rue  | Rap urbain
+   - Sur la tête de ma mère — L'Algérino
+       → devrait être : Rap de rue  | Rap standard
+   - Catchu Catchu — Lartiste
+       → devrait être : Pop  | Pop urbaine
+   - Vai et viens — Lartiste
+       → devrait être : Pop  | Pop urbaine
+   - Mafiosa (feat. Caroliina) — Lartiste, Caroliina
+       → devrait être : Pop  | Pop urbaine
+   - Vie de star (feat. Ninho) — Leto, Ninho
+       → devrait être : Rap de rue  | Rap urbain
+   - Afro Trap Pt. 7 (La puissance) — MHD
+       → devrait être : Rap de rue  | Afro trap, rap de rue
+   - Afro Trap Part. 11 (King Kong) — MHD
+       → devrait être : Rap de rue  | Afro trap, rap de rue
+   - Fallait pas — Marwa Loud
+       → devrait être : Pop  | Pop urbaine
+   - Bad Boy — Marwa Loud
+       → devrait être : Pop  | Pop urbaine
+   - Fallait pas — Marwa Loud
+       → devrait être : Pop  | Doublon, pop urbaine
+   - Ma belle — Moha La Squale
+       → devrait être : Rap de rue  | Rap urbain
+   - 6.3 — Naps, Ninho
+       → devrait être : Rap de rue  | Rap urbain marseillais
+   - MMM — Naza
+       → devrait être : Pop  | Pop urbaine
+   - Sac à dos — Naza
+       → devrait être : Rap de rue  | Rap urbain
+   - P*Tain de m*Rde — Naza
+       → devrait être : Rap de rue  | Rap urbain
+   - Tricheur — Nekfeu, Damso
+       → devrait être : Rap de rue  | Rap conscient
+   - Un Poco — Ninho
+       → devrait être : Rap de rue  | Rap urbain
+   - La vie qu'on mène — Ninho
+       → devrait être : Rap de rue  | Rap urbain
+   - Putana — Ninho
+       → devrait être : Rap de rue  | Rap urbain
+   - Réseaux — Niska
+       → devrait être : Rap de rue  | Rap urbain
+   - Salé — Niska
+       → devrait être : Rap de rue  | Rap urbain
+   - Medellín — Niska
+       → devrait être : Rap de rue  | Niska, rap de rue français typique
+   - Air Max — Rim'K, Ninho
+       → devrait être : Rap de rue  | Rim'K et Ninho, rap urbain
+   - Air Max — Rim'K, Ninho
+       → devrait être : Rap de rue  | Doublon, même raison
+   - Air Max — Rim'K, Ninho
+       → devrait être : Rap de rue  | Triplon, même raison
+   - Mecs de cités — Sifax, Sofiane
+       → devrait être : Rap de rue  | Sifax et Sofiane, rap de rue brut
+   - Casanova — Soolking, Gazo
+       → devrait être : Rap de rue  | Gazo incarne le rap de rue actuel
+   - Petrouchka (feat. PLK) — Soso Maness, PLK
+       → devrait être : Rap de rue  | Soso Maness et PLK, rap marseillais de rue
+   - Dans La Gova — TK
+       → devrait être : Rap de rue  | TK, rap de rue
+   - Coup du marteau — Tam Sir, Team Paiya, Ste Milano, Renard Barakissa, Tazeboy, PSK
+       → devrait être : Rap de rue  | Collectif rap de rue
+   - Bourbier — Timal, Naza
+       → devrait être : Rap de rue  | Timal et Naza, rap de rue
+   - Bande organisée — Vernis Rouge
+       → devrait être : Rap de rue  | Bande organisée = hymne rap de rue marseillais
+
+### Rap old school — 49 mal placés sur 132 (37.1 %)
+   - C'est que du rap — Bigflo & Oli, Black M, Soprano
+       → devrait être : Pop  | Collaboration pop-rap moderne, pas old school
+   - Trop tard — Bigflo & Oli, JoeyStarr
+       → devrait être : Pop  | Bigflo & Oli sont du rap moderne pop
+   - Sur ma route — Black M
+       → devrait être : Pop  | Black M solo est de la pop urbaine
+   - À l’heure où je me couche — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - Si facile — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - Inachevés — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - 22h31 - Fais les backs — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - C’est toujours 2 connards dans un abribus — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - 01h47 - Change de pote — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - 15h02 - Regarde comme il fait beau (dehors) — Casseurs Flowters
+       → devrait être : Pop  | Casseurs Flowters = rap humoristique moderne
+   - C'Est Ma Life — DJ Abdel, Soprano
+       → devrait être : Pop  | DJ Abdel/Soprano = pop urbaine
+   - 93 mesures — Dinos
+       → devrait être : Pop  | Dinos = rap moderne mélodique
+   - Without Me — Eminem
+       → devrait être : Rap us  | Eminem = rap américain
+   - The Heart Part 5 — Kendrick Lamar
+       → devrait être : Rap us  | Kendrick Lamar = rap US, 2022 = trop récent pour old school
+   - Nique les clones, Pt. II — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - Reuf - Version Five — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - Ken Kaneki — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - On verra — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - Martin Eden — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - Nique les clones, Pt. II — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - Reuf - Version Five — Nekfeu
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - Ma dope — Nekfeu, S.Pri Noir
+       → devrait être : Rap de rue  | Nekfeu années 2010-2020 = trop récent pour old school
+   - La petite marchande de porte-clefs — Orelsan
+       → devrait être : Rap de rue  | Orelsan années 2010-2020 = trop récent pour old school
+   - Défaite de famille — Orelsan
+       → devrait être : Rap de rue  | Orelsan années 2010-2020 = trop récent pour old school
+   - J’essaye, j’essaye — Orelsan
+       → devrait être : Rap de rue  | Orelsan années 2010-2020 = trop récent pour old school
+   - Jour meilleur — Orelsan
+       → devrait être : Rap de rue  | Orelsan années 2010-2020 = trop récent pour old school
+   - L'odeur de l'essence — Orelsan
+       → devrait être : Rap de rue  | Orelsan années 2010-2020 = trop récent pour old school
+   - La fête est finie — Orelsan
+       → devrait être : Rap de rue  | Orelsan années 2010-2020 = trop récent pour old school
+   - Shonen — Orelsan
+       → devrait être : Rap us  | Album La fête est finie (2017), prod moderne, pas old school
+   - San — Orelsan
+       → devrait être : Rap us  | Album La fête est finie (2017), son contemporain
+   - Paradis — Orelsan
+       → devrait être : Rap us  | Album La fête est finie (2017), production actuelle
+   - Basique — Orelsan
+       → devrait être : Rap us  | Single 2017, esthétique moderne pop-rap
+   - Tout va bien — Orelsan
+       → devrait être : Rap us  | Album Civilisation (2021), trop récent
+   - Bonne meuf — Orelsan
+       → devrait être : Rap us  | Perdu d'avance (2009) mais son moderne, pas old school
+   - CP_005_ Ok... Super... — Orelsan
+       → devrait être : Rap us  | Album Civilisation (2021), contemporain
+   - Suicide social — Orelsan
+       → devrait être : Rap us  | Album Le chant des sirènes (2011), pas old school
+   - Notes pour trop tard (feat. Ibeyi) — Orelsan, Ibeyi
+       → devrait être : Rap us  | Album La fête est finie (2017), featuring moderne
+   - Et toi? — Scylla
+       → devrait être : Rap us  | Scylla années 2010-2020, son moderne
+   - Ecoutez-moi — Scylla, Sofiane Pamart
+       → devrait être : Rap us  | Featuring Sofiane Pamart, esthétique contemporaine
+   - Château dans le ciel — Scylla, Sofiane Pamart
+       → devrait être : Rap us  | Featuring Sofiane Pamart, production récente
+   - Monument — Soleil Noir, Swift Guad, Dooz Kawa, Davodka, Euphonik
+       → devrait être : Rap us  | Swift Guad/Dooz Kawa génération 2010+, pas old school
+   - Millionnaire — Soprano
+       → devrait être : Rap de rue, Pop  | Soprano est du rap moderne/commercial, pas old school
+   - Ainsi soit-il — Taïro
+       → devrait être : Reggae  | Taïro est un artiste reggae/dancehall
+   - Rappel — Vald
+       → devrait être : Rap de rue  | Vald est du rap contemporain, pas old school
+   - Ma meilleure amie — Vald
+       → devrait être : Rap de rue  | Vald est du rap contemporain, pas old school
+   - Désaccordé — Vald
+       → devrait être : Rap de rue  | Vald est du rap contemporain, pas old school
+   - Peon (feat. Orelsan) — Vald, Orelsan
+       → devrait être : Rap de rue  | Vald et Orelsan sont du rap contemporain, pas old school
+   - X — Xzibit
+       → devrait être : Rap us  | Xzibit est un rappeur US, pas old school français
+   - On se connaît — Youssoupha, Noémie
+       → devrait être : Rap de rue, Pop  | Youssoupha est du rap moderne, pas old school
+
+### Rap us — 37 mal placés sur 102 (36.3 %)
+   - It's On Again (feat. Kendrick Lamar) - From The Amazing Spider-Man 2 Soundtrack — Alicia Keys, Kendrick Lamar
+       → devrait être : BO film  | Bande originale Spider-Man, même avec Kendrick Lamar
+   - It's On Again (feat. Kendrick Lamar) - From The Amazing Spider-Man 2 Soundtrack — Alicia Keys, Kendrick Lamar
+       → devrait être : BO film  | Bande originale Spider-Man (doublon)
+   - Ça va trop vite — Bigflo & Oli, Busta Rhymes
+       → devrait être : Rap de rue  | Bigflo & Oli sont français, pas rap us
+   - What's Up Danger (with Black Caviar) — Blackway, Black Caviar
+       → devrait être : BO film  | Bande originale Spider-Man: Into the Spider-Verse
+   - The Git Up — Blanco Brown
+       → devrait être : Pop Culture  | Country trap/meme song, pas rap us authentique
+   - No Yodeling Walmart Kid — Charles Goose
+       → devrait être : Pop Culture  | Parodie/meme, pas du rap us
+   - Hancock — Chinese Man, Pistol McFly, Plex Rock
+       → devrait être : Chinesse-man crew  | Chinese Man crew, identité distincte
+   - The Drop — Chinese Man, Scratch Bandits Crew
+       → devrait être : Chinesse-man crew  | Chinese Man crew
+   - Hold Tight — Chinese Man, Scratch Bandits Crew, ASM, Youthstar, ILLAMAN
+       → devrait être : Chinesse-man crew  | Chinese Man crew
+   - The Bare Necessities - Evian Remix by Romain Hainaut — Craash
+       → devrait être : Disney  | Remix du Livre de la Jungle
+   - Θ. Macarena — Damso
+       → devrait être : Rap de rue  | Damso est belge/français, pas rap us
+   - Love Me or Not — Dub FX
+       → devrait être : Dub Singing  | Dub FX = identité dub
+   - Ring a Digidoo — Fat Dog
+       → devrait être : Rock  | Fat Dog = groupe rock/punk britannique
+   - God Bless (feat. Damso) — Hamza, Damso
+       → devrait être : Rap de rue  | Hamza et Damso sont belges, rap français/belge
+   - Enemy (with JID) - from the series Arcane League of Legends — Imagine Dragons, JID, Arcane, League of Legends
+       → devrait être : Pop Culture, Rock  | Imagine Dragons est un groupe rock, JID en featuring ne suffit pas
+   - Numb / Encore — JAŸ-Z, Linkin Park
+       → devrait être : Pop Culture, Rock  | Collab rock/rap mais identité rock dominant (Linkin Park)
+   - Talk Dirty (feat. 2 Chainz) — Jason Derulo, 2 Chainz
+       → devrait être : Pop, Pop Dance  | Jason Derulo est pop/R&B, pas rap malgré le featuring
+   - Wiggle (feat. Snoop Dogg) — Jason Derulo, Snoop Dogg
+       → devrait être : Pop, Pop Dance  | Jason Derulo pop/R&B, featuring ne change pas l'identité
+   - Sucker for Pain (with Wiz Khalifa, Imagine Dragons, Logic & Ty Dolla $ign feat. X Ambassadors) — Lil Wayne, Wiz Khalifa, Imagine Dragons, X Ambassadors, Logic, Ty Dolla $ign
+       → devrait être : Pop Culture  | BO Suicide Squad, mélange trop pop/rock
+   - Nobody Knows (Ladas Road) — Loyle Carner
+       → devrait être : Rap de rue  | Loyle Carner est britannique, rap UK
+   - Wakanda - DJ Dahi Remix — Ludwig Göransson, Baaba Maal, Dahi
+       → devrait être : BO film  | BO Black Panther remixée
+   - Don't Wanna Know — Maroon 5, Kendrick Lamar
+       → devrait être : Pop  | Maroon 5 pop rock, featuring Kendrick ne suffit pas
+   - Payphone — Maroon 5, Wiz Khalifa
+       → devrait être : Pop  | Maroon 5 pop rock, featuring rap insuffisant
+   - My Family - from "The Addams Family" — Migos, KAROL G, Snoop Dogg, Rock Mafia
+       → devrait être : BO film, Pop Culture  | BO Addams Family
+   - International Love (feat. Chris Brown) — Pitbull, Chris Brown
+       → devrait être : Latino, Pop Dance  | Pitbull est latino/dance, pas rap US
+   - Sunflower - Spider-Man: Into the Spider-Verse — Post Malone, Swae Lee
+       → devrait être : BO film, Pop Culture  | BO Spider-Verse, identité pop/mélodie
+   - Sunflower - Spider-Man: Into the Spider-Verse — Post Malone, Swae Lee
+       → devrait être : BO film, Pop Culture  | BO Spider-Verse (doublon)
+   - Thank God — Rilès
+       → devrait être : Rap de rue  | Rilès est français
+   - E Knows — Rilès
+       → devrait être : Rap de rue  | Rilès est français
+   - ANOTHER DAY, ANOTHER CHALLENGE — Rilès
+       → devrait être : Rap de rue  | Rilès est français
+   - Mia Khalifa — Skan, M.I.M.E
+       → devrait être : Électro Chill  | Skan est un producteur EDM, pas rap US
+   - Sweat - Snoop Dogg vs David Guetta Remix — Snoop Dogg, David Guetta
+       → devrait être : House, Électro Chill  | Remix house de David Guetta
+   - Sunday Best — Surfaces
+       → devrait être : Chill pop  | Surfaces est un duo pop/indie feel-good, pas rap
+   - Me Gusta Latina — Tryf Dacomedian, Snoop Dogg
+       → devrait être : Latino  | Titre latino avec thématique latina
+   - Yeah! (feat. Lil Jon & Ludacris) — USHER, Lil Jon, Ludacris
+       → devrait être : Pop Dance  | Crunk/R&B pop dance, pas rap US pur
+   - Yeah! — USHER, Lil Jon, Ludacris
+       → devrait être : Pop Dance  | Crunk/R&B pop dance, pas rap US pur
+   - FADE UP — ZEG P, Hamza, SCH
+       → devrait être : Rap de rue  | Rap français de rue (ZEG P, Hamza, SCH)
+
+### Disney — 12 mal placés sur 36 (33.3 %)
+   - Pour un pote - Bande originale du film "Brice 3" — Bigflo & Oli, Jean Dujardin
+       → devrait être : BO film  | BO de Brice 3, pas Disney
+   - Besoin de chanter (Simplement Dan) — Charles Ludig, PALMASHOW
+       → devrait être : Pop Culture  | Palmashow sketch, pas Disney
+   - Les cités d'or — Le Groupe Apollo
+       → devrait être : BO film  | Anime japonais, pas Disney
+   - Ça marche — Le Roi Soleil, Christophe Maé
+       → devrait être : Pop Culture  | Comédie musicale Le Roi Soleil, pas Disney
+   - Alain - La Pomme de Terrre — Natoo
+       → devrait être : Pop Culture  | Sketch Natoo, pas Disney
+   - Assassins des templiers — Norman
+       → devrait être : Pop Culture  | Sketch Norman, pas Disney
+   - Luigi clash Mario — Norman
+       → devrait être : Pop Culture  | Sketch Norman, pas Disney
+   - La chanson du faux — Norman
+       → devrait être : Pop Culture  | Sketch Norman, pas Disney
+   - Internet de l'époque — Norman
+       → devrait être : Pop Culture  | Sketch Norman, pas Disney
+   - Le rap de Gaspard & Balthazar — PALMASHOW, Charles Ludig
+       → devrait être : Pop Culture  | Palmashow sketch, pas Disney
+   - J'aime pas Noël — Pv Nova, Cyprien
+       → devrait être : Pop Culture  | Sketch Cyprien/PV Nova, pas Disney
+   - La musique - Angelica — Star Academy
+       → devrait être : Variété  | Star Academy, pas Disney
+
+### Dub — 15 mal placés sur 50 (30.0 %)
+   - Great Spirit — Armin van Buuren, Vini Vici, Hilight Tribe
+       → devrait être : Électro Chill  | Psytrance/EDM, pas dub
+   - Purple Noise — Boris Brejcha
+       → devrait être : House  | Minimal techno, pas dub
+   - Les kassos — Darktek
+       → devrait être : House  | Hardtek/tribe, pas dub
+   - Super quenouille — Darktek
+       → devrait être : House  | Hardtek/tribe, pas dub
+   - 80's Never Die — Darktek
+       → devrait être : House  | Hardtek/tribe, pas dub
+   - Shankara — Hilight Tribe
+       → devrait être : Électro Chill  | Psytrance, pas dub
+   - Esperanza — Hilight Tribe
+       → devrait être : Électro Chill  | Psytrance, pas dub
+   - Free Tibet — Hilight Tribe
+       → devrait être : Électro Chill  | Psytrance, pas dub
+   - Free Tibet - Vini Vici Remix — Hilight Tribe, Vini Vici
+       → devrait être : Électro Chill  | Psytrance, pas dub
+   - Sem Chão — Mandragora
+       → devrait être : House  | Psytrance, pas dub
+   - Codeine — Mandragora
+       → devrait être : House  | Psytrance, pas dub
+   - Sac à dos — Naza
+       → devrait être : Rap de rue  | Rap français, pas dub
+   - Savag — Naza (Musik)
+       → devrait être : Rap de rue  | Rap français, pas dub
+   - Rave — Sam Paganini
+       → devrait être : House  | Techno, pas dub
+   - Moshi Moshi (feat. Mama Aoki) — Steve Aoki, Vini Vici, Mama Aoki
+       → devrait être : Électro Chill  | Steve Aoki - électro progressive, pas dub
+
+### Rock soůl — 18 mal placés sur 60 (30.0 %)
+   - Gibraltar — Abd Al Malik
+       → devrait être : Rap us  | Abd Al Malik est du rap/slam français
+   - Svalutation — Adriano Celentano
+       → devrait être : Variété  | Adriano Celentano, chanson italienne variété pop
+   - Rock Around The Clock — Bill Haley & His Comets
+       → devrait être : Rock  | Rock'n'roll pur, pas soul
+   - (We're Gonna) Rock Around The Clock — Bill Haley & His Comets
+       → devrait être : Rock  | Rock'n'roll pur, pas soul
+   - Dancing In The Dark — Cannonball Adderley
+       → devrait être : Jazz  | Cannonball Adderley est jazz pur
+   - Blue Suede Shoes - Rerecorded — Carl Perkins
+       → devrait être : Rock  | Rockabilly, pas soul
+   - The Twist — Chubby Checker
+       → devrait être : Rock  | Rock'n'roll/twist, pas soul
+   - Let's Twist Again — Chubby Checker
+       → devrait être : Rock  | Rock'n'roll/twist, pas soul
+   - Johnny B. Goode — Chuck Berry
+       → devrait être : Rock  | Rock'n'roll classique, pas soul
+   - Blue Suede Shoes — Elvis Presley
+       → devrait être : Rock  | Elvis rockabilly, pas soul
+   - Jailhouse Rock — Elvis Presley
+       → devrait être : Rock  | Elvis rock'n'roll, pas soul
+   - Santa María (del Buen Ayre) — Gotan Project
+       → devrait être : Électro Chill  | Gotan Project est électro tango
+   - Afraid To Feel — LF SYSTEM
+       → devrait être : House  | LF SYSTEM est house électronique
+   - What A Wonderful World — Louis Armstrong
+       → devrait être : Jazz  | Louis Armstrong jazz, pas rock soul
+   - Just A Gigolo - Remastered — Louis Prima
+       → devrait être : Jazz  | Louis Prima swing/jazz
+   - L-O-V-E — Nat King Cole
+       → devrait être : Jazz  | Nat King Cole jazz crooner
+   - Hit the Road Jack - Swing Hop Mix — Wolfgang Lohr, LMZG
+       → devrait être : Pop Dance  | Remix swing hop, nature dance/électronique
+   - jazz is for ordinary people — berlioz
+       → devrait être : Jazz  | Titre explicite jazz, pas rock soul
+
+### Dub Singing — 8 mal placés sur 28 (28.6 %)
+   - La Teuf du Farfadet — Guigoo, Mat Weasel Busters, Farfaders
+       → devrait être : Électro Chill  | électro festive, pas dub singing
+   - Exploration — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+   - Gros train de vie — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+   - Le silence — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+   - Le son sort des enceintes — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+   - Tony Hawk — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+   - Techno toujours pareil — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+   - Bout de bois — Salut C'est Cool
+       → devrait être : Chill pop  | pop lo-fi français, pas dub
+
+### House — 29 mal placés sur 107 (27.1 %)
+   - Paris City Jazz — Bellaire
+       → devrait être : Jazz  | Identité jazz, pas house
+   - The Time (Dirty Bit) — Black Eyed Peas
+       → devrait être : Pop Dance  | Pop dance/électro pop, pas house pur
+   - Is This Love - Montmartre Remix — Bob Marley & The Wailers, MONTMARTRE
+       → devrait être : Reggae  | Reggae remix mais identité reggae dominante
+   - Entrevue Optimisme (feat. Patrick Poivre d'Arvor) — Bon Entendeur, Patrick Poivre d'Avor
+       → devrait être : Pop Culture  | Entrevue/spoken word pop culture
+   - Baby I'm Yours (feat. Irfane) — Breakbot, Irfane
+       → devrait être : Électro Chill  | Électro chill/nu-disco, pas house
+   - Arcades — C2C
+       → devrait être : Fat Beat  | Hip-hop électro/turntablism
+   - Down The Road — C2C
+       → devrait être : Fat Beat  | Hip-hop électro/turntablism
+   - Jolie Coquine — Caravan Palace
+       → devrait être : Électro Chill  | Electro swing, identité distincte
+   - Midnight — Caravan Palace
+       → devrait être : Électro Chill  | Electro swing, identité distincte
+   - 80's Never Die — Darktek
+       → devrait être : Dub  | Hardtek/frenchcore, identité dub/tekno
+   - Les kassos — Darktek
+       → devrait être : Dub  | Hardtek/frenchcore, identité dub/tekno
+   - Pony — Deluxe
+       → devrait être : Pop  | Pop française, pas House
+   - Egoraphobia — Deluxe
+       → devrait être : Pop  | Pop française, pas House
+   - Tum Rakak — Deluxe
+       → devrait être : Pop  | Pop française, pas House
+   - Petit frère - Live — Deluxe, IAM
+       → devrait être : Live, Rap français  | Live de rap français - Rap français absent de la liste donc Live
+   - Machistador - Live — Deluxe, M, IAM
+       → devrait être : Live, Rap français  | Live de rap français - Rap français absent de la liste donc Live
+   - Dynabeat — Jain
+       → devrait être : Pop  | Pop électronique mais pas House
+   - Time — Jorja Smith
+       → devrait être : Pop  | R&B/Soul pop, pas House
+   - Weekend — Jorja Smith
+       → devrait être : Pop  | R&B/Soul pop, pas House
+   - House of Love — Naâman
+       → devrait être : Reggae  | Reggae/Dancehall, pas House
+   - Under the Sea — Off The Wall
+       → devrait être : Disney  | Reprise Disney
+   - Booty Swing — Parov Stelar
+       → devrait être : Électro Chill  | Electro swing, pas House
+   - Canopée — Polo & Pan
+       → devrait être : Électro Chill  | Électro pop downtempo français, pas house
+   - Harder, Better, Faster, Stronger — Pomplamoose
+       → devrait être : Reprise  | Cover acoustique d'un titre Daft Punk, pas house
+   - Can't Stop Feeling Billie Jean's Face — Pomplamoose
+       → devrait être : Reprise  | Mashup acoustique, pas production house
+   - Smoke & Mirrors — RJD2
+       → devrait être : Fat Beat  | Hip-hop instrumental, pas house
+   - Djon maya maï (feat. Victor Démé) — Synapson, Victor Démé
+       → devrait être : Électro Chill  | Nu-disco/électro downtempo, pas house énergique
+   - Second Hand — TUN - Torino Unlimited Noise, Studnitzky
+       → devrait être : Électro Chill  | Deep électro ambient, pas house
+   - jazz is for ordinary people — berlioz
+       → devrait être : Jazz  | Titre explicite, identité jazz claire
+
+### Électro Chill — 30 mal placés sur 113 (26.5 %)
+   - Haboglabotribin' — Bernard Wright
+       → devrait être : Rap old school  | Funk/soul instrumental des années 80, pas d'identité électro chill
+   - Mountain Top — Biga*Ranx
+       → devrait être : Reggae  | Reggae/dancehall de Biga*Ranx
+   - Get Up — Chinese Man, exi, Lush One, Plex Rock
+       → devrait être : Chinesse-man crew  | Identité Chinese Man crew
+   - U cantu di l'orsu — Cuscenza
+       → devrait être : Variété  | Chanson corse traditionnelle/variété
+   - Still D.R.E. — Dr. Dre, Snoop Dogg
+       → devrait être : Rap us  | Rap West Coast US
+   - The Next Episode — Dr. Dre, Snoop Dogg
+       → devrait être : Rap us  | Rap West Coast US
+   - Still D.R.E. — Dr. Dre, Snoop Dogg
+       → devrait être : Rap us  | Rap West Coast US (doublon)
+   - Clint Eastwood — Gorillaz, Del The Funky Homosapien
+       → devrait être : Pop  | Alternative rock/hip-hop hybride Gorillaz
+   - Karma Mix — Indochine
+       → devrait être : Rock  | Rock new wave français Indochine
+   - Canary Bay — Indochine
+       → devrait être : Rock  | Rock new wave français Indochine
+   - HUMBLE. — Kendrick Lamar
+       → devrait être : Rap us  | Rap pur, pas d'électro chill
+   - Kids — Kyle Dixon & Michael Stein
+       → devrait être : BO film  | BO Stranger Things
+   - Push the Limits — L'Entourloop, Biga*Ranx
+       → devrait être : Dub, Reggae  | Dub/reggae, pas électro chill
+   - Alain - La Pomme de Terrre — Natoo
+       → devrait être : Pop Culture  | Parodie humoristique
+   - Savag — Naza (Musik)
+       → devrait être : Rap de rue  | Rap français de rue
+   - Can't Stop Feeling Billie Jean's Face — Pomplamoose
+       → devrait être : Reprise  | Mashup/reprise
+   - Sunflower - Spider-Man: Into the Spider-Verse — Post Malone, Swae Lee
+       → devrait être : BO film, Rap us  | BO film, rap mélodique
+   - Spybreak! - Short One — Propellerheads
+       → devrait être : BO film  | BO Matrix, big beat
+   - Chill Bill (feat. J. Davi$ & Spooks) — Rob $tone, J. Davi$, J Spooks
+       → devrait être : Rap us  | Rap US, pas électro chill
+   - Motherless Jazz - Live — Smokey Joe & The Kid
+       → devrait être : Jazz, Live  | Jazz live, pas électro chill
+   - Don't Scream Remix - Live — Smokey Joe & The Kid, MysDiggi, Yoshi Di Original
+       → devrait être : Live, Rap old school  | Live rap/hip-hop, pas électro chill
+   - Smokid Inc. - Live — Smokey Joe & The Kid, MysDiggi, Yoshi Di Original
+       → devrait être : Live, Rap old school  | Live rap/hip-hop, pas électro chill
+   - Sweat - Snoop Dogg vs David Guetta Remix — Snoop Dogg, David Guetta
+       → devrait être : House, Pop Dance  | House/dance énergique, pas chill
+   - 6:30 — Snoop Dogg, Wiz Khalifa
+       → devrait être : Rap us  | Rap US pur
+   - Talent Show — Snoop Dogg, Wiz Khalifa
+       → devrait être : Rap us  | Rap US pur
+   - Hit the Road Jack - Swing Hop Mix — Wolfgang Lohr, LMZG
+       → devrait être : Jazz  | Swing/jazz hop, pas électro
+   - Heads Will Roll - A-Trak Remix — Yeah Yeah Yeahs, A-Trak
+       → devrait être : Rock, Électro Chill  | Remix électro d'un rock indie
+   - We No Speak Americano - Radio Edit — Yolanda Be Cool, DCup
+       → devrait être : House, Pop Dance  | House dance festive
+   - Der Verkehr — Zenzile
+       → devrait être : Dub  | Dub pur
+   - Der Verkehr — Zenzile
+       → devrait être : Dub  | Dub pur
+
+### Jazz — 21 mal placés sur 100 (21.0 %)
+   - Arcades — C2C
+       → devrait être : Électro Chill, Fat Beat  | C2C = turntablism électro, pas jazz
+   - ALWAYS — Forrest Frank
+       → devrait être : Chill pop, Pop  | Forrest Frank = pop/chill chrétien moderne, pas jazz
+   - Rap Jazz — Hi Levelz
+       → devrait être : Rap old school, Rap us  | Rap jazz = sous-genre du rap, identité hip-hop
+   - Take Five but it's Song of Storms — Imaginary Ambition
+       → devrait être : Reprise, Pop Culture  | Mashup/reprise parodique de jeu vidéo
+   - Time — Jorja Smith
+       → devrait être : Pop, Chill pop  | Jorja Smith = R&B/pop moderne, pas jazz
+   - Weekend — Jorja Smith
+       → devrait être : Pop, Chill pop  | Jorja Smith = R&B/pop moderne, pas jazz
+   - Little Things x Gypsy Woman - L BEATS MASHUP — Jorja Smith
+       → devrait être : Pop Culture, Pop Dance  | Mashup pop/house, pas jazz
+   - Waltz in High Socks (Poor Faye) [From "Cowboy Bebop"] - Piano Version — Kim Bo
+       → devrait être : BO film, Pop Culture  | Reprise piano d'anime, identité BO/pop culture
+   - Another Day Of Sun — La La Land Cast
+       → devrait être : BO film  | Comédie musicale La La Land = BO film
+   - My Favorite Things — Outkast
+       → devrait être : Rap us  | Outkast = groupe de rap US, même sur reprise jazz
+   - Au lipopette bar - Remasterisé — Oxmo Puccino, The Jazzbastards
+       → devrait être : Rap de rue  | Oxmo Puccino = rappeur français
+   - 可愛ひかるのテーマ — fox capture plan
+       → devrait être : BO film  | Thème de personnage, identité de musique de film/série
+   - 早乙女郁人のテーマ — fox capture plan
+       → devrait être : BO film  | Thème de personnage, identité de musique de film/série
+   - 瀬尾との対面 — fox capture plan
+       → devrait être : BO film  | Thème narratif, identité de musique de film/série
+   - 約束 — fox capture plan
+       → devrait être : BO film  | Titre narratif (promesse), identité de musique de film/série
+   - 瀬尾さん取扱説明書 — fox capture plan
+       → devrait être : BO film  | Thème de personnage, identité de musique de film/série
+   - 執念 — fox capture plan
+       → devrait être : BO film  | Titre narratif (obsession), identité de musique de film/série
+   - Attack Of Cursed Corpse — 照井順政
+       → devrait être : BO film  | Attack Of... - contexte narratif anime/film
+   - President of academy — 神前 暁
+       → devrait être : BO film  | Thème de personnage, identité de musique de film/série
+   - Fighting animals — 神前 暁
+       → devrait être : BO film  | Titre narratif, identité de musique de film/série
+   - Impatience — 神前 暁
+       → devrait être : BO film  | Titre émotionnel narratif, identité de musique de film/série
+
+### Freestyle — 50 mal placés sur 241 (20.7 %)
+   - Soleil noir - Live — 47ter
+       → devrait être : Freestyle, Live  | Version live, devrait être aussi dans Live
+   - Tout oublier — Angèle, Roméo Elvis
+       → devrait être : Pop  | Pop belge, pas du freestyle rap
+   - Promesses — Bigflo & Oli
+       → devrait être : Pop, Variété  | chanson mélodique, pas freestyle
+   - L'ombre et la lumière — Calogero, Grand Corps Malade
+       → devrait être : Variété, Pop  | chanson à texte, pas rap freestyle
+   - À l’heure où je me couche — Casseurs Flowters
+       → devrait être : Rap old school  | morceau posé narratif, pas freestyle
+   - 06h16 - Des histoires à raconter — Casseurs Flowters
+       → devrait être : Rap old school  | narration album concept, pas freestyle
+   - Inachevés — Casseurs Flowters
+       → devrait être : Rap old school  | morceau introspectif, pas freestyle
+   - 01h47 - Change de pote — Casseurs Flowters
+       → devrait être : Rap old school  | narration album, pas freestyle
+   - 15h02 - Regarde comme il fait beau (dehors) — Casseurs Flowters
+       → devrait être : Rap old school  | narration album, pas freestyle
+   - Restons amis — Cheeko
+       → devrait être : Reggae, Dub Singing  | reggae/dancehall, pas rap freestyle
+   - Bomboclaat — Cheeko, Volodia
+       → devrait être : Reggae, Dub Singing  | dancehall reggae, pas freestyle
+   - Petit prince — Demi Portion
+       → devrait être : Rap old school  | morceau introspectif narratif
+   - Souvenir — Demi Portion
+       → devrait être : Rap old school  | morceau nostalgique posé
+   - Faire mieux — Demi Portion
+       → devrait être : Rap old school  | morceau introspectif
+   - Sous les ponts — Demi Portion
+       → devrait être : Rap old school  | morceau introspectif narratif
+   - RUB A DUB — Fauve
+       → devrait être : Rock  | Fauve = spoken word rock
+   - NUITS FAUVES — Fauve
+       → devrait être : Rock  | Fauve = spoken word rock
+   - INFIRMIERE — Fauve
+       → devrait être : Rock  | Fauve = spoken word rock
+   - Boomer - Live Zénith — Gaël Faye
+       → devrait être : Live  | Version live
+   - Singulier — KT Gorique
+       → devrait être : Rap de rue  | rap classique, pas freestyle
+   - RUN — KT Gorique, Riga
+       → devrait être : Rap de rue  | rap classique, pas freestyle
+   - Si — Kamini
+       → devrait être : Beauf  | Kamini = rap humoristique beauf
+   - Psychostar Show — Kamini
+       → devrait être : Beauf  | Kamini = rap humoristique beauf
+   - Marly-Gomont — Kamini
+       → devrait être : Beauf  | Kamini = rap humoristique beauf
+   - Parce qu'on est con — Kamini
+       → devrait être : Beauf  | Kamini = rap humoristique beauf
+   - Psychostar World — Kamini
+       → devrait être : Beauf  | Kamini = rap humoristique beauf
+   - Dans la tête des autres - James Gainsbrown — Kamini
+       → devrait être : Beauf  | Kamini = rap humoristique beauf
+   - Je me barre — Keny Arkana
+       → devrait être : Rap de rue  | rap engagé, pas freestyle
+   - Haagen-Dazs — Kyan Khojandi
+       → devrait être : Beauf  | Kyan = humoristique beauf
+   - L'horizon des évènements — Kyan Khojandi
+       → devrait être : Beauf  | Kyan = humoristique beauf
+   - Soleil nuit — Kyan Khojandi, Mathilda
+       → devrait être : Beauf  | Kyan = humoristique beauf
+   - Ca fait boum — La Smala
+       → devrait être : Beauf  | La Smala = humoristique
+   - Fume à fond — Lorenzo
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Le son qui fait plaiz — Lorenzo
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Tu le C — Lorenzo
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Nique la BAC — Lorenzo
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Ce genre — Lorenzo, Lujipeka, Foda C
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Je vous déteste tous — Lorenzo, Todiefor
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Coco - Todiefor Remix — Lorenzo, Todiefor
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - La Kush — Lorenzo, Tony Corrida
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - La Kush — Lorenzo, Tony Corrida
+       → devrait être : Beauf  | Lorenzo track normale, pas freestyle
+   - Medley — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Mais qui est la belette — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Tout le monde est là — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Je parle — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Il faut bien rigoler — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Des Kilos — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Je Parle II — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Con J'Pense — Manau
+       → devrait être : Beauf  | Manau = rap humoristique beauf
+   - Hit Sale (feat. Roméo Elvis) — Therapie TAXI, Roméo Elvis
+       → devrait être : Pop, Variété  | Therapie TAXI = pop/variété, pas freestyle
+
+### BO film — 17 mal placés sur 97 (17.5 %)
+   - Thank You (Falettinme Be Mice Elf Agin) — Big Brovaz
+       → devrait être : Pop  | reprise pop, pas directement lié à une BO
+   - Rock Around The Clock — Bill Haley & His Comets
+       → devrait être : Rock  | classique rock 50s, pas spécifique BO
+   - Time in a Bottle — Jim Croce
+       → devrait être : Pop  | chanson pop 70s, pas une BO
+   - Immigrant Song - Remaster — Led Zeppelin
+       → devrait être : Rock  | Morceau de Led Zeppelin, groupe de rock, réutilisé dans Thor Ragnarok mais identité rock avant tout
+   - My Family - from "The Addams Family" — Migos, KAROL G, Snoop Dogg, Rock Mafia
+       → devrait être : Rap us  | Morceau rap de Migos/Snoop Dogg pour Addams Family, mais identité rap avant tout
+   - Blue Monday — New Order
+       → devrait être : Pop  | Morceau new wave de New Order, pas composé pour un film
+   - Gone, Gone, Gone — Phillip Phillips
+       → devrait être : Pop  | Chanson pop de Phillip Phillips, pas une BO de film
+   - Life is a Highway — Rascal Flatts
+       → devrait être : Pop, Rock  | Reprise rock/pop pour Cars mais identité country-rock du morceau prédomine
+   - Come and Get Your Love - Single Version — Redbone
+       → devrait être : Rock  | Morceau rock des années 70 réutilisé dans Guardians of the Galaxy, identité rock
+   - La Bamba - Single Version — Ritchie Valens
+       → devrait être : Rock  | Classique rock'n'roll de Ritchie Valens, même si dans un film biographique
+   - L'Orange — Star Academy
+       → devrait être : Variété  | Émission Star Academy, pas une BO de film
+   - Hypnotize - 2007 Remaster — The Notorious B.I.G.
+       → devrait être : Rap us  | Classique rap de Biggie, pas composé pour un film
+   - I'll Be There for You (Theme from Friends) - Single Version — The Rembrandts
+       → devrait être : Pop  | Générique de série TV Friends, pas de film
+   - Intro — The xx
+       → devrait être : Rock, Électro Chill  | Morceau du groupe The xx, pas une BO
+   - Jump — Van Halen
+       → devrait être : Rock  | Morceau original de Van Halen, pas une BO
+   - Father And Son — Yusuf / Cat Stevens
+       → devrait être : Pop, Rock  | Chanson originale de Cat Stevens, pas une BO
+   - Baila Morena — Zucchero, Maná
+       → devrait être : Latino, Rock  | Chanson pop latino, pas une BO
+
+### Live — 15 mal placés sur 95 (15.8 %)
+   - Sensualité — Axelle Red
+       → devrait être : Pop, Variété  | pas de mention Live
+   - Un Jour Parfait — Calogero
+       → devrait être : Pop, Variété  | pas de mention Live
+   - Juste après — Carole Fredericks, Jean-Jacques Goldman, Michael Jones
+       → devrait être : Pop, Variété  | pas de mention Live
+   - J'irai où tu iras (with Jean-Jacques Goldman) — Céline Dion, Jean-Jacques Goldman
+       → devrait être : Pop, Variété  | pas de mention Live
+   - Je danse le Mia — IAM
+       → devrait être : Rap de rue, Rap old school  | pas de mention Live
+   - Trois nuits par semaine — Indochine
+       → devrait être : Rock, Pop  | pas de mention Live
+   - 3e sexe — Indochine
+       → devrait être : Rock, Pop  | pas de mention Live
+   - Elle a fait un bébé toute seule — Jean-Jacques Goldman
+       → devrait être : Variété  | pas de mention Live, studio
+   - Attention au départ - Radio Version — Les Enfoirés
+       → devrait être : Variété  | Radio Version, pas Live
+   - Les nuits parisiennes - Version démo — Louise Attaque
+       → devrait être : Rock  | Version démo, pas Live
+   - Le Dernier Clope - Single Version — Louise Attaque
+       → devrait être : Rock  | Single Version, pas Live
+   - Sans contrefaçon — Mylène Farmer
+       → devrait être : Pop  | pas de mention Live, studio
+   - J'ai dix ans — Waxx, -M-
+       → devrait être : Pop, Variété  | Pas d'indication Live dans le titre
+   - Les yeux revolver — Zephyr 21, Les 3 Fromages
+       → devrait être : Rock, Variété  | Pas d'indication Live dans le titre
+   - L'histoire d'un ado — Zgroop
+       → devrait être : Rap de rue, Variété  | Pas d'indication Live dans le titre
+
+### Drop d'un autre temps — 3 mal placés sur 20 (15.0 %)
+   - Hardcoriste — LE BASK
+       → devrait être : Rap de rue  | Rap moderne français, pas identité 'drop ancien'
+   - FANFARON — PERCEVAL
+       → devrait être : Rap de rue  | Rap français contemporain
+   - MACHTOU PICHTOU — PERCEVAL, Vadrouilleur2.0
+       → devrait être : Rap de rue  | Rap français contemporain
+
+### Pop Dance — 2 mal placés sur 14 (14.3 %)
+   - Whistle — Flo Rida
+       → devrait être : Rap us  | Flo Rida est du rap US, pas de la pop dance pure
+   - Can't Hold Us (feat. Ray Dalton) — Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton
+       → devrait être : Rap us  | Macklemore & Ryan Lewis sont du rap US, orientation hip-hop
+
+### Rock — 22 mal placés sur 155 (14.2 %)
+   - Le Brio (Branchez la guitare) — Big Soul
+       → devrait être : Pop, Variété  | Big Soul = soul/funk français, pas rock
+   - Bruxelles — Boulevard des Airs
+       → devrait être : Pop, Variété  | Boulevard des Airs = pop française acoustique
+   - J'en rêve encore - Radio Edit — De Palmas
+       → devrait être : Variété, Pop  | De Palmas = variété française, pas rock
+   - Regarde-moi bien en face - Live — De Palmas
+       → devrait être : Variété, Pop  | De Palmas = variété française, pas rock
+   - Stereo — Elephanz
+       → devrait être : Pop, Électro Chill  | Elephanz = pop électro indie, pas rock
+   - Help Myself (Nous Ne Faisons Que Passer) — Gaëtan Roussel
+       → devrait être : Pop, Variété  | Gaëtan Roussel = pop française mélodique
+   - Des Kilos — Manau
+       → devrait être : Rap old school  | Manau = rap/hip-hop avec samples celtiques, pas rock
+   - Mais qui est la belette — Manau
+       → devrait être : Rap old school  | Manau = rap français années 90
+   - Medley — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - Tout le monde est là — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - Je parle — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - C'Etait Juste Une Belle Journée — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - Il faut bien rigoler — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - Je Parle II — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - Con J'Pense — Manau
+       → devrait être : Rap old school  | Manau = rap
+   - Les princes des villes - Remasterisé en 2002 — Michel Berger
+       → devrait être : Variété  | Michel Berger = variété française pop, pas rock
+   - J'ai vu — Niagara
+       → devrait être : Variété  | Niagara = variété/new wave française, pas rock
+   - Quoi de neuf les voyous — Rok.wav, THÉA, Dudu.wav
+       → devrait être : Rap de rue  | Production rap/drill moderne
+   - Planter des cailloux — Syrano
+       → devrait être : Rap de rue  | Syrano est rappeur
+   - Blesse-moi — Therapie TAXI
+       → devrait être : Pop  | Therapie TAXI est pop/électro, pas rock
+   - Un point c'est toi — Zazie
+       → devrait être : Variété  | Zazie est variété française
+   - Rue de la Paix — Zazie
+       → devrait être : Variété  | Zazie est variété française
+
+### Reprise — 5 mal placés sur 39 (12.8 %)
+   - La Kush — Lorenzo, Tony Corrida
+       → devrait être : Rap de rue  | Titre original de Lorenzo, pas une reprise
+   - Parle-moi — Nâdiya
+       → devrait être : Pop  | Titre original de Nâdiya, pas une reprise
+   - Across the Rolling Hills (Padmasambhava) — Peter Rowan Bluegrass Band
+       → devrait être : Rock  | Titre original bluegrass, pas une reprise
+   - Lache l'affaire — R.Wan
+       → devrait être : Rap us  | Titre original, pas une reprise
+   - Freestyle Funk — Tsonpa
+       → devrait être : Freestyle  | Freestyle original, pas une reprise
+
+### Reggae — 6 mal placés sur 70 (8.6 %)
+   - Bisso Na bisso — Bisso na Bisso
+       → devrait être : Rap us  | Rap congolais, pas reggae
+   - Don't Worry Be Happy — Bobby McFerrin
+       → devrait être : Pop  | A cappella pop, pas reggae
+   - Marie Jeanne — Kacem Wapalek
+       → devrait être : Rap de rue  | Rap français, pas reggae
+   - Highway of Love — Laid Back
+       → devrait être : Pop  | Electro-pop danois, pas reggae
+   - Healing Feeling — Laid Back
+       → devrait être : Pop  | Pop synthétique des années 80, pas de riddim reggae
+   - Angela — Saian Supa Crew
+       → devrait être : Rap old school  | Morceau hip-hop de la Saian Supa Crew, pas reggae
+
+### Fat Beat — 5 mal placés sur 62 (8.1 %)
+   - AU REVOIR À VOUS — Bagarre
+       → devrait être : Pop, Électro Chill  | Bagarre est de la pop française électro, pas Fat Beat
+   - Techno toujours pareil — Salut C'est Cool
+       → devrait être : Pop, Électro Chill  | Salut C'est Cool est pop électro décalée, pas hardcore/hardstyle
+   - Bout de bois — Salut C'est Cool
+       → devrait être : Pop, Électro Chill  | Même groupe, style pop électro français
+   - Tony Hawk — Salut C'est Cool
+       → devrait être : Pop, Électro Chill  | Même groupe, pop électro ludique
+   - Automatic Attack — Stand High Patrol
+       → devrait être : Dub  | Stand High Patrol = dub électronique
+
+### Beauf — 1 mal placés sur 59 (1.7 %)
+   - Fais-Moi Mal, Johnny — Carmen Maria Vega
+       → devrait être : Rock  | Rock indé, pas l'univers beauf
+
+### Chill pop — 0 mal placés sur 6 (0.0 %)
+   ✔ rien à signaler
+
+### Chinesse-man crew — 0 mal placés sur 49 (0.0 %)
+   ✔ rien à signaler
+
+### Pop — 0 mal placés sur 7 (0.0 %)
+   ✔ rien à signaler
+
+### Rap de rue — 0 mal placés sur 128 (0.0 %)
+   ✔ rien à signaler
+
+### Variété — 0 mal placés sur 13 (0.0 %)
+   ✔ rien à signaler

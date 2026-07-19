@@ -1,0 +1,343 @@
+RAPPORT D'AUDIT v2 — avec les définitions de Kinder
+======================================================================
+
+1415 titres audités dans 22 genres
+Formats EXCLUS (non auditables) : Live, Reprise, BO film, Disney, Freestyle
+94 titres n'ont VRAIMENT rien à faire là où ils sont (6.6 %)
+
+--- PAR PLAYLIST ---
+
+  21/ 113  Électro Chill   (doutes laissés tels quels : 44)
+  15/  50  Dub   (doutes laissés tels quels : 10)
+  15/ 102  Rap us   (doutes laissés tels quels : 16)
+  13/ 107  House   (doutes laissés tels quels : 19)
+   7/  28  Dub Singing   (doutes laissés tels quels : 5)
+   6/  31  Classique   (doutes laissés tels quels : 5)
+   5/  62  Fat Beat   (doutes laissés tels quels : 15)
+   4/ 132  Rap old school   (doutes laissés tels quels : 0)
+   2/   4  Latino   (doutes laissés tels quels : 0)
+   2/ 105  Pop Culture   (doutes laissés tels quels : 4)
+   2/  60  Rock soůl   (doutes laissés tels quels : 13)
+   1/ 100  Jazz   (doutes laissés tels quels : 10)
+   1/  70  Reggae   (doutes laissés tels quels : 11)
+   0/  59  Beauf   (doutes laissés tels quels : 4)
+   0/   6  Chill pop   (doutes laissés tels quels : 0)
+   0/  49  Chinesse-man crew   (doutes laissés tels quels : 7)
+   0/  20  Drop d'un autre temps   (doutes laissés tels quels : 3)
+   0/   7  Pop   (doutes laissés tels quels : 0)
+   0/  14  Pop Dance   (doutes laissés tels quels : 0)
+   0/ 128  Rap de rue   (doutes laissés tels quels : 0)
+   0/ 155  Rock   (doutes laissés tels quels : 22)
+   0/  13  Variété   (doutes laissés tels quels : 0)
+
+======================================================================
+DÉTAIL — titres à RETIRER
+======================================================================
+
+### Électro Chill — 21 à retirer sur 113
+   - Haboglabotribin' — Bernard Wright
+       → plutôt : Funk, Jazz  | Morceau funk/jazz des années 80, pas de dimension électro chill
+       spotify:track:3XiHctnuCGCKuq2YC1O6ZU
+   - Mountain Top — Biga*Ranx
+       → plutôt : Reggae, Dub  | Reggae/dub, pas électro chill
+       spotify:track:6hqpa3TiYUz8RYZZf1drrR
+   - Get Up — Chinese Man, exi, Lush One, Plex Rock
+       → plutôt : Chinesse-man crew  | Hip-hop/trip-hop uptempo, pas downtempo chill
+       spotify:track:5PEZJMU4xfiSNwT26JhHnL
+   - U cantu di l'orsu — Cuscenza
+       → plutôt : Variété  | Chanson corse traditionnelle, aucune dimension électro
+       spotify:track:4XB2Aqdm6qQwo3rBvJw2Hh
+   - Still D.R.E. — Dr. Dre, Snoop Dogg
+       → plutôt : Rap us, Rap old school  | Rap G-funk, pas électro chill
+       spotify:track:6ltPEsP4edATzvinHOzvk2
+   - The Next Episode — Dr. Dre, Snoop Dogg
+       → plutôt : Rap us, Rap old school  | Rap G-funk, pas électro chill
+       spotify:track:20LxTsa6936zOlzTWqoPVt
+   - Still D.R.E. — Dr. Dre, Snoop Dogg
+       → plutôt : Rap us, Rap old school  | Rap G-funk, pas électro chill
+       spotify:track:503OTo2dSqe7qk76rgsbep
+   - Karma Mix — Indochine
+       → plutôt : Pop, Rock  | Rock new wave français, pas électro chill
+       spotify:track:207cY9yap1IflewBCsXarD
+   - Canary Bay — Indochine
+       → plutôt : Pop, Rock  | Rock new wave français, pas électro chill
+       spotify:track:3WOFIGsCzse0Wa3kd1UGG8
+   - HUMBLE. — Kendrick Lamar
+       → plutôt : Rap us  | Rap énergique et agressif de Kendrick Lamar, rien de chill ou downtempo
+       spotify:track:3GnLo84IkdSWCPYt6tnLll
+   - Push the Limits — L'Entourloop, Biga*Ranx
+       → plutôt : Dub  | Dub/reggae énergique avec Biga*Ranx, pas du tout chill electronic
+       spotify:track:3YANwShzRdwXRLeyDx6vH2
+   - Alain - La Pomme de Terrre — Natoo
+       → plutôt : Pop Culture  | Parodie/sketch humoristique de Natoo, n'a rien à faire dans électro chill
+       spotify:track:3gGdi8pgA6DoRGo3X06UIq
+   - Sunflower - Spider-Man: Into the Spider-Verse — Post Malone, Swae Lee
+       → plutôt : Pop  | Pop/hip-hop commercial pour BO Spider-Verse, pas électro chill
+       spotify:track:3KkXRkHbMCARz0aVfEt68P
+   - Chill Bill (feat. J. Davi$ & Spooks) — Rob $tone, J. Davi$, J Spooks
+       → plutôt : Rap us  | Rap/hip-hop avec flow agressif, pas chill electronic
+       spotify:track:5uDASfU19gDxSjW8cnCaBp
+   - Motherless Jazz - Live — Smokey Joe & The Kid
+       → plutôt : Live, Jazz  | Jazz live acoustique, pas électro
+       spotify:track:0afSnuukLTBPznTj8Ir0no
+   - Don't Scream Remix - Live — Smokey Joe & The Kid, MysDiggi, Yoshi Di Original
+       → plutôt : Live, Freestyle  | Performance live avec MCs, pas électro chill
+       spotify:track:7lReNNf4xBcmV2BCuhOBx0
+   - Smokid Inc. - Live — Smokey Joe & The Kid, MysDiggi, Yoshi Di Original
+       → plutôt : Live, Freestyle  | Performance live avec MCs, pas électro chill
+       spotify:track:1QMpLPhDViyrmwBRu7sCbm
+   - Sweat - Snoop Dogg vs David Guetta Remix — Snoop Dogg, David Guetta
+       → plutôt : Pop Dance, House  | Remix dance énergique Guetta, pas chill
+       spotify:track:0R7YVi7w41Dr9jU5vblAok
+   - 6:30 — Snoop Dogg, Wiz Khalifa
+       → plutôt : Rap us  | Rap classique Snoop/Wiz, pas électro
+       spotify:track:02Io4lJ2wtUAVKlmDA6v4S
+   - Talent Show — Snoop Dogg, Wiz Khalifa
+       → plutôt : Rap us  | Rap classique Snoop/Wiz, pas électro
+       spotify:track:2PKrMpyyYb7WKQU1r7TVBY
+   - We No Speak Americano - Radio Edit — Yolanda Be Cool, DCup
+       → plutôt : Pop Dance, House  | House dancefloor énergique, pas chill
+       spotify:track:7fG22bvpAT44rkKgYDLmFK
+
+### Dub — 15 à retirer sur 50
+   - Great Spirit — Armin van Buuren, Vini Vici, Hilight Tribe
+       → plutôt : Électro Chill, House  | Psytrance/Big Room, pas dub
+       spotify:track:6FzjJPwf5JzzFOei7h6Qrp
+   - Purple Noise — Boris Brejcha
+       → plutôt : House, Électro Chill  | Techno minimale, pas dub
+       spotify:track:6BA2JM59JObFjHNvLK2KOg
+   - Les kassos — Darktek
+       → plutôt : Électro Chill  | Frenchcore/Hardtek, pas dub
+       spotify:track:58JZ6rp2DWa5HbKwhneAs3
+   - Super quenouille — Darktek
+       → plutôt : Électro Chill  | Frenchcore/Hardtek, pas dub
+       spotify:track:2JfuHpYly9D8oT6cEitYPc
+   - 80's Never Die — Darktek
+       → plutôt : Électro Chill  | Frenchcore/Hardtek, pas dub
+       spotify:track:462603d91iTgX2VCa4M2S7
+   - Shankara — Hilight Tribe
+       → plutôt : Électro Chill, House  | Psytrance, pas dub
+       spotify:track:3ChrN5yqI2YE6eAMMfvDs1
+   - Esperanza — Hilight Tribe
+       → plutôt : Électro Chill, House  | Psytrance, pas dub
+       spotify:track:1hxLjD8TYT5A1oAKhwgaA7
+   - Free Tibet — Hilight Tribe
+       → plutôt : Électro Chill, House  | Psytrance, pas dub
+       spotify:track:7puRCh5DDjKxdyN9vl6JdJ
+   - Free Tibet - Vini Vici Remix — Hilight Tribe, Vini Vici
+       → plutôt : Électro Chill, House  | Psytrance, pas dub
+       spotify:track:1Ic75bJnvNE3zpE7qZg7aA
+   - Sem Chão — Mandragora
+       → plutôt : Électro Chill, House  | Psytrance, pas dub
+       spotify:track:5irKKFoCUyKFq8rvtSBIYM
+   - Codeine — Mandragora
+       → plutôt : Électro Chill, House  | Psytrance, pas dub
+       spotify:track:1AQH4K1OX1KHbTt5ojMonp
+   - Sac à dos — Naza
+       → plutôt : Rap de rue  | Rap français, pas dub
+       spotify:track:6WzuBQg8YcvHrargJhHeS2
+   - Savag — Naza (Musik)
+       → plutôt : Rap de rue  | Rap français, pas dub
+       spotify:track:4CjRC1gRKyBEPgwfADg1nW
+   - Rave — Sam Paganini
+       → plutôt : House, Électro Chill  | Techno pure, pas dub
+       spotify:track:5YDbSfN5oKWBoeyf9nBA38
+   - Moshi Moshi (feat. Mama Aoki) — Steve Aoki, Vini Vici, Mama Aoki
+       → plutôt : Électro Chill, House  | Steve Aoki - électro/EDM festival, pas de caractéristiques dub
+       spotify:track:17lEJ9k56Wi3udKUrR4VWR
+
+### Rap us — 15 à retirer sur 102
+   - Ça va trop vite — Bigflo & Oli, Busta Rhymes
+       → plutôt : Rap de rue  | Bigflo & Oli sont du rap français, pas du son américain
+       spotify:track:1j4NeXyIkyDp6whcQEff78
+   - Hancock — Chinese Man, Pistol McFly, Plex Rock
+       → plutôt : Chinesse-man crew  | Chinese Man crew a son propre genre dédié dans la collection
+       spotify:track:2uSD5HJu749QIfVUirL0Pz
+   - The Drop — Chinese Man, Scratch Bandits Crew
+       → plutôt : Chinesse-man crew  | Chinese Man crew a son propre genre dédié dans la collection
+       spotify:track:2SgdlsANzYKMCL0w5RmFxq
+   - Hold Tight — Chinese Man, Scratch Bandits Crew, ASM, Youthstar, ILLAMAN
+       → plutôt : Chinesse-man crew  | Chinese Man crew a son propre genre dédié dans la collection
+       spotify:track:69yYDgM8sCrUsD56AHyOt9
+   - The Bare Necessities - Evian Remix by Romain Hainaut — Craash
+       → plutôt : Disney, Pop Culture  | Remix Evian du Livre de la Jungle, c'est du Disney remixé
+       spotify:track:11xZxaMe9DZOVOo9mvQbP3
+   - Θ. Macarena — Damso
+       → plutôt : Rap de rue  | Damso est du rap belge francophone, pas du son américain
+       spotify:track:2ewjMyCbNv2X1dB2qIDCwD
+   - Love Me or Not — Dub FX
+       → plutôt : Dub, Dub Singing  | Dub FX fait du dub/beatbox live, pas du rap US
+       spotify:track:5b59RfPJUVfpO565rhnrkx
+   - God Bless (feat. Damso) — Hamza, Damso
+       → plutôt : Rap de rue  | Hamza et Damso sont belges, rap francophone, pas du rap US
+       spotify:track:6gkwAFKr9uk5Qq1HhSZzss
+   - Brothers (Remix Rilès) — KIK
+       → plutôt : Rap de rue  | KIK est français, rap francophone
+       spotify:track:2UwrB6Ge6mPfUV8yGvAfX7
+   - Thank God — Rilès
+       → plutôt : Rap de rue, Chill pop  | Rilès est français, rap francophone
+       spotify:track:5ZtoiFGlZ3tur8NJAMn0ws
+   - E Knows — Rilès
+       → plutôt : Rap de rue, Chill pop  | Rilès est français, rap francophone
+       spotify:track:3SbJ9UFWV3RG31wwDq8tlz
+   - ANOTHER DAY, ANOTHER CHALLENGE — Rilès
+       → plutôt : Rap de rue, Chill pop  | Rilès est français, rap francophone
+       spotify:track:7v22z3F5yNlUxNrrmx1USa
+   - Mia Khalifa — Skan, M.I.M.E
+       → plutôt : Électro Chill  | EDM/Trap électronique, pas de rap américain
+       spotify:track:19UywlTpQfPrg3uO5KSXep
+   - Sunday Best — Surfaces
+       → plutôt : Chill pop, Pop  | Pop indie/surf pop, aucun élément rap
+       spotify:track:1Cv1YLb4q0RzL6pybtaMLo
+   - FADE UP — ZEG P, Hamza, SCH
+       → plutôt : Rap de rue  | Rap français (ZEG P, Hamza, SCH), pas américain
+       spotify:track:4ZpIuzx91EAPK3VimONbfB
+
+### House — 13 à retirer sur 107
+   - The Time (Dirty Bit) — Black Eyed Peas
+       → plutôt : Pop Dance, Électro  | Électro-pop mainstream, pas house
+       spotify:track:7vWFaMq63AwkFDhS2OAg5u
+   - Arcades — C2C
+       → plutôt : Fat Beat  | Turntablism/hip-hop instrumental, pas house
+       spotify:track:14zo201LRIXPtpgZCjDW7t
+   - Down The Road — C2C
+       → plutôt : Fat Beat  | Turntablism/hip-hop instrumental, pas house
+       spotify:track:1x5MjCffpcdHLf65eR9r3T
+   - Jolie Coquine — Caravan Palace
+       → plutôt : Électro  | Electro swing, pas house
+       spotify:track:0OuWBW2Q299zvZCdLUPlLx
+   - Midnight — Caravan Palace
+       → plutôt : Électro  | Electro swing, pas house
+       spotify:track:3x2nWCAqpyAtgU7ccU0W1d
+   - Petit frère - Live — Deluxe, IAM
+       → plutôt : Live, Rap old school  | Live de rap, aucun élément house
+       spotify:track:6WWWoLMZHauQe3YBB5DsQ9
+   - Machistador - Live — Deluxe, M, IAM
+       → plutôt : Live, Rap old school, Variété  | Live de rap/variété, aucun élément house
+       spotify:track:4A32qhhkrRmrHsArLX4hYO
+   - Time — Jorja Smith
+       → plutôt : Chill pop, Jazz  | Jorja Smith R&B/soul, aucun élément house
+       spotify:track:63WCHKx1gIE4SphVQegjwX
+   - Weekend — Jorja Smith
+       → plutôt : Chill pop, Jazz  | Jorja Smith R&B/soul, aucun élément house
+       spotify:track:7nwJv3n5KQxAHrPRwPTSSd
+   - Harder, Better, Faster, Stronger — Pomplamoose
+       → plutôt : Pop, Reprise  | Reprise acoustique pop par Pomplamoose, sans les éléments house du Daft Punk original
+       spotify:track:1s2LrYFnrFdG2LCtyvwBmv
+   - Can't Stop Feeling Billie Jean's Face — Pomplamoose
+       → plutôt : Pop, Reprise  | Mashup/reprise pop acoustique par Pomplamoose, aucun élément house
+       spotify:track:0yAuMnPTRBkLEJk4cGKYYi
+   - Smoke & Mirrors — RJD2
+       → plutôt : Électro Chill, Fat Beat  | RJD2 fait du hip-hop instrumental/downtempo, pas de house
+       spotify:track:2C1nOw1nRxJaBWb9I1x05A
+   - jazz is for ordinary people — berlioz
+       → plutôt : Jazz, Électro Chill  | Titre jazz/électro expérimental, pas de structure house
+       spotify:track:12BaQt9aYdTlEtKreqB5V4
+
+### Dub Singing — 7 à retirer sur 28
+   - Exploration — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:1ra6GNtbf2Kkodh4UNPtnL
+   - Gros train de vie — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:5dDrO1bFFTNUp03lKsiAzQ
+   - Le silence — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:66u75KeroFB4i4f4WcJaAN
+   - Le son sort des enceintes — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:23XtpuXvoDM5VFb6zM6wMM
+   - Tony Hawk — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:48Ljue6r2j2l2UpRGaAlBe
+   - Techno toujours pareil — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:4u2dQmcZaFAu0fKXGmIf96
+   - Bout de bois — Salut C'est Cool
+       → plutôt : Électro Chill, Pop  | Salut C'est Cool fait de l'électro-pop française parlée/chantée sans lien avec le dub ou le ragga
+       spotify:track:3wLRNsACNgXg2adgmZRnxe
+
+### Classique — 6 à retirer sur 31
+   - Take Five — Dave Brubeck, The Dave Brubeck Quartet
+       → plutôt : Jazz  | Take Five est un standard de jazz cool, pas de la musique classique
+       spotify:track:5UbLKRX1qVROlwDFOooEvG
+   - L'operap — Mozart Opera Rock
+       → plutôt : Rock, Pop  | Mozart Opera Rock est un spectacle rock/pop moderne, pas de la musique classique orchestrale
+       spotify:track:6ls24Tsbj6VHJcI0S9LnFZ
+   - Psyché Rock - Malpaso Mix By Fatboy Slim — Pierre Henry, Michel Colombier
+       → plutôt : Électro Chill  | Psyché Rock remix par Fatboy Slim est de la musique électronique, pas classique
+       spotify:track:48R1fMxYe4Tve4RbMsMKjR
+   - Berghain — ROSALÍA, Björk, Yves Tumor
+       → plutôt : Pop, Électro Chill  | ROSALÍA/Björk collaboration est de la pop/électro expérimentale, pas classique
+       spotify:track:2T8yuUKl1nhmtaIocqWo4i
+   - Paint It Black — Wednesday Addams
+       → plutôt : Rock  | Paint It Black des Rolling Stones est du rock, même en version Wednesday Addams
+       spotify:track:1OuCn2F9BmyTAdM0Jylo9X
+   - La Foule — Édith Piaf
+       → plutôt : Variété  | La Foule d'Édith Piaf est de la chanson française/variété, pas de la musique classique
+       spotify:track:6cvIJ1zOcshUv0yCtcphaG
+
+### Fat Beat — 5 à retirer sur 62
+   - AU REVOIR À VOUS — Bagarre
+       → plutôt : Pop, Électro Chill  | Bagarre fait de l'électro pop française légère, pas du gros boom boom fat beat
+       spotify:track:5yW39tfWwikidyZYR6IAre
+   - Hey Mama (feat. Nicki Minaj, Bebe Rexha & Afrojack) — David Guetta, AFROJACK, Bebe Rexha, Nicki Minaj
+       → plutôt : Pop Dance  | Pop dance commerciale festive mais pas de gros kick hardstyle/hardcore, trop léger pour Fat Beat
+       spotify:track:285HeuLxsngjFn4GGegGNm
+   - Techno toujours pareil — Salut C'est Cool
+       → plutôt : Pop, Électro Chill  | Salut C'est Cool fait de l'électro pop française ironique et légère, ce titre se moque justement de la techno répétitive mais n'est pas lui-même du gros boom boom
+       spotify:track:4u2dQmcZaFAu0fKXGmIf96
+   - Bout de bois — Salut C'est Cool
+       → plutôt : Pop, Électro Chill  | Électro pop française légère de Salut C'est Cool, pas de kick lourd ni d'énergie fat beat
+       spotify:track:3wLRNsACNgXg2adgmZRnxe
+   - Automatic Attack — Stand High Patrol
+       → plutôt : Dub  | Stand High Patrol fait du dub/reggae digital, pas d'électro forte type festival
+       spotify:track:38srUX62KRfmtpgovBNw0e
+
+### Rap old school — 4 à retirer sur 132
+   - Without Me — Eminem
+       → plutôt : Rap us  | Eminem est un artiste de rap américain, pas français - correspond davantage à 'Rap us'
+       spotify:track:7lQ8MOhq6IN2w8EYcFNSUk
+   - The Heart Part 5 — Kendrick Lamar
+       → plutôt : Rap us  | Kendrick Lamar est un artiste de rap américain, pas français
+       spotify:track:5MMW4CZsZiZt2iuqAXzzWC
+   - Ainsi soit-il — Taïro
+       → plutôt : Reggae  | Taïro est un artiste reggae/dancehall, pas rap
+       spotify:track:0eTqahBdv7jpTdk5rJYKEt
+   - X — Xzibit
+       → plutôt : Rap us  | Xzibit est un rappeur américain, pas français
+       spotify:track:5stZnlPMYz3Ba8Hbo3ajlP
+
+### Latino — 2 à retirer sur 4
+   - Vamos a la Playa — Loona
+       → plutôt : Pop Dance  | Eurodance des années 90, aucune identité latino malgré le titre espagnol
+       spotify:track:2Tk5B1h58lJRsrivGg1jaE
+   - L'italiano — Toto Cutugno
+       → plutôt : Variété  | Variété italienne, pas d'identité latino (tango/salsa/reggaeton/gipsy/cumbia)
+       spotify:track:2S7RApTsKT0CtYojYq2cKz
+
+### Pop Culture — 2 à retirer sur 105
+   - Solo (feat. Demi Lovato) — Clean Bandit, Demi Lovato
+       → plutôt : Pop Dance, Pop  | Clean Bandit/Demi Lovato, pop électronique internationale, pas du rap français mélodique
+       spotify:track:6kPJZM97LwdG9QIsT7khp6
+   - La musique - Angelica — Star Academy
+       → plutôt : Variété  | Star Academy - émission TV variété française, pas du rap mainstream français mélodique
+       spotify:track:7tGmXM46H0m2w4WSOumNEM
+
+### Rock soůl — 2 à retirer sur 60
+   - Santa María (del Buen Ayre) — Gotan Project
+       → plutôt : Latino, Électro Chill  | Tango électronique argentin, aucun lien avec soul/funk/R&B/rock'n'roll/oldies
+       spotify:track:65MDo5mxRY45IHpyVkLEU5
+   - jazz is for ordinary people — berlioz
+       → plutôt : Jazz  | Titre de jazz contemporain sans lien avec soul, funk, R&B, rock'n'roll ou oldies
+       spotify:track:12BaQt9aYdTlEtKreqB5V4
+
+### Jazz — 1 à retirer sur 100
+   - ALWAYS — Forrest Frank
+       → plutôt : Pop, Chill pop  | Forrest Frank est un artiste pop/worship contemporain, aucun élément jazz identifiable
+       spotify:track:2MRm76TO0j4VBbyPj6lodc
+
+### Reggae — 1 à retirer sur 70
+   - Bisso Na bisso — Bisso na Bisso
+       → plutôt : Rap us, Rap old school  | Bisso Na Bisso est un collectif de rap congolais, ce titre n'a pas d'éléments reggae
+       spotify:track:7pQKLGoSPL8tVSEofWxC2w
