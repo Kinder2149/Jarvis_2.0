@@ -13,7 +13,7 @@ Tests avec **appels API réels** (OpenRouter, Brave Search).
    - `OPENROUTER_KEY` (obligatoire)
    - `WEB_SEARCH_KEY` (pour test Brave Search)
 
-3. **METHODO accessible** : `C:\DEV\METHODO\`
+3. **METHODO accessible** : `V:\DEV\METHODO\`
 
 ## Commandes
 

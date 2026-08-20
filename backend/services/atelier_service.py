@@ -18,7 +18,7 @@ def get_clients_base_dir() -> Path:
     cursor.execute("SELECT value FROM app_config WHERE key = 'clients_export_path'")
     row = cursor.fetchone()
     conn.close()
-    return Path(row["value"]) if row and row["value"] else Path("C:/DEV/PROJETS/Clients")
+    return Path(row["value"]) if row and row["value"] else Path("V:/DEV/PROJETS/Clients")
 
 
 def load_resource(filename: str) -> str:

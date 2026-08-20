@@ -7,7 +7,7 @@ Commande : python -m pytest tests/live/test_live_modules.py -m live -v --timeout
 Prérequis :
   - JARVIS doit tourner : uvicorn backend.main:app --reload --port 8000
   - Clés API valides dans .env (OPENROUTER_KEY, WEB_SEARCH_KEY)
-  - METHODO accessible dans C:\DEV\METHODO\
+  - METHODO accessible dans V:\DEV\METHODO\
 """
 import pytest
 import httpx
@@ -130,7 +130,7 @@ async def test_live_profil_utilisateur_dans_systemprompt():
     Vérifie que FIX-01 + INFRA injecte bien le profil.
     """
     # Chemin METHODO
-    methodo_path = Path("C:/DEV/METHODO")
+    methodo_path = Path("V:/DEV/METHODO")
     profil_path = methodo_path / "informations utilisateur" / "PROFIL_UTILISATEUR.md"
     
     # Sauvegarder profil original

@@ -386,7 +386,7 @@ def write_file(request: WriteFileRequest):
     """Écrit le contenu dans un fichier (sécurisé pour PROJET_CONTEXTE.md uniquement)."""
     file_path = Path(request.path)
     
-    # Sécurité : vérifier que le chemin est dans C:\DEV\PROJETS\ et que c'est PROJET_CONTEXTE.md
+    # Sécurité : vérifier que le chemin est dans V:\DEV\PROJETS\ et que c'est PROJET_CONTEXTE.md
     if not str(file_path).startswith("C:\\DEV\\PROJETS\\"):
         raise HTTPException(status_code=403, detail="Chemin non autorisé")
     

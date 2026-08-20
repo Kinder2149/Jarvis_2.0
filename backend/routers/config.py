@@ -320,7 +320,7 @@ def get_clients_export_path():
     cursor.execute("SELECT value FROM app_config WHERE key = 'clients_export_path'")
     row = cursor.fetchone()
     conn.close()
-    return {"value": row["value"] if row else "C:/DEV/PROJETS/Clients"}
+    return {"value": row["value"] if row else "V:/DEV/PROJETS/Clients"}
 
 @router.post("/clients_export_path")
 def save_clients_export_path(body: dict):

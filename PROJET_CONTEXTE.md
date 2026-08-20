@@ -414,3 +414,25 @@ JARVIS/
 - **Phase 4 UI avancée** — éditeur diff interactif, historique replay
 - **Atelier V2** — multi-catégories, relance cycle sur même prospect
 - **Dashboard — analytics avancés** — coût cumulatif par projet, courbe semaine/mois
+
+---
+
+## 10. AUDIT DE REPRISE (2026-08-06)
+
+**Constat :**
+- **Statut affiché obsolète** : la section 1 indique "Statut : En développement" (dernière mise à jour 2026-04-16), alors que la méthode actuelle (`V:\DEV\CLAUDE.md`) classe Jarvis-2.0 **⏸ en pause**, et que le nouveau projet **Brain** (`V:\DEV\PROJETS\intelligence_artificielle\Brain`) reprend une partie de sa vision (orchestrateur de réflexion) en repartant d'une base neuve et volontairement minimale, en réaction explicite au "bus factor 1" qui a arrêté Jarvis. Champ Statut corrigé ci-dessous pour refléter la réalité.
+- **Dernier commit git : 2026-07-19**, `git status` propre — le code n'a pas bougé depuis, cohérent avec la pause.
+- **Dépassement massif de la règle "5 fichiers .md max"** : 8 fichiers `.md`/apparentés à la racine (`AGENT_TEMPLATE.md`, `CHANGELOG.md`, `JARVIS.spec`, `JARVIS_ref`, `PROJET_CONTEXTE.md`, `PROMPT_AGENT_ORGANISEUR.md`, `README.md`, `STACK_CODE.md`).
+- **`CHANGELOG.md` fait 159 Ko** — taille inhabituelle par rapport aux autres projets du périmètre, à vérifier s'il contient de l'historique devenu obsolète compressible/archivable.
+- Le tableau de la section 1 (IDENTITÉ) est mal formé en Markdown (une cellule par ligne au lieu du format `| a | b |` sur une seule ligne) — lisible mais non conforme au format standard des autres `PROJET_CONTEXTE.md` du périmètre.
+
+**Champ corrigé :**
+| Champ | Valeur |
+|---|---|
+| Statut | **⏸ En pause** (dernier commit 2026-07-19 ; vision reprise par le nouveau projet **Brain**, voir `intelligence_artificielle/Brain/PROJET_CONTEXTE.md`) |
+
+**Backlog (reprise) :**
+1. Si Jarvis-2.0 reste en pause : archiver `AGENT_TEMPLATE.md`, `JARVIS.spec`, `JARVIS_ref`, `PROMPT_AGENT_ORGANISEUR.md`, `STACK_CODE.md` dans `_archives/` pour redescendre sous la limite de 5 fichiers .md — aucun n'est nécessaire tant que le code ne bouge pas.
+2. Décider avec Kinder : Jarvis-2.0 est-il définitivement remplacé par Brain, ou reste-t-il une base de code à récupérer un jour (le README de Brain mentionne déjà réutiliser son client OpenRouter) ? Trancher évite de laisser deux systèmes concurrents "en sommeil".
+3. `CHANGELOG.md` (159 Ko) — évaluer si une partie peut être archivée (ex. découpée par trimestre) pour rester exploitable.
+4. Corriger le format du tableau section 1 si le fichier est repris un jour (cosmétique, non bloquant).

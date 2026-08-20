@@ -341,7 +341,7 @@ def init_db():
     # Initialiser clients_export_path si absent
     cursor.execute("""
         INSERT OR IGNORE INTO app_config (key, value, category) 
-        VALUES ('clients_export_path', 'C:/DEV/PROJETS/Clients', 'paths')
+        VALUES ('clients_export_path', 'V:/DEV/PROJETS/Clients', 'paths')
     """)
     conn.commit()
     
